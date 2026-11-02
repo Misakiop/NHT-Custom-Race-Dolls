@@ -7,11 +7,11 @@
 
 | 种族 | 身体 | 备注 |
 | --- | --- | --- |
-| Milira race | Milira_Body | 含翅膀 |
-| Miho race | Alien_Miho | 含尾巴 |
-| Kiiro race | Kiiro_Body | 含尾巴 |
-| Ratkin race | RK_Body_Ratkin | 原版 HairDef 发型 |
-| Wolfein race | Wolfein_Body | 原版 HairDef 发型 |
+| Milira race |
+| Miho race |
+| Kiiro race |
+| Ratkin race | 
+| Wolfein race |
 
 …还在陆续调整与补充。
 
