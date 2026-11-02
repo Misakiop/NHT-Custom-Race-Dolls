@@ -1,0 +1,16 @@
+# 编辑器个人数据 / 缓存
+Editor/nht-project*.js
+Editor/history/
+Editor/assets/
+Editor/Mainimg/
+Editor/body-map*.json
+Editor/_*.html
+# 编译产物
+Source/bin/
+Source/obj/
+*.bak
+*.tmp
+*.orig
+# 系统
+Thumbs.db
+desktop.ini

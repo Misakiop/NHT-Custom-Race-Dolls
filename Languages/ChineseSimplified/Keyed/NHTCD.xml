@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <NHTCD_SettingsCategory>NHT 自定义娃娃</NHTCD_SettingsCategory>
+  <NHTCD_Header>已有自定义娃娃的种族：{0}。未指定的栏位会依次回退：性别 → 体型 → 任意娃娃。</NHTCD_Header>
+  <NHTCD_ShowHairInXray>在骨骼 / 器官视图显示头发</NHTCD_ShowHairInXray>
+  <NHTCD_NoDolls>没有找到种族娃娃。请把导出的 HumanlikeDoll XML 放进 Defs/ 目录。</NHTCD_NoDolls>
+  <NHTCD_Auto>自动</NHTCD_Auto>
+  <NHTCD_Default>默认</NHTCD_Default>
+  <NHTCD_Female>女性</NHTCD_Female>
+  <NHTCD_Male>男性</NHTCD_Male>
+  <NHTCD_Body>体型…</NHTCD_Body>
+  <NHTCD_Debug>调试模式（输出启动信息、诊断日志、缺图警告）</NHTCD_Debug>
+  <NHTCD_DefaultHint>默认：所有栏位都使用对应种族补丁里的娃娃（自动）。只有手动改过的栏位才会用你选的娃娃。</NHTCD_DefaultHint>
+  <NHTCD_BaseDolls>基础 NHT 体型</NHTCD_BaseDolls>
+  <NHTCD_BaseTag>（原版体型）</NHTCD_BaseTag>
+  <NHTCD_UseRacePatch>用种族补丁</NHTCD_UseRacePatch>
+</LanguageData>

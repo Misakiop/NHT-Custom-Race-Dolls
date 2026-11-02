@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- HAR 附加件（头发）在 NHT 娃娃上的绘制参数：scale=1 表示铺满整身，
+       offset 以“身高”为单位（负值向上）。编辑器会覆盖这些数值。 -->
+  <NHT_CustomDolls.HairFitDef>
+    <defName>NHTCD_HairFit_Default</defName>
+    <race>*</race>
+    <scale>0.78</scale>
+    <offsetX>0</offsetX>
+    <offsetY>-0.21</offsetY>
+    <front>true</front>
+    <layer>15</layer>
+    <showInXray>false</showInXray>
+    <aboveParts>
+      <li>Milira_FemaleHalo</li>
+    </aboveParts>
+  </NHT_CustomDolls.HairFitDef>
+</Defs>

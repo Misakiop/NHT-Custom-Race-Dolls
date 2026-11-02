@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+	<name>Nice Health Tab - Custom Race Dolls</name>
+	<author>atian</author>
+	<packageId>atian.nht.customdolls</packageId>
+	<supportedVersions>
+		<li>1.7</li>
+	</supportedVersions>
+	<description>【这是什么】
+为不同种族换上专属的发型与身体部位，也能在娃娃上额外添加翅膀、尾巴、角、头饰等装饰。
+本质是 Nice Health Tab（一个非常美观的健康页面模组）的种族补丁集。
+
+【目前内置】
+· Milira race
+· Miho race
+· Kiiro race
+· Ratkin race
+· Wolfein race
+…还在陆续调整与补充。
+
+【功能】
+· 种族专属娃娃：按种族自动替换 NHT 面板里的身体，互相独立、互不影响；
+· 自定义部位与装饰：种族自带部位（翅膀 / 尾巴 / 角）直接绑定它自己的序号，
+  人类共有的部位沿用 0–63，编辑器会按对照表自动换算；
+· 64 号以后的部位（如尾巴）同样支持，受伤信息与悬停提示正常；
+· HAR 发型绘制：头发按「层级」插入到部位之间，所以耳朵、角这类层级更高的部位
+  可以自然盖在头发之上；
+· 非 HAR 发型上色：原版 HairDef 种族（RatKin 等）可开启「发型重绘」补发色；
+· 体型 / 性别可细分：默认全部使用该种族补丁，也可以在 Mod 设置里按
+  默认 / 男 / 女 / 指定体型单独挑娃娃，或改用 NHT 自带的原版体型。
+
+【配套编辑器】
+GitHub 上提供做好的网页编辑器，方便你定制自己的种族娃娃：
+导入种族模组 → 调整部位与发型 → 导出补丁，一步到位。
+编辑器已经能自行处理大多数问题（部位编号对照、发型参数、缺贴图提示等），
+不过界面功能较多、稍显繁琐，第一次用建议先看编辑器里的「指南」。
+如果不想自己动手，可以在评论区留言需要的种族，我看到后会排进清单。
+
+【兼容与前置】
+· 需要 Harmony、Nice Health Tab；
+· 与 HAR（Humanoid Alien Races）一起使用时，请让它排在本模组之前加载；
+· 与 Nice Health Tab - Race Dolls 功能重叠，两者同时开启时本模组优先。
+
+【测试情况】
+目前在 1.7 环境下测试通过；1.6 尚未测试
+（1.6 与 1.7 的游戏运行时不同，需要单独编译一份 DLL）。</description>
+	<modDependencies>
+		<li>
+			<packageId>brrainz.harmony</packageId>
+			<displayName>Harmony</displayName>
+			<steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
+		</li>
+		<li>
+			<packageId>Andromeda.NiceHealthTab</packageId>
+			<displayName>Nice Health Tab</displayName>
+			<steamWorkshopUrl>steam://url/CommunityFilePage/3328729902</steamWorkshopUrl>
+		</li>
+	</modDependencies>
+	<loadAfter>
+		<li>brrainz.harmony</li>
+		<li>Andromeda.NiceHealthTab</li>
+		<li>erdelf.HumanoidAlienRaces</li>
+	</loadAfter>
+</ModMetaData>

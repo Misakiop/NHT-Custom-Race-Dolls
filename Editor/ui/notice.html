@@ -1,0 +1,35 @@
+<!--
+  NHT 解剖编辑器 —— 通知内容
+  ------------------------------------------------------------
+  这个文件可以随便改：保存后回到编辑器按 R 重启（或刷新页面）即可生效。
+  里面可以直接写 HTML / 内联样式，编辑器会原样塞进右上角通知气泡里。
+  注意：只用 <div> <p> <b> <br> <span> <ul>/<li> 这类基础标签最稳。
+-->
+<div class="nt">
+  <p class="nt-h">HAR 发型提示</p>
+
+  <p>HAR 种族的头发是 <b>bodyAddon（附加件）</b>，不写进小人自己的 HairDef，
+     所以 NHT 看不到它 —— 要在游戏里显示，必须由本模组自绘。</p>
+
+  <div class="nt-box">
+    <p>① 打开「全局属性 → HAR 头发 → <b>开启自绘</b>」</p>
+    <p>② 按这份画布调好 <b>缩放 / 偏移X / 偏移Y</b> 与层级</p>
+    <p>③ 画布若有 <b>导出偏移</b>，再打开 <b>发型跟随偏移</b>（否则发型会与身体错位）</p>
+  </div>
+
+  <p class="nt-foot">Miho 与 Milira 的画布都用这套流程；头发贴图在主层 / 后层两个文件夹里。</p>
+</div>
+
+<style>
+  .nt { font-size: 11px; line-height: 1.65; color: #c3ccd0; }
+  .nt p { margin: 0 0 6px; }
+  .nt .nt-h { font-size: 11.5px; font-weight: 600; color: #e3b558; margin-bottom: 6px; }
+  .nt b { color: #eaf6f4; font-weight: 600; }
+  .nt-box {
+    margin: 7px 0 6px; padding: 7px 9px; border-radius: 6px;
+    background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.08);
+  }
+  .nt-box p { margin: 0 0 4px; font-size: 10.5px; line-height: 1.7; }
+  .nt-box p:last-child { margin-bottom: 0; }
+  .nt .nt-foot { margin: 0; font-size: 10px; color: #8d9499; }
+</style>

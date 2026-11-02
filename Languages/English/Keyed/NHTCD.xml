@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <NHTCD_SettingsCategory>NHT Custom Dolls</NHTCD_SettingsCategory>
+  <NHTCD_Header>Races with a custom doll: {0}. Unset rows fall back to gender, then body type, then any doll.</NHTCD_Header>
+  <NHTCD_ShowHairInXray>Show hair in the Bones / Organs view</NHTCD_ShowHairInXray>
+  <NHTCD_NoDolls>No race dolls found. Drop the exported HumanlikeDoll XML into Defs/.</NHTCD_NoDolls>
+  <NHTCD_Auto>auto</NHTCD_Auto>
+  <NHTCD_Default>default</NHTCD_Default>
+  <NHTCD_Female>female</NHTCD_Female>
+  <NHTCD_Male>male</NHTCD_Male>
+  <NHTCD_Body>body...</NHTCD_Body>
+  <NHTCD_Debug>Debug logging (startup info, per-pawn diagnostics, missing textures)</NHTCD_Debug>
+  <NHTCD_DefaultHint>Default: every slot uses the doll from that race's patch (auto). Only slots you change manually use your pick.</NHTCD_DefaultHint>
+  <NHTCD_BaseDolls>Base NHT bodies</NHTCD_BaseDolls>
+  <NHTCD_BaseTag>(vanilla body)</NHTCD_BaseTag>
+  <NHTCD_UseRacePatch>race patch</NHTCD_UseRacePatch>
+</LanguageData>

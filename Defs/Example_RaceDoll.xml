@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!--
+    把编辑器导出的补丁 XML（补丁页 → 导出补丁 XML）里的内容贴到下面：
+      · <NiceHealthTab.HumanlikeDoll> ... </NiceHealthTab.HumanlikeDoll>
+      · 所有 <NiceHealthTab.DollBodyPart> ... </NiceHealthTab.DollBodyPart>
+
+    可以直接整段 "Defs" 里的内容粘进来，不用保留编辑器生成的那层 <PatchOperationAdd>。
+    如果导出的是 PatchOperation 形式，把文件改成放到 ../Patches/ 下即可，而不要放这里。
+  -->
+</Defs>

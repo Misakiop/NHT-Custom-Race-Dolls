@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+	<name>Nice Health Tab - Custom Race Dolls</name>
+	<author>atian</author>
+	<packageId>atian.nht.customdolls</packageId>
+	<supportedVersions>
+		<li>1.7</li>
+	</supportedVersions>
+	<description>给 Nice Health Tab 的解剖面板换上「自己画的」娃娃与发型，并附带一个网页编辑器（Editor 文件夹）。
+
+【能做什么】
+· 种族娃娃：一个种族一套娃娃（HumanlikeDoll + 部位），运行时自动识别并替换；
+· 体型 / 性别：默认全部使用该种族补丁里的娃娃；也可以在 选项 → NHT 自定义娃娃 里
+  按「默认 / 男 / 女 / 指定体型」单独指定，或改用 Nice Health Tab 自带的原版体型娃娃；
+· 自定义部位：翅膀、尾巴、角这类种族自带部位直接绑它们自己的序号，
+  人类共有的部位沿用 0–63，编辑器里会按对照表自动换算；
+· 64+ 部位：NHT 没给对照表的自定义身体，本模组会按部位名自动生成一份，
+  所以尾巴这类 64 号以后的部位也能画、也有悬停信息；
+· HAR 头发：HAR 种族（Miho / Milira / Kiiro / Wolfein …）的附加件头发由本模组绘制，
+  层级来自补丁里的 HairFitDef（头发画在第一个「图层 ≥ 头发层级」的部位之前，
+  所以图层更高的耳朵会盖在头发上）；
+· 非 HAR 发型显示颜色：原版 HairDef 种族（RatKin 等）可开启「发型重绘」按发色补画一层；
+· 编辑器：画布分组、部位拖动 / 缩放 / 旋转、命中框、置顶重画、参考发型、素材库、
+  多选注入、导出纯模组文件夹、本地服务保存、可自行编辑的指南 / 通知 / 提示。
+
+【需要】
+· Harmony
+· Nice Health Tab（本模组依赖它的娃娃系统）
+· 与 HAR（Humanoid Alien Races）搭配时请让它先加载。
+
+【版本】
+· 当前 DLL 按 1.7 编译（Assemblies/NHT_CustomDolls.dll）；
+· 1.6 需要单独编译一份 DLL（1.6 是 Mono/.NET Framework，1.7 是 .NET），
+  补丁与编辑器本体与版本无关，可以共用。
+
+【怎么用】
+1. Mod 设置里不用动就已是「全部使用种族补丁」；
+2. 加新种族：双击 Editor\启动编辑器.bat → 导入种族 → 调部位 / 发型 → 导出页注入模组；
+3. 详细操作见 Editor\说明.txt 与编辑器里的「指南」。</description>
+	<modDependencies>
+		<li>
+			<packageId>brrainz.harmony</packageId>
+			<displayName>Harmony</displayName>
+			<steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
+		</li>
+		<li>
+			<packageId>Andromeda.NiceHealthTab</packageId>
+			<displayName>Nice Health Tab</displayName>
+			<steamWorkshopUrl>steam://url/CommunityFilePage/3328729902</steamWorkshopUrl>
+		</li>
+	</modDependencies>
+	<loadAfter>
+		<li>brrainz.harmony</li>
+		<li>Andromeda.NiceHealthTab</li>
+		<li>erdelf.HumanoidAlienRaces</li>
+	</loadAfter>
+</ModMetaData>
