@@ -8,7 +8,7 @@ Editor/_*.html
 # 编译产物
 Source/bin/
 Source/obj/
-*.bak
+*.bak*
 *.tmp
 *.orig
 # 系统
