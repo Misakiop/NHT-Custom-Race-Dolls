@@ -45,7 +45,8 @@ Source/                C# 源码 + build.ps1
 ```
 
 ## 配套编辑器
-<img src="Editor\Mainimg\屏幕截图 2026-11-03 021124.png" " 
+<img src="Editor\Mainimg\屏幕截图 2026-11-03 021124.png" > 
+<img src="Editor/Mainimg/屏幕截图 2026-11-03 021220.png" > 
 仓库自带网页编辑器：双击 `Editor\启动编辑器.bat`，会开一个控制台窗口（= 本地服务）并自动打开浏览器。
 
 流程：**导入种族 → 调部位 / 发型 → 导出页注入模组**。
