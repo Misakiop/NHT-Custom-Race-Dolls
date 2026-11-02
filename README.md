@@ -54,13 +54,10 @@ Source/                C# 源码 + build.ps1
 
 - 需要 **Harmony**、**Nice Health Tab**；
 - 与 **HAR**（Humanoid Alien Races）一起使用时，请让它排在本模组之前加载；
-- 与 **Nice Health Tab - Race Dolls** 功能重叠，两者同时开启时本模组优先。
 
 ## 版本
 
 - 目前在 **1.7** 环境下测试通过；
-- **1.6 尚未测试** —— 1.6 与 1.7 的游戏运行时不同（1.6 是 Mono/.NET Framework，
-  1.7 是 .NET），需要单独编译一份 DLL；Patches / Defs / Textures / Editor 与版本无关。
 
 ## 重新编译 DLL
 
