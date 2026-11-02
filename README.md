@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="About/Preview.png" alt="预览" width="620">
+</p>
+
 # Nice Health Tab - Custom Race Dolls
 
 为不同种族换上专属的**发型与身体部位**，也能在娃娃上额外添加翅膀、尾巴、角、头饰等**装饰**。  
