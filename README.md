@@ -9,8 +9,8 @@
 
 ## 目前内置
 
-| 种族 | 身体 | 备注 |
-| --- | --- | --- |
+| 种族 |
+| --- |
 | Milira race |
 | Miho race |
 | Kiiro race |
