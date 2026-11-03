@@ -1081,7 +1081,7 @@ kbd{
 .harwarn{width:300px;max-width:calc(100% - 24px);max-height:min(380px,calc(100% - 96px));overflow:auto;line-height:1.55}
 .harwarn__b{word-break:break-word}
 /* 问号气泡 */
-.qpop{position:fixed;z-index:60000;width:min(300px,calc(100vw - 24px));max-height:min(320px,60vh);overflow:auto;
+.qpop{white-space:pre-line;position:fixed;z-index:60000;width:min(300px,calc(100vw - 24px));max-height:min(320px,60vh);overflow:auto;
   padding:8px 10px;border-radius:8px;font-size:11.5px;line-height:1.6;color:#dfe6e9;
   background:rgba(20,25,28,.98);border:1px solid rgba(227,181,88,.45);box-shadow:0 10px 30px rgba(0,0,0,.55);
   white-space:pre-wrap;word-break:break-word;pointer-events:none}
@@ -1475,10 +1475,10 @@ html,body{overflow-anchor:none}
 .gitstat--two{grid-template-columns:repeat(2,1fr) !important}
 
 /* REPO 状态一行三列：左 / 中 / 右 */
-.gitstat--three{display:grid !important;grid-template-columns:1fr 1fr 1fr;align-items:center;gap:4px;text-align:left}
+.gitstat--three{display:grid !important;grid-template-columns:auto auto minmax(0,1fr);align-items:center;gap:6px;text-align:left}
 .gitstat--three > span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gitstat--three .st-mid{text-align:center}
-.gitstat--three .st-right{text-align:right}
+.gitstat--three .st-right{text-align:right;white-space:nowrap;overflow:visible}
 /* 同步日志标题行：文字 + 右侧工具按钮 */
 .gitlog summary{display:flex;align-items:center;gap:6px;cursor:pointer;list-style:none}
 .gitlog summary::-webkit-details-marker{display:none}
@@ -1511,6 +1511,187 @@ html,body{overflow-anchor:none}
 /* 提示条 / 气泡要压在弹窗之上，否则设置里的报错看不到 */
 .toasts{z-index:200000 !important}
 .qpop{z-index:210000 !important}
+
+/* 推送文件选择窗口 */
+.pushtree{max-height:min(52vh,430px);overflow:auto;border:1px solid rgba(255,255,255,.1);border-radius:8px;
+  background:rgba(0,0,0,.26);padding:4px 2px;margin:8px 0}
+.prow{display:flex;align-items:center;gap:6px;padding:3px 6px;border-radius:5px;font:11px/1.6 var(--font-mono);color:#cfd7da}
+.prow:hover{background:rgba(255,255,255,.05)}
+.prow.is-dir{color:#e6edf0;font-weight:600}
+.prow.is-locked{background:rgba(255,90,70,.10);color:#ff9a86 !important}
+.prow.is-locked .prow__name{text-decoration:line-through;opacity:.85}
+.prow__ind{flex:0 0 auto;width:10px;color:#6f777b}
+.prow__chev{flex:0 0 auto;width:14px;text-align:center;color:#8d9499;cursor:pointer}
+.prow__box{flex:0 0 auto;width:13px;height:13px;border-radius:3px;border:1px solid rgba(255,255,255,.3);
+  display:grid;place-items:center;cursor:pointer;color:#0d1013;font-size:10px;line-height:1}
+.prow__box.on{background:#7ee0a8;border-color:#7ee0a8}
+.prow__box.part{background:rgba(126,224,168,.35);border-color:rgba(126,224,168,.8)}
+.prow__box.hidden{visibility:hidden}
+.prow__name{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prow__st{flex:0 0 auto;font-size:9.5px;color:#8d9499;border:1px solid rgba(255,255,255,.14);border-radius:4px;padding:0 4px}
+.prow__st.st-A{color:#7ee0a8;border-color:rgba(126,224,168,.5)}
+.prow__st.st-D{color:#ff9a86;border-color:rgba(255,110,90,.5)}
+.prow__st.st-M{color:#ffcf70;border-color:rgba(227,181,88,.5)}
+.prow__lock{flex:0 0 auto;width:18px;height:18px;display:grid;place-items:center;border-radius:4px;
+  border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);cursor:pointer;color:#9aa3a7}
+.prow__lock:hover{color:#fff;border-color:rgba(160,220,255,.7)}
+.prow__lock.on{color:#ff6b5a;border-color:rgba(255,107,90,.8);background:rgba(255,90,70,.15)}
+.prow__lock svg{width:11px;height:11px}
+.pushtools{display:flex;gap:6px;align-items:center;margin:8px 0 2px}
+.pushtools .n{margin-left:auto;font-size:10.5px;color:#8d9499}
+
+/* 固定尺寸的弹窗内容（避免折叠/展开时整体跳动） */
+.modalfix{width:min(760px,94vw);height:min(78vh,720px);display:flex;flex-direction:column;min-height:0}
+.modalfix--push{width:min(720px,94vw);height:min(78vh,680px)}
+.modalfix .modal__body{flex:1 1 auto;min-height:0;overflow:auto}
+.modalfix .modal__foot{flex:0 0 auto}
+.modalfix--push .pushtree{flex:1 1 auto;min-height:0;max-height:none;overflow:auto}
+
+/* 提交描述：右下角可拖动调整高度 */
+.pushbody{resize:vertical;min-height:58px;max-height:220px;line-height:1.6;font-family:var(--font-ui);width:100%}
+
+.prow__note{margin-left:8px;font:10px/1.5 var(--font-ui);color:#7f8a90;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46%}
+.prow.is-locked .prow__note{color:#c98a83}
+
+/* ================= Git 画布书签 ================= */
+.gmkc.is-stale{opacity:.42;filter:grayscale(1)}
+.gmk__btn.is-stale{border-color:rgba(255,255,255,.16);background:rgba(255,255,255,.05);color:#8d9499;cursor:not-allowed}
+
+
+/* 收起时只让竖排 GIT 左移 2px（图标不动） */
+.gmk:not(.is-open) .gmk__label{transform:translateX(-2px)}
+/* 有新画布（仓库里有没看过的版本）时的提醒 */
+.gmk.has-new .gmk__tab{animation:gmkAlert 1.5s ease-in-out infinite}
+@keyframes gmkAlert{
+  0%,100%{filter:drop-shadow(0 4px 10px rgba(0,0,0,.5)) drop-shadow(0 0 2px rgba(76,214,140,.35));
+          transform:scale(1);opacity:.92;background:rgba(76,214,140,.85)}
+  35%{filter:drop-shadow(0 6px 18px rgba(0,0,0,.5)) drop-shadow(0 0 16px rgba(90,255,170,.95))
+          drop-shadow(0 0 28px rgba(60,220,140,.55));
+       transform:scale(1.07);opacity:1;background:rgba(120,255,180,1)}
+  60%{filter:drop-shadow(0 6px 16px rgba(0,0,0,.5)) drop-shadow(0 0 8px rgba(76,214,140,.7));
+       transform:scale(1.02);opacity:1;background:rgba(96,240,165,1)}
+}
+
+.gmk{position:absolute;left:100%;right:auto;top:4.5px;margin-left:1.5px;z-index:4200;display:flex;flex-direction:column;align-items:flex-start;pointer-events:none}
+.gmk>*{pointer-events:auto}
+.gmk__tab{position:relative;width:34px;height:25px;border:0;
+  background:rgba(76,214,140,.95);
+  color:#8ff0bb;display:flex;align-items:center;justify-content:center;gap:6px;
+  cursor:pointer;padding:0;border-radius:0 7px 7px 0;
+  clip-path:polygon(0 0,calc(100% - 8px) 0,100% 50%,calc(100% - 8px) 100%,0 100%);
+  filter:drop-shadow(0 5px 12px rgba(0,0,0,.55));
+  transition:width .34s cubic-bezier(.22,1.4,.36,1), filter .3s, color .2s, padding .3s;
+  animation:gmkBreath 2.6s ease-in-out infinite}
+/* 内层：深色填充，inset 1px 之后自然露出 1px 橙色描边（含尖角） */
+.gmk__tab::before{content:'';position:absolute;inset:1px;border-radius:0 6px 6px 0;
+  background:linear-gradient(180deg,rgba(18,34,26,.98),rgba(11,22,17,.98));
+  clip-path:inherit}
+.gmk__tab>*{position:relative;z-index:1}
+.gmk__tab:hover{color:#c6ffdd;}
+.gmk.is-open .gmk__tab{width:348px;justify-content:flex-start;padding-left:12px;animation:none;border-radius:0 7px 0 0;
+  clip-path:polygon(0 0,calc(100% - 16px) 0,100% 50%,calc(100% - 16px) 100%,0 100%);
+  background:rgba(96,230,158,1);
+  filter:drop-shadow(0 6px 16px rgba(0,0,0,.6))}
+.gmk__tab svg{width:13px;height:13px;opacity:.9;flex:0 0 auto}
+.gmk__label{writing-mode:vertical-rl;font:8.5px/1 var(--font-ui);letter-spacing:.06em;opacity:.8}
+.gmk.is-open .gmk__label{display:none}
+.gmk__title{display:none}
+.gmk.is-open .gmk__title{display:inline;font:11px/1 var(--font-ui);letter-spacing:.06em;color:#b6ffd4;white-space:nowrap}
+@keyframes gmkBreath{
+  0%,100%{filter:drop-shadow(0 4px 10px rgba(0,0,0,.5)) drop-shadow(0 0 0 rgba(76,214,140,0))}
+  50%{filter:drop-shadow(0 5px 14px rgba(0,0,0,.55)) drop-shadow(0 0 6px rgba(76,214,140,.55))}
+}
+.gmk__panel{position:relative;width:348px;max-height:min(62vh,560px);overflow:auto;
+  margin:0;background:linear-gradient(180deg,rgba(24,29,33,.985),rgba(15,19,22,.985));
+  border:1px solid rgba(255,255,255,.12);border-top:0;border-radius:0 0 10px 10px;
+  box-shadow:0 20px 46px rgba(0,0,0,.66);padding:8px 9px 10px;
+  opacity:0;transform:translateY(-4px);transform-origin:top left;transition:opacity .22s,transform .26s cubic-bezier(.22,1.3,.36,1)}
+.gmk.is-open .gmk__panel{opacity:1;transform:none}
+.gmk__panel[hidden]{display:none}
+.gmk__h{display:flex;align-items:center;gap:6px;padding:2px 2px 7px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:6px}
+.gmk__h b{font-size:11.5px;color:#e6edf0}
+.gmk__h .n{margin-left:auto;font-size:10px;color:#8d9499}
+.gmkv{margin-bottom:6px;border:1px solid rgba(255,255,255,.08);border-radius:8px;overflow:hidden;background:rgba(255,255,255,.02)}
+.gmkv__h{display:flex;align-items:center;gap:6px;padding:6px 8px;cursor:pointer;background:rgba(255,255,255,.03)}
+.gmkv__h:hover{background:rgba(255,255,255,.06)}
+.gmkv__chev{width:12px;color:#8d9499}
+.gmkv__h b{font-size:11px;color:#dfe7ea}
+.gmkv__sha{font:9.5px var(--font-mono);color:#7f888b;border:1px solid rgba(255,255,255,.12);border-radius:4px;padding:0 4px}
+.gmkv__n{margin-left:auto;font-size:10px;color:#8d9499}
+.gmkv__items{padding:4px 5px 6px}
+.gmkv__items.is-shut{display:none}
+.gmkc{padding:6px 7px;border:1px solid rgba(255,255,255,.08);border-radius:7px;margin:4px 0;
+  background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012));cursor:pointer;
+  transition:border-color .18s,background .18s,opacity .25s,filter .25s}
+.gmkc:hover{border-color:rgba(255,180,110,.45);background:rgba(255,149,65,.07)}
+.gmkc.is-applied{opacity:.5;filter:grayscale(.85)}
+.gmkc__top{display:flex;align-items:center;gap:6px}
+.gmkc__top b{font-size:11px;color:#e6edf0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gmk__btn{margin-left:auto;flex:0 0 auto;font:10px/1 var(--font-ui);padding:3px 8px;border-radius:5px;
+  border:1px solid rgba(120,224,168,.55);background:rgba(120,224,168,.12);color:#9df0c4;cursor:pointer}
+.gmk__btn:hover{background:rgba(120,224,168,.22)}
+.gmk__btn.is-undo{border-color:rgba(255,149,65,.6);background:rgba(255,149,65,.12);color:#ffc48c}
+.gmkc__line{display:flex;align-items:center;gap:5px;margin-top:3px;font:9.5px var(--font-ui);color:#8d9499}
+.gmkc__line .tags{margin-left:auto;display:flex;gap:3px}
+.gmk__empty{font-size:10.5px;color:#8d9499;line-height:1.7;padding:8px 4px}
+/* 主画布卡片：标签移到标题下一行、右对齐 */
+.cv__line{display:flex;align-items:center;gap:5px;min-width:0}
+.cv__tags{margin-left:auto;display:flex;gap:3px;flex:0 0 auto}
+
+/* 书签卡片：缩略图 + 内容 */
+.gmkc{display:flex;gap:7px;align-items:flex-start}
+.gmkc__fig{flex:0 0 auto;width:34px;height:42px;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.12);
+  border-radius:4px;background:radial-gradient(60% 50% at 50% 45%,#1b2124,#0b0e12)}
+.gmkc__body{flex:1 1 auto;min-width:0}
+/* 临时查看提示条 */
+.gmkview{position:fixed;left:50%;top:58px;transform:translateX(-50%);z-index:24000;display:flex;align-items:center;gap:8px;
+  padding:6px 8px 6px 6px;border-radius:8px;background:linear-gradient(180deg,rgba(18,34,26,.97),rgba(11,22,17,.97));
+  border:1px solid rgba(90,230,160,.55);box-shadow:0 12px 30px rgba(0,0,0,.55);color:#c9f5dc;font-size:11px}
+.gmkview b{color:#eafff2}
+.gmkview__ico{font:600 9px var(--font-mono);letter-spacing:.08em;color:#0d1a13;background:#5fe0a0;border-radius:4px;padding:2px 4px}
+.gmkview__x{margin-left:4px;padding:2px 8px;border-radius:5px;border:1px solid rgba(120,240,180,.6);
+  background:rgba(120,240,180,.14);color:#c9f5dc;font-size:10px;cursor:pointer}
+.gmkview__x:hover{background:rgba(120,240,180,.26)}
+
+/* 最近改动（回收站）母栏 */
+#cvTrash{flex:0 0 auto}
+.ctrash{margin:8px 8px 4px;border:1px dashed rgba(255,255,255,.14);border-radius:8px;background:rgba(255,255,255,.02)}
+.ctrash__h{display:flex;align-items:center;gap:6px;padding:5px 8px;cursor:pointer;color:#cfd7da;font-size:11px}
+.ctrash__h:hover{background:rgba(255,255,255,.04)}
+.ctrash__chev{width:10px;color:#8d9499}
+.ctrash__n{margin-left:auto;font:9.5px var(--font-mono);color:#8d9499}
+.ctrash.is-shut .ctrash__items{display:none}
+.ctrash__items{padding:2px 5px 6px;max-height:136px;overflow:auto}
+.ctrash__empty{font-size:10px;color:#6f777b;padding:6px 4px}
+.ctr{display:flex;align-items:center;gap:6px;padding:4px 5px;border-radius:5px;cursor:default}
+.ctr:hover{background:rgba(255,255,255,.05)}
+.ctr__fig{flex:0 0 auto;width:26px;height:32px;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.12);border-radius:3px;background:#0d1114}
+.ctr__txt{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:1px}
+.ctr__txt b{font-size:10.5px;color:#dfe7ea;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ctr__txt i{font-size:9.5px;color:#8d9499;font-style:normal;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ctr__tag{flex:0 0 auto;font:9px var(--font-ui);padding:1px 5px;border-radius:4px;border:1px solid rgba(255,255,255,.16);color:#9aa3a7}
+.ctr__tag.is-replace{color:#ffcf70;border-color:rgba(255,207,112,.5);background:rgba(255,207,112,.08)}
+.ctr__tag.is-delete{color:#ff9a86;border-color:rgba(255,110,90,.5);background:rgba(255,90,70,.08)}
+.ctrmenu{position:fixed;z-index:99999;min-width:110px;padding:4px;border-radius:7px;
+  background:linear-gradient(180deg,rgba(26,31,36,.99),rgba(16,20,23,.99));
+  border:1px solid rgba(255,255,255,.14);box-shadow:0 14px 34px rgba(0,0,0,.6)}
+
+/* 只读预览：右栏编辑控件禁用 */
+body.is-preview .col--r input,
+body.is-preview .col--r select,
+body.is-preview .col--r textarea,
+body.is-preview .col--r .btn,
+body.is-preview .col--r .switch,
+body.is-preview .col--r .cv,
+body.is-preview .col--r .swrow{pointer-events:none;opacity:.5}
+body.is-preview .col--l .cv,
+body.is-preview .col--l .ctr{pointer-events:none;opacity:.55}
+body.is-preview #stage{cursor:not-allowed}
+.gmkview.is-preview{border-color:rgba(255,160,90,.6);background:linear-gradient(180deg,rgba(38,26,16,.97),rgba(22,16,10,.97));color:#ffd9b3}
+.gmkview.is-preview b{color:#fff1de}
+.gmkview.is-preview .gmkview__ico{background:#ffb066;color:#241505}
+.gmkview.is-preview .gmkview__x{border-color:rgba(255,180,110,.6);background:rgba(255,180,110,.14);color:#ffd9b3}
+.gmkview.is-preview .gmkview__x:hover{background:rgba(255,180,110,.28)}
 </style>
   <script src="ui/guides.js"></script>
 </head>
@@ -1575,7 +1756,7 @@ html,body{overflow-anchor:none}
       <span class="vsep"></span>
       <button class="btn btn--ghost" data-act="history" title="查看最近 5 份本地保存历史，可挑一份载入"><svg><use href="#i-undo"/></svg>历史</button>
       <button class="btn btn--ghost" data-act="save" title="保存**全部画布**与素材清单到项目文件 nht-project.js（html 同目录），不是只存当前画布。Ctrl+S"><svg><use href="#i-save"/></svg>本地保存（全部画布）</button>
-      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-03 14:35</span>
+      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-03 20:49</span>
             <span class="notif" id="notifWrap">
         <button class="iconbtn notif__btn" data-act="notif-toggle" id="notifBtn" title="Git 更新通知：点「收到」后不再弹出，仓库有新的 Push 会再次提醒">
           <svg class="notif__ico"><use href="#i-bell"/></svg>
@@ -2088,6 +2269,7 @@ function normalizeCanvas(c) {
 }
 
 function applyProject(st) {
+  S.trash = Array.isArray(st.trash) ? st.trash : (S.trash || []);
   S.project = Object.assign(S.project, st.project || {});
   S.canvases = (st.canvases || []).map(normalizeCanvas);
   S.canvases.forEach(c => {
@@ -2157,7 +2339,7 @@ function seedProject() {
   };
 }
 
-const activeCanvas = () => S.canvases.find(c => c.id === S.active) || S.canvases[0] || null;
+const activeCanvas = () => (S.preview && S.preview.canvas) ? S.preview.canvas : (S.canvases.find(c => c.id === (S.viewOnly || S.active)) || S.canvases.find(c => c.id === S.active) || S.canvases[0] || null);
 const byUid = u => {
   const c = activeCanvas(); if (!c) return null;
   return c.parts.find(p => p.uid === u) || c.detached.find(p => p.uid === u) || null;
@@ -2187,8 +2369,10 @@ function restoreHistory(i) {
   fitView();
   persist();
 }
-function undo() { if (S.hi > 0) { restoreHistory(S.hi - 1); toast('已撤销'); } }
-function redo() { if (S.hi < S.history.length - 1) { restoreHistory(S.hi + 1); toast('已重做'); } }
+function undo() {
+  if (S.preview) { S.preview = null; document.body.classList.remove('is-preview'); } if (S.hi > 0) { restoreHistory(S.hi - 1); toast('已撤销'); } }
+function redo() {
+  if (S.preview) { S.preview = null; document.body.classList.remove('is-preview'); } if (S.hi < S.history.length - 1) { restoreHistory(S.hi + 1); toast('已重做'); } }
 function renderHistoryButtons() {
   const u = $('#btnUndo'), r = $('#btnRedo');
   if (u) u.disabled = S.hi <= 0;
@@ -2208,6 +2392,7 @@ function doPersist() {
   try {
     localStorage.setItem(LS_KEY, JSON.stringify(projectPayload()));
     setSaveStatus('已自动保存 · ' + now());
+    try { scheduleCanvasSave(); } catch (e) { }
   } catch (e) {
     setSaveStatus('本地存储不可用（仅本次会话）');
   }
@@ -2509,6 +2694,90 @@ function cvItemHTML(c) {
     </div>`;
 }
 
+
+/* ---------------- 最近改动（被替换 / 删除的画布，最多 5 张） ---------------- */
+const TRASH_MAX = 5;
+
+function trashInit() {
+  if (!Array.isArray(S.trash)) S.trash = [];
+  if (typeof S.ui.trashOpen !== 'boolean') S.ui.trashOpen = true;
+}
+
+function pushTrash(canvas, kind) {
+  if (!canvas) return;
+  trashInit();
+  const t = new Date();
+  const hh = String(t.getHours()).padStart(2, '0'), mm = String(t.getMinutes()).padStart(2, '0');
+  S.trash.unshift({
+    id: 'tr' + Date.now().toString(36),
+    kind: kind || '删除',
+    time: hh + ':' + mm,
+    ts: t.getTime(),
+    canvas: JSON.parse(JSON.stringify(canvas)),
+  });
+  if (S.trash.length > TRASH_MAX) S.trash.length = TRASH_MAX;
+}
+
+function trashRestore(id) {
+  if (S.preview) { S.preview = null; document.body.classList.remove('is-preview'); }
+  trashInit();
+  const idx = S.trash.findIndex(x => x.id === id);
+  if (idx < 0) return;
+  const item = S.trash[idx];
+  const cv = item.canvas;
+  const sameId = S.canvases.findIndex(x => x.id === cv.id);
+  if (sameId >= 0) {
+    // 原位还在（替换）→ 用旧版盖回去
+    S.canvases[sameId] = JSON.parse(JSON.stringify(cv));
+    S.active = cv.id;
+  } else {
+    S.canvases.push(JSON.parse(JSON.stringify(cv)));
+    S.active = cv.id;
+  }
+  S.trash.splice(idx, 1);
+  S.viewOnly = null;
+  renderAll(); persist(); pushHistory();
+  toast('已还原画布：' + (cv.title || '') + '（' + item.kind + '）');
+}
+
+function trashRow(item) {
+  const cv = item.canvas || {};
+  const tagCls = item.kind === '替换' ? 'is-replace' : 'is-delete';
+  return `<div class="ctr" data-trid="${esc(item.id)}" data-act="trash-preview" title="点击只读预览；右键可还原">
+      <div class="cv__fig ctr__fig" data-trm="${esc(item.id)}"></div>
+      <div class="ctr__txt"><b>${esc(cv.title || '（无标题）')}</b>
+        <i>${esc(cv.doll || '')} · ${(cv.parts || []).length} 部位 · ${esc(item.time)}</i></div>
+      <span class="ctr__tag ${tagCls}">${esc(item.kind || '删除')}</span>
+    </div>`;
+}
+
+function renderTrash() {
+  const panel = document.querySelector('.panel--cvs');
+  if (!panel) return;
+  let box = document.getElementById('cvTrash');
+  if (!box) {
+    box = document.createElement('div');
+    box.id = 'cvTrash';
+    panel.appendChild(box);
+  }
+  box.innerHTML = '';
+  trashInit();
+  const wrap = document.createElement('div');
+  wrap.className = 'ctrash' + (S.ui.trashOpen ? '' : ' is-shut');
+  const rows = S.trash.length ? S.trash.map(trashRow).join('') : '<div class="ctrash__empty">还没有被替换或删除的画布</div>';
+  wrap.innerHTML = `<div class="ctrash__h" data-act="trash-toggle">
+      <span class="ctrash__chev">${S.ui.trashOpen ? '▾' : '▸'}</span><b>最近改动</b>
+      <span class="ctrash__n">${S.trash.length}/${TRASH_MAX}</span>
+    </div>
+    <div class="ctrash__items">${rows}</div>`;
+  box.appendChild(wrap);
+  if (!S.ui.trashOpen) return;
+  S.trash.forEach(item => {
+    const fig = wrap.querySelector(`[data-trm="${CSS.escape(item.id)}"]`);
+    if (fig) { try { paintMini(fig, item.canvas); } catch (e) { } }
+  });
+}
+
 function renderCanvasList() {
   const box = $('#canvasList');
   ensureCanvasGroups();
@@ -2537,13 +2806,14 @@ function renderCanvasList() {
   }
   html += `<button class="cvgadd" data-act="cv-group-add">＋ 新建分组</button>`;
   box.innerHTML = html;
+  try { renderTrash(); } catch (e) { }
 
   $('#cvsCount').textContent = S.canvases.length;
   S.canvases.forEach(c => {
     const fig = box.querySelector(`[data-mini="${CSS.escape(c.id)}"]`);
     if (fig) paintMini(fig, c);
   });
-  // 右键菜单
+  // 右键菜单（锁定 / 移动分组 / 删除）
   box.querySelectorAll('.cv').forEach(el => {
     el.addEventListener('contextmenu', ev => { ev.preventDefault(); openCvMenu(ev, el.dataset.id); });
   });
@@ -6265,9 +6535,9 @@ function renderPatch() {
           title="${gitBranchBad(ensureGitSettings().branch) ? '不能直接推 main，请换成自己的分支' : '推送 / 拉取使用的分支（会自动在远端创建）'}">
       </div>
       <div class="gitstat gitstat--three">
-        <span class="st-left" data-tip="本地已有、还没推到远端的提交数">待推送 <b id="gitAhead">${(gitState.status && gitState.status.ahead) || 0}</b></span>
-        <span class="st-mid" data-tip="远端已有、本地还没拉的提交数">待拉取 <b id="gitBehind">${(gitState.status && gitState.status.behind) || 0}</b></span>
-        <span class="st-right gitstate is-${gitState.stateOk === true ? 'ok' : (gitState.stateOk === false ? 'fail' : 'idle')}" id="gitLastFetch">${esc(gitState.stateText || '未同步')}</span>
+        <span class="st-left" data-tip="未推送 = 还没推的提交 ${gitPendingCount().commits} 个 + 未提交的可推送文件 ${gitPendingCount().files} 个（默认锁定的文件不计入）">未推送 <b id="gitAhead">${gitPendingCount().total}</b></span>
+        <span class="st-mid" data-tip="GitHub 上还没拉到本地的提交数（不是文件数）">未拉取 <b id="gitBehind">${(gitState.status && gitState.status.behind) || 0}</b></span>
+        <span class="st-right gitstate is-${gitState.stateOk === true ? 'ok' : (gitState.stateOk === false ? 'fail' : 'idle')}" id="gitLastFetch" data-tip="${esc(gitStateTip())}">${esc(gitState.stateText || '未同步')}</span>
       </div>
       <details class="gitlog" id="gitLogBox"${gitState.logs.length ? ' open' : ''}>
         <summary title="推送 / 拉取 / 测试连接的完整输出，失败原因都在这里"><span>同步日志（${gitState.logs.length}）</span>
@@ -6424,6 +6694,26 @@ document.addEventListener('pointerdown', e => {
   menu.hidden = true;
 });
 
+
+/* 回收站行：右键只有「还原」 */
+document.addEventListener('contextmenu', e => {
+  const row = e.target.closest && e.target.closest('.ctr');
+  if (!row) return;
+  e.preventDefault();
+  document.querySelectorAll('.ctrmenu').forEach(m => m.remove());
+  const m = document.createElement('div');
+  m.className = 'ctrmenu';
+  m.innerHTML = `<button class="cvmenu__i" data-act="trash-restore" data-trid="${esc(row.dataset.trid)}">↩ 还原</button>`;
+  document.body.appendChild(m);
+  const w = m.offsetWidth, h = m.offsetHeight;
+  m.style.left = Math.min(e.clientX, innerWidth - w - 8) + 'px';
+  m.style.top = Math.min(e.clientY, innerHeight - h - 8) + 'px';
+});
+document.addEventListener('click', e => {
+  if (e.target.closest && e.target.closest('.ctrmenu')) return;
+  document.querySelectorAll('.ctrmenu').forEach(m => m.remove());
+});
+
 /* 全站悬浮提示：任何带 title / data-tip 的元素都用同一套气泡 */
 document.addEventListener('mouseover', e => {
   const el = e.target.closest && e.target.closest('[title], [data-tip]');
@@ -6449,7 +6739,7 @@ window.addEventListener('resize', () => {
 
 
 /* ---------------- Git 同步（本地服务提供 /__git* 接口） ---------------- */
-let gitState = { status: null, logs: [], note: '', stateText: '未同步', stateOk: null, info: null, busy: false };
+let gitState = { status: null, logs: [], note: '', stateText: '未同步', stateOk: null, info: null, remote: null, busy: false };
 const GIT_LOG_MAX = 20;
 
 function gitDefaults() {
@@ -6537,19 +6827,27 @@ function renderRepoGear() {
     : 'Git 设置有问题：' + (st.isDefaultDir ? '还在用默认仓库目录；' : '') + (st.badBranch ? '分支不能是 main；' : '') + (!st.okStatus ? '无法连接仓库。' : '');
 }
 
-async function gitRefresh() {
+async function gitRefresh(fetchRemote) {
   const g = ensureGitSettings();
   if (!LOCAL_HTTP) { gitState.note = '需要本地服务'; return; }
+  if (!gitState.remote) { try { await gitLoadRemote(); } catch (e) { } }
   try {
-    const r = await fetch('/__git?dir=' + encodeURIComponent(g.dir) + '&branch=' + encodeURIComponent(g.branch || 'main'), { cache: 'no-store' });
+    const extra = fetchRemote ? '&fetch=1' : '';
+    const r = await fetch('/__git?dir=' + encodeURIComponent(g.dir) + '&branch=' + encodeURIComponent(g.branch || 'main') + extra, { cache: 'no-store' });
     const j = await r.json();
     if (j && j.ok) {
       gitState.status = j;
       const t = new Date();
       const hh = String(t.getHours()).padStart(2, '0'), mm = String(t.getMinutes()).padStart(2, '0'), ss = String(t.getSeconds()).padStart(2, '0');
-      gitState.stateText = `已同步 ${hh}:${mm}:${ss}`;
-      gitState.stateDetail = '分支 ' + (j.branch || '') + ' · 待推送 ' + (j.ahead || 0) + ' · 待拉取 ' + (j.behind || 0);
+      gitState.stateText = (j.fetched ? `已同步 ${hh}:${mm}` : `已读取本地 ${hh}:${mm}`);
+      gitState.stateDetail = '';
       gitState.stateOk = true;
+      if (j.fetchNote) gitState.note = j.fetchNote;
+      if (j.fetching) {
+        // 后台 fetch：几秒后再读一次本地引用，页面本身完全不被阻塞
+        clearTimeout(window.__gitFetchPoll);
+        window.__gitFetchPoll = setTimeout(() => { try { gitRefresh(false); } catch (e) { } }, 7000);
+      }
       gitNotifyNewCommits(j);
     } else {
       gitState.status = null;
@@ -6571,6 +6869,41 @@ async function gitRefresh() {
   renderGitUI();
 }
 
+
+/* 未推送计数：提交数 + 未提交且未被默认锁定的文件数 */
+function gitPendingCount() {
+  const st = gitState.status || {};
+  const commits = st.ahead || 0;
+  const unlocked = (st.dirty || []).filter(p => !pushIsDefaultLocked(String(p).replace(/\\/g, '/')));
+  return { commits: commits, files: unlocked.length, total: commits + unlocked.length };
+}
+
+
+/* 状态气泡：当前仓库的完整参数（多行显示） */
+function gitStateTip() {
+  const st = gitState.status || null;
+  const g = ensureGitSettings();
+  const remote = (gitState.remote && gitState.remote.url) || '（未读取）';
+  const pend = gitPendingCount();
+  const L = [];
+  L.push('状态：' + (gitState.stateText || '未同步'));
+  if (st) {
+    L.push('分支：' + (st.branch || g.branch || '-'));
+    L.push('待推送：' + pend.total + '（提交 ' + pend.commits + ' + 未提交文件 ' + pend.files + '）');
+    L.push('待拉取：' + (st.behind || 0) + ' 个提交');
+    L.push('本地提交：' + ((st.commits || []).length) + ' 条记录');
+    if (st.fetched) L.push('远端检测：刚刚成功联网');
+    else if (st.fetching) L.push('远端检测：后台进行中…');
+    else if (st.fetchNote) L.push('远端检测：' + st.fetchNote);
+    else L.push('远端检测：未联网（只读本地）');
+  } else {
+    L.push('仓库：读不到（' + (gitState.stateDetail || '可能未设置目录') + '）');
+  }
+  L.push('远程仓库：' + remote);
+  L.push('本机仓库：' + (g.dir || '（未设置）'));
+  return L.join('\n');
+}
+
 function renderGitUI() {
   const st = gitState.status;
   const brInp = document.getElementById('gitBranchInput');
@@ -6587,14 +6920,20 @@ function renderGitUI() {
     tag.style.color = (st && st.behind) ? '#7ef0d4' : '';
   }
   const ahead = document.getElementById('gitAhead');
-  if (ahead) ahead.textContent = (st && st.ahead) || 0;
+  if (ahead) {
+    const pend = gitPendingCount();
+    ahead.textContent = pend.total;
+    const wrap = ahead.parentElement;
+    if (wrap) wrap.setAttribute('data-tip',
+      '未推送 = 还没推的提交 ' + pend.commits + ' 个 + 未提交的可推送文件 ' + pend.files + ' 个（默认锁定的文件不计入）');
+  }
   const behind = document.getElementById('gitBehind');
   if (behind) behind.textContent = (st && st.behind) || 0;
   const note = document.getElementById('gitLastFetch');
   if (note) {
     note.textContent = gitState.stateText || '未同步';
     note.className = 'gitstate st-right ' + (gitState.stateOk === true ? 'is-ok' : (gitState.stateOk === false ? 'is-fail' : 'is-idle'));
-    if (gitState.stateDetail) note.setAttribute('data-tip', gitState.stateDetail); else note.removeAttribute('data-tip');
+    note.setAttribute('data-tip', gitStateTip());
   }
   const pull = document.getElementById('gitPullBtn');
   if (pull) {
@@ -6630,61 +6969,366 @@ function gitFlash(ok, which) {
   });
 }
 
-async function gitDoPush() {
+const PUSH_STATE = { files: [], tree: null, msg: 'Update from NHT editor', body: '', busy: false, locked: {} };
+
+/* 默认锁住（不推送）的个人数据：别人的仓库里也有这些文件，推上去会覆盖他们的 */
+const PUSH_DEFAULT_LOCK = [
+  'Editor/history',            // 本地保存快照（个人数据，会覆盖别人）
+  'Editor/canvases/.backup',   // 画布备份
+  'Editor/body-map',           // 部位序号调试产物（含 body-map-*.json）
+  'Editor/nht-project.js',     // 项目聚合文件（每个人自己的画布）
+  'Editor/assets',             // 本机素材库（导入的图、参考图）
+  'Editor/ui/notice1.html',    // 早期重复的通知文件
+  'Editor/ui/notice.html.bak', // 通知备份
+  'Source/bin',                // 编译中间产物
+  'Source/obj',                // 编译中间产物
+  'Source/build',              // 编译输出目录（真正要用的是 Assemblies/）
+  'Textures/Custom/.cache',    // 贴图缓存
+];
+
+/* 这些后缀/名字一律视为「没用」，默认锁住 */
+const PUSH_LOCK_RE = [
+  /\.bak[^/]*$/i,             // *.bak / *.bak-slots-*
+  /\.orig$/i,                 // 合并残留
+  /\.rej$/i,                  // 补丁失败残留
+  /\.tmp$/i,                  // 临时文件
+  /\.log$/i,                  // 日志
+  /(^|\/)Thumbs\.db$/i,      // Windows 缩略图缓存
+  /(^|\/)\.DS_Store$/i,      // macOS 缓存
+  /(^|\/)_[a-z0-9_-]*\.html$/i, // 编辑器调试用的临时页面 _xxx.html
+];
+
+/* ---------------- 推送弹窗用的文件说明目录（ui/file-notes.html） ---------------- */
+let FILE_NOTES = null;
+async function loadFileNotes() {
+  if (FILE_NOTES) return FILE_NOTES;
+  FILE_NOTES = [];
+  try {
+    const r = await fetch('ui/file-notes.html?t=' + Date.now(), { cache: 'no-store' });
+    if (!r.ok) return FILE_NOTES;
+    const html = await r.text();
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    doc.querySelectorAll('[data-path]').forEach(el => {
+      const path = (el.dataset.path || '').replace(/\\/g, '/').replace(/\/+$/, '');
+      const note = (el.dataset.note || '').trim();
+      if (path && note) FILE_NOTES.push({ path, note });
+    });
+    FILE_NOTES.sort((a, b) => b.path.length - a.path.length);
+  } catch (e) { }
+  return FILE_NOTES;
+}
+
+const NOTE_BY_EXT = [
+  [/\.json$/i, '数据文件（JSON）'],
+  [/\.(png|jpe?g|webp|gif)$/i, '图片 / 贴图'],
+  [/\.xml$/i, 'XML：Def 或补丁'],
+  [/\.cs$/i, 'C# 源码'],
+  [/\.(js|mjs)$/i, '脚本（JS）'],
+  [/\.(css)$/i, '样式表'],
+  [/\.(txt|md)$/i, '文本说明'],
+  [/\.(bat|ps1)$/i, '脚本（批处理 / PowerShell）'],
+  [/\.dll$/i, '编译产物（DLL）'],
+  [/\.(zip|7z)$/i, '压缩包'],
+];
+
+function fileNoteFor(path, isDir) {
+  const p = String(path || '').replace(/\\/g, '/');
+  const list = FILE_NOTES || [];
+  for (const it of list) {
+    if (p === it.path || p.indexOf(it.path + '/') === 0) return { note: it.note, owner: it.path };
+  }
+  // 文件夹没有专门说明就不显示（避免每个目录都挂一句“其它文件”）
+  if (isDir) return null;
+  // 文件按扩展名给一句通用说明，保证每个文件都有解释
+  for (const [re, note] of NOTE_BY_EXT) {
+    if (re.test(p)) return { note, owner: p };
+  }
+  return { note: '其它文件', owner: p };
+}
+
+function pushIsDefaultLocked(path) {
+  const p = String(path || '').replace(/\\/g, '/');
+  if (PUSH_LOCK_RE.some(re => re.test(p))) return true;
+  return PUSH_DEFAULT_LOCK.some(x => p === x || p.indexOf(x + '/') === 0);
+}
+
+function pushNodeFiles(node, out) {
+  if (!node) return out;
+  if (node.type === 'file') { out.push(node); return out; }
+  (node.children || []).forEach(c => pushNodeFiles(c, out));
+  return out;
+}
+
+function pushCollect(node, out) {
+  if (!node || node.locked) return out;
+  if (node.type === 'file') { if (node.checked) out.push(node.path); return out; }
+  (node.children || []).forEach(c => pushCollect(c, out));
+  return out;
+}
+
+function pushRecompute(node) {
+  if (!node || node.type === 'file') return !!node && !!node.checked;
+  let any = 0, all = 0, on = 0;
+  node.children.forEach(c => {
+    const r = pushRecompute(c);
+    if (c.type === 'file') { any++; if (r) on++; }
+    if (r) all++;
+  });
+  node.checked = on === any && any > 0;
+  node.partial = on > 0 && on < any;
+  return node.checked;
+}
+
+function pushSetAll(node, val) {
+  if (!node || node.locked) return;
+  if (node.type === 'file') { node.checked = val; return; }
+  node.children.forEach(c => pushSetAll(c, val));
+  node.checked = val; node.partial = false;
+}
+
+function buildPushTree(files) {
+  const root = { type: 'dir', name: '', path: '', children: [], open: true, locked: false, checked: true };
+  const dirs = new Map();
+  const dirNode = (parts) => {
+    let cur = root;
+    let acc = '';
+    parts.forEach(seg => {
+      acc = acc ? acc + '/' + seg : seg;
+      let n = dirs.get(acc);
+      if (!n) {
+        n = { type: 'dir', name: seg, path: acc, children: [], open: true, locked: false, checked: true };
+        dirs.set(acc, n);
+        cur.children.push(n);
+      }
+      cur = n;
+    });
+    return cur;
+  };
+  files.forEach(f => {
+    const parts = String(f.path).split('/');
+    const name = parts.pop();
+    const parent = parts.length ? dirNode(parts) : root;
+    parent.children.push({ type: 'file', name, path: f.path, status: f.status, checked: true, locked: false });
+  });
+  // 上次锁定的文件夹：这次打开保持锁定并默认折叠
+  const applyLocked = (node) => {
+    if (node.path && (PUSH_STATE.locked[node.path] || pushIsDefaultLocked(node.path))) {
+      node.locked = true;
+      if (node.type === 'dir') node.open = false;
+    }
+    (node.children || []).forEach(applyLocked);
+  };
+  applyLocked(root);
+  pushRecompute(root);
+  return root;
+}
+
+function pushSelectedCount() {
+  return pushCollect(PUSH_STATE.tree, []).length;
+}
+
+function pushRow(node, depth, parentLocked, coveredBy) {
+  const locked = parentLocked || node.locked;
+  const cls = ['prow'];
+  if (node.type === 'dir') cls.push('is-dir');
+  if (locked) cls.push('is-locked');
+  const pad = depth * 12;
+  const chev = node.type === 'dir'
+    ? `<span class="prow__chev" data-act="push-fold" data-path="${esc(node.path)}">${node.open ? '▾' : '▸'}</span>`
+    : '<span class="prow__chev"></span>';
+  const boxCls = (node.locked || parentLocked) ? 'hidden' : (node.checked ? 'on' : (node.partial ? 'part' : ''));
+  const box = `<span class="prow__box ${boxCls}" data-act="push-check" data-path="${esc(node.path)}">${node.checked && !node.partial ? '✓' : ''}</span>`;
+  const st = node.type === 'file' && node.status ? `<span class="prow__st st-${esc(node.status[0])}">${esc(node.status)}</span>` : '';
+  const lockIcon = node.locked
+    ? '<svg viewBox="0 0 16 16"><path fill="currentColor" d="M8 1a3 3 0 0 0-3 3v2H4v8h8V6h-1V4a3 3 0 0 0-3-3zm0 1.5A1.5 1.5 0 0 1 9.5 4v2h-3V4A1.5 1.5 0 0 1 8 2.5z"/></svg>'
+    : '<svg viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.4" d="M5 7V4.5a3 3 0 0 1 6 0V7M3.5 7h9v7h-9z"/></svg>';
+  const hit = fileNoteFor(node.path, node.type === 'dir');
+  // 父级已经解释过这块（hit.owner === 父级说明 owner）就不再重复
+  const showNote = !!hit && hit.owner !== coveredBy;
+  const noteHtml = showNote ? `<span class="prow__note" title="${esc(hit.note)}">${esc(hit.note)}</span>` : '';
+  const row = `<div class="${cls.join(' ')}" style="padding-left:${6 + pad}px">
+      ${chev}${box}<span class="prow__name" title="${esc(node.path || node.name)}">${esc(node.name || '/')}</span>${st}${noteHtml}
+      <span class="prow__lock ${node.locked ? 'on' : ''}" data-act="push-lock" data-path="${esc(node.path)}" title="${node.locked ? '已锁定：这部分不会推送' : '锁定：这部分不推送'}">${lockIcon}</span>
+    </div>`;
+  if (node.type === 'dir' && node.open) {
+    const cover = hit ? hit.owner : coveredBy;
+    return row + node.children.map(c => pushRow(c, depth + 1, locked, cover)).join('');
+  }
+  return row;
+}
+
+function pushFindNode(node, path) {
+  if (!node) return null;
+  if (node.path === path) return node;
+  for (const c of node.children || []) {
+    const r = pushFindNode(c, path);
+    if (r) return r;
+  }
+  return null;
+}
+
+function pushDialogHTML() {
+  const total = pushNodeFiles(PUSH_STATE.tree, []).length;
+  const sel = pushSelectedCount();
+  return `<div class="modal__head"><span class="idx">PUSH</span><h3>选择要推送的文件</h3>
+      <button class="iconbtn x" data-act="push-cancel">${icon('x')}</button></div>
+    <div class="modal__body">
+      <p class="mini-note" style="margin:0 0 8px">
+        <b>怎么用：</b>默认全部勾选 → 不想传的取消勾选，或点右侧锁图标把整块锁住（红色、勾选框消失、不参与本次推送）。
+        勾/取消父文件夹会连带子项；点 <b>▾ / ▸</b> 折叠或展开。<br>
+        <b>为什么有些文件默认锁住：</b><code>Editor/history</code>（本地保存快照）、<code>Editor/nht-project.js</code>（你自己的画布数据）、
+        <code>*.bak</code> 备份、<code>Editor/body-map.json</code> 都是「个人本地数据」—— 传到仓库会把别人拉下来的数据覆盖掉，所以默认锁住，
+        需要时你可以手动解锁。
+      </p>
+      <div class="pushtree" id="pushTree">${PUSH_STATE.tree.children.map(c => pushRow(c, 0, false)).join('')}</div>
+      <div class="pushtools">
+        <button class="btn btn--sm" data-act="push-all">全选</button>
+        <button class="btn btn--sm" data-act="push-none">全不选</button>
+        <span class="n" id="pushCount">本次推送 ${sel} / ${total} 个文件${PUSH_STATE.lockedCount ? `　·　已锁定 ${PUSH_STATE.lockedCount} 项不推送（${(PUSH_STATE.lockedNames || []).join('、')}${PUSH_STATE.lockedCount > (PUSH_STATE.lockedNames || []).length ? ' …' : ''}）` : ''}</span>
+      </div>
+      <div class="field"><label>提交说明</label><div class="ctl">
+        <input class="inp" id="pushMsg" value="${esc(PUSH_STATE.msg)}" spellcheck="false">
+      </div></div>
+      <div class="field"><label>提交描述</label><div class="ctl">
+        <textarea class="inp pushbody" id="pushBody" rows="3" spellcheck="false"
+          placeholder="可选：这次改了什么（会写进 git 提交描述）">${esc(PUSH_STATE.body || '')}</textarea>
+      </div></div>
+    </div>
+    <div class="modal__foot">
+      <button class="btn btn--danger" data-act="push-cancel">取消</button>
+      <button class="btn btn--multi" data-act="push-go" id="pushGoBtn" ${sel ? '' : 'disabled'}>推送 ${sel} 个文件</button>
+    </div>`;
+}
+
+function refreshPushDialog() {
+  const tree = document.getElementById('pushTree');
+  if (!tree) { renderPushDialog(); return; }
+  tree.innerHTML = PUSH_STATE.tree.children.map(c => pushRow(c, 0, false)).join('');
+  const total = pushNodeFiles(PUSH_STATE.tree, []).length;
+  const sel = pushSelectedCount();
+  const count = document.getElementById('pushCount');
+  if (count) count.textContent = `已选 ${sel} / ${total} 个文件`;
+  const go = document.getElementById('pushGoBtn');
+  if (go) { go.textContent = `推送 ${sel} 个文件`; go.disabled = !sel; }
+}
+
+function renderPushDialog() {
+  const tree = document.getElementById('pushTree');
+  if (tree) { refreshPushDialog(); return; }
+  openModal(`<div class="modalfix modalfix--push">${pushDialogHTML()}</div>`);
+  const inp = document.getElementById('pushMsg');
+  if (inp) inp.addEventListener('input', () => { PUSH_STATE.msg = inp.value; });
+  const bodyInp = document.getElementById('pushBody');
+  if (bodyInp) bodyInp.addEventListener('input', () => { PUSH_STATE.body = bodyInp.value; });
+}
+
+async function gitOpenPushDialog() {
   if (!gitValid()) return;
   if (gitBranchBad(ensureGitSettings().branch)) { toast('分支不能是 main：请到「设置 → Git」改成自己的分支', true); setSettingsTab('git'); modalSettings(); return; }
-  if (!String(ensureGitSettings().branch || '').trim()) { toast('分支不能为空：先到「设置 → Git」选一个命名开头', true); setSettingsTab('git'); modalSettings(); return; }
-  if (gitState.busy) return;
-  if (!gitState.status) {
-    await gitRefresh();
-    if (!gitState.status) {
-      toast('Git 配置有问题：连不上仓库（去看「设置 → Git」和同步日志）', true);
-      setSettingsTab('git'); modalSettings();
+  if (!String(ensureGitSettings().branch || '').trim()) { toast('分支不能为空：先在仓库同步里选一个命名开头', true); return; }
+  if (PUSH_STATE.busy) return;
+  PUSH_STATE.busy = true;
+  try {
+    await loadFileNotes();
+    const g = ensureGitSettings();
+    const syncQ = (g.syncMod === false) ? '0' : '1';
+    const r = await fetch('/__gitchanges?dir=' + encodeURIComponent(g.dir) + '&sync=' + syncQ, { cache: 'no-store' });
+    const j = await r.json();
+    if (!j || !j.ok) { toast('读取本地更改失败：' + ((j && j.error) || '未知错误'), true); return; }
+    if (!j.files || !j.files.length) { toast('没有需要推送的更改'); return; }
+    const allFiles = j.files || [];
+    const shown = allFiles.filter(f => !pushIsDefaultLocked(f.path));
+    PUSH_STATE.lockedCount = allFiles.length - shown.length;
+    PUSH_STATE.lockedNames = Array.from(new Set(allFiles
+      .filter(f => pushIsDefaultLocked(f.path))
+      .map(f => { const p = String(f.path).split('/'); return p.length > 1 ? p.slice(0, 2).join('/') : p[0]; }))).slice(0, 6);
+    if (!shown.length) {
+      toast('改动都在默认锁定范围内（个人数据 / 临时文件），不需要推送', true);
       return;
     }
+    PUSH_STATE.files = shown;
+    PUSH_STATE.tree = buildPushTree(shown);
+    renderPushDialog();
+  } catch (e) {
+    toast('读取本地更改失败：' + (e && e.message), true);
+  } finally {
+    PUSH_STATE.busy = false;
   }
+}
+
+async function gitPushNow() {
+  if (!gitValid()) return;
   const g = ensureGitSettings();
-  const message = window.prompt('提交说明（会显示在 GitHub 的提交记录里）', 'Update from NHT editor');
-  if (message === null) return;
+  const files = pushCollect(PUSH_STATE.tree, []);
+  if (!files.length) { toast('没有选中任何文件', true); return; }
+  const message = (PUSH_STATE.msg || '').trim() || 'Update from NHT editor';
   gitState.busy = true;
-  gitFlash(false, 'push'); // 清掉旧特效
+  gitFlash(false);
+  const goBtn = document.getElementById('pushGoBtn');
+  const goTxt = goBtn ? goBtn.textContent : '';
+  if (goBtn) { goBtn.disabled = true; goBtn.textContent = '正在推送…'; }
+  toast('正在推送 ' + files.length + ' 个文件到仓库…');
   try {
     const url = '/__gitpush?dir=' + encodeURIComponent(g.dir)
       + '&branch=' + encodeURIComponent(g.branch || 'main')
-      + '&message=' + encodeURIComponent(message || 'Update from NHT editor')
+      + '&message=' + encodeURIComponent(message)
       + '&name=' + encodeURIComponent(g.name || '')
       + '&email=' + encodeURIComponent(g.email || '')
-      + '&sync=' + (g.syncMod === false ? '0' : '1');
+      + '&sync=0'
+      + '&body=' + encodeURIComponent(PUSH_STATE.body || '')
+      + '&files=' + encodeURIComponent(files.join('\n'));
     const r = await fetch(url, { cache: 'no-store', method: 'POST' });
     const j = await r.json();
     if (j && j.ok) {
       gitFlash(true, 'push');
       gitLog('Push 成功', (j.log || '').trim() || '已推送');
-      toast('已推送到 GitHub：' + (message || ''));
-    } else if (j && j.hint === 'diverged') {
+      closeModal();
+      await gitRefresh();                      // 立刻刷新「未推送 / 已同步」
+      try { renderPatch(); } catch (e) { }      // 右侧区块重画
+      try { gmkCheckNew(); } catch (e) { }      // 书签检查新版本
+      toast('已推送 ' + files.length + ' 个文件并同步状态：' + message);
+    } else if (j && j.hint === 'nothing-staged') {
       gitFlash(false, 'push');
+      gitLog('Push 失败：没有改动', (j.log || ''));
+      toast('选中的文件没有产生改动（可能路径不匹配/被忽略），已阻止推送空分支；刷新后重试', true);
+      await gitRefresh();
+      gitFlash(false, 'push');
+    } else if (j && j.hint === 'diverged') {
       gitLog('Push 被阻止', ((j.log || '') + '\n本地领先 ' + (j.ahead || 0) + ' / 落后 ' + (j.behind || 0) + '，先拉取合并。').trim());
       toast('本地和远端都有新提交：先点「拉取远端」合并后再推送', true);
       await gitRefresh();
-    } else if (j && j.hint === 'pull-first') {
       gitFlash(false, 'push');
+    } else if (j && j.hint === 'pull-first') {
       gitLog('Push 被阻止', ((j.log || '') + '\n远端有 ' + (j.behind || '若干') + ' 个新提交，请先拉取。').trim());
       toast('远端有 ' + (j.behind || '') + ' 个新提交：先点「拉取远端」再推送', true);
       await gitRefresh();
       gitFlash(false, 'push');
     } else {
       gitFlash(false, 'push');
-      gitLog('Push 失败', (j && (j.log || j.error)) || '未知错误');
-      toast('Push 失败，展开「同步日志」看原因', true);
+      const failLog = String((j && (j.log || j.error)) || '');
+      if (/网络超时/.test(failLog)) {
+        gitLog('Push 超时', failLog);
+        toast('推送超时：连不上远端（网络 / 代理问题），已中止，不会卡住页面', true);
+        await gitRefresh();
+        gitFlash(false, 'push');
+      } else
+      gitLog('Push 失败', failLog || '未知错误');
+      if (/Repository not found|repository .* not found|does not appear to be a git repository|This repository moved|redirect/i.test(failLog)) {
+        toast('推送失败：远程地址可能已改名 / 迁移 —— 到「设置 → Git → 远程仓库」点齿轮改地址', true);
+        setSettingsTab('git'); modalSettings();
+      } else {
+        toast('Push 失败，展开「同步日志」看原因', true);
+      }
     }
   } catch (e) {
     gitFlash(false, 'push');
     gitLog('Push 失败', e && e.message);
     toast('Push 失败：' + (e && e.message), true);
+  } finally {
+    gitState.busy = false;
+    if (goBtn) { goBtn.disabled = false; goBtn.textContent = goTxt || '推送'; }
+    renderGitUI();
   }
-  gitState.busy = false;
-  await gitRefresh();
-  renderPatch();
 }
 
 async function gitDoPull() {
@@ -6712,8 +7356,10 @@ async function gitDoPull() {
       toast('已拉取仓库更新');
     } else {
       gitFlash(false, 'pull');
-      gitLog('拉取失败', (j && (j.log || j.error)) || '未知错误');
-      toast('拉取失败，展开「同步日志」看原因', true);
+      const pl = String((j && (j.log || j.error)) || '未知错误');
+      gitLog('拉取失败', pl);
+      if (/网络超时/.test(pl)) toast('拉取超时：连不上远端（网络 / 代理问题），已中止，页面其他操作不受影响', true);
+      else toast('拉取失败，展开「同步日志」看原因', true);
     }
   } catch (e) {
     gitFlash(false, 'pull');
@@ -6722,6 +7368,7 @@ async function gitDoPull() {
   }
   gitState.busy = false;
   await gitRefresh();
+  try { gmkCheckNew(); } catch (e) { }
   renderPatch();
 }
 
@@ -6808,7 +7455,7 @@ async function doExportModFiles() {
 
 /* ---------------- 保存路径设置 ---------------- */
 const SAVE_TARGETS = [
-  { key: 'project', name: '本地保存（全部画布 → nht-project.js）', hint: '项目文件写到编辑器目录', def: 'Editor/nht-project.js', pick: false },
+  { key: 'project', name: '本地保存（每个画布 → canvases/<种族>/）', hint: 'index.json + 每个画布一个 json，同时生成 nht-project.js', def: 'Editor/canvases/', pick: false },
   { key: 'patch',   name: '注入模组（单个/多选 → Patches/*.xml）', hint: '补丁 XML 写到模组的 Patches/', def: 'NHT_CustomDolls/Patches/', pick: true },
   { key: 'texture', name: '贴图（Textures/）', hint: '部位/发型贴图写到模组 Textures/', def: 'NHT_CustomDolls/Textures/', pick: true },
   { key: 'assets',  name: '素材目录（assets/）', hint: '「按勾选写入」使用的目录', def: 'Editor/assets/', pick: true }
@@ -6914,6 +7561,10 @@ function settingsBodyHTML(tab) {
         <button class="setab" data-act="set-tab" data-tab="ui">界面</button>
       </div>
       ${gitLine}
+      <div class="repoline">远程仓库：
+        <b data-tip="${esc((gitState.remote && gitState.remote.url) || '（未读取）')}">${esc((gitState.remote && gitState.remote.url) || '（未读取）')}</b>
+        <button class="iconbtn iconbtn--xs" data-act="git-change-remote" title="仓库改名 / 换地址后在这里改">${icon('gear')}</button>
+      </div>
       <div class="repoline">本机仓库：<b data-tip="${esc(g.dir || '（未设置）')}">${esc(g.dir || '（未设置）')}</b>
         <button class="iconbtn iconbtn--xs" data-act="g-pick" title="选择本机文件夹">${icon('folder')}</button>
       </div>
@@ -6976,13 +7627,13 @@ function refreshSettingsInPlace() {
   mo.classList.add('is-focus');
   if ((S.ui.settingsTab || 'paths') === 'paths') renderSettingsPaths();
   if (!gitState.info && LOCAL_HTTP) gitLoadInfo().then(() => { if (document.querySelector('.modal')) refreshSettingsInPlace(); });
-  if ((S.ui.settingsTab || 'paths') === 'git' && !gitState.status && LOCAL_HTTP) gitRefresh();
+  if ((S.ui.settingsTab || 'paths') === 'git' && LOCAL_HTTP) { gitLoadRemote(); if (!gitState.status) gitRefresh(); }
 }
 
 function modalSettings() {
   saveSettings();
   const tab = S.ui.settingsTab || 'paths';
-  openModal(`<div style="width:100%;display:flex;flex-direction:column;min-height:0">
+  openModal(`<div class="modalfix">
     <div class="modal__head"><span class="idx">SETTINGS</span><h3>设置</h3>
       <button class="iconbtn x" data-act="close-modal">${icon('x')}</button></div>
     <div class="modal__body">${settingsBodyHTML(tab)}</div>
@@ -6994,7 +7645,40 @@ function modalSettings() {
   if (mo) mo.classList.add('is-focus');
   if (tab === 'paths') renderSettingsPaths();
   if (LOCAL_HTTP && !gitState.info) gitLoadInfo().then(() => refreshSettingsInPlace());
-  if (tab === 'git' && LOCAL_HTTP && !gitState.status) gitRefresh();
+  if (tab === 'git' && LOCAL_HTTP) { gitLoadRemote().then(() => refreshSettingsInPlace()); if (!gitState.status) gitRefresh(); }
+}
+
+
+async function gitLoadRemote() {
+  if (!LOCAL_HTTP) return null;
+  try {
+    const g = ensureGitSettings();
+    const r = await fetch('/__gitremote?dir=' + encodeURIComponent(g.dir), { cache: 'no-store' });
+    const j = await r.json();
+    gitState.remote = (j && j.ok) ? j : null;
+  } catch (e) { gitState.remote = null; }
+  return gitState.remote;
+}
+
+async function gitChangeRemote() {
+  const g = ensureGitSettings();
+  const cur = (gitState.remote && gitState.remote.url) || '';
+  const url = window.prompt('远程仓库地址（GitHub 改名后填新地址）', cur);
+  if (url === null) return;
+  const clean = url.trim();
+  if (!clean) return;
+  if (!/^(https?:\/\/|git@|ssh:\/\/)/.test(clean)) { toast('地址要以 https:// 或 git@ 开头', true); return; }
+  const r = await fetch('/__gitsetremote?dir=' + encodeURIComponent(g.dir) + '&url=' + encodeURIComponent(clean), { method: 'POST', cache: 'no-store' });
+  const j = await r.json();
+  if (j && j.ok) {
+    toast('远程地址已改为：' + clean);
+    gitLog('远程地址', clean);
+    await gitLoadRemote();
+    await gitRefresh();
+    refreshSettingsInPlace();
+  } else {
+    toast('修改失败：' + ((j && j.error) || (j && j.log) || '未知错误'), true);
+  }
 }
 
 async function gitLoadInfo() {
@@ -7508,6 +8192,469 @@ function validateAll() {
   const order = { error: 0, warn: 1, info: 2 };
   out.sort((a, b2) => order[a.lv] - order[b2.lv]);
   return out.slice(0, 40);
+}
+
+
+
+/* ==========================================================================
+   Git 画布书签：读取仓库里 Editor/canvases 最近 3 个版本的画布，可预览 / 应用 / 撤销
+   ========================================================================== */
+const GMK = { loaded: false, loading: false, open: false, versions: null, openRev: null, applied: {}, err: null, hasNew: false, newCount: 0 };
+
+function gmkHTML() {
+  return `<button class="gmk__tab" data-act="gmk-toggle" title="Git 画布书签：看看最近推送过的画布版本，可一键应用或撤销">
+      <svg viewBox="0 0 16 16"><path fill="currentColor" d="M3 2h8a1 1 0 0 1 1 1v11l-4.5-2.6L3 14V3a1 1 0 0 1 1-1z"/></svg>
+      <span class="gmk__label">GIT</span>
+      <span class="gmk__title">GIT 画布书签</span>
+    </button>
+    <div class="gmk__panel" id="gmkPanel" hidden></div>`;
+}
+
+function gmkMount() {
+  const panel = document.querySelector('.panel--cvs');
+  if (!panel || document.getElementById('gitBookmark')) return;
+  const wrap = document.createElement('div');
+  wrap.className = 'gmk';
+  wrap.id = 'gitBookmark';
+  wrap.innerHTML = gmkHTML();
+  panel.appendChild(wrap);
+}
+
+function gmkVersionLabel(v) {
+  return (v.date || '').slice(0, 16) || (v.rev || '').slice(0, 7);
+}
+
+function gmkParse(file) {
+  try { return JSON.parse(file.text); } catch (e) { return null; }
+}
+
+
+/* 临时查看 Git 画布时，顶部显示提示条 */
+function syncGmkViewBar() {
+  let bar = document.getElementById('gmkViewBar');
+  if (S.preview) {
+    const meta = S.preview.meta || {};
+    const cv = S.preview.canvas || {};
+    if (!bar) {
+      bar = document.createElement('div');
+      bar.id = 'gmkViewBar';
+      bar.className = 'gmkview is-preview';
+      document.body.appendChild(bar);
+    }
+    const act = meta.kind === 'trash'
+      ? `<button class="gmkview__x" data-act="trash-restore" data-trid="${esc(meta.trashId || '')}" title="把这个画布放回项目">还原</button>`
+      : `<button class="gmkview__x" data-act="gmk-apply-preview" title="把这版画布写入项目（可编辑）">应用</button>`;
+    bar.innerHTML = `<span class="gmkview__ico">只读</span>
+      <span>预览${meta.kind === 'trash' ? '（最近改动）' : '（Git 版本）'}：<b>${esc(cv.title || '')}</b> · ${(cv.parts || []).length} 部位</span>
+      ${act}
+      <button class="gmkview__x" data-act="gmk-exit" title="关闭预览">返回</button>`;
+    return;
+  }
+  if (!S.viewOnly) { if (bar) bar.remove(); return; }
+  const cv = S.canvases.find(c => c.id === S.viewOnly);
+  if (!cv) { if (bar) bar.remove(); return; }
+  if (!bar) {
+    bar = document.createElement('div');
+    bar.id = 'gmkViewBar';
+    bar.className = 'gmkview';
+    document.body.appendChild(bar);
+  }
+  bar.className = 'gmkview';
+  bar.innerHTML = `<span class="gmkview__ico">GIT</span>
+    <span>正在查看 Git 画布：<b>${esc(cv.title || '')}</b></span>
+    <button class="gmkview__x" data-act="gmk-exit" title="退出临时查看，回到原来的画布">返回</button>`;
+}
+
+function gmkRender() {
+  const wrap = document.getElementById('gitBookmark');
+  if (!wrap) return;
+  wrap.classList.toggle('is-open', !!GMK.open);
+  wrap.classList.toggle('has-new', !!GMK.hasNew && !GMK.open);
+  try { syncGmkViewBar(); } catch (e) { }
+  const panel = document.getElementById('gmkPanel');
+  if (!panel) return;
+  if (!GMK.open) { panel.hidden = true; return; }
+  panel.hidden = false;
+  if (GMK.loading) { panel.innerHTML = '<div class="gmk__empty">正在读取仓库里的画布版本…</div>'; return; }
+  if (GMK.err) { panel.innerHTML = `<div class="gmk__empty">读取失败：${esc(GMK.err)}</div>`; return; }
+  const vers = GMK.versions || [];
+  if (!vers.length) {
+    panel.innerHTML = `<div class="gmk__h"><b>Git 画布书签</b><span class="n">0 个版本</span></div>
+      <div class="gmk__empty">仓库里还没有画布的历史版本。<br>先在「仓库同步 REPO」推送一次画布，这里就会出现最近 3 个版本。</div>`;
+    return;
+  }
+  const body = vers.map((v, i) => {
+    const open = GMK.openRev ? GMK.openRev === v.rev : i === 0;
+    const cards = (v.files || []).filter(f => f.rel !== 'index.json' && f.rel.indexOf('.backup/') < 0).map(f => {
+      const c = gmkParse(f);
+      const key = v.rev + ':' + f.rel;
+      const appliedRec = GMK.applied[key];
+      const isApplied = !!appliedRec;
+      const isStale = !!(appliedRec && appliedRec.stale);
+      const title = c ? (c.title || f.rel) : f.rel;
+      const doll = c ? c.doll : '';
+      const n = c && c.parts ? c.parts.length : 0;
+      const isRace = c && c.kind === 'race';
+      return `<div class="gmkc${isApplied ? ' is-applied' : ''}${isStale ? ' is-stale' : ''}" data-gmkkey="${esc(key)}" data-act="gmk-card" data-rev="${esc(v.rev)}" data-rel="${esc(f.rel)}" title="点击打开这版画布，像普通画布一样编辑部位">
+          <div class="cv__fig gmkc__fig" data-gmkfig="${esc(key)}"></div>
+          <div class="gmkc__body">
+          <div class="gmkc__top"><b>${esc(title)}</b>
+            <button class="gmk__btn${isApplied ? (isStale ? ' is-stale' : ' is-undo') : ''}" data-act="gmk-apply" data-rev="${esc(v.rev)}" data-rel="${esc(f.rel)}"${isStale ? ' disabled' : ''}
+              title="${isStale ? '已被更新的版本替代' : (isApplied ? '撤销：恢复到应用之前的画布' : '应用：有同名画布就替换，没有就作为游离画布加入')}">${isStale ? '已替代' : (isApplied ? '撤销' : '应用')}</button>
+          </div>
+          <div class="gmkc__line"><span>${esc(doll)} · ${n} 部位</span>
+            <span class="tags">${isRace ? '<span class="cv__tag">RACE</span>' : '<span class="cv__tag">MOD</span>'}</span>
+          </div>
+          </div>
+        </div>`;
+    }).join('');
+    return `<div class="gmkv">
+        <div class="gmkv__h" data-act="gmk-fold" data-rev="${esc(v.rev)}">
+          <span class="gmkv__chev">${open ? '▾' : '▸'}</span>
+          <b>${esc(gmkVersionLabel(v))}</b>
+          <span class="gmkv__sha">${esc((v.rev || '').slice(0, 7))}</span>
+          <span class="gmkv__n">${(v.files || []).length} 张</span>
+        </div>
+        <div class="gmkv__items${open ? '' : ' is-shut'}">${cards || '<div class="gmk__empty">这个提交里没有画布文件</div>'}</div>
+      </div>`;
+  }).join('');
+  panel.innerHTML = `<div class="gmk__h"><b>Git 画布书签</b><span class="n">最近 ${vers.length} 个版本</span></div>${body}`;
+  try { syncGmkViewBar(); } catch (e) { }
+  try {
+    vers.forEach(v => {
+      (v.files || []).forEach(f => {
+        if (f.rel === 'index.json') return;
+        const key = v.rev + ':' + f.rel;
+        const box = panel.querySelector(`[data-gmkfig="${CSS.escape(key)}"]`);
+        if (!box) return;
+        const cv = gmkParse(f);
+        if (!cv) return;
+        box.innerHTML = '';
+        try { paintMini(box, cv); } catch (e) { }
+        // 贴图是异步解码的：稍后重画一次，避免缩略图空白
+        [300, 900, 1800].forEach(ms => setTimeout(() => {
+          try { if (box.isConnected) { box.innerHTML = ''; paintMini(box, cv); } } catch (e) { }
+        }, ms));
+      });
+    });
+  } catch (e) { }
+}
+
+
+const GMK_SEEN_KEY = 'nht.gmk.seen';
+
+function gmkSeen() { try { return localStorage.getItem(GMK_SEEN_KEY) || ''; } catch (e) { return ''; } }
+function gmkMarkSeen() {
+  const v = (GMK.versions || [])[0];
+  if (!v) return;
+  try { localStorage.setItem(GMK_SEEN_KEY, v.rev || ''); } catch (e) { }
+  GMK.hasNew = false; GMK.newCount = 0;
+  gmkRender();
+}
+
+async function gmkCheckNew() {
+  try {
+    const g = ensureGitSettings();
+    const r = await fetch('/__gitcanvases?dir=' + encodeURIComponent(g.dir), { cache: 'no-store' });
+    const j = await r.json();
+    if (!j || !j.ok) return;
+    GMK.versions = j.commits || [];
+    GMK.loaded = true;
+    const seen = gmkSeen();
+    let count = 0;
+    for (const v of GMK.versions) {
+      if (v.rev === seen) break;
+      count++;
+    }
+    // 第一次打开（没有已读记录）也算有新画布，这样刚拉取下来就能看到提醒
+    GMK.hasNew = count > 0;
+    GMK.newCount = count;
+    gmkRender();
+  } catch (e) { }
+}
+
+async function gmkLoad() {
+  GMK.loading = true; GMK.err = null; gmkRender();
+  try {
+    const g = ensureGitSettings();
+    const r = await fetch('/__gitcanvases?dir=' + encodeURIComponent(g.dir), { cache: 'no-store' });
+    const j = await r.json();
+    if (!j || !j.ok) { GMK.err = (j && j.error) || '读取失败'; GMK.versions = []; }
+    else GMK.versions = j.commits || [];
+  } catch (e) {
+    GMK.err = e && e.message; GMK.versions = [];
+  }
+  GMK.loading = false; GMK.loaded = true; gmkRender();
+}
+
+async function gmkToggle() {
+  GMK.open = !GMK.open;
+  if (GMK.open && !GMK.loaded) await gmkLoad();
+  if (GMK.open) gmkMarkSeen();
+  gmkRender();
+}
+
+function gmkFind(rev, rel) {
+  const v = (GMK.versions || []).find(x => x.rev === rev);
+  const f = v && (v.files || []).find(x => x.rel === rel);
+  return f ? { ver: v, file: f, canvas: gmkParse(f) } : null;
+}
+
+function gmkApply(rev, rel) {
+  const hit = gmkFind(rev, rel);
+  if (!hit || !hit.canvas) { toast('这版画布内容解析失败', true); return; }
+  const key = rev + ':' + rel;
+  if (GMK.applied[key] && !GMK.applied[key].stale) { gmkUndo(rev, rel); return; }
+
+  const c = JSON.parse(JSON.stringify(hit.canvas));
+  const existing = S.canvases.find(x => x.doll === c.doll && (x.kind || '') === (c.kind || '')) || S.canvases.find(x => x.id === c.id);
+
+  if (existing) {
+    Object.keys(GMK.applied).forEach(k => {
+      const st = GMK.applied[k];
+      if (k !== key && st && st.canvasId === existing.id) st.stale = true;
+    });
+    pushTrash(existing, '替换');
+    GMK.applied[key] = { mode: 'replace', canvasId: existing.id, doll: c.doll, prev: JSON.parse(JSON.stringify(existing)) };
+    const idx = S.canvases.indexOf(existing);
+    c.id = existing.id;
+    c.group = existing.group;
+    S.canvases[idx] = c;
+    S.active = c.id;
+    renderAll(); persist(); pushHistory();
+    toast('已用该版本替换画布：' + (c.title || rel));
+  } else {
+    c.id = 'gmk' + Math.random().toString(36).slice(2, 8);
+    c.group = null;
+    c.gmkOrphan = true;
+    GMK.applied[key] = { mode: 'add', canvasId: c.id, doll: c.doll };
+    S.canvases.push(c);
+    S.active = c.id;
+    renderAll(); persist(); pushHistory();
+    toast('项目里没有 Doll「' + (c.doll || '?') + '」对应的画布，已作为「游离」画布加入（未分组，可自行归组）', true);
+  }
+  gmkRender();
+}
+
+function gmkUndo(rev, rel) {
+  const key = rev + ':' + rel;
+  const st = GMK.applied[key];
+  if (!st) return;
+  if (st.stale) {
+    delete GMK.applied[key];
+    toast('这版已被更新的版本替代，不能再单独撤销（画布保持最新应用的那一版）', true);
+    gmkRender();
+    return;
+  }
+  if (st.mode === 'replace' && st.prev) {
+    const idx = S.canvases.findIndex(x => x.id === st.canvasId);
+    if (idx >= 0) S.canvases[idx] = st.prev;
+    S.active = st.canvasId;
+  } else if (st.mode === 'add') {
+    S.canvases = S.canvases.filter(x => x.id !== st.canvasId);
+    if (!S.canvases.some(x => x.id === S.active)) S.active = S.canvases[0] && S.canvases[0].id;
+  }
+  delete GMK.applied[key];
+  renderAll(); persist(); pushHistory();
+  toast('已撤销，恢复到应用前的画布');
+  gmkRender();
+}
+
+/* 点击卡片：把这版画布打开到画布列表并切过去，像普通画布一样编辑部位 */
+/* 点击卡片：临时把该版本画布显示到画布区（不改变左侧列表的选中，不跳转） */
+/* 点击卡片：只读预览该版本（不写入项目、不能编辑） */
+function gmkOpenCanvas(rev, rel) {
+  const hit = gmkFind(rev, rel);
+  if (!hit || !hit.canvas) { toast('这版画布内容解析失败', true); return; }
+  setPreview(hit.canvas, { kind: 'git', rev: rev, rel: rel, title: hit.canvas.title || rel });
+}
+
+/* 点击回收站条目：同样只读预览 */
+function trashPreview(id) {
+  if (!Array.isArray(S.trash)) return;
+  const item = S.trash.find(x => x.id === id);
+  if (!item) return;
+  setPreview(item.canvas, { kind: 'trash', trashId: id, title: (item.canvas && item.canvas.title) || '已删除的画布' });
+}
+
+function setPreview(canvas, meta) {
+  S.preview = { canvas: JSON.parse(JSON.stringify(canvas)), meta: meta || {} };
+  S.sel = null;
+  S.viewOnly = null;
+  document.body.classList.add('is-preview');
+  GMK.open = false;
+  renderAll();
+  try { fitView(); } catch (e) { }
+  gmkRender();
+  toast('只读预览：' + (meta && meta.title ? meta.title : '') + '（不能编辑；要编辑请先「应用」或「还原」）');
+}
+
+function clearPreview() {
+  if (!S.preview) return;
+  S.preview = null;
+  document.body.classList.remove('is-preview');
+  renderAll();
+  try { fitView(); } catch (e) { }
+  gmkRender();
+}
+
+function gmkExitView() {
+  if (S.preview) { clearPreview(); return; }
+  if (!S.viewOnly) return;
+  S.viewOnly = null;
+  renderAll();
+  try { fitView(); } catch (e) { }
+  gmkRender();
+}
+
+function gmkPreview(rev, rel) {
+  const hit = gmkFind(rev, rel);
+  if (!hit || !hit.canvas) { toast('这版画布内容解析失败', true); return; }
+  const c = hit.canvas;
+  const applied = !!GMK.applied[rev + ':' + rel];
+  openModal(`<div class="modalfix" style="width:min(520px,92vw);height:auto">
+    <div class="modal__head"><span class="idx">GIT</span><h3>${esc(c.title || rel)}</h3>
+      <button class="iconbtn x" data-act="close-modal">${icon('x')}</button></div>
+    <div class="modal__body">
+      <p class="mini-note" style="margin:0 0 8px">版本 ${esc((hit.ver.date || '').slice(0, 16))} · ${esc((hit.ver.rev || '').slice(0, 7))}</p>
+      <p class="setnote">Doll：<code>${esc(c.doll || '')}</code> · 部位 ${(c.parts || []).length} 个 · 分组 ${esc(c.kind || '')}</p>
+      <p class="setnote">${esc(c.desc || '（无备注）')}</p>
+    </div>
+    <div class="modal__foot">
+      <button class="btn btn--danger" data-act="close-modal">关闭</button>
+      <button class="btn btn--multi" data-act="gmk-apply" data-rev="${esc(rev)}" data-rel="${esc(rel)}">${applied ? '撤销' : '应用这版画布'}</button>
+    </div></div>`);
+}
+
+/* ==========================================================================
+   画布分文件存储：Editor/canvases/<分组>/<标题>__<id>.json
+   - index.json 里放非画布数据（项目信息 / 设置 / 界面状态 / 顺序）
+   - 每个画布单独一个 json，便于按种族归档、单独对比、单独推送
+   ========================================================================== */
+const CANVAS_DIR = 'Editor/canvases/';
+const CANVAS_BAK_DIR = 'Editor/canvases/.backup/';
+
+function canvasSlug(txt, fallback) {
+  const t = String(txt || '').trim().replace(/[\\/:*?"<>|\s]+/g, '_').replace(/^_+|_+$/g, '');
+  return (t || fallback || 'canvas').slice(0, 60);
+}
+
+/* 分组目录：种族画布 → 种族名；默认体型 → Default；其它 → Other */
+function canvasGroupDir(c) {
+  if (!c) return 'Other';
+  if (c.kind === 'race') {
+    const name = (c.race && (c.race.defName || c.race.name)) || c.doll || c.title;
+    return canvasSlug(name, 'Race');
+  }
+  if (c.kind === 'default') return 'Default';
+  return 'Other';
+}
+
+function canvasFileRel(c) {
+  return canvasGroupDir(c) + '/' + canvasSlug(c.title, c.doll) + '__' + String(c.id || '').replace(/[^\w-]/g, '') + '.json';
+}
+
+function canvasIndexPayload() {
+  const p = projectPayload();
+  delete p.canvases;
+  p.v = 5;
+  p.canvasFiles = S.canvases.map(c => ({ rel: canvasFileRel(c), id: c.id, title: c.title, kind: c.kind, doll: c.doll }));
+  return p;
+}
+
+async function canvasPut(rel, text) {
+  const r = await fetch('/__canvas-put?rel=' + encodeURIComponent(rel), {
+    method: 'POST', cache: 'no-store',
+    headers: { 'Content-Type': 'application/json; charset=utf-8' },
+    body: text,
+  });
+  const j = await r.json();
+  if (!j || !j.ok) throw new Error((j && j.error) || 'write failed');
+  return true;
+}
+
+async function canvasGet(rel) {
+  const r = await fetch('/__canvas-get?rel=' + encodeURIComponent(rel), { cache: 'no-store' });
+  const j = await r.json();
+  if (!j || !j.ok) return null;
+  return j.text;
+}
+
+async function canvasDelete(rel) {
+  try { await fetch('/__canvas-del?rel=' + encodeURIComponent(rel), { method: 'POST', cache: 'no-store' }); } catch (e) { }
+}
+
+/* 写单个画布 */
+async function saveCanvasFile(c) {
+  if (!LOCAL_HTTP || !c) return false;
+  if (S.preview) return false;
+  try {
+    await canvasPut(canvasFileRel(c), JSON.stringify(c));
+    return true;
+  } catch (e) { return false; }
+}
+
+/* 写全部画布 + index */
+async function saveAllCanvasFiles(quiet) {
+  if (!LOCAL_HTTP) return false;
+  try {
+    const keep = new Set();
+    for (const c of S.canvases) {
+      const rel = canvasFileRel(c);
+      keep.add(rel);
+      await canvasPut(rel, JSON.stringify(c));
+    }
+    await canvasPut('index.json', JSON.stringify(canvasIndexPayload()));
+    // 删掉已经不存在于项目里的画布文件（只删 canvases 下的 .json，不动 index）
+    try {
+      const r = await fetch('/__canvas-list', { cache: 'no-store' });
+      const j = await r.json();
+      for (const f of (j && j.files) || []) {
+        if (f.rel === 'index.json') continue;
+        if (String(f.rel).indexOf('.backup/') === 0) continue;
+        if (!keep.has(f.rel)) await canvasDelete(f.rel);
+      }
+    } catch (e) { }
+    if (!quiet) setSaveStatus('已保存 ' + S.canvases.length + ' 个画布文件 · ' + now());
+    return true;
+  } catch (e) {
+    if (!quiet) toast('画布文件保存失败：' + (e && e.message), true);
+    return false;
+  }
+}
+
+let canvasSaveTimer = null;
+function scheduleCanvasSave() {
+  if (!LOCAL_HTTP) return;
+  if (S.preview) return;                        // 预览的是仓库里的版本，不能写回项目文件
+  clearTimeout(canvasSaveTimer);
+  canvasSaveTimer = setTimeout(() => {
+    const c = activeCanvas();
+    if (c) saveCanvasFile(c);
+  }, 900);
+}
+
+/* 启动时从 canvases/index.json 读回；返回 {payload, canvases} 或 null */
+async function loadCanvasFiles() {
+  if (!LOCAL_HTTP) return null;
+  try {
+    const r = await fetch('/__canvas-list', { cache: 'no-store' });
+    const j = await r.json();
+    if (!j || !j.ok) return null;
+    const hasIndex = (j.files || []).some(f => f.rel === 'index.json');
+    if (!hasIndex) return null;
+    const idxText = await canvasGet('index.json');
+    if (!idxText) return null;
+    const payload = JSON.parse(idxText);
+    const canvases = [];
+    for (const meta of payload.canvasFiles || []) {
+      const text = await canvasGet(meta.rel);
+      if (!text) continue;
+      try { canvases.push(JSON.parse(text)); } catch (e) { }
+    }
+    if (!canvases.length) return null;
+    return { payload, canvases };
+  } catch (e) { return null; }
 }
 
 /* ==========================================================================
@@ -8257,6 +9404,8 @@ function select(uidVal) {
 }
 
 function switchCanvas(id) {
+  S.viewOnly = null;
+  if (S.preview) { S.preview = null; document.body.classList.remove('is-preview'); }
   if (S.active === id) return;
   S.active = id; S.sel = null;
   // the organ / bone chips are global: keep their promise on the canvas we just opened
@@ -8492,6 +9641,7 @@ let spaceDown = false;
 
 function onPointerDown(e) {
   if (e.button === 2) return;
+  if (S.preview) { toast('只读预览：要编辑请先点「应用」或「还原」', true); return; }
   // 从标尺拖出参考线（PS 风格）
   const ruler = e.target.closest('.ruler');
   if (ruler) {
@@ -8853,6 +10003,7 @@ function onKeyDown(e) {
   const modalOpen = !!$('#modalRoot').firstElementChild;
 
   if (e.key === 'Escape') {
+    if (S.preview) { clearPreview(); return; }
     if (modalOpen) { closeModal(); e.preventDefault(); }
     else select(null);
     return;
@@ -8867,6 +10018,11 @@ function onKeyDown(e) {
   if (mod && e.key.toLowerCase() === 'd') { e.preventDefault(); if (selPart()) duplicatePart(selPart()); return; }
 
   if (typing) return;
+  if (S.preview && (e.key === 'Delete' || e.key === 'Backspace' || (mod && (e.key.toLowerCase() === 'd')))) {
+    e.preventDefault();
+    toast('只读预览：要编辑请先点「应用」或「还原」', true);
+    return;
+  }
 
   if (e.key === 'f' || e.key === 'F') { fitView(); return; }
   if (e.key === 'g' || e.key === 'G') { S.flags.grid = !S.flags.grid; $('#gridLayer').classList.toggle('is-off', !S.flags.grid); renderKindChips(); return; }
@@ -10039,6 +11195,17 @@ function modalHelp() {
             <div>保存 / 取消 <span><kbd>Ctrl</kbd><kbd>S</kbd><kbd>Esc</kbd></span></div>
           </div>
         </div>
+        <div>
+          <h4 class="help-h">GIT 书签 · 最近改动</h4>
+          <p class="help-p"><b>画布现在一张一个文件</b>（<code>Editor/canvases/&lt;种族&gt;/…json</code>），自动保存只写当前这张。</p>
+          <p class="help-p"><b>GIT 书签</b>在「体型画布」面板右边缘：点开能看到仓库里最近 3 个画布版本；
+             <b>点卡片 = 只读预览</b>（不能编辑），要改就点卡片上的「应用」；应用后可「撤销」。</p>
+          <p class="help-p"><b>最近改动</b>固定在画布列表下方：保留最近 5 张被替换 / 删除的画布，
+             点一下只读预览，右键只有「还原」。</p>
+          <p class="help-p"><b>推送弹窗</b>会先列出本地改动：默认全选，但 <code>Editor/history</code>、
+             <code>nht-project.js</code>、<code>*.bak</code>、编译产物等个人数据默认锁定（红色），
+             避免覆盖别人的仓库。</p>
+        </div>
       </div>
       <div class="credit">
         <img src="${imgURL('About/ModIcon')}" alt="">
@@ -10074,10 +11241,28 @@ function toast(msg, danger) {
 /* ==========================================================================
    global events
    ========================================================================== */
+const PREVIEW_BLOCKED_ACTS = new Set([
+  'add-part', 'del-part', 'duplicate-part', 'part-img', 'part-img-clear', 'apply-bodytype',
+  'flip-h', 'flip-v', 'auto-align', 'canvas-new', 'new-canvas', 'del-canvas-ok', 'import-race',
+  'hair-redraw-toggle', 'hairfit-toggle', 'fit-bounds', 'scale-reset', 'box-fit', 'box-reset',
+  'dock-detach', 'dock-attach', 'edit-part-name', 'part-lock', 'part-vis', 'layer-up', 'layer-down',
+  // 导出 / 注入 / 复制 / 保存 也一并禁用：预览的是仓库版本，不能当成项目内容导出
+  'export-patch', 'export-png', 'export-json', 'copy-xml', 'mod-export', 'mod-export-go',
+  'patch-to-mod', 'multi-export', 'set-save', 'import-json', 'import-assets', 'import-hair',
+  'hair-import', 'hair-clear', 'hair-reset', 'asset-del', 'del-canvas', 'delete-part', 'over-hair'
+]);
 document.addEventListener('click', e => {
   const el = e.target.closest('[data-act]');
   if (!el) return;
   const act = el.dataset.act;
+  if (S.preview && PREVIEW_BLOCKED_ACTS.has(act)) {
+    e.stopPropagation(); e.preventDefault();
+    const isExport = /export|patch-to-mod|mod-export|multi-export|copy-xml/.test(act);
+    toast(isExport
+      ? '只读预览：不能导出 / 注入，请先点「应用」把画布写入项目'
+      : '只读预览：要编辑请先点「应用」或「还原」', true);
+    return;
+  }
 
   switch (act) {
     case 'canvas': switchCanvas(el.dataset.id); break;
@@ -10112,6 +11297,7 @@ document.addEventListener('click', e => {
     case 'g-prefix': gitApplyPrefix(el.dataset.prefix || ''); refreshSettingsInPlace(); break;
     case 'g-pick': gitPickDir(); break;
     case 'set-tab': setSettingsTab(el.dataset.tab); refreshSettingsInPlace(); break;
+    case 'git-change-remote': gitChangeRemote(); break;
     case 'git-test': gitRefresh().then(() => {
       if (gitState.status) {
         gitLog('测试连接成功', '分支 ' + gitState.status.branch + ' · 待推送 ' + (gitState.status.ahead || 0) + ' · 待拉取 ' + (gitState.status.behind || 0));
@@ -10124,7 +11310,7 @@ document.addEventListener('click', e => {
     }); break;
     case 'git-open-folder': gitRefresh().then(() => { refreshSettingsInPlace(); toast(gitState.status ? ('分支 ' + gitState.status.branch + ' · 待推送 ' + (gitState.status.ahead || 0) + ' · 待拉取 ' + (gitState.status.behind || 0)) : '还没有连接成功', !gitState.status); }); break;
 
-    case 'git-sync-now': e.stopPropagation(); gitRefresh().then(() => { toast(gitState.status ? '已同步仓库状态' : '同步失败，看下方日志', !gitState.status); }); break;
+    case 'git-sync-now': e.stopPropagation(); toast('正在连接远端检查…'); gitRefresh(true).then(() => { toast(gitState.status ? '已同步仓库状态' : '同步失败，看下方日志', !gitState.status); }); break;
 
     case 'git-prefix': {
       const sel = el;
@@ -10153,7 +11339,61 @@ document.addEventListener('click', e => {
       if (LOCAL_HTTP) gitRefresh().then(() => { refreshSettingsInPlace(); renderRepoGear(); });
       break;
     }
-    case 'git-push': gitDoPush(); break;
+    case 'gmk-apply-preview': {
+      const meta = (S.preview && S.preview.meta) || {};
+      if (meta.kind === 'git' && meta.rev) { const r = meta.rev, l = meta.rel; clearPreview(); gmkApply(r, l); }
+      break;
+    }
+    case 'trash-preview': trashPreview(el.dataset.trid); break;
+    case 'gmk-exit': gmkExitView(); break;
+    case 'gmk-toggle': gmkToggle(); break;
+    case 'gmk-fold': {
+      GMK.openRev = (GMK.openRev === el.dataset.rev) ? '' : el.dataset.rev;
+      gmkRender();
+      break;
+    }
+    case 'gmk-apply': {
+      try { e.stopPropagation(); } catch (err) { }
+      gmkApply(el.dataset.rev, el.dataset.rel);
+      break;
+    }
+    case 'gmk-card': gmkOpenCanvas(el.dataset.rev, el.dataset.rel); break;
+    case 'git-push': gitOpenPushDialog(); break;
+    case 'push-check': {
+      const node = pushFindNode(PUSH_STATE.tree, el.dataset.path);
+      if (node && !node.locked) {
+        const val = !(node.checked && !node.partial);
+        pushSetAll(node, val);
+        pushRecompute(PUSH_STATE.tree);
+        renderPushDialog();
+      }
+      break;
+    }
+    case 'push-lock': {
+      const node = pushFindNode(PUSH_STATE.tree, el.dataset.path);
+      if (node) {
+        node.locked = !node.locked;
+        if (node.locked) {
+          PUSH_STATE.locked[node.path] = true;
+          if (node.type === 'dir') node.open = false;
+        } else {
+          delete PUSH_STATE.locked[node.path];
+        }
+        pushRecompute(PUSH_STATE.tree);
+        renderPushDialog();
+      }
+      break;
+    }
+    case 'push-fold': {
+      const node = pushFindNode(PUSH_STATE.tree, el.dataset.path);
+      if (node) { node.open = !node.open; renderPushDialog(); }
+      break;
+    }
+    case 'push-all': pushSetAll(PUSH_STATE.tree, true); pushRecompute(PUSH_STATE.tree); renderPushDialog(); break;
+    case 'push-none': pushSetAll(PUSH_STATE.tree, false); pushRecompute(PUSH_STATE.tree); renderPushDialog(); break;
+    case 'push-cancel': closeModal(); break;
+    case 'push-go': gitPushNow(); break;
+
     case 'git-pull': gitDoPull(); break;
     case 'mod-export': exportModFiles(); break;
     case 'mod-export-go': doExportModFiles(); break;
@@ -10261,6 +11501,8 @@ document.addEventListener('click', e => {
       renderCanvasList(); persist();
       break;
     }
+    case 'trash-toggle': S.ui.trashOpen = !(S.ui.trashOpen !== false); renderCanvasList(); break;
+    case 'trash-restore': { try { e.stopPropagation(); } catch (err) { } trashRestore(el.dataset.trid); break; }
     case 'cv-group-add': cvGroupAdd(); break;
     case 'cv-group-del': cvGroupDel(el.dataset.gid); break;
     case 'cv-group-del-no': {
@@ -10469,6 +11711,7 @@ document.addEventListener('click', e => {
     case 'del-canvas-ok': {
       const id = el.dataset.id;
       { const cc = S.canvases.find(x => x.id === id); if (cc && cc.locked) { closeModal(); toast('画布已锁定，已取消删除', true); break; } }
+      { const cc = S.canvases.find(x => x.id === id); if (cc) pushTrash(cc, '删除'); }
       S.canvases = S.canvases.filter(c => c.id !== id);
       if (!S.canvases.length) S.canvases.push(canvasFromBodytype(D.bodytypes[0]));
       if (!S.canvases.some(c => c.id === S.active)) S.active = S.canvases[0].id;
@@ -12595,6 +13838,7 @@ async function openHistory() {
 }
 
 async function loadHistoryVersion(name) {
+  if (S.preview) { S.preview = null; document.body.classList.remove('is-preview'); }
   try {
     const r = await fetch('/__history-file?name=' + encodeURIComponent(name), { cache: 'no-store' });
     if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -12619,12 +13863,14 @@ function projectPayload() {
     return { v: 4, savedAt: Date.now(), project: S.project, canvases: S.canvases, active: S.active,
     flags: flags, kinds: Object.assign({}, S.kinds), wins: S.wins, customAssets: S.customAssets,
     mine: S.mine, hairRef: S.hairRef, hairFits: hairFits(),
+    trash: S.trash || [],
     ui: {
       open: S.ui.open || {},
       panels: S.ui.panels || {},
       cvGroups: S.ui.cvGroups || [],
       cvCollapsed: S.ui.cvCollapsed || {},
       cvBaseSeeded: !!S.ui.cvBaseSeeded,
+      trashOpen: S.ui.trashOpen !== false,
       cat: S.ui.cat, q: S.ui.q
     },
     settings: saveSettings(),
@@ -12644,10 +13890,16 @@ async function saveProjectFile(forcePick) {
     const body = 'window.__NHT_PROJECT=' + JSON.stringify(projectPayload()) + ';';
     const ok = await apiSave('to=project', body);
     if (ok) {
-      progStep(3, '写入 nht-project.js…');
+      progStep(3, '写入 canvases/*.json + index.json…');
+      const okFiles = await saveAllCanvasFiles(true);
       progDone();
-      setSaveStatus('已保存 Editor/nht-project.js · ' + now());
-      toast('项目已保存到 Editor/nht-project.js');
+      if (okFiles) {
+        setSaveStatus('已保存 ' + S.canvases.length + ' 个画布文件 · ' + now());
+        toast('画布已分别保存到 Editor/canvases/（' + S.canvases.length + ' 个）');
+      } else {
+        setSaveStatus('已保存 Editor/nht-project.js · ' + now());
+        toast('已保存 nht-project.js，但画布分文件写入失败', true);
+      }
       return;
     }
     toast('本地服务写入失败，改用文件夹选择', true);
@@ -12768,6 +14020,20 @@ function boot() {
     renderAll();
     try { if (typeof persist === 'function') persist(); } catch (e) { }
   });
+  if (LOCAL_HTTP) {
+    loadCanvasFiles().then(res => {
+      if (!res) return;
+      const keepActive = S.active;                 // 进入页面时用户看到的那张
+      applyProject(res.payload);
+      S.canvases = res.canvases;
+      if (keepActive && S.canvases.some(c => c.id === keepActive)) S.active = keepActive;
+      else if (!S.canvases.some(c => c.id === S.active)) S.active = S.canvases[0].id;
+      renderAll();
+      try { if (typeof persist === 'function') persist(); } catch (e) { }
+      setSaveStatus('已载入 ' + res.canvases.length + ' 个画布文件 · ' + now());
+    }).catch(() => { });
+  }
+  try { gmkMount(); gmkRender(); setTimeout(() => { try { gmkCheckNew(); } catch (e) { } }, 1600); } catch (e) { }
   $('#projName').value = S.project.name;
 
   // highest uid wins

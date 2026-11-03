@@ -1,0 +1,36 @@
+<!--
+  NHT 解剖编辑器 —— 推送弹窗里的文件说明
+  ------------------------------------------------------------
+  规则：
+  · data-path 可以是文件，也可以是文件夹（如 Editor/history）
+  · 文件夹的说明只显示在文件夹那一行，里面的文件不再重复（整块归它解释）
+  · 最长匹配优先；都没匹配到会按扩展名给一句通用说明，保证每个条目都有解释
+  改完刷新编辑器即可生效，不需要重新打包。
+-->
+<div data-path="Editor/history" data-note="本地保存快照：每次「本地保存」都会多一份，属于个人数据，默认锁住"></div>
+<div data-path="Editor/nht-project.js" data-note="项目聚合文件（所有画布 + 设置），兼容用；分文件在 canvases/ 下"></div>
+<div data-path="Editor/canvases" data-note="画布数据：每个画布一个 json，按种族分文件夹（Default / 各种族名）"></div>
+<div data-path="Editor/body-map" data-note="游戏里写出的槽位对照表（调试用），每台机器不同，默认锁住"></div>
+<div data-path="Editor/assets" data-note="素材库：本机导入的贴图、发型参考图（个人数据，体积大）"></div>
+<div data-path="Editor/Mainimg" data-note="编辑器界面用的展示图 / 预览图"></div>
+<div data-path="Editor/ui" data-note="可自行编辑的界面文本：指南、通知、提示、本说明目录"></div>
+<div data-path="Editor/anatomy-editor.html" data-note="编辑器本体（单文件页面），改界面代码时才会变"></div>
+<div data-path="Editor/serve.ps1" data-note="本地服务脚本：保存、贴图、Git、导出都靠它"></div>
+<div data-path="Editor/启动编辑器.bat" data-note="双击启动本地服务并打开编辑器"></div>
+<div data-path="Editor/停止服务.bat" data-note="关闭后台的本地服务"></div>
+<div data-path="Editor/安装新DLL.bat" data-note="把 Source\build 里新编译的 DLL 装进 Assemblies（游戏要关闭）"></div>
+<div data-path="Editor/说明.txt" data-note="编辑器使用手册"></div>
+<div data-path="About" data-note="模组信息：About.xml（名称 / 版本 / 依赖 / 描述）、Preview.png 预览图、PublishedFileId"></div>
+<div data-path="Defs" data-note="模组自定义 Def：HairFitDef（发型缩放 / 偏移 / 层级）等"></div>
+<div data-path="Patches" data-note="娃娃补丁：每个种族一个 nht-*.xml，游戏启动时套用到 Nice Health Tab 的 Def"></div>
+<div data-path="Textures" data-note="贴图总目录；本机注入的素材在 Custom/ 下"></div>
+<div data-path="Textures/Custom" data-note="本机导入 / 绘制的部位贴图（注入时自动写到这里）"></div>
+<div data-path="Assemblies" data-note="编译好的 DLL：发型与部位绘制的 Harmony 补丁"></div>
+<div data-path="Source" data-note="C# 源码与编译脚本（参考用，不参与游戏加载）"></div>
+<div data-path="Source/build" data-note="编译输出目录，安装新 DLL 从这里取文件"></div>
+<div data-path="Source/bin" data-note="编译中间产物（可忽略）"></div>
+<div data-path="Source/obj" data-note="编译中间产物（可忽略）"></div>
+<div data-path="Languages" data-note="翻译文本：中文 / English 的 Keyed 条目"></div>
+<div data-path="Languages/ChineseSimplified" data-note="简体中文翻译"></div>
+<div data-path="Languages/English" data-note="英文翻译"></div>
+<div data-path="README.txt" data-note="模组说明（游戏内「更多信息」按钮显示）"></div>
