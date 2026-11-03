@@ -75,6 +75,47 @@ function Invoke-Git([string]$Git, [string[]]$GitArgs) {
     }
 }
 
+
+function Invoke-GitNet([string]$Git, [string[]]$GitArgs, [int]$TimeoutSec = 12) {
+    # 网络类命令（fetch/push/pull/ls-remote）：超时就杀掉，避免整个本地服务被卡住
+    $prev = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    $prevOut = [Console]::OutputEncoding
+    try {
+        try { [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 } catch { }
+        $outFile = Join-Path ([System.IO.Path]::GetTempPath()) ('nht-git-' + [guid]::NewGuid().ToString('N') + '.txt')
+        $psi = New-Object System.Diagnostics.ProcessStartInfo
+        $psi.FileName = $Git
+        $psi.Arguments = ($GitArgs | ForEach-Object { if ($_ -match '\s') { '"' + $_ + '"' } else { $_ } }) -join ' '
+        $psi.UseShellExecute = $false
+        $psi.RedirectStandardOutput = $true
+        $psi.RedirectStandardError = $true
+        $psi.CreateNoWindow = $true
+        $psi.EnvironmentVariables['GIT_TERMINAL_PROMPT'] = '0'
+        $psi.EnvironmentVariables['GCM_INTERACTIVE'] = 'never'
+        $p = [System.Diagnostics.Process]::Start($psi)
+        $so = $p.StandardOutput.ReadToEndAsync()
+        $se = $p.StandardError.ReadToEndAsync()
+        $done = $p.WaitForExit($TimeoutSec * 1000)
+        if (-not $done) {
+            try { $p.Kill() } catch { }
+            try { [System.IO.File]::Delete($outFile) } catch { }
+            return [pscustomobject]@{ code = 124; text = ('网络超时（' + $TimeoutSec + ' 秒）：连不上远端仓库，请检查网络 / 代理后再试。') }
+        }
+        $text = ($so.Result + $se.Result)
+        $code = $p.ExitCode
+        try { [System.IO.File]::Delete($outFile) } catch { }
+        return [pscustomobject]@{ code = $code; text = $text }
+    }
+    catch {
+        return [pscustomobject]@{ code = 1; text = $_.Exception.Message }
+    }
+    finally {
+        try { [Console]::OutputEncoding = $prevOut } catch { }
+        $ErrorActionPreference = $prev
+    }
+}
+
 function Send-Json($stream, [string]$status, $obj) {
     $txt = ConvertTo-Json -InputObject $obj -Depth 6 -Compress
     Send-Text $stream $status $txt
@@ -368,12 +409,55 @@ while ($true) {
             if ($pathPart -eq '/__git') {
                 $cur = Invoke-Git $git @('-C', $dir, 'rev-parse', '--abbrev-ref', 'HEAD')
                 if ($cur.code -eq 0 -and $cur.text.Trim()) { $branch = $cur.text.Trim() }
-                $null = Invoke-Git $git @('-C', $dir, 'fetch', 'origin', '--quiet')
+                $didFetch = $false
+                $fetchNote = ''
+                $fetching = $false
+                if ($query['fetch'] -eq '1') {
+                    # 后台启动 fetch：立即返回，避免单线程服务被网络卡住
+                    $lockFile = Join-Path ([System.IO.Path]::GetTempPath()) ('nht-fetch-' + ([string]$dir).GetHashCode() + '.lock')
+                    $busy = $false
+                    if (Test-Path -LiteralPath $lockFile) {
+                        try {
+                            $age = ((Get-Date) - (Get-Item -LiteralPath $lockFile).LastWriteTime).TotalSeconds
+                            if ($age -lt 45) { $busy = $true }
+                        } catch { }
+                    }
+                    if (-not $busy) {
+                        try {
+                            Set-Content -LiteralPath $lockFile -Value ([string](Get-Date)) -Encoding UTF8
+                            $psi = New-Object System.Diagnostics.ProcessStartInfo
+                            $psi.FileName = $git
+                            $psi.Arguments = ('-C "' + $dir + '" fetch origin --quiet')
+                            $psi.UseShellExecute = $false
+                            $psi.CreateNoWindow = $true
+                            $psi.EnvironmentVariables['GIT_TERMINAL_PROMPT'] = '0'
+                            [System.Diagnostics.Process]::Start($psi) | Out-Null
+                            $fetching = $true
+                            $fetchNote = '正在后台检测远端…'
+                        } catch { $fetchNote = ('后台检测启动失败：' + $_.Exception.Message) }
+                    } else {
+                        $fetching = $true
+                        $fetchNote = '上一次检测还没结束…'
+                    }
+                    $didFetch = $false
+                }
                 $behindR = Invoke-Git $git @('-C', $dir, 'rev-list', '--count', ('HEAD..origin/' + $branch))
                 $aheadR = Invoke-Git $git @('-C', $dir, 'rev-list', '--count', ('origin/' + $branch + '..HEAD'))
                 $behind = 0; $ahead = 0
                 [int]::TryParse($behindR.text.Trim(), [ref]$behind) | Out-Null
                 [int]::TryParse($aheadR.text.Trim(), [ref]$ahead) | Out-Null
+
+                # 未提交的改动（供客户端排除默认锁定后计数）
+                $dirtyR = Invoke-Git $git @('-C', $dir, '-c', 'core.quotepath=false', 'status', '--porcelain=v1', '-uall')
+                $dirty = @()
+                foreach ($dl in ($dirtyR.text -split "`n")) {
+                    $dl = $dl.TrimEnd("`r")
+                    if (-not $dl.Trim() -or $dl.Length -lt 4) { continue }
+                    $dp = $dl.Substring(2).Trim()
+                    if ($dp -match ' -> ') { $dp = ($dp -split ' -> ')[-1] }
+                    $dp = $dp.Trim('"')
+                    if ($dp) { $dirty += $dp }
+                }
 
                 $sep = [string][char]31
                 $fmt = '--pretty=format:%h' + $sep + '%ad' + $sep + '%s' + $sep + '%an'
@@ -392,7 +476,8 @@ while ($true) {
                     }
                 }
                 Send-Json $stream '200 OK' ([pscustomobject]@{
-                    ok = $true; branch = $branch; behind = $behind; ahead = $ahead; commits = $commits
+                    ok = $true; branch = $branch; behind = $behind; ahead = $ahead; commits = $commits; dirty = $dirty;
+                    fetched = $didFetch; fetching = $fetching; fetchNote = $fetchNote
                 })
                 continue
             }
@@ -441,7 +526,7 @@ while ($true) {
                 }
 
                 # 先看远端有没有新提交：落后就要求先拉取，避免 non-fast-forward
-                $null = Invoke-Git $git @('-C', $dir, 'fetch', 'origin', '--quiet')
+                $null = Invoke-GitNet $git @('-C', $dir, 'fetch', 'origin', '--quiet') 8
                 $behindR = Invoke-Git $git @('-C', $dir, 'rev-list', '--count', ('HEAD..origin/' + $branch))
                 $behind = 0
                 [int]::TryParse($behindR.text.Trim(), [ref]$behind) | Out-Null
@@ -451,7 +536,7 @@ while ($true) {
                     [int]::TryParse($aheadR.text.Trim(), [ref]$ahead) | Out-Null
                     if ($ahead -eq 0) {
                         # 只是落后：直接快进，然后继续推送，用户不用手动点拉取
-                        $ffR = Invoke-Git $git @('-C', $dir, 'pull', '--ff-only', 'origin', $branch)
+                        $ffR = Invoke-GitNet $git @('-C', $dir, 'pull', '--ff-only', 'origin', $branch) 20
                         if ($ffR.code -eq 0) {
                             $behind = 0
                         } else {
@@ -487,7 +572,7 @@ while ($true) {
                     Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $false; hint = 'nothing-staged'; commitCode = $commitR.code; pushCode = -1; log = $text })
                     continue
                 }
-                $pushR = Invoke-Git $git @('-C', $dir, 'push', '-u', 'origin', $branch)
+                $pushR = Invoke-GitNet $git @('-C', $dir, 'push', '-u', 'origin', $branch) 25
                 $text = ($syncText + $addR.text + $commitR.text + $switchText + $pushR.text)
                 $ok = ($pushR.code -eq 0)
 
@@ -500,8 +585,8 @@ while ($true) {
             }
 
             if ($pathPart -eq '/__gitpull') {
-                $fetchR = Invoke-Git $git @('-C', $dir, 'fetch', 'origin')
-                $pullR = Invoke-Git $git @('-C', $dir, 'pull', '--ff-only', 'origin', $branch)
+                $fetchR = Invoke-GitNet $git @('-C', $dir, 'fetch', 'origin') 12
+                $pullR = Invoke-GitNet $git @('-C', $dir, 'pull', '--ff-only', 'origin', $branch) 20
                 Send-Json $stream '200 OK' ([pscustomobject]@{ ok = ($pullR.code -eq 0); log = ($fetchR.text + $pullR.text) })
                 continue
             }
