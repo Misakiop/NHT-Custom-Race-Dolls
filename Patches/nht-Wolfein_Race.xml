@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   NHT_CustomDolls
-  由 NHT Anatomy Editor 生成 · 2026-11-03 12:30
+  由 NHT Anatomy Editor 生成 · 2026-11-04 00:40
   基准模组：Nice Health Tab (Andromeda.NiceHealthTab) v1.6 · 创意工坊 3328729902
   RJW 层：Nice Health Tab - RJW Genitalia (zoc2k.nicehealthtab.rjwgenitalia) · 相关操作带 MayRequire rim.job.world
   画布：1 个 · 部位：30 个 · 补丁操作：8 段
-  贴图路径指向 Nice Health Tab（以及 RJW 补丁）的 Textures/ 目录。直接点「保存到注入模组」写进 NHT_CustomDolls/Patches/ 即可，也可以手动放进任意模组的 Patches/。
+  贴图路径指向 Nice Health Tab（以及 RJW 补丁）的 Textures/ 目录。直接点「保存到注入模组」写进 NHT_CustomDollTest/Patches/ 即可，也可以手动放进任意模组的 Patches/。
   备注：以 Nice Health Tab 模组 1.6 默认体型为基准制作的部位补丁。
 -->
 <Patch>
   <!-- Wolfein race · HAR 头发参数（种族 Wolfein_Race） -->
   <Operation Class="PatchOperationAdd">
+    <success>Always</success>
     <xpath>Defs</xpath>
     <value>
       <NHT_CustomDolls.HairFitDef>
@@ -29,6 +30,7 @@
   </Operation>
   <!-- Wolfein race · HAR 头发参数（种族 Wolfein race） -->
   <Operation Class="PatchOperationAdd">
+    <success>Always</success>
     <xpath>Defs</xpath>
     <value>
       <NHT_CustomDolls.HairFitDef>
@@ -47,6 +49,7 @@
   </Operation>
   <!-- Wolfein race · 画在头发之上的部位（NHTCD_HairFit_Wolfein_Race） -->
   <Operation Class="PatchOperationReplace">
+    <success>Always</success>
     <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_Wolfein_Race"]/aboveParts</xpath>
     <value>
       <aboveParts>
@@ -55,6 +58,7 @@
   </Operation>
   <!-- Wolfein race · 画在头发之上的部位（NHTCD_HairFit_Wolfein_race） -->
   <Operation Class="PatchOperationReplace">
+    <success>Always</success>
     <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_Wolfein_race"]/aboveParts</xpath>
     <value>
       <aboveParts>
@@ -63,6 +67,7 @@
   </Operation>
   <!-- HandDoll · 手掌基底 #39 -->
   <Operation Class="PatchOperationReplace">
+    <success>Always</success>
     <xpath>Defs/NiceHealthTab.DollBodyPart[defName="HandBaseRight"]</xpath>
     <value>
       <NiceHealthTab.DollBodyPart>
@@ -83,6 +88,7 @@
   </Operation>
   <!-- HandDoll · 中指 #31 -->
   <Operation Class="PatchOperationReplace">
+    <success>Always</success>
     <xpath>Defs/NiceHealthTab.DollBodyPart[defName="MiddleLeft"]</xpath>
     <value>
       <NiceHealthTab.DollBodyPart>
@@ -103,6 +109,7 @@
   </Operation>
   <!-- FeetDoll · 脚掌基底 #58 -->
   <Operation Class="PatchOperationReplace">
+    <success>Always</success>
     <xpath>Defs/NiceHealthTab.DollBodyPart[defName="FeetBaseRight"]</xpath>
     <value>
       <NiceHealthTab.DollBodyPart>
@@ -123,6 +130,7 @@
   </Operation>
   <!-- 新增定义 -->
   <Operation Class="PatchOperationAdd">
+    <success>Always</success>
     <xpath>Defs</xpath>
     <value>
       <!-- Wolfein race · 新建 HumanlikeDoll Wolfein_Race -->

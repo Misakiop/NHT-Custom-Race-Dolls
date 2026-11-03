@@ -1,0 +1,813 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  NHT_CustomDolls
+  由 NHT Anatomy Editor 生成 · 2026-11-04 01:59
+  基准模组：Nice Health Tab (Andromeda.NiceHealthTab) v1.6 · 创意工坊 3328729902
+  RJW 层：Nice Health Tab - RJW Genitalia (zoc2k.nicehealthtab.rjwgenitalia) · 相关操作带 MayRequire rim.job.world
+  画布：1 个 · 部位：30 个 · 补丁操作：8 段
+  贴图路径指向 Nice Health Tab（以及 RJW 补丁）的 Textures/ 目录。直接点「保存到注入模组」写进 NHT_CustomDollTest/Patches/ 即可，也可以手动放进任意模组的 Patches/。
+  备注：以 Nice Health Tab 模组 1.6 默认体型为基准制作的部位补丁。
+-->
+<Patch>
+  <!-- MoeLotl · HAR 头发参数（种族 Axolotl） -->
+  <Operation Class="PatchOperationAdd">
+    <success>Always</success>
+    <xpath>Defs</xpath>
+    <value>
+      <NHT_CustomDolls.HairFitDef>
+        <defName>NHTCD_HairFit_Axolotl</defName>
+        <race>Axolotl</race>
+        <scale>0.360</scale>
+        <offsetX>0.000</offsetX>
+        <offsetY>-0.344</offsetY>
+        <front>true</front>
+        <layer>15</layer>
+        <showInXray>false</showInXray>
+        <aboveParts>
+        </aboveParts>
+      </NHT_CustomDolls.HairFitDef>
+    </value>
+  </Operation>
+  <!-- MoeLotl · HAR 头发参数（种族 MoeLotl） -->
+  <Operation Class="PatchOperationAdd">
+    <success>Always</success>
+    <xpath>Defs</xpath>
+    <value>
+      <NHT_CustomDolls.HairFitDef>
+        <defName>NHTCD_HairFit_MoeLotl</defName>
+        <race>MoeLotl</race>
+        <scale>0.360</scale>
+        <offsetX>0.000</offsetX>
+        <offsetY>-0.344</offsetY>
+        <front>true</front>
+        <layer>15</layer>
+        <showInXray>false</showInXray>
+        <aboveParts>
+        </aboveParts>
+      </NHT_CustomDolls.HairFitDef>
+    </value>
+  </Operation>
+  <!-- MoeLotl · 画在头发之上的部位（NHTCD_HairFit_Axolotl） -->
+  <Operation Class="PatchOperationReplace">
+    <success>Always</success>
+    <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_Axolotl"]/aboveParts</xpath>
+    <value>
+      <aboveParts>
+      </aboveParts>
+    </value>
+  </Operation>
+  <!-- MoeLotl · 画在头发之上的部位（NHTCD_HairFit_MoeLotl） -->
+  <Operation Class="PatchOperationReplace">
+    <success>Always</success>
+    <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_MoeLotl"]/aboveParts</xpath>
+    <value>
+      <aboveParts>
+      </aboveParts>
+    </value>
+  </Operation>
+  <!-- HandDoll · 手掌基底 #39 -->
+  <Operation Class="PatchOperationReplace">
+    <success>Always</success>
+    <xpath>Defs/NiceHealthTab.DollBodyPart[defName="HandBaseRight"]</xpath>
+    <value>
+      <NiceHealthTab.DollBodyPart>
+        <defName>HandBaseRight</defName>
+        <dollName>HandDoll</dollName>
+        <imagePath>HediffTab/Baseliner/Hand/HandBase</imagePath>
+        <bodyPartId>39</bodyPartId>
+        <position><x>113</x><y>40.5</y></position>
+        <width>1</width>
+        <height>1</height>
+        <layer>19</layer>
+        <visibleByDefault>true</visibleByDefault>
+        <showArmorCover>true</showArmorCover>
+        <bondageScale>1.00</bondageScale>
+        <hitboxScale><x>0.87</x><y>0.7</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+    </value>
+  </Operation>
+  <!-- HandDoll · 中指 #31 -->
+  <Operation Class="PatchOperationReplace">
+    <success>Always</success>
+    <xpath>Defs/NiceHealthTab.DollBodyPart[defName="MiddleLeft"]</xpath>
+    <value>
+      <NiceHealthTab.DollBodyPart>
+        <defName>MiddleLeft</defName>
+        <dollName>HandDoll</dollName>
+        <imagePath>HediffTab/Baseliner/Hand/Middle</imagePath>
+        <bodyPartId>31</bodyPartId>
+        <position><x>-97</x><y>-56.3</y></position>
+        <width>-1</width>
+        <height>1</height>
+        <layer>3</layer>
+        <visibleByDefault>true</visibleByDefault>
+        <showArmorCover>false</showArmorCover>
+        <bondageScale>1.00</bondageScale>
+        <hitboxScale><x>0.76</x><y>0.87</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+    </value>
+  </Operation>
+  <!-- FeetDoll · 脚掌基底 #58 -->
+  <Operation Class="PatchOperationReplace">
+    <success>Always</success>
+    <xpath>Defs/NiceHealthTab.DollBodyPart[defName="FeetBaseRight"]</xpath>
+    <value>
+      <NiceHealthTab.DollBodyPart>
+        <defName>FeetBaseRight</defName>
+        <dollName>FeetDoll</dollName>
+        <imagePath>HediffTab/Baseliner/Feet/Feet</imagePath>
+        <bodyPartId>58</bodyPartId>
+        <position><x>97.2</x><y>17.3</y></position>
+        <width>1</width>
+        <height>1</height>
+        <layer>10</layer>
+        <visibleByDefault>true</visibleByDefault>
+        <showArmorCover>true</showArmorCover>
+        <bondageScale>1.00</bondageScale>
+        <hitboxScale><x>0.8</x><y>0.8</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+    </value>
+  </Operation>
+  <!-- 新增定义 -->
+  <Operation Class="PatchOperationAdd">
+    <success>Always</success>
+    <xpath>Defs</xpath>
+    <value>
+      <!-- MoeLotl · 新建 HumanlikeDoll Axolotl -->
+      <NiceHealthTab.HumanlikeDoll>
+        <defName>Axolotl</defName>
+        <gender>Female</gender>
+        <xenotype>Axolotl</xenotype>
+        <bodytype>*</bodytype>
+        <outlinePath>HediffTab/Baseliner/Female/Outline</outlinePath>
+        <headPart>Axolotl_FemaleHead</headPart>
+        <BoundingBox>
+          <m_XMin>-160</m_XMin>
+          <m_YMin>-455</m_YMin>
+          <m_Width>320</m_Width>
+          <m_Height>890</m_Height>
+        </BoundingBox>
+        <headOverlayOffset><x>-2</x><y>-2</y></headOverlayOffset>
+        <headOverlayScale><x>310</x><y>310</y></headOverlayScale>
+      </NiceHealthTab.HumanlikeDoll>
+      <!-- Axolotl_Tail -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>AxolotlAxolotlTailAxolotlTail</defName>
+        <imagePath>Custom/Axolotl_Tail</imagePath>
+        <position>
+          <x>-112.9</x>
+          <y>70.7</y>
+        </position>
+        <layer>0</layer>
+        <dollName>Axolotl</dollName>
+        <bodyPartId>65</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1.67</width>
+        <height>1.67</height>
+        <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 躯干 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Axolotl_FemaleTorso</defName>
+        <imagePath>HediffTab/Baseliner/Female/Torso</imagePath>
+        <position>
+          <x>2</x>
+          <y>-140.5</y>
+        </position>
+        <layer>1</layer>
+        <dollName>Axolotl</dollName>
+        <bodyPartId>0</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1</width>
+        <height>1</height>
+        <hitboxScale><x>0.74</x><y>0.75</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 右腿 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Axolotl_FemaleLegLeft</defName>
+        <imagePath>HediffTab/Baseliner/Female/Leg</imagePath>
+        <position>
+          <x>-45</x>
+          <y>179.5</y>
+        </position>
+        <layer>2</layer>
+        <dollName>Axolotl</dollName>
+        <bodyPartId>55</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>-1</width>
+        <height>1</height>
+        <hitboxScale><x>0.8</x><y>0.88</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 左腿 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Axolotl_FemaleLegRight</defName>
+        <imagePath>HediffTab/Baseliner/Female/Leg</imagePath>
+        <position>
+          <x>45</x>
+          <y>179.5</y>
+        </position>
+        <layer>2</layer>
+        <dollName>Axolotl</dollName>
+        <bodyPartId>46</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1</width>
+        <height>1</height>
+        <hitboxScale><x>0.8</x><y>0.88</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 颈部 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Axolotl_FemaleNeck</defName>
+        <imagePath>HediffTab/Baseliner/Female/Neck</imagePath>
+        <position>
+          <x>1</x>
+          <y>-303.5</y>
+        </position>
+        <layer>2</layer>
+        <dollName>Axolotl</dollName>
+        <bodyPartId>12</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1</width>
+        <height>1</height>
+        <hitboxScale><x>0.9</x><y>0.74</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 右肩 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Axolotl_FemaleShoulderLeft</defName>
+        <imagePath>HediffTab/Baseliner/Female/Shoulder</imagePath>
+        <position>
+          <x>-81.5</x>
+          <y>-198</y>
+        </position>
+        <layer>2</layer>
+        <dollName>Axolotl</dollName>
+        <bodyPartId>34</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>-1</width>
+        <height>1</height>
+        <hitboxScale><x>0.73</x><y>0.79</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 左肩 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Axolotl_FemaleShoulderRight</defName>
+        <imagePath>HediffTab/Baseliner/Female/Shoulder</imagePath>
+        <position>
+          <x>81.5</x>
+          <y>-198</y>
+        </position>
+        <layer>2</layer>
+        <dollName>Axolotl</dollName>
+        <bodyPartId>23</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1</width>
+        <height>1</height>
+        <hitboxScale><x>0.73</x><y>0.79</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 右臂 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Axolotl_FemaleArmLeft</defName>
+        <imagePath>HediffTab/Baseliner/Female/Arm</imagePath>
+        <position>
+          <x>-107</x>
+          <y>-82</y>
+        </position>
+        <layer>3</layer>
+        <dollName>Axolotl</dollName>
+        <bodyPartId>36</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>-1</width>
+        <height>1</height>
+        <hitboxScale><x>0.74</x><y>0.73</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 左臂 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Axolotl_FemaleArmRight</defName>
+        <imagePath>HediffTab/Baseliner/Female/Arm</imagePath>
+        <position>
+          <x>107</x>
+          <y>-82</y>
+        </position>
+        <layer>3</layer>
+        <dollName>Axolotl</dollName>
+        <bodyPartId>25</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1</width>
+        <height>1</height>
+        <hitboxScale><x>0.74</x><y>0.73</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 右脚 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Axolotl_FemaleFeetLeft</defName>
+        <imagePath>HediffTab/Baseliner/Female/Feet</imagePath>
+        <position>
+          <x>-47.5</x>
+          <y>411.5</y>
+        </position>
+        <layer>3</layer>
+        <dollName>Axolotl</dollName>
+        <bodyPartId>58</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>-1</width>
+        <height>1</height>
+        <hitboxScale><x>0.8</x><y>0.77</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 左脚 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Axolotl_FemaleFeetRight</defName>
+        <imagePath>HediffTab/Baseliner/Female/Feet</imagePath>
+        <position>
+          <x>47.5</x>
+          <y>411.5</y>
+        </position>
+        <layer>3</layer>
+        <dollName>Axolotl</dollName>
+        <bodyPartId>49</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1</width>
+        <height>1</height>
+        <hitboxScale><x>0.8</x><y>0.77</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 头部 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Axolotl_FemaleHead</defName>
+        <imagePath>HediffTab/Baseliner/Female/NiceHead</imagePath>
+        <position>
+          <x>0</x>
+          <y>-352</y>
+        </position>
+        <layer>3</layer>
+        <dollName>Axolotl</dollName>
+        <bodyPartId>13</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1</width>
+        <height>1</height>
+        <hitboxScale><x>0.92</x><y>0.92</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 右手 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Axolotl_FemaleHandLeft</defName>
+        <imagePath>HediffTab/Baseliner/Female/Hand</imagePath>
+        <position>
+          <x>-121</x>
+          <y>5.5</y>
+        </position>
+        <layer>4</layer>
+        <dollName>Axolotl</dollName>
+        <bodyPartId>39</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>-1</width>
+        <height>1</height>
+        <hitboxScale><x>0.88</x><y>0.75</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 左手 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Axolotl_FemaleHandRight</defName>
+        <imagePath>HediffTab/Baseliner/Female/Hand</imagePath>
+        <position>
+          <x>121</x>
+          <y>5.5</y>
+        </position>
+        <layer>4</layer>
+        <dollName>Axolotl</dollName>
+        <bodyPartId>28</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1</width>
+        <height>1</height>
+        <hitboxScale><x>0.88</x><y>0.75</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 骨盆 -->
+      <NiceHealthTab.DollBone>
+        <defName>Axolotl_FemalePelvis</defName>
+        <imagePath>HediffTab/Bones/Pelvis</imagePath>
+        <position>
+          <x>0</x>
+          <y>-42.5</y>
+        </position>
+        <layer>9</layer>
+        <dollName>Axolotl</dollName>
+        <bodyPartId>3</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>false</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1</width>
+        <height>1</height>
+        <hitboxScale><x>0.75</x><y>0.8</y></hitboxScale>
+        <extraLayer>0</extraLayer>
+      </NiceHealthTab.DollBone>
+      <!-- 脊柱 -->
+      <NiceHealthTab.DollBone>
+        <defName>Axolotl_FemaleSpine</defName>
+        <imagePath>HediffTab/Bones/Spine</imagePath>
+        <position>
+          <x>0</x>
+          <y>-152.5</y>
+        </position>
+        <layer>10</layer>
+        <dollName>Axolotl</dollName>
+        <bodyPartId>4</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>false</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>0.7</width>
+        <height>0.7</height>
+        <hitboxScale><x>0.99</x><y>0.82</y></hitboxScale>
+        <extraLayer>0</extraLayer>
+      </NiceHealthTab.DollBone>
+      <!-- 鼻子 -->
+      <NiceHealthTab.DollOrgan>
+        <defName>Axolotl_FemaleNose</defName>
+        <imagePath>HediffTab/Baseliner/Head/Nose</imagePath>
+        <position>
+          <x>0</x>
+          <y>-329.5</y>
+        </position>
+        <layer>14</layer>
+        <dollName>Axolotl</dollName>
+        <bodyPartId>20</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>false</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1</width>
+        <height>1</height>
+        <hitboxScale><x>0.88</x><y>0.88</y></hitboxScale>
+        <extraLayer>0</extraLayer>
+      </NiceHealthTab.DollOrgan>
+      <!-- 左眼 -->
+      <NiceHealthTab.DollEye>
+        <defName>Axolotl_FemaleEyeLeft</defName>
+        <imagePath>HediffTab/Baseliner/Head/NiceMaleEye</imagePath>
+        <position>
+          <x>18</x>
+          <y>-341.5</y>
+        </position>
+        <layer>15</layer>
+        <dollName>Axolotl</dollName>
+        <bodyPartId>16</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>false</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>0.6</width>
+        <height>0.6</height>
+        <hitboxScale><x>0.8</x><y>0.75</y></hitboxScale>
+      </NiceHealthTab.DollEye>
+      <!-- 右眼 -->
+      <NiceHealthTab.DollEye>
+        <defName>Axolotl_FemaleEyeRight</defName>
+        <imagePath>HediffTab/Baseliner/Head/NiceMaleEye</imagePath>
+        <position>
+          <x>-18</x>
+          <y>-341.5</y>
+        </position>
+        <layer>15</layer>
+        <dollName>Axolotl</dollName>
+        <bodyPartId>17</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>false</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>-0.6</width>
+        <height>0.6</height>
+        <hitboxScale><x>0.8</x><y>0.75</y></hitboxScale>
+      </NiceHealthTab.DollEye>
+      <!-- 自定义部位 · 左腮 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Axolotl_u5de6u816e</defName>
+        <imagePath>Custom/Axolotl_GillRightD</imagePath>
+        <position>
+          <x>60</x>
+          <y>-358</y>
+        </position>
+        <layer>17</layer>
+        <dollName>Axolotl</dollName>
+        <bodyPartId>66</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>0.8</width>
+        <height>0.8</height>
+        <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 自定义部位 · 右腮 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Axolotl_u53f3u816e</defName>
+        <imagePath>Custom/Axolotl_GillLeftD</imagePath>
+        <position>
+          <x>-60</x>
+          <y>-358</y>
+        </position>
+        <layer>17</layer>
+        <dollName>Axolotl</dollName>
+        <bodyPartId>67</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>0.8</width>
+        <height>0.8</height>
+        <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 大脑 -->
+      <NiceHealthTab.DollOrgan>
+        <defName>Axolotl_FemaleBrain</defName>
+        <imagePath>HediffTab/Organs/Brain</imagePath>
+        <position>
+          <x>1</x>
+          <y>-379</y>
+        </position>
+        <layer>20</layer>
+        <dollName>Axolotl</dollName>
+        <bodyPartId>15</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>false</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1</width>
+        <height>1</height>
+        <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
+        <extraLayer>0</extraLayer>
+      </NiceHealthTab.DollOrgan>
+      <!-- 心脏 -->
+      <NiceHealthTab.DollOrgan>
+        <defName>Axolotl_FemaleHeart</defName>
+        <imagePath>HediffTab/Organs/Heart</imagePath>
+        <position>
+          <x>4.5</x>
+          <y>-167.5</y>
+        </position>
+        <layer>21</layer>
+        <dollName>Axolotl</dollName>
+        <bodyPartId>6</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>false</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>0.85</width>
+        <height>0.85</height>
+        <hitboxScale><x>0.75</x><y>0.75</y></hitboxScale>
+        <extraLayer>0</extraLayer>
+      </NiceHealthTab.DollOrgan>
+      <!-- 右肾 -->
+      <NiceHealthTab.DollOrgan>
+        <defName>Axolotl_FemaleKidneyLeft</defName>
+        <imagePath>HediffTab/Organs/Kidney</imagePath>
+        <position>
+          <x>-37.5</x>
+          <y>-71</y>
+        </position>
+        <layer>22</layer>
+        <dollName>Axolotl</dollName>
+        <bodyPartId>10</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>false</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>-0.85</width>
+        <height>0.85</height>
+        <hitboxScale><x>0.8</x><y>0.7</y></hitboxScale>
+        <extraLayer>0</extraLayer>
+      </NiceHealthTab.DollOrgan>
+      <!-- 左肾 -->
+      <NiceHealthTab.DollOrgan>
+        <defName>Axolotl_FemaleKidneyRight</defName>
+        <imagePath>HediffTab/Organs/Kidney</imagePath>
+        <position>
+          <x>37.5</x>
+          <y>-71</y>
+        </position>
+        <layer>22</layer>
+        <dollName>Axolotl</dollName>
+        <bodyPartId>9</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>false</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>0.85</width>
+        <height>0.85</height>
+        <hitboxScale><x>0.8</x><y>0.7</y></hitboxScale>
+        <extraLayer>0</extraLayer>
+      </NiceHealthTab.DollOrgan>
+      <!-- 肝脏 -->
+      <NiceHealthTab.DollOrgan>
+        <defName>Axolotl_FemaleLiver</defName>
+        <imagePath>HediffTab/Organs/Liver</imagePath>
+        <position>
+          <x>-25.5</x>
+          <y>-120</y>
+        </position>
+        <layer>23</layer>
+        <dollName>Axolotl</dollName>
+        <bodyPartId>11</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>false</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>0.85</width>
+        <height>0.85</height>
+        <hitboxScale><x>0.75</x><y>0.87</y></hitboxScale>
+        <extraLayer>0</extraLayer>
+      </NiceHealthTab.DollOrgan>
+      <!-- 右肺 -->
+      <NiceHealthTab.DollOrgan>
+        <defName>Axolotl_FemaleLungLeft</defName>
+        <imagePath>HediffTab/Organs/Lung</imagePath>
+        <position>
+          <x>-23.5</x>
+          <y>-229.5</y>
+        </position>
+        <layer>24</layer>
+        <dollName>Axolotl</dollName>
+        <bodyPartId>8</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>false</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>-0.85</width>
+        <height>0.85</height>
+        <hitboxScale><x>0.77</x><y>0.7</y></hitboxScale>
+        <extraLayer>0</extraLayer>
+      </NiceHealthTab.DollOrgan>
+      <!-- 左肺 -->
+      <NiceHealthTab.DollOrgan>
+        <defName>Axolotl_FemaleLungRight</defName>
+        <imagePath>HediffTab/Organs/Lung</imagePath>
+        <position>
+          <x>23.5</x>
+          <y>-229.5</y>
+        </position>
+        <layer>24</layer>
+        <dollName>Axolotl</dollName>
+        <bodyPartId>7</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>false</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>0.85</width>
+        <height>0.85</height>
+        <hitboxScale><x>0.77</x><y>0.7</y></hitboxScale>
+        <extraLayer>0</extraLayer>
+      </NiceHealthTab.DollOrgan>
+      <!-- 胃 -->
+      <NiceHealthTab.DollOrgan>
+        <defName>Axolotl_FemaleStomach</defName>
+        <imagePath>HediffTab/Organs/Stomach</imagePath>
+        <position>
+          <x>19.5</x>
+          <y>-114</y>
+        </position>
+        <layer>25</layer>
+        <dollName>Axolotl</dollName>
+        <bodyPartId>5</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>false</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>0.85</width>
+        <height>0.85</height>
+        <hitboxScale><x>0.75</x><y>0.75</y></hitboxScale>
+        <extraLayer>0</extraLayer>
+      </NiceHealthTab.DollOrgan>
+      <!-- 胸腔 -->
+      <NiceHealthTab.DollBone>
+        <defName>Axolotl_FemaleRibcage</defName>
+        <imagePath>HediffTab/Bones/Ribcage</imagePath>
+        <position>
+          <x>0</x>
+          <y>-214.5</y>
+        </position>
+        <layer>11</layer>
+        <dollName>Axolotl</dollName>
+        <bodyPartId>1</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>false</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>0.9</width>
+        <height>0.9</height>
+        <hitboxScale><x>0.77</x><y>0.95</y></hitboxScale>
+        <extraLayer>30</extraLayer>
+      </NiceHealthTab.DollBone>
+      <!-- Axolotl · 种族部位对照表（NHT 槽位 → 身体部位下标） -->
+      <NiceHealthTab.BodyPartIndexesRemap>
+        <defName>NHTCD_BodyRemap_Axolotl</defName>
+        <bodyDefName>Axolotl</bodyDefName>
+        <parts>
+            <li>0, 0</li>
+            <li>1, 1</li>
+            <li>2, 2</li>
+            <li>3, 3</li>
+            <li>4, 4</li>
+            <li>5, 7</li>
+            <li>6, 8</li>
+            <li>7, 9</li>
+            <li>8, 10</li>
+            <li>9, 11</li>
+            <li>10, 12</li>
+            <li>11, 13</li>
+            <li>12, 14</li>
+            <li>13, 15</li>
+            <li>14, 16</li>
+            <li>15, 17</li>
+            <li>16, 18</li>
+            <li>17, 19</li>
+            <li>18, 20</li>
+            <li>19, 21</li>
+            <li>20, 22</li>
+            <li>21, 23</li>
+            <li>22, 24</li>
+            <li>23, 27</li>
+            <li>24, 28</li>
+            <li>25, 29</li>
+            <li>26, 30</li>
+            <li>27, 31</li>
+            <li>28, 32</li>
+            <li>29, 33</li>
+            <li>30, 34</li>
+            <li>31, 35</li>
+            <li>32, 36</li>
+            <li>33, 37</li>
+            <li>34, 38</li>
+            <li>35, 39</li>
+            <li>36, 40</li>
+            <li>37, 41</li>
+            <li>38, 42</li>
+            <li>39, 43</li>
+            <li>40, 44</li>
+            <li>41, 45</li>
+            <li>42, 46</li>
+            <li>43, 47</li>
+            <li>44, 48</li>
+            <li>45, 49</li>
+            <li>46, 50</li>
+            <li>47, 51</li>
+            <li>48, 52</li>
+            <li>49, 53</li>
+            <li>50, 54</li>
+            <li>51, 55</li>
+            <li>52, 56</li>
+            <li>53, 57</li>
+            <li>54, 58</li>
+            <li>55, 59</li>
+            <li>56, 60</li>
+            <li>57, 61</li>
+            <li>58, 62</li>
+            <li>59, 63</li>
+            <li>60, 64</li>
+            <li>61, 65</li>
+            <li>62, 66</li>
+            <li>63, 67</li>
+            <li>64, 5</li>
+            <li>65, 6</li>
+            <li>66, 25</li>
+            <li>67, 26</li>
+            <li>68, 68</li>
+        </parts>
+      </NiceHealthTab.BodyPartIndexesRemap>
+    </value>
+  </Operation>
+</Patch>
