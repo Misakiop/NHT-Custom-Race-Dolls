@@ -1712,6 +1712,9 @@ body.is-preview #stage{cursor:not-allowed}
 .aboutgrid span{color:#dfe7ea;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .aboutta{width:100%;min-height:190px;resize:vertical;font:11px/1.55 var(--font-mono);white-space:pre;
   tab-size:2;padding:8px 10px}
+
+.gitcurrow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px;font-size:10.5px;color:#8d9499}
+.gitcurrow b{color:#cfd7da;font-weight:600}
 </style>
   <script src="ui/guides.js"></script>
 </head>
@@ -1776,7 +1779,7 @@ body.is-preview #stage{cursor:not-allowed}
       <span class="vsep"></span>
       <button class="btn btn--ghost" data-act="history" title="查看最近 5 份本地保存历史，可挑一份载入"><svg><use href="#i-undo"/></svg>历史</button>
       <button class="btn btn--ghost" data-act="save" title="保存**全部画布**与素材清单到项目文件 nht-project.js（html 同目录），不是只存当前画布。Ctrl+S"><svg><use href="#i-save"/></svg>本地保存（全部画布）</button>
-      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-04 03:22</span>
+      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-04 03:30</span>
             <span class="notif" id="notifWrap">
         <button class="iconbtn notif__btn" data-act="notif-toggle" id="notifBtn" title="Git 更新通知：点「收到」后不再弹出，仓库有新的 Push 会再次提醒">
           <svg class="notif__ico"><use href="#i-bell"/></svg>
@@ -6601,7 +6604,10 @@ function renderPatch() {
         <input class="inp${gitBranchBad(ensureGitSettings().branch) ? ' is-bad' : ''}" id="gitBranchInput" data-f="g.branch"
           value="${esc(ensureGitSettings().branch || '')}" spellcheck="false" placeholder="分支名，例如 feature-milira-hair"
           title="${gitBranchBad(ensureGitSettings().branch) ? '不能直接推 main，请换成自己的分支' : '推送 / 拉取使用的分支（会自动在远端创建）'}">
-        <button class="btn btn--xs" data-act="git-use-current" title="把分支改成当前本地分支">用当前分支${gitState.status && gitState.status.branch ? '（' + esc(gitState.status.branch) + '）' : ''}</button>
+      </div>
+      <div class="gitcurrow">
+        <span>当前本地分支：<b>${esc((gitState.status && gitState.status.branch) || '—')}</b></span>
+        <button class="btn btn--xs" data-act="git-use-current" title="把「分支」改成当前本地分支">用当前分支</button>
       </div>
       <div class="gitstat gitstat--three">
         <span class="st-left" data-tip="未推送 = 还没推的提交 ${gitPendingCount().commits} 个 + 未提交的可推送文件 ${gitPendingCount().files} 个（默认锁定的文件不计入）">未推送 <b id="gitAhead">${gitPendingCount().total}</b></span>
@@ -11769,7 +11775,10 @@ document.addEventListener('click', e => {
       const apply = (cur) => {
         ensureGitSettings().branch = cur;
         saveSettings();
-        refreshSettingsInPlace();
+        const inp = document.getElementById('gitBranchInput');
+        if (inp) inp.value = cur;
+        try { renderPatch(); } catch (e) { }
+        try { if (document.querySelector('.modal')) refreshSettingsInPlace(); } catch (e) { }
         toast('分支已改为当前分支：' + cur);
       };
       const cur = (gitState.status && gitState.status.branch) || (gitState.remote && gitState.remote.branch) || '';
