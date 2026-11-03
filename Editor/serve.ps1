@@ -382,8 +382,11 @@ while ($true) {
             $git = Get-GitExe
             if (-not $git) { Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $false; installed = $false }) ; continue }
             $ver = Invoke-Git $git @('--version')
+            $un = Invoke-Git $git @('config', '--global', 'user.name')
+            $ue = Invoke-Git $git @('config', '--global', 'user.email')
             Send-Json $stream '200 OK' ([pscustomobject]@{
                 ok = $true; installed = $true; path = $git; version = $ver.text.Trim()
+                userName = $un.text.Trim(); userEmail = $ue.text.Trim()
             })
             continue
         }
@@ -504,8 +507,12 @@ while ($true) {
             if ($pathPart -eq '/__gitpush') {
                 $msg = $query['message']
                 if (-not $msg) { $msg = 'Update from NHT editor' }
-                $name = $query['name']; if (-not $name) { $name = 'NHT Editor' }
-                $email = $query['email']; if (-not $email) { $email = 'nht-editor@localhost' }
+                $name = $query['name']
+                $email = $query['email']
+                if (-not $name) { $name = (Invoke-Git $git @('config', '--global', 'user.name')).text.Trim() }
+                if (-not $email) { $email = (Invoke-Git $git @('config', '--global', 'user.email')).text.Trim() }
+                if (-not $name) { $name = 'NHT Editor' }
+                if (-not $email) { $email = 'nht-editor@localhost' }
                 # sync=1：先把当前模组目录的内容镜像到仓库目录（不删除仓库独有文件）
                 $syncText = ''
                 if ($query['sync'] -eq '1') {

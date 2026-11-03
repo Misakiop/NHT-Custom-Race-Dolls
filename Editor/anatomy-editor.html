@@ -1776,7 +1776,7 @@ body.is-preview #stage{cursor:not-allowed}
       <span class="vsep"></span>
       <button class="btn btn--ghost" data-act="history" title="查看最近 5 份本地保存历史，可挑一份载入"><svg><use href="#i-undo"/></svg>历史</button>
       <button class="btn btn--ghost" data-act="save" title="保存**全部画布**与素材清单到项目文件 nht-project.js（html 同目录），不是只存当前画布。Ctrl+S"><svg><use href="#i-save"/></svg>本地保存（全部画布）</button>
-      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-04 03:14</span>
+      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-04 03:22</span>
             <span class="notif" id="notifWrap">
         <button class="iconbtn notif__btn" data-act="notif-toggle" id="notifBtn" title="Git 更新通知：点「收到」后不再弹出，仓库有新的 Push 会再次提醒">
           <svg class="notif__ico"><use href="#i-bell"/></svg>
@@ -6601,6 +6601,7 @@ function renderPatch() {
         <input class="inp${gitBranchBad(ensureGitSettings().branch) ? ' is-bad' : ''}" id="gitBranchInput" data-f="g.branch"
           value="${esc(ensureGitSettings().branch || '')}" spellcheck="false" placeholder="分支名，例如 feature-milira-hair"
           title="${gitBranchBad(ensureGitSettings().branch) ? '不能直接推 main，请换成自己的分支' : '推送 / 拉取使用的分支（会自动在远端创建）'}">
+        <button class="btn btn--xs" data-act="git-use-current" title="把分支改成当前本地分支">用当前分支${gitState.status && gitState.status.branch ? '（' + esc(gitState.status.branch) + '）' : ''}</button>
       </div>
       <div class="gitstat gitstat--three">
         <span class="st-left" data-tip="未推送 = 还没推的提交 ${gitPendingCount().commits} 个 + 未提交的可推送文件 ${gitPendingCount().files} 个（默认锁定的文件不计入）">未推送 <b id="gitAhead">${gitPendingCount().total}</b></span>
@@ -7250,6 +7251,15 @@ function pushDialogHTML() {
       <button class="iconbtn x" data-act="push-cancel">${icon('x')}</button></div>
     <div class="modal__body">
       <p class="mini-note" style="margin:0 0 8px">
+        ${(() => {
+          const g0 = ensureGitSettings();
+          const cur = (gitState.status && gitState.status.branch) || '';
+          const target = g0.branch || cur || 'main';
+          const warn = cur && target !== cur;
+          return `目标分支：<b>${esc(target)}</b>${warn
+            ? `　<b style="color:#ffb066">⚠ 当前本地分支是 ${esc(cur)}，会以 HEAD:${esc(target)} 推送</b>（如果远端该分支有自己的提交会被拒绝）`
+            : ''}`;
+        })()}<br>
         <b>怎么用：</b>默认全部勾选 → 不想传的取消勾选，或点右侧锁图标把整块锁住（红色、勾选框消失、不参与本次推送）。
         勾/取消父文件夹会连带子项；点 <b>▾ / ▸</b> 折叠或展开。<br>
         <b>为什么有些文件默认锁住：</b><code>Editor/history</code>（本地保存快照）、<code>Editor/nht-project.js</code>（你自己的画布数据）、
@@ -7790,10 +7800,10 @@ function settingsBodyHTML(tab) {
       <div class="repoline">本机仓库：<b data-tip="${esc(g.dir || '（未设置）')}">${esc(g.dir || '（未设置）')}</b>
         <button class="iconbtn iconbtn--xs" data-act="g-pick" title="选择本机文件夹">${icon('folder')}</button>
       </div>
-      <div class="field"><label>提交者名</label><div class="ctl">
+      <div class="field"><label>提交者名</label><div class="ctl" title="会写进 git 提交记录，GitHub 上显示的就是这个名字">
         <input class="inp" data-f="g.name" value="${esc(g.name || '')}" spellcheck="false" placeholder="可空">
       </div></div>
-      <div class="field"><label>提交者邮箱</label><div class="ctl">
+      <div class="field"><label>提交者邮箱</label><div class="ctl" title="会写进 git 提交记录；留空则用本机 git 全局配置">
         <input class="inp" data-f="g.email" value="${esc(g.email || '')}" spellcheck="false" placeholder="可空">
       </div></div>
       <div class="swrow" style="margin:8px 0 2px">
@@ -7924,6 +7934,14 @@ async function gitLoadInfo() {
   try {
     const r = await fetch('/__gitinfo', { cache: 'no-store' });
     gitState.info = await r.json();
+    try {
+      const g = ensureGitSettings();
+      const inf = gitState.info || {};
+      let changed = false;
+      if (!String(g.name || '').trim() && inf.userName) { g.name = inf.userName; changed = true; }
+      if (!String(g.email || '').trim() && inf.userEmail) { g.email = inf.userEmail; changed = true; }
+      if (changed) { saveSettings(); try { refreshSettingsInPlace(); } catch (e) { } }
+    } catch (e) { }
   } catch (e) { gitState.info = { installed: false, error: e && e.message }; }
 }
 
@@ -11747,6 +11765,24 @@ document.addEventListener('click', e => {
     }); break;
     case 'git-open-folder': gitRefresh().then(() => { refreshSettingsInPlace(); toast(gitState.status ? ('分支 ' + gitState.status.branch + ' · 待推送 ' + (gitState.status.ahead || 0) + ' · 待拉取 ' + (gitState.status.behind || 0)) : '还没有连接成功', !gitState.status); }); break;
 
+    case 'git-use-current': {
+      const apply = (cur) => {
+        ensureGitSettings().branch = cur;
+        saveSettings();
+        refreshSettingsInPlace();
+        toast('分支已改为当前分支：' + cur);
+      };
+      const cur = (gitState.status && gitState.status.branch) || (gitState.remote && gitState.remote.branch) || '';
+      if (cur) { apply(cur); break; }
+      fetch('/__gitremote?dir=' + encodeURIComponent(ensureGitSettings().dir || ''), { cache: 'no-store' })
+        .then(r => r.json())
+        .then(j => {
+          const b = (j && j.branch) || '';
+          if (b) apply(b); else toast('读不到当前分支（仓库没连上？）', true);
+        })
+        .catch(() => toast('读不到当前分支', true));
+      break;
+    }
     case 'git-sync-now': e.stopPropagation(); toast('正在连接远端检查…'); gitRefresh(true).then(() => { toast(gitState.status ? '已同步仓库状态' : '同步失败，看下方日志', !gitState.status); }); break;
 
     case 'git-prefix': {
