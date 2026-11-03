@@ -55,7 +55,12 @@ function Get-GitExe {
 function Invoke-Git([string]$Git, [string[]]$GitArgs) {
     $prev = $ErrorActionPreference
     $ErrorActionPreference = 'Continue'
+    $prevOut = [Console]::OutputEncoding
+    $prevPS = $OutputEncoding
     try {
+        # git 输出是 UTF-8；PowerShell 默认按系统代码页(GBK)解码会把中文和引号弄坏
+        try { [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 } catch { }
+        try { $OutputEncoding = [System.Text.Encoding]::UTF8 } catch { }
         $text = (& $Git @GitArgs 2>&1 | Out-String)
         $code = $LASTEXITCODE
         return [pscustomobject]@{ code = $code; text = $text }
@@ -63,7 +68,11 @@ function Invoke-Git([string]$Git, [string[]]$GitArgs) {
     catch {
         return [pscustomobject]@{ code = 1; text = $_.Exception.Message }
     }
-    finally { $ErrorActionPreference = $prev }
+    finally {
+        try { [Console]::OutputEncoding = $prevOut } catch { }
+        try { $OutputEncoding = $prevPS } catch { }
+        $ErrorActionPreference = $prev
+    }
 }
 
 function Send-Json($stream, [string]$status, $obj) {
@@ -203,6 +212,131 @@ while ($true) {
             Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $true; keys = $list })
             continue
         }
+        elseif ($pathPart -eq '/__canvas-list' -and $method -eq 'GET') {
+            $cvRoot = Join-Path $ModRoot 'Editor\canvases'
+            $list = @()
+            if (Test-Path -LiteralPath $cvRoot) {
+                Get-ChildItem -LiteralPath $cvRoot -Recurse -File -Filter '*.json' | ForEach-Object {
+                    $rel = $_.FullName.Substring($cvRoot.Length + 1) -replace '\\', '/'
+                    $list += [pscustomobject]@{ rel = $rel; size = $_.Length; mtime = $_.LastWriteTime.ToString('yyyy-MM-dd HH:mm:ss') }
+                }
+            }
+            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $true; files = $list })
+            continue
+        }
+        elseif ($pathPart -eq '/__canvas-get' -and $method -eq 'GET') {
+            $rel = ($query['rel'] -replace '\\', '/').TrimStart('/')
+            if (-not $rel -or $rel -match '\.\.') { Send-Json $stream '200 OK' @{ ok = $false; error = 'bad rel' }; continue }
+            $file = Join-Path (Join-Path $ModRoot 'Editor\canvases') ($rel -replace '/', '\')
+            if (-not (Test-Path -LiteralPath $file)) { Send-Json $stream '200 OK' @{ ok = $false; error = 'not found' }; continue }
+            $text = [System.IO.File]::ReadAllText($file, [System.Text.Encoding]::UTF8)
+            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $true; rel = $rel; text = $text })
+            continue
+        }
+        elseif ($pathPart -eq '/__canvas-put' -and $method -eq 'POST') {
+            $rel = ($query['rel'] -replace '\\', '/').TrimStart('/')
+            if (-not $rel -or $rel -match '\.\.') { Send-Json $stream '200 OK' @{ ok = $false; error = 'bad rel' }; continue }
+            $file = Join-Path (Join-Path $ModRoot 'Editor\canvases') ($rel -replace '/', '\')
+            $dir2 = Split-Path -Parent $file
+            if (-not (Test-Path -LiteralPath $dir2)) { New-Item -ItemType Directory -Force -Path $dir2 | Out-Null }
+            $body = ''
+            if ($req.body) { $body = [System.Text.Encoding]::UTF8.GetString($req.body) }
+            [System.IO.File]::WriteAllText($file, [string]$body, (New-Object System.Text.UTF8Encoding($false)))
+            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $true; rel = $rel; bytes = ([string]$body).Length })
+            continue
+        }
+        elseif ($pathPart -eq '/__canvas-del' -and $method -eq 'POST') {
+            $rel = ($query['rel'] -replace '\\', '/').TrimStart('/')
+            if (-not $rel -or $rel -match '\.\.') { Send-Json $stream '200 OK' @{ ok = $false; error = 'bad rel' }; continue }
+            $file = Join-Path (Join-Path $ModRoot 'Editor\canvases') ($rel -replace '/', '\')
+            if (Test-Path -LiteralPath $file) { Remove-Item -LiteralPath $file -Force }
+            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $true; rel = $rel })
+            continue
+        }
+        elseif ($pathPart -eq '/__gitcanvases' -and $method -eq 'GET') {
+            $git = Get-GitExe
+            $dir = $query['dir']
+            if (-not $dir -or -not (Test-Path -LiteralPath $dir)) { Send-Json $stream '200 OK' @{ ok = $false; error = 'repo not found' }; continue }
+            if (-not $git) { Send-Json $stream '200 OK' @{ ok = $false; error = 'git.exe not found' }; continue }
+            $sep = [string][char]31
+            $fmt = '--pretty=format:%H' + $sep + '%ad' + $sep + '%s'
+            $log = Invoke-Git $git @('-C', $dir, 'log', '-n', '3', $fmt, '--date=format:%Y-%m-%d %H:%M', '--', 'Editor/canvases')
+            $commits = @()
+            foreach ($line in ($log.text -split "`n")) {
+                $line = $line.Trim()
+                if (-not $line) { continue }
+                $parts = $line -split [regex]::Escape($sep)
+                if ($parts.Length -lt 3) { continue }
+                $rev = $parts[0]
+                $files = @()
+                $ls = Invoke-Git $git @('-C', $dir, '-c', 'core.quotepath=false', 'ls-tree', '-r', '--name-only', $rev, '--', 'Editor/canvases')
+                foreach ($f in ($ls.text -split "`n")) {
+                    $f = $f.Trim().Trim('"')
+                    if (-not $f -or $f -notmatch '\.json$') { continue }
+                    $relInRepo = $f
+                    $rel = $f.Substring('Editor/canvases/'.Length)
+                    $show = Invoke-Git $git @('-C', $dir, 'show', ($rev + ':' + $relInRepo))
+                    if ($show.code -ne 0) { continue }
+                    $files += [pscustomobject]@{ rel = $rel; text = $show.text }
+                }
+                $commits += [pscustomobject]@{ rev = $rev; date = $parts[1]; subject = $parts[2]; files = $files }
+            }
+            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $true; commits = $commits })
+            continue
+        }
+        elseif ($pathPart -eq '/__gitchanges') {
+            $git = Get-GitExe
+            $dir = $query['dir']
+            if (-not $git) { Send-Json $stream '200 OK' @{ ok = $false; error = 'git.exe not found' }; continue }
+            if (-not $dir -or -not (Test-Path -LiteralPath $dir)) { Send-Json $stream '200 OK' @{ ok = $false; error = ('repo dir not found: ' + $dir) }; continue }
+            if ($query['sync'] -eq '1') {
+                try { $null = & robocopy $ModRoot $dir /E /XD .git .vs bin obj /XF *.bak *.bak.* /NFL /NDL /NJH /NJS /NP 2>&1 } catch { }
+            }
+            $st = Invoke-Git $git @('-C', $dir, '-c', 'core.quotepath=false', 'status', '--porcelain=v1', '-uall')
+            $list = @()
+            foreach ($line in ($st.text -split "`n")) {
+                $line = $line.TrimEnd("`r")
+                if (-not $line.Trim()) { continue }
+                if ($line.Length -lt 4) { continue }
+                $code = $line.Substring(0, 2).Trim()
+                $rest = $line.Substring(2).Trim()
+                if ($rest -match ' -> ') { $rest = ($rest -split ' -> ')[-1] }
+                $rest = $rest.Trim('"')
+                if ($rest -match '\\[0-7]{3}') {
+                    # 极端情况下仍有八进制转义：用 git 自己还原
+                    $fixed = Invoke-Git $git @('-C', $dir, 'rev-parse', '--sq-quote', $rest)
+                    if ($fixed.code -eq 0 -and $fixed.text.Trim()) { $rest = $rest }
+                }
+                $list += [pscustomobject]@{ path = $rest; status = $code }
+            }
+            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $true; files = $list })
+            continue
+        }
+        elseif ($pathPart -eq '/__gitremote' -and $method -eq 'GET') {
+            $git = Get-GitExe
+            $dir = $query['dir']
+            if (-not $git -or -not $dir -or -not (Test-Path -LiteralPath $dir)) { Send-Json $stream '200 OK' @{ ok = $false; error = 'bad dir/git' }; continue }
+            $url = Invoke-Git $git @('-C', $dir, 'remote', 'get-url', 'origin')
+            $br = Invoke-Git $git @('-C', $dir, 'rev-parse', '--abbrev-ref', 'HEAD')
+            $brName = ''
+            if ($br.code -eq 0 -and $br.text.Trim() -and $br.text.Trim() -notmatch 'fatal|error') { $brName = $br.text.Trim() }
+            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = ($url.code -eq 0); url = $url.text.Trim(); branch = $brName })
+            continue
+        }
+        elseif ($pathPart -eq '/__gitsetremote' -and $method -eq 'POST') {
+            $git = Get-GitExe
+            $dir = $query['dir']
+            $url = $query['url']
+            if (-not $git -or -not $dir -or -not (Test-Path -LiteralPath $dir)) { Send-Json $stream '200 OK' @{ ok = $false; error = 'bad dir/git' }; continue }
+            if (-not $url -or $url -notmatch '^(https?://|git@|ssh://)') { Send-Json $stream '200 OK' @{ ok = $false; error = 'only https/ssh url allowed' }; continue }
+            $set = Invoke-Git $git @('-C', $dir, 'remote', 'set-url', 'origin', $url)
+            if ($set.code -ne 0) {
+                # origin 不存在时直接添加
+                $set = Invoke-Git $git @('-C', $dir, 'remote', 'add', 'origin', $url)
+            }
+            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = ($set.code -eq 0); log = $set.text })
+            continue
+        }
         elseif ($pathPart -eq '/__gitinfo') {
             $git = Get-GitExe
             if (-not $git) { Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $false; installed = $false }) ; continue }
@@ -277,8 +411,34 @@ while ($true) {
                     } catch { $syncText = "同步模组文件失败：" + $_.Exception.Message + "`n" }
                 }
 
-                $addR = Invoke-Git $git @('-C', $dir, 'add', '-A')
-                $commitR = Invoke-Git $git @('-C', $dir, '-c', ('user.name=' + $name), '-c', ('user.email=' + $email), 'commit', '-m', $msg)
+                # 支持只暂存选中的文件（files = 换行分隔的相对路径）
+                $only = $query['files']
+                $addText = ''
+                if ($null -ne $only -and $only.Trim()) {
+                    $paths = @($only -split "`n" | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+                    $chunk = @()
+                    foreach ($p in $paths) {
+                        $chunk += $p
+                        if ($chunk.Count -ge 80) {
+                            $r0 = Invoke-Git $git (@('-C', $dir, 'add', '-A', '--') + $chunk)
+                            $addText += $r0.text
+                            $chunk = @()
+                        }
+                    }
+                    if ($chunk.Count -gt 0) {
+                        $r0 = Invoke-Git $git (@('-C', $dir, 'add', '-A', '--') + $chunk)
+                        $addText += $r0.text
+                    }
+                    $addR = [pscustomobject]@{ code = 0; text = ($addText + "已选择 " + $paths.Count + " 个文件`n") }
+                } else {
+                    $addR = Invoke-Git $git @('-C', $dir, 'add', '-A')
+                }
+                $bodyTxt = $query['body']
+                if ($bodyTxt -and $bodyTxt.Trim()) {
+                    $commitR = Invoke-Git $git @('-C', $dir, '-c', ('user.name=' + $name), '-c', ('user.email=' + $email), 'commit', '-m', $msg, '-m', $bodyTxt)
+                } else {
+                    $commitR = Invoke-Git $git @('-C', $dir, '-c', ('user.name=' + $name), '-c', ('user.email=' + $email), 'commit', '-m', $msg)
+                }
 
                 # 先看远端有没有新提交：落后就要求先拉取，避免 non-fast-forward
                 $null = Invoke-Git $git @('-C', $dir, 'fetch', 'origin', '--quiet')
@@ -321,6 +481,12 @@ while ($true) {
                     $switchBack = $true
                 }
 
+                $commitTxt = [string]$commitR.text
+                if ($commitR.code -ne 0 -and ($commitTxt -match 'nothing to commit|no changes added|nothing added')) {
+                    $text = ($syncText + $addR.text + $commitTxt + "选中的文件没有产生任何改动（可能路径不匹配或已被忽略）。")
+                    Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $false; hint = 'nothing-staged'; commitCode = $commitR.code; pushCode = -1; log = $text })
+                    continue
+                }
                 $pushR = Invoke-Git $git @('-C', $dir, 'push', '-u', 'origin', $branch)
                 $text = ($syncText + $addR.text + $commitR.text + $switchText + $pushR.text)
                 $ok = ($pushR.code -eq 0)
