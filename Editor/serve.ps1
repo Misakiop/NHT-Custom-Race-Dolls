@@ -464,7 +464,7 @@ while ($true) {
                     $didFetch = $false
                 }
                 $behindR = Invoke-Git $git @('-C', $dir, 'rev-list', '--count', ('HEAD..origin/' + $branch))
-                $aheadR = Invoke-Git $git @('-C', $dir, 'rev-list', '--count', ('origin/' + $chkBranch + '..HEAD'))
+                $aheadR = Invoke-Git $git @('-C', $dir, 'rev-list', '--count', ('origin/' + $branch + '..HEAD'))
                 $behind = 0; $ahead = 0
                 [int]::TryParse($behindR.text.Trim(), [ref]$behind) | Out-Null
                 [int]::TryParse($aheadR.text.Trim(), [ref]$ahead) | Out-Null

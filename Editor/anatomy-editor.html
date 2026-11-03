@@ -1779,7 +1779,7 @@ body.is-preview #stage{cursor:not-allowed}
       <span class="vsep"></span>
       <button class="btn btn--ghost" data-act="history" title="查看最近 5 份本地保存历史，可挑一份载入"><svg><use href="#i-undo"/></svg>历史</button>
       <button class="btn btn--ghost" data-act="save" title="保存**全部画布**与素材清单到项目文件 nht-project.js（html 同目录），不是只存当前画布。Ctrl+S"><svg><use href="#i-save"/></svg>本地保存（全部画布）</button>
-      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-04 03:30</span>
+      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-04 03:44</span>
             <span class="notif" id="notifWrap">
         <button class="iconbtn notif__btn" data-act="notif-toggle" id="notifBtn" title="Git 更新通知：点「收到」后不再弹出，仓库有新的 Push 会再次提醒">
           <svg class="notif__ico"><use href="#i-bell"/></svg>
@@ -6564,6 +6564,7 @@ function resetHairFit() {
    RENDER: patch pane
    ========================================================================== */
 function renderPatch() {
+  { const old0 = document.getElementById('gitPrefixMenu'); if (old0 && old0.parentElement === document.body) old0.remove(); }
   const pane = $('#panePatch');
   const issues = validateAll();
   const errs = issues.filter(i => i.lv === 'error').length;
@@ -7272,6 +7273,7 @@ function pushDialogHTML() {
         <code>*.bak</code> 备份、<code>Editor/body-map.json</code> 都是「个人本地数据」—— 传到仓库会把别人拉下来的数据覆盖掉，所以默认锁住，
         需要时你可以手动解锁。
       </p>
+      ${PUSH_STATE.aheadOnly ? `<p class="mini-note" style="margin:0 0 8px;color:#ffd08a">本次没有新的文件改动，只推送本地已有的 <b>${PUSH_STATE.aheadCount || 0}</b> 个未推送提交。</p>` : ''}
       <div class="pushtree" id="pushTree">${PUSH_STATE.tree.children.map(c => pushRow(c, 0, false)).join('')}</div>
       <div class="pushtools">
         <button class="btn btn--sm" data-act="push-all">全选</button>
@@ -7288,7 +7290,7 @@ function pushDialogHTML() {
     </div>
     <div class="modal__foot">
       <button class="btn btn--danger" data-act="push-cancel">取消</button>
-      <button class="btn btn--multi" data-act="push-go" id="pushGoBtn" ${sel ? '' : 'disabled'}>推送 ${sel} 个文件</button>
+      <button class="btn btn--multi" data-act="push-go" id="pushGoBtn" ${(sel || PUSH_STATE.aheadOnly) ? '' : 'disabled'}>${PUSH_STATE.aheadOnly ? '推送本地提交' : ('推送 ' + sel + ' 个文件')}</button>
     </div>`;
 }
 
@@ -7327,7 +7329,25 @@ async function gitOpenPushDialog() {
     const r = await fetch('/__gitchanges?dir=' + encodeURIComponent(g.dir) + '&sync=' + syncQ, { cache: 'no-store' });
     const j = await r.json();
     if (!j || !j.ok) { toast('读取本地更改失败：' + ((j && j.error) || '未知错误'), true); return; }
-    if (!j.files || !j.files.length) { toast('没有需要推送的更改'); return; }
+    if (!j.files || !j.files.length) {
+      // 没有新改动：如果本地还有没推的提交（比如上次推送失败），仍然允许推送
+      let ahead = 0;
+      try {
+        const st = await (await fetch('/__git?dir=' + encodeURIComponent(ensureGitSettings().dir) +
+          '&branch=' + encodeURIComponent(ensureGitSettings().branch || 'main'), { cache: 'no-store' })).json();
+        if (st && st.ok) { gitState.status = st; ahead = Number(st.ahead) || 0; }
+      } catch (e) { }
+      if (!ahead) { toast('没有需要推送的更改'); return; }
+      PUSH_STATE.aheadOnly = true;
+      PUSH_STATE.aheadCount = ahead;
+      PUSH_STATE.lockedCount = 0;
+      PUSH_STATE.lockedNames = [];
+      PUSH_STATE.files = [];
+      PUSH_STATE.tree = buildPushTree([]);
+      renderPushDialog();
+      return;
+    }
+    PUSH_STATE.aheadOnly = false;
     const allFiles = j.files || [];
     const shown = allFiles.filter(f => !pushIsDefaultLocked(f.path));
     PUSH_STATE.lockedCount = allFiles.length - shown.length;
@@ -7352,7 +7372,7 @@ async function gitPushNow() {
   if (!gitValid()) return;
   const g = ensureGitSettings();
   const files = pushCollect(PUSH_STATE.tree, []);
-  if (!files.length) { toast('没有选中任何文件', true); return; }
+  if (!files.length && !PUSH_STATE.aheadOnly) { toast('没有选中任何文件', true); return; }
   const message = (PUSH_STATE.msg || '').trim() || 'Update from NHT editor';
   if (!GIT_PUSH_AUTORETRY) { /* 第一次进入：允许一次自动重试 */ }
   gitState.busy = true;
@@ -7380,7 +7400,7 @@ async function gitPushNow() {
       await gitRefresh();                      // 立刻刷新「未推送 / 已同步」
       try { renderPatch(); } catch (e) { }      // 右侧区块重画
       try { gmkCheckNew(); } catch (e) { }      // 书签检查新版本
-      toast('已推送 ' + files.length + ' 个文件并同步状态：' + message);
+      toast(files.length ? ('已推送 ' + files.length + ' 个文件并同步状态：' + message) : ('已推送本地未推送的提交：' + message));
     } else if (j && j.hint === 'nothing-staged') {
       gitFlash(false, 'push');
       gitLog('Push 失败：没有改动', (j.log || ''));
@@ -11803,13 +11823,26 @@ document.addEventListener('click', e => {
     }
     case 'git-prefix-menu': {
       const m = document.getElementById('gitPrefixMenu');
-      if (m) m.hidden = !m.hidden;
+      if (!m) break;
+      if (!m.hidden) { m.hidden = true; break; }
+      // 面板里有 overflow:hidden，会把绝对定位的菜单裁掉 → 挂到 body 上做成浮层
+      if (m.parentElement !== document.body) document.body.appendChild(m);
+      const btn = document.querySelector('#gitPrefixSel .gitsel__btn');
+      const r = btn ? btn.getBoundingClientRect() : { left: 8, bottom: 8 };
+      m.style.position = 'fixed';
+      m.style.left = Math.max(8, Math.min(r.left, innerWidth - 210)) + 'px';
+      m.style.top = Math.min(r.bottom + 5, innerHeight - 220) + 'px';
+      m.style.zIndex = '220000';
+      m.style.minWidth = '190px';
+      m.hidden = false;
       break;
     }
     case 'git-prefix-set': {
       const m = document.getElementById('gitPrefixMenu');
       if (m) m.hidden = true;
       gitApplyPrefix(el.dataset.prefix || '');
+      // 重画右栏，让“分支开头”按钮文字和分支输入框立刻跟着变
+      try { renderPatch(); } catch (err) { }
       renderGitUI();
       gitRefresh();
       break;
