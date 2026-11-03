@@ -1081,7 +1081,7 @@ kbd{
 .harwarn{width:300px;max-width:calc(100% - 24px);max-height:min(380px,calc(100% - 96px));overflow:auto;line-height:1.55}
 .harwarn__b{word-break:break-word}
 /* 问号气泡 */
-.qpop{position:fixed;z-index:60000;width:min(300px,calc(100vw - 24px));max-height:min(320px,60vh);overflow:auto;
+.qpop{white-space:pre-line;position:fixed;z-index:60000;width:min(300px,calc(100vw - 24px));max-height:min(320px,60vh);overflow:auto;
   padding:8px 10px;border-radius:8px;font-size:11.5px;line-height:1.6;color:#dfe6e9;
   background:rgba(20,25,28,.98);border:1px solid rgba(227,181,88,.45);box-shadow:0 10px 30px rgba(0,0,0,.55);
   white-space:pre-wrap;word-break:break-word;pointer-events:none}
@@ -1475,10 +1475,10 @@ html,body{overflow-anchor:none}
 .gitstat--two{grid-template-columns:repeat(2,1fr) !important}
 
 /* REPO 状态一行三列：左 / 中 / 右 */
-.gitstat--three{display:grid !important;grid-template-columns:1fr 1fr 1fr;align-items:center;gap:4px;text-align:left}
+.gitstat--three{display:grid !important;grid-template-columns:auto auto minmax(0,1fr);align-items:center;gap:6px;text-align:left}
 .gitstat--three > span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gitstat--three .st-mid{text-align:center}
-.gitstat--three .st-right{text-align:right}
+.gitstat--three .st-right{text-align:right;white-space:nowrap;overflow:visible}
 /* 同步日志标题行：文字 + 右侧工具按钮 */
 .gitlog summary{display:flex;align-items:center;gap:6px;cursor:pointer;list-style:none}
 .gitlog summary::-webkit-details-marker{display:none}
@@ -1756,7 +1756,7 @@ body.is-preview #stage{cursor:not-allowed}
       <span class="vsep"></span>
       <button class="btn btn--ghost" data-act="history" title="查看最近 5 份本地保存历史，可挑一份载入"><svg><use href="#i-undo"/></svg>历史</button>
       <button class="btn btn--ghost" data-act="save" title="保存**全部画布**与素材清单到项目文件 nht-project.js（html 同目录），不是只存当前画布。Ctrl+S"><svg><use href="#i-save"/></svg>本地保存（全部画布）</button>
-      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-03 20:24</span>
+      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-03 20:45</span>
             <span class="notif" id="notifWrap">
         <button class="iconbtn notif__btn" data-act="notif-toggle" id="notifBtn" title="Git 更新通知：点「收到」后不再弹出，仓库有新的 Push 会再次提醒">
           <svg class="notif__ico"><use href="#i-bell"/></svg>
@@ -6535,9 +6535,9 @@ function renderPatch() {
           title="${gitBranchBad(ensureGitSettings().branch) ? '不能直接推 main，请换成自己的分支' : '推送 / 拉取使用的分支（会自动在远端创建）'}">
       </div>
       <div class="gitstat gitstat--three">
-        <span class="st-left" data-tip="本地仓库里还没推送到 GitHub 的提交数（不是文件数）">未推送 <b id="gitAhead">${(gitState.status && gitState.status.ahead) || 0}</b></span>
+        <span class="st-left" data-tip="未推送 = 还没推的提交 ${gitPendingCount().commits} 个 + 未提交的可推送文件 ${gitPendingCount().files} 个（默认锁定的文件不计入）">未推送 <b id="gitAhead">${gitPendingCount().total}</b></span>
         <span class="st-mid" data-tip="GitHub 上还没拉到本地的提交数（不是文件数）">未拉取 <b id="gitBehind">${(gitState.status && gitState.status.behind) || 0}</b></span>
-        <span class="st-right gitstate is-${gitState.stateOk === true ? 'ok' : (gitState.stateOk === false ? 'fail' : 'idle')}" id="gitLastFetch">${esc(gitState.stateText || '未同步')}</span>
+        <span class="st-right gitstate is-${gitState.stateOk === true ? 'ok' : (gitState.stateOk === false ? 'fail' : 'idle')}" id="gitLastFetch" data-tip="${esc(gitStateTip())}">${esc(gitState.stateText || '未同步')}</span>
       </div>
       <details class="gitlog" id="gitLogBox"${gitState.logs.length ? ' open' : ''}>
         <summary title="推送 / 拉取 / 测试连接的完整输出，失败原因都在这里"><span>同步日志（${gitState.logs.length}）</span>
@@ -6827,19 +6827,27 @@ function renderRepoGear() {
     : 'Git 设置有问题：' + (st.isDefaultDir ? '还在用默认仓库目录；' : '') + (st.badBranch ? '分支不能是 main；' : '') + (!st.okStatus ? '无法连接仓库。' : '');
 }
 
-async function gitRefresh() {
+async function gitRefresh(fetchRemote) {
   const g = ensureGitSettings();
   if (!LOCAL_HTTP) { gitState.note = '需要本地服务'; return; }
+  if (!gitState.remote) { try { await gitLoadRemote(); } catch (e) { } }
   try {
-    const r = await fetch('/__git?dir=' + encodeURIComponent(g.dir) + '&branch=' + encodeURIComponent(g.branch || 'main'), { cache: 'no-store' });
+    const extra = fetchRemote ? '&fetch=1' : '';
+    const r = await fetch('/__git?dir=' + encodeURIComponent(g.dir) + '&branch=' + encodeURIComponent(g.branch || 'main') + extra, { cache: 'no-store' });
     const j = await r.json();
     if (j && j.ok) {
       gitState.status = j;
       const t = new Date();
       const hh = String(t.getHours()).padStart(2, '0'), mm = String(t.getMinutes()).padStart(2, '0'), ss = String(t.getSeconds()).padStart(2, '0');
-      gitState.stateText = `已同步 ${hh}:${mm}:${ss}`;
-      gitState.stateDetail = '分支 ' + (j.branch || '') + ' · 待推送 ' + (j.ahead || 0) + ' · 待拉取 ' + (j.behind || 0);
+      gitState.stateText = (j.fetched ? `已同步 ${hh}:${mm}` : `已读取本地 ${hh}:${mm}`);
+      gitState.stateDetail = '';
       gitState.stateOk = true;
+      if (j.fetchNote) gitState.note = j.fetchNote;
+      if (j.fetching) {
+        // 后台 fetch：几秒后再读一次本地引用，页面本身完全不被阻塞
+        clearTimeout(window.__gitFetchPoll);
+        window.__gitFetchPoll = setTimeout(() => { try { gitRefresh(false); } catch (e) { } }, 7000);
+      }
       gitNotifyNewCommits(j);
     } else {
       gitState.status = null;
@@ -6861,6 +6869,41 @@ async function gitRefresh() {
   renderGitUI();
 }
 
+
+/* 未推送计数：提交数 + 未提交且未被默认锁定的文件数 */
+function gitPendingCount() {
+  const st = gitState.status || {};
+  const commits = st.ahead || 0;
+  const unlocked = (st.dirty || []).filter(p => !pushIsDefaultLocked(String(p).replace(/\\/g, '/')));
+  return { commits: commits, files: unlocked.length, total: commits + unlocked.length };
+}
+
+
+/* 状态气泡：当前仓库的完整参数（多行显示） */
+function gitStateTip() {
+  const st = gitState.status || null;
+  const g = ensureGitSettings();
+  const remote = (gitState.remote && gitState.remote.url) || '（未读取）';
+  const pend = gitPendingCount();
+  const L = [];
+  L.push('状态：' + (gitState.stateText || '未同步'));
+  if (st) {
+    L.push('分支：' + (st.branch || g.branch || '-'));
+    L.push('待推送：' + pend.total + '（提交 ' + pend.commits + ' + 未提交文件 ' + pend.files + '）');
+    L.push('待拉取：' + (st.behind || 0) + ' 个提交');
+    L.push('本地提交：' + ((st.commits || []).length) + ' 条记录');
+    if (st.fetched) L.push('远端检测：刚刚成功联网');
+    else if (st.fetching) L.push('远端检测：后台进行中…');
+    else if (st.fetchNote) L.push('远端检测：' + st.fetchNote);
+    else L.push('远端检测：未联网（只读本地）');
+  } else {
+    L.push('仓库：读不到（' + (gitState.stateDetail || '可能未设置目录') + '）');
+  }
+  L.push('远程仓库：' + remote);
+  L.push('本机仓库：' + (g.dir || '（未设置）'));
+  return L.join('\n');
+}
+
 function renderGitUI() {
   const st = gitState.status;
   const brInp = document.getElementById('gitBranchInput');
@@ -6877,14 +6920,20 @@ function renderGitUI() {
     tag.style.color = (st && st.behind) ? '#7ef0d4' : '';
   }
   const ahead = document.getElementById('gitAhead');
-  if (ahead) ahead.textContent = (st && st.ahead) || 0;
+  if (ahead) {
+    const pend = gitPendingCount();
+    ahead.textContent = pend.total;
+    const wrap = ahead.parentElement;
+    if (wrap) wrap.setAttribute('data-tip',
+      '未推送 = 还没推的提交 ' + pend.commits + ' 个 + 未提交的可推送文件 ' + pend.files + ' 个（默认锁定的文件不计入）');
+  }
   const behind = document.getElementById('gitBehind');
   if (behind) behind.textContent = (st && st.behind) || 0;
   const note = document.getElementById('gitLastFetch');
   if (note) {
     note.textContent = gitState.stateText || '未同步';
     note.className = 'gitstate st-right ' + (gitState.stateOk === true ? 'is-ok' : (gitState.stateOk === false ? 'is-fail' : 'is-idle'));
-    if (gitState.stateDetail) note.setAttribute('data-tip', gitState.stateDetail); else note.removeAttribute('data-tip');
+    note.setAttribute('data-tip', gitStateTip());
   }
   const pull = document.getElementById('gitPullBtn');
   if (pull) {
@@ -7247,6 +7296,12 @@ async function gitPushNow() {
     } else {
       gitFlash(false, 'push');
       const failLog = String((j && (j.log || j.error)) || '');
+      if (/网络超时/.test(failLog)) {
+        gitLog('Push 超时', failLog);
+        toast('推送超时：连不上远端（网络 / 代理问题），已中止，不会卡住页面', true);
+        await gitRefresh();
+        gitFlash(false, 'push');
+      } else
       gitLog('Push 失败', failLog || '未知错误');
       if (/Repository not found|repository .* not found|does not appear to be a git repository|This repository moved|redirect/i.test(failLog)) {
         toast('推送失败：远程地址可能已改名 / 迁移 —— 到「设置 → Git → 远程仓库」点齿轮改地址', true);
@@ -7291,8 +7346,10 @@ async function gitDoPull() {
       toast('已拉取仓库更新');
     } else {
       gitFlash(false, 'pull');
-      gitLog('拉取失败', (j && (j.log || j.error)) || '未知错误');
-      toast('拉取失败，展开「同步日志」看原因', true);
+      const pl = String((j && (j.log || j.error)) || '未知错误');
+      gitLog('拉取失败', pl);
+      if (/网络超时/.test(pl)) toast('拉取超时：连不上远端（网络 / 代理问题），已中止，页面其他操作不受影响', true);
+      else toast('拉取失败，展开「同步日志」看原因', true);
     }
   } catch (e) {
     gitFlash(false, 'pull');
@@ -11243,7 +11300,7 @@ document.addEventListener('click', e => {
     }); break;
     case 'git-open-folder': gitRefresh().then(() => { refreshSettingsInPlace(); toast(gitState.status ? ('分支 ' + gitState.status.branch + ' · 待推送 ' + (gitState.status.ahead || 0) + ' · 待拉取 ' + (gitState.status.behind || 0)) : '还没有连接成功', !gitState.status); }); break;
 
-    case 'git-sync-now': e.stopPropagation(); gitRefresh().then(() => { toast(gitState.status ? '已同步仓库状态' : '同步失败，看下方日志', !gitState.status); }); break;
+    case 'git-sync-now': e.stopPropagation(); toast('正在连接远端检查…'); gitRefresh(true).then(() => { toast(gitState.status ? '已同步仓库状态' : '同步失败，看下方日志', !gitState.status); }); break;
 
     case 'git-prefix': {
       const sel = el;
