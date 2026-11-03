@@ -64,13 +64,6 @@ Source/                C# 源码 + build.ps1
 
 - 目前在 **1.7** 环境下测试通过；
 
-## 重新编译 DLL
-
-```powershell
-powershell -ExecutionPolicy Bypass -File Source\build.ps1
-```
-
-然后完全退出游戏，双击 `Editor\安装新DLL.bat`（游戏运行时 DLL 被占用会写入失败）。
 
 ## 授权
 
