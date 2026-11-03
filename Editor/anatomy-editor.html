@@ -1776,7 +1776,7 @@ body.is-preview #stage{cursor:not-allowed}
       <span class="vsep"></span>
       <button class="btn btn--ghost" data-act="history" title="查看最近 5 份本地保存历史，可挑一份载入"><svg><use href="#i-undo"/></svg>历史</button>
       <button class="btn btn--ghost" data-act="save" title="保存**全部画布**与素材清单到项目文件 nht-project.js（html 同目录），不是只存当前画布。Ctrl+S"><svg><use href="#i-save"/></svg>本地保存（全部画布）</button>
-      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-04 03:06</span>
+      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-04 03:14</span>
             <span class="notif" id="notifWrap">
         <button class="iconbtn notif__btn" data-act="notif-toggle" id="notifBtn" title="Git 更新通知：点「收到」后不再弹出，仓库有新的 Push 会再次提醒">
           <svg class="notif__ico"><use href="#i-bell"/></svg>
@@ -6908,6 +6908,10 @@ async function gitRefresh(fetchRemote) {
     const r = await fetch('/__git?dir=' + encodeURIComponent(g.dir) + '&branch=' + encodeURIComponent(g.branch || 'main') + extra, { cache: 'no-store' });
     const j = await r.json();
     if (j && j.ok) {
+      if (gitState.pushGuardUntil && Date.now() < gitState.pushGuardUntil && Number(j.behind) > 0) {
+        j.behind = 0;                     // 保护期内：这个“落后”基本都是刚 push 上去的提交
+        j.ahead = Math.max(0, Number(j.ahead) || 0);
+      }
       gitState.status = j;
       const t = new Date();
       const hh = String(t.getHours()).padStart(2, '0'), mm = String(t.getMinutes()).padStart(2, '0'), ss = String(t.getSeconds()).padStart(2, '0');
@@ -7356,6 +7360,7 @@ async function gitPushNow() {
       gitFlash(true, 'push');
       gitLog('Push 成功', (j.log || '').trim() || '已推送');
       closeModal();
+      gitState.pushGuardUntil = Date.now() + 6000;   // 刚推完：短暂忽略“落后”判定，避免自己刚推的提交被当成新提交
       await gitRefresh();                      // 立刻刷新「未推送 / 已同步」
       try { renderPatch(); } catch (e) { }      // 右侧区块重画
       try { gmkCheckNew(); } catch (e) { }      // 书签检查新版本

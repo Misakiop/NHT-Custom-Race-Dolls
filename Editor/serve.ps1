@@ -579,16 +579,6 @@ while ($true) {
                             continue
                         }
                     }
-                } elseif ($hasRemote) {
-                    # 目标分支已存在且有本地没有的提交 → 直接覆盖会被拒绝，先讲清楚
-                    $behindT = Invoke-Git $git @('-C', $dir, 'rev-list', '--count', ('HEAD..origin/' + $branch))
-                    $bt = 0
-                    [int]::TryParse($behindT.text.Trim(), [ref]$bt) | Out-Null
-                    if ($bt -gt 0) {
-                        $text = ($syncText + $addR.text + $commitR.text + "分支「" + $branch + "」上有 $bt 个本地没有的提交，不能直接覆盖。`n把设置里的分支改成当前分支（" + $cur + "）再推送，或先切到该分支拉取。")
-                        Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $false; hint = 'target-diverged'; branch = $branch; behind = $bt; commitCode = $commitR.code; pushCode = -1; log = $text })
-                        continue
-                    }
                 }
 
                 if ($sameBranch) {
@@ -599,6 +589,11 @@ while ($true) {
                 }
                 $text = ($syncText + $addR.text + $commitR.text + $switchText + $pushR.text)
                 $ok = ($pushR.code -eq 0)
+                if (-not $ok -and ($pushR.text -match 'non-fast-forward|fetch first|rejected')) {
+                    $text = $text + ("`n分支「" + $branch + "」上有本地没有的提交，git 拒绝了覆盖。`n把设置里的分支改成当前分支（" + $cur + "）再推送，或先切到该分支拉取。")
+                    Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $false; hint = 'target-diverged'; branch = $branch; commitCode = $commitR.code; pushCode = $pushR.code; log = $text })
+                    continue
+                }
 
                 Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $ok; commitCode = $commitR.code; pushCode = $pushR.code; log = $text })
                 continue
