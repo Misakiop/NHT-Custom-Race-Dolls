@@ -491,7 +491,7 @@ while ($true) {
                 $syncText = ''
                 if ($query['sync'] -eq '1') {
                     try {
-                        $rc = & robocopy $ModRoot $dir /E /XD .git .vs bin obj /XF *.bak *.bak.* /NFL /NDL /NJH /NJS /NP 2>&1
+                        $rc = & robocopy $ModRoot $dir /E /XD .git .vs bin obj Editor\history Editor\assets /XF *.bak *.bak.* /NFL /NDL /NJH /NJS /NP 2>&1
                         $syncText = "已同步模组文件到仓库目录（robocopy 退出码 " + $LASTEXITCODE + "）`n"
                     } catch { $syncText = "同步模组文件失败：" + $_.Exception.Message + "`n" }
                 }
