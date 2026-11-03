@@ -609,19 +609,21 @@ while ($true) {
                 $mode = 'ff'
                 $log = $fetchR.text + $pullR.text
                 if ($pullR.code -ne 0 -and ($pullR.text -match 'Not possible to fast-forward|diverging|diverged')) {
-                    # 本地和远端分叉：先把本地提交变基到远端（保留双方提交，历史线性）
-                    $reb = Invoke-GitNet $git @('-C', $dir, 'pull', '--rebase', '--autostash', 'origin', $branch) 25
-                    $log = $log + "`n—— 检测到分叉，改用 rebase ——`n" + $reb.text
-                    if ($reb.code -eq 0) {
-                        $mode = 'rebase'
-                        $pullR = $reb
+                    # 分叉：先「以本地为准」合并（单人/多机时远端多半是旧的同一批编辑器文件）
+                    $mrg = Invoke-GitNet $git @('-C', $dir, 'merge', '--no-ff', '--no-edit', '-X', 'ours', 'origin/' + $branch) 25
+                    $log = $log + "`n—— 检测到分叉，改用「以本地为准」合并 ——`n" + $mrg.text
+                    if ($mrg.code -eq 0) {
+                        $mode = 'merge-ours'
+                        $pullR = $mrg
                     } else {
-                        $null = Invoke-Git $git @('-C', $dir, 'rebase', '--abort')
-                        # rebase 冲突：退回合并提交
-                        $mrg = Invoke-GitNet $git @('-C', $dir, 'pull', '--no-rebase', '--no-ff', '--no-edit', 'origin', $branch) 25
-                        $log = $log + "`n—— rebase 未成功，改用 merge ——`n" + $mrg.text
-                        if ($mrg.code -eq 0) { $mode = 'merge'; $pullR = $mrg }
-                        else { $null = Invoke-Git $git @('-C', $dir, 'merge', '--abort'); $log = $log + "`n合并也失败，仓库保持原样（没有半途状态）。" }
+                        $null = Invoke-Git $git @('-C', $dir, 'merge', '--abort')
+                        $mrg2 = Invoke-GitNet $git @('-C', $dir, 'merge', '--no-ff', '--no-edit', 'origin/' + $branch) 25
+                        $log = $log + "`n—— 普通合并 ——`n" + $mrg2.text
+                        if ($mrg2.code -eq 0) { $mode = 'merge'; $pullR = $mrg2 }
+                        else {
+                            $null = Invoke-Git $git @('-C', $dir, 'merge', '--abort')
+                            $log = $log + "`n合并失败，仓库已恢复到拉取前的状态。"
+                        }
                     }
                 }
                 Send-Json $stream '200 OK' ([pscustomobject]@{ ok = ($pullR.code -eq 0); mode = $mode; log = $log })
