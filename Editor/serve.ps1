@@ -461,7 +461,7 @@ while ($true) {
                     $didFetch = $false
                 }
                 $behindR = Invoke-Git $git @('-C', $dir, 'rev-list', '--count', ('HEAD..origin/' + $branch))
-                $aheadR = Invoke-Git $git @('-C', $dir, 'rev-list', '--count', ('origin/' + $branch + '..HEAD'))
+                $aheadR = Invoke-Git $git @('-C', $dir, 'rev-list', '--count', ('origin/' + $chkBranch + '..HEAD'))
                 $behind = 0; $ahead = 0
                 [int]::TryParse($behindR.text.Trim(), [ref]$behind) | Out-Null
                 [int]::TryParse($aheadR.text.Trim(), [ref]$ahead) | Out-Null
@@ -544,61 +544,62 @@ while ($true) {
                     $commitR = Invoke-Git $git @('-C', $dir, '-c', ('user.name=' + $name), '-c', ('user.email=' + $email), 'commit', '-m', $msg)
                 }
 
-                # 先看远端有没有新提交：落后就要求先拉取，避免 non-fast-forward
-                $null = Invoke-GitNet $git @('-C', $dir, 'fetch', 'origin', '--quiet') 8
-                $behindR = Invoke-Git $git @('-C', $dir, 'rev-list', '--count', ('HEAD..origin/' + $branch))
-                $behind = 0
-                [int]::TryParse($behindR.text.Trim(), [ref]$behind) | Out-Null
-                if ($behind -gt 0) {
-                    $aheadR = Invoke-Git $git @('-C', $dir, 'rev-list', '--count', ('origin/' + $branch + '..HEAD'))
-                    $ahead = 0
-                    [int]::TryParse($aheadR.text.Trim(), [ref]$ahead) | Out-Null
-                    if ($ahead -eq 0) {
-                        # 只是落后：直接快进，然后继续推送，用户不用手动点拉取
-                        $ffR = Invoke-GitNet $git @('-C', $dir, 'pull', '--ff-only', 'origin', $branch) 20
-                        if ($ffR.code -eq 0) {
-                            $behind = 0
-                        } else {
-                            $text = ($syncText + $addR.text + $commitR.text + $ffR.text + "自动快进失败，请手动点「拉取远端」。")
-                            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $false; hint = 'pull-first'; behind = $behind; commitCode = $commitR.code; pushCode = -1; log = $text })
-                            continue
-                        }
-                    } else {
-                        $text = ($syncText + $addR.text + $commitR.text + "本地和远端都有新提交（本地领先 $ahead / 落后 $behind），已阻止推送。`n请先点「拉取远端」合并后再推送。")
-                        Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $false; hint = 'diverged'; behind = $behind; ahead = $ahead; commitCode = $commitR.code; pushCode = -1; log = $text })
-                        continue
-                    }
-                }
-
-                # 请求的分支和当前本地分支不同 → 从当前 HEAD 建一个同名分支推上去，推完切回
+                # ---- 目标分支 = 设置里的 branch；当前分支只决定推送方式 ----
                 $curR = Invoke-Git $git @('-C', $dir, 'rev-parse', '--abbrev-ref', 'HEAD')
                 $cur = $curR.text.Trim()
-                $switchBack = $false
+                $sameBranch = [bool]($cur -and $cur -eq $branch)
                 $switchText = ''
-                if ($cur -and $cur -ne $branch) {
-                    $coR = Invoke-Git $git @('-C', $dir, 'checkout', '-B', $branch)
-                    $switchText = $coR.text
-                    if ($coR.code -ne 0) {
-                        Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $false; hint = 'branch-switch'; commitCode = $commitR.code; pushCode = -1; log = ($syncText + $addR.text + $commitR.text + $switchText) })
-                        continue
-                    }
-                    $switchBack = $true
+                if (-not $sameBranch -and $cur) {
+                    $switchText = ("推送到分支：" + $branch + "（本地当前是 " + $cur + "，用 HEAD:" + $branch + " 推送）`n")
                 }
 
-                $commitTxt = [string]$commitR.text
-                if ($commitR.code -ne 0 -and ($commitTxt -match 'nothing to commit|no changes added|nothing added')) {
-                    $text = ($syncText + $addR.text + $commitTxt + "选中的文件没有产生任何改动（可能路径不匹配或已被忽略）。")
-                    Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $false; hint = 'nothing-staged'; commitCode = $commitR.code; pushCode = -1; log = $text })
-                    continue
+                $null = Invoke-GitNet $git @('-C', $dir, 'fetch', 'origin', '--quiet') 8
+                $hasRemoteR = Invoke-Git $git @('-C', $dir, 'rev-parse', '--verify', '--quiet', ('origin/' + $branch))
+                $hasRemote = ($hasRemoteR.code -eq 0)
+
+                if ($sameBranch) {
+                    $behindR = Invoke-Git $git @('-C', $dir, 'rev-list', '--count', ('HEAD..origin/' + $branch))
+                    $behind = 0
+                    [int]::TryParse($behindR.text.Trim(), [ref]$behind) | Out-Null
+                    if ($behind -gt 0) {
+                        $aheadR = Invoke-Git $git @('-C', $dir, 'rev-list', '--count', ('origin/' + $branch + '..HEAD'))
+                        $ahead = 0
+                        [int]::TryParse($aheadR.text.Trim(), [ref]$ahead) | Out-Null
+                        if ($ahead -eq 0) {
+                            $ffR = Invoke-GitNet $git @('-C', $dir, 'pull', '--ff-only', 'origin', $branch) 20
+                            if ($ffR.code -eq 0) { $behind = 0 }
+                            else {
+                                $text = ($syncText + $addR.text + $commitR.text + $ffR.text + "自动快进失败，请点「拉取远端」。")
+                                Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $false; hint = 'pull-first'; behind = $behind; commitCode = $commitR.code; pushCode = -1; log = $text })
+                                continue
+                            }
+                        } else {
+                            $text = ($syncText + $addR.text + $commitR.text + "本地和远端都有新提交（本地领先 $ahead / 落后 $behind），已阻止推送。`n请先点「拉取远端」合并后再推送。")
+                            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $false; hint = 'diverged'; behind = $behind; ahead = $ahead; commitCode = $commitR.code; pushCode = -1; log = $text })
+                            continue
+                        }
+                    }
+                } elseif ($hasRemote) {
+                    # 目标分支已存在且有本地没有的提交 → 直接覆盖会被拒绝，先讲清楚
+                    $behindT = Invoke-Git $git @('-C', $dir, 'rev-list', '--count', ('HEAD..origin/' + $branch))
+                    $bt = 0
+                    [int]::TryParse($behindT.text.Trim(), [ref]$bt) | Out-Null
+                    if ($bt -gt 0) {
+                        $text = ($syncText + $addR.text + $commitR.text + "分支「" + $branch + "」上有 $bt 个本地没有的提交，不能直接覆盖。`n把设置里的分支改成当前分支（" + $cur + "）再推送，或先切到该分支拉取。")
+                        Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $false; hint = 'target-diverged'; branch = $branch; behind = $bt; commitCode = $commitR.code; pushCode = -1; log = $text })
+                        continue
+                    }
                 }
-                $pushR = Invoke-GitNet $git @('-C', $dir, 'push', '-u', 'origin', $branch) 25
+
+                if ($sameBranch) {
+                    $pushR = Invoke-GitNet $git @('-C', $dir, 'push', '-u', 'origin', $branch) 25
+                } else {
+                    # 推到别的分支时不改本地分支的上游，否则下次状态会盯着那个分支
+                    $pushR = Invoke-GitNet $git @('-C', $dir, 'push', 'origin', ('HEAD:' + $branch)) 25
+                }
                 $text = ($syncText + $addR.text + $commitR.text + $switchText + $pushR.text)
                 $ok = ($pushR.code -eq 0)
 
-                if ($switchBack) {
-                    $backR = Invoke-Git $git @('-C', $dir, 'checkout', $cur, '--quiet')
-                    $text = $text + $backR.text
-                }
                 Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $ok; commitCode = $commitR.code; pushCode = $pushR.code; log = $text })
                 continue
             }

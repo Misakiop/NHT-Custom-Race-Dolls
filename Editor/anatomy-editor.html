@@ -1776,7 +1776,7 @@ body.is-preview #stage{cursor:not-allowed}
       <span class="vsep"></span>
       <button class="btn btn--ghost" data-act="history" title="查看最近 5 份本地保存历史，可挑一份载入"><svg><use href="#i-undo"/></svg>历史</button>
       <button class="btn btn--ghost" data-act="save" title="保存**全部画布**与素材清单到项目文件 nht-project.js（html 同目录），不是只存当前画布。Ctrl+S"><svg><use href="#i-save"/></svg>本地保存（全部画布）</button>
-      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-04 02:59</span>
+      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-04 03:06</span>
             <span class="notif" id="notifWrap">
         <button class="iconbtn notif__btn" data-act="notif-toggle" id="notifBtn" title="Git 更新通知：点「收到」后不再弹出，仓库有新的 Push 会再次提醒">
           <svg class="notif__ico"><use href="#i-bell"/></svg>
@@ -6811,6 +6811,7 @@ window.addEventListener('resize', () => {
 
 /* ---------------- Git 同步（本地服务提供 /__git* 接口） ---------------- */
 let gitState = { status: null, logs: [], note: '', stateText: '未同步', stateOk: null, info: null, remote: null, busy: false };
+let GIT_PUSH_AUTORETRY = false;
 const GIT_LOG_MAX = 20;
 
 function gitDefaults() {
@@ -7333,6 +7334,7 @@ async function gitPushNow() {
   const files = pushCollect(PUSH_STATE.tree, []);
   if (!files.length) { toast('没有选中任何文件', true); return; }
   const message = (PUSH_STATE.msg || '').trim() || 'Update from NHT editor';
+  if (!GIT_PUSH_AUTORETRY) { /* 第一次进入：允许一次自动重试 */ }
   gitState.busy = true;
   gitFlash(false);
   const goBtn = document.getElementById('pushGoBtn');
@@ -7364,14 +7366,30 @@ async function gitPushNow() {
       toast('选中的文件没有产生改动（可能路径不匹配/被忽略），已阻止推送空分支；刷新后重试', true);
       await gitRefresh();
       gitFlash(false, 'push');
-    } else if (j && j.hint === 'diverged') {
-      gitLog('Push 被阻止', ((j.log || '') + '\n本地领先 ' + (j.ahead || 0) + ' / 落后 ' + (j.behind || 0) + '，先拉取合并。').trim());
-      toast('本地和远端都有新提交：先点「拉取远端」合并后再推送', true);
-      await gitRefresh();
-      gitFlash(false, 'push');
-    } else if (j && j.hint === 'pull-first') {
-      gitLog('Push 被阻止', ((j.log || '') + '\n远端有 ' + (j.behind || '若干') + ' 个新提交，请先拉取。').trim());
-      toast('远端有 ' + (j.behind || '') + ' 个新提交：先点「拉取远端」再推送', true);
+    } else if (j && (j.hint === 'diverged' || j.hint === 'pull-first')) {
+      gitLog('Push 被阻止', (j.log || '').trim());
+      if (!GIT_PUSH_AUTORETRY) {
+        // 第一次遇到：自动拉取（服务端会 ff 或「以本地为准」合并），然后重试一次推送
+        GIT_PUSH_AUTORETRY = true;
+        toast('远端有更新，正在自动拉取后重试推送…');
+        const g2 = ensureGitSettings();
+        try {
+          const pr = await fetch('/__gitpull?dir=' + encodeURIComponent(g2.dir) + '&branch=' + encodeURIComponent(g2.branch || 'main'),
+            { cache: 'no-store', method: 'POST' });
+          const pj = await pr.json();
+          if (pj && pj.ok) {
+            gitLog('自动拉取完成', (pj.log || '').trim());
+            await gitRefresh();
+            gitFlash(false, 'push');
+            setTimeout(() => { try { gitPushNow(); } catch (e) { } }, 60);
+            return;
+          }
+          gitLog('自动拉取失败', (pj && (pj.log || pj.error)) || '未知错误');
+        } catch (e) {
+          gitLog('自动拉取失败', e && e.message);
+        }
+      }
+      toast('本地和远端都有新提交：拉取未能自动完成，请手动点「拉取远端」后再推送', true);
       await gitRefresh();
       gitFlash(false, 'push');
     } else {
