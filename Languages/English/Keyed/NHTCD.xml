@@ -14,4 +14,5 @@
   <NHTCD_BaseDolls>Base NHT bodies</NHTCD_BaseDolls>
   <NHTCD_BaseTag>(vanilla body)</NHTCD_BaseTag>
   <NHTCD_UseRacePatch>race patch</NHTCD_UseRacePatch>
+    <NHTCD_DrawAllHairLayers>Draw all hair layers (off by default: only one main hairstyle, avoids overlapping hair)</NHTCD_DrawAllHairLayers>
 </LanguageData>

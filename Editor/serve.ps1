@@ -398,6 +398,25 @@ while ($true) {
             Send-Json $stream '200 OK' ([pscustomobject]@{ ok = [bool]$picked; path = $picked })
             continue
         }
+        elseif ($pathPart -eq '/__self' -and $method -eq 'GET') {
+            $name = Split-Path -Leaf $ModRoot
+            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $true; name = $name; dir = $ModRoot; root = $Root })
+            continue
+        }
+        elseif ($pathPart -eq '/__about' -and $method -eq 'GET') {
+            $f = Join-Path $ModRoot 'About\About.xml'
+            if (Test-Path -LiteralPath $f) {
+                try {
+                    $txt = [System.IO.File]::ReadAllText($f, [System.Text.Encoding]::UTF8)
+                    Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $true; path = $f; text = $txt })
+                } catch {
+                    Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $false; error = $_.Exception.Message })
+                }
+            } else {
+                Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $false; error = 'About.xml not found' })
+            }
+            continue
+        }
         elseif ($pathPart -eq '/__git' -or $pathPart -eq '/__gitpush' -or $pathPart -eq '/__gitpull') {
             $git = Get-GitExe
             $dir = $query['dir']
@@ -621,6 +640,15 @@ while ($true) {
                 $skip = @('Editor', '.git', '.vs', 'bin', 'obj')
                 Get-ChildItem -LiteralPath $ModRoot -Force | Where-Object { $skip -notcontains $_.Name } | ForEach-Object {
                     Copy-Item -LiteralPath $_.FullName -Destination $stage -Recurse -Force
+                }
+                # 用编辑器里配置的 About.xml 覆盖模组目录里的那份（导出时忽略原文件）
+                if ($query['about']) {
+                    try {
+                        $aboutText = $query['about']
+                        $aboutDir = Join-Path $stage 'About'
+                        if (-not (Test-Path -LiteralPath $aboutDir)) { New-Item -ItemType Directory -Path $aboutDir -Force | Out-Null }
+                        [System.IO.File]::WriteAllText((Join-Path $aboutDir 'About.xml'), $aboutText, (New-Object System.Text.UTF8Encoding($false)))
+                    } catch { }
                 }
                 Get-ChildItem -LiteralPath $stage -Recurse -Force -File -ErrorAction SilentlyContinue | Where-Object { $_.Extension -eq '.bak' -or $_.Extension -eq '.tmp' -or $_.Extension -eq '.orig' } | Remove-Item -Force -ErrorAction SilentlyContinue
                 foreach ($junk in @('Source\bin', 'Source\obj')) {
