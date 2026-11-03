@@ -3,7 +3,8 @@
 # Build NHT_CustomDolls.dll (Harmony + mod settings) against RimWorld 1.7 / NHT.
 $ErrorActionPreference = 'Stop'
 
-$mod      = "C:\Misaki\Game\RimCrow\mods\NHT_CustomDolls"
+$mod      = Split-Path -Parent $PSScriptRoot   # 模组根目录（文件夹改名也不影响）
+if (-not (Test-Path (Join-Path $mod "About"))) { $mod = "C:\Misaki\Game\RimCrow\mods\NHT_CustomDolls" }
 $rw       = "C:\Program Files (x86)\Steam\steamapps\common\RimWorld"
 $ws       = "C:\Program Files (x86)\Steam\steamapps\workshop\content\294100"
 $nht      = Join-Path $ws "3328729902\1.7\Assemblies\NiceHediffTab.dll"
