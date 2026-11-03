@@ -41,6 +41,36 @@ $Mime = @{
     '.ico'  = 'image/x-icon'
 }
 
+
+function Get-GitExe {
+    $c = Get-Command git.exe -ErrorAction SilentlyContinue
+    if ($c) { return $c.Source }
+    foreach ($p in @('C:\Program Files\Git\cmd\git.exe', 'C:\Program Files (x86)\Git\cmd\git.exe')) {
+        if (Test-Path -LiteralPath $p) { return $p }
+    }
+    return $null
+}
+
+
+function Invoke-Git([string]$Git, [string[]]$GitArgs) {
+    $prev = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try {
+        $text = (& $Git @GitArgs 2>&1 | Out-String)
+        $code = $LASTEXITCODE
+        return [pscustomobject]@{ code = $code; text = $text }
+    }
+    catch {
+        return [pscustomobject]@{ code = 1; text = $_.Exception.Message }
+    }
+    finally { $ErrorActionPreference = $prev }
+}
+
+function Send-Json($stream, [string]$status, $obj) {
+    $txt = ConvertTo-Json -InputObject $obj -Depth 6 -Compress
+    Send-Text $stream $status $txt
+}
+
 function Send-Bytes($stream, [string]$status, [string]$ctype, [byte[]]$body) {
     $crlf = [string][char]13 + [string][char]10
     $head = 'HTTP/1.1 ' + $status + $crlf +
@@ -158,6 +188,157 @@ while ($true) {
                 $yes = Test-Path -LiteralPath $fp -PathType Leaf
             }
             if ($yes) { Send-Text $stream '200 OK' 'yes' } else { Send-Text $stream '200 OK' 'no' }
+        }
+        elseif ($pathPart -eq '/__texindex' -and ($method -eq 'GET' -or $method -eq 'HEAD')) {
+            $list = @()
+            $texRoot = Join-Path $ModRoot 'Textures'
+            if (Test-Path -LiteralPath $texRoot) {
+                $list = @(Get-ChildItem -LiteralPath $texRoot -Recurse -File -Filter '*.png' -ErrorAction SilentlyContinue |
+                    ForEach-Object {
+                        $rel = $_.FullName.Substring($texRoot.Length + 1)
+                        $rel = $rel -replace '\\', '/'
+                        $rel -replace '\.png$', ''
+                    })
+            }
+            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $true; keys = $list })
+            continue
+        }
+        elseif ($pathPart -eq '/__gitinfo') {
+            $git = Get-GitExe
+            if (-not $git) { Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $false; installed = $false }) ; continue }
+            $ver = Invoke-Git $git @('--version')
+            Send-Json $stream '200 OK' ([pscustomobject]@{
+                ok = $true; installed = $true; path = $git; version = $ver.text.Trim()
+            })
+            continue
+        }
+        elseif ($pathPart -eq '/__pickdir') {
+            $picked = ''
+            try {
+                $shell = New-Object -ComObject Shell.Application
+                $folder = $shell.BrowseForFolder(0, '选择 Git 仓库目录', 0x0001, 0)
+                if ($folder) { $picked = $folder.Self.Path }
+            }
+            catch { }
+            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = [bool]$picked; path = $picked })
+            continue
+        }
+        elseif ($pathPart -eq '/__git' -or $pathPart -eq '/__gitpush' -or $pathPart -eq '/__gitpull') {
+            $git = Get-GitExe
+            $dir = $query['dir']
+            $branch = $query['branch']
+            if (-not $branch) { $branch = 'main' }
+            if (-not $git) { Send-Json $stream '200 OK' @{ ok = $false; error = 'git.exe not found' }; continue }
+            if (-not $dir -or -not (Test-Path -LiteralPath $dir)) { Send-Json $stream '200 OK' @{ ok = $false; error = ('repo dir not found: ' + $dir) }; continue }
+
+            if ($pathPart -eq '/__git') {
+                $cur = Invoke-Git $git @('-C', $dir, 'rev-parse', '--abbrev-ref', 'HEAD')
+                if ($cur.code -eq 0 -and $cur.text.Trim()) { $branch = $cur.text.Trim() }
+                $null = Invoke-Git $git @('-C', $dir, 'fetch', 'origin', '--quiet')
+                $behindR = Invoke-Git $git @('-C', $dir, 'rev-list', '--count', ('HEAD..origin/' + $branch))
+                $aheadR = Invoke-Git $git @('-C', $dir, 'rev-list', '--count', ('origin/' + $branch + '..HEAD'))
+                $behind = 0; $ahead = 0
+                [int]::TryParse($behindR.text.Trim(), [ref]$behind) | Out-Null
+                [int]::TryParse($aheadR.text.Trim(), [ref]$ahead) | Out-Null
+
+                $sep = [string][char]31
+                $fmt = '--pretty=format:%h' + $sep + '%ad' + $sep + '%s' + $sep + '%an'
+                $dateFmt = '--date=format:%Y-%m-%d %H:%M'
+                $logRef = 'origin/' + $branch
+                $verify = Invoke-Git $git @('-C', $dir, 'rev-parse', '--verify', '--quiet', $logRef)
+                if ($verify.code -ne 0) { $logRef = 'HEAD' }
+                $logR = Invoke-Git $git @('-C', $dir, 'log', '-n', '12', $fmt, $dateFmt, $logRef)
+                $commits = @()
+                foreach ($line in ($logR.text -split "`n")) {
+                    $line = $line.Trim()
+                    if (-not $line) { continue }
+                    $parts = $line -split [regex]::Escape($sep)
+                    if ($parts.Length -ge 4) {
+                        $commits += [pscustomobject]@{ hash = $parts[0]; date = $parts[1]; subject = $parts[2]; author = $parts[3] }
+                    }
+                }
+                Send-Json $stream '200 OK' ([pscustomobject]@{
+                    ok = $true; branch = $branch; behind = $behind; ahead = $ahead; commits = $commits
+                })
+                continue
+            }
+
+            if ($pathPart -eq '/__gitpush') {
+                $msg = $query['message']
+                if (-not $msg) { $msg = 'Update from NHT editor' }
+                $name = $query['name']; if (-not $name) { $name = 'NHT Editor' }
+                $email = $query['email']; if (-not $email) { $email = 'nht-editor@localhost' }
+                # sync=1：先把当前模组目录的内容镜像到仓库目录（不删除仓库独有文件）
+                $syncText = ''
+                if ($query['sync'] -eq '1') {
+                    try {
+                        $rc = & robocopy $ModRoot $dir /E /XD .git .vs bin obj /XF *.bak *.bak.* /NFL /NDL /NJH /NJS /NP 2>&1
+                        $syncText = "已同步模组文件到仓库目录（robocopy 退出码 " + $LASTEXITCODE + "）`n"
+                    } catch { $syncText = "同步模组文件失败：" + $_.Exception.Message + "`n" }
+                }
+
+                $addR = Invoke-Git $git @('-C', $dir, 'add', '-A')
+                $commitR = Invoke-Git $git @('-C', $dir, '-c', ('user.name=' + $name), '-c', ('user.email=' + $email), 'commit', '-m', $msg)
+
+                # 先看远端有没有新提交：落后就要求先拉取，避免 non-fast-forward
+                $null = Invoke-Git $git @('-C', $dir, 'fetch', 'origin', '--quiet')
+                $behindR = Invoke-Git $git @('-C', $dir, 'rev-list', '--count', ('HEAD..origin/' + $branch))
+                $behind = 0
+                [int]::TryParse($behindR.text.Trim(), [ref]$behind) | Out-Null
+                if ($behind -gt 0) {
+                    $aheadR = Invoke-Git $git @('-C', $dir, 'rev-list', '--count', ('origin/' + $branch + '..HEAD'))
+                    $ahead = 0
+                    [int]::TryParse($aheadR.text.Trim(), [ref]$ahead) | Out-Null
+                    if ($ahead -eq 0) {
+                        # 只是落后：直接快进，然后继续推送，用户不用手动点拉取
+                        $ffR = Invoke-Git $git @('-C', $dir, 'pull', '--ff-only', 'origin', $branch)
+                        if ($ffR.code -eq 0) {
+                            $behind = 0
+                        } else {
+                            $text = ($syncText + $addR.text + $commitR.text + $ffR.text + "自动快进失败，请手动点「拉取远端」。")
+                            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $false; hint = 'pull-first'; behind = $behind; commitCode = $commitR.code; pushCode = -1; log = $text })
+                            continue
+                        }
+                    } else {
+                        $text = ($syncText + $addR.text + $commitR.text + "本地和远端都有新提交（本地领先 $ahead / 落后 $behind），已阻止推送。`n请先点「拉取远端」合并后再推送。")
+                        Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $false; hint = 'diverged'; behind = $behind; ahead = $ahead; commitCode = $commitR.code; pushCode = -1; log = $text })
+                        continue
+                    }
+                }
+
+                # 请求的分支和当前本地分支不同 → 从当前 HEAD 建一个同名分支推上去，推完切回
+                $curR = Invoke-Git $git @('-C', $dir, 'rev-parse', '--abbrev-ref', 'HEAD')
+                $cur = $curR.text.Trim()
+                $switchBack = $false
+                $switchText = ''
+                if ($cur -and $cur -ne $branch) {
+                    $coR = Invoke-Git $git @('-C', $dir, 'checkout', '-B', $branch)
+                    $switchText = $coR.text
+                    if ($coR.code -ne 0) {
+                        Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $false; hint = 'branch-switch'; commitCode = $commitR.code; pushCode = -1; log = ($syncText + $addR.text + $commitR.text + $switchText) })
+                        continue
+                    }
+                    $switchBack = $true
+                }
+
+                $pushR = Invoke-Git $git @('-C', $dir, 'push', '-u', 'origin', $branch)
+                $text = ($syncText + $addR.text + $commitR.text + $switchText + $pushR.text)
+                $ok = ($pushR.code -eq 0)
+
+                if ($switchBack) {
+                    $backR = Invoke-Git $git @('-C', $dir, 'checkout', $cur, '--quiet')
+                    $text = $text + $backR.text
+                }
+                Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $ok; commitCode = $commitR.code; pushCode = $pushR.code; log = $text })
+                continue
+            }
+
+            if ($pathPart -eq '/__gitpull') {
+                $fetchR = Invoke-Git $git @('-C', $dir, 'fetch', 'origin')
+                $pullR = Invoke-Git $git @('-C', $dir, 'pull', '--ff-only', 'origin', $branch)
+                Send-Json $stream '200 OK' ([pscustomobject]@{ ok = ($pullR.code -eq 0); log = ($fetchR.text + $pullR.text) })
+                continue
+            }
         }
         elseif ($pathPart -eq '/__modzip' -and ($method -eq 'GET' -or $method -eq 'HEAD')) {
             # 把整个模组文件夹（不含 Editor）打包成 zip 交给浏览器下载

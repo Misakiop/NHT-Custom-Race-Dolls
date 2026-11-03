@@ -1162,6 +1162,7 @@ namespace NHT_CustomDolls
                 catch (Exception) { }
             }
 
+
             private static void Prefix(object __instance, Rect dollRect)
             {
                 if (failed || __instance == null) return;
