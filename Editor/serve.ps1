@@ -587,7 +587,25 @@ while ($true) {
             if ($pathPart -eq '/__gitpull') {
                 $fetchR = Invoke-GitNet $git @('-C', $dir, 'fetch', 'origin') 12
                 $pullR = Invoke-GitNet $git @('-C', $dir, 'pull', '--ff-only', 'origin', $branch) 20
-                Send-Json $stream '200 OK' ([pscustomobject]@{ ok = ($pullR.code -eq 0); log = ($fetchR.text + $pullR.text) })
+                $mode = 'ff'
+                $log = $fetchR.text + $pullR.text
+                if ($pullR.code -ne 0 -and ($pullR.text -match 'Not possible to fast-forward|diverging|diverged')) {
+                    # 本地和远端分叉：先把本地提交变基到远端（保留双方提交，历史线性）
+                    $reb = Invoke-GitNet $git @('-C', $dir, 'pull', '--rebase', '--autostash', 'origin', $branch) 25
+                    $log = $log + "`n—— 检测到分叉，改用 rebase ——`n" + $reb.text
+                    if ($reb.code -eq 0) {
+                        $mode = 'rebase'
+                        $pullR = $reb
+                    } else {
+                        $null = Invoke-Git $git @('-C', $dir, 'rebase', '--abort')
+                        # rebase 冲突：退回合并提交
+                        $mrg = Invoke-GitNet $git @('-C', $dir, 'pull', '--no-rebase', '--no-ff', '--no-edit', 'origin', $branch) 25
+                        $log = $log + "`n—— rebase 未成功，改用 merge ——`n" + $mrg.text
+                        if ($mrg.code -eq 0) { $mode = 'merge'; $pullR = $mrg }
+                        else { $null = Invoke-Git $git @('-C', $dir, 'merge', '--abort'); $log = $log + "`n合并也失败，仓库保持原样（没有半途状态）。" }
+                    }
+                }
+                Send-Json $stream '200 OK' ([pscustomobject]@{ ok = ($pullR.code -eq 0); mode = $mode; log = $log })
                 continue
             }
         }

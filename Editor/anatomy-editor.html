@@ -1756,7 +1756,7 @@ body.is-preview #stage{cursor:not-allowed}
       <span class="vsep"></span>
       <button class="btn btn--ghost" data-act="history" title="查看最近 5 份本地保存历史，可挑一份载入"><svg><use href="#i-undo"/></svg>历史</button>
       <button class="btn btn--ghost" data-act="save" title="保存**全部画布**与素材清单到项目文件 nht-project.js（html 同目录），不是只存当前画布。Ctrl+S"><svg><use href="#i-save"/></svg>本地保存（全部画布）</button>
-      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-03 20:49</span>
+      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-03 20:56</span>
             <span class="notif" id="notifWrap">
         <button class="iconbtn notif__btn" data-act="notif-toggle" id="notifBtn" title="Git 更新通知：点「收到」后不再弹出，仓库有新的 Push 会再次提醒">
           <svg class="notif__ico"><use href="#i-bell"/></svg>
@@ -7352,8 +7352,10 @@ async function gitDoPull() {
     const j = await r.json();
     if (j && j.ok) {
       gitFlash(true, 'pull');
-      gitLog('拉取成功', (j.log || '').trim() || '已是最新');
-      toast('已拉取仓库更新');
+      const modeTxt = j.mode === 'rebase' ? '（本地提交已变基到远端）'
+        : (j.mode === 'merge' ? '（生成了一个合并提交）' : '');
+      gitLog('拉取成功' + modeTxt, (j.log || '').trim() || '已是最新');
+      toast('已拉取仓库更新' + modeTxt);
     } else {
       gitFlash(false, 'pull');
       const pl = String((j && (j.log || j.error)) || '未知错误');
