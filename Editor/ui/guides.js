@@ -41,5 +41,49 @@ window.NHT_GUIDES = [
       <p>头发层级来自 <b class="g-opt">HAR 头发 → 层级</b>，必须勾选
          <b class="g-opt">导出发型坐标</b> 才会写进补丁；没写进补丁时游戏用默认值 15。</p>
     `
+  },
+  {
+    title: 'GIT 书签：查看 / 应用 / 只读预览',
+    body: `
+      <p>「体型画布」面板右边缘有一枚绿色 <b class="g-opt">GIT 书签</b>。
+         它读的是仓库里 <code>Editor/canvases/</code> 的提交记录，最多显示最近 <b>3 个版本</b>。</p>
+      <ul class="g-ul">
+        <li>点书签展开：每个版本一组，默认只展开最新一版</li>
+        <li>卡片带缩略图，<b class="g-opt">点卡片 = 只读预览</b>（画布区显示，但不能编辑）</li>
+        <li>想真正改这张：点卡片右上角的 <b class="g-opt">应用</b> → 写入项目并进入可编辑</li>
+        <li>应用后卡片变灰、按钮变 <b class="g-opt">撤销</b>；同一张画布被新版本应用时，旧卡片显示「已替代」</li>
+      </ul>
+      <p><b class="g-bad">注意：</b>只读预览时，点画布、按 Delete、改右侧属性、<b>导出补丁 / 注入模组 / 导出模组文件</b>
+         都会被拦下并提示；要先应用（或还原）把画布写进项目，才能导出与注入。</p>
+      <p>仓库里还没有画布提交时，书签会提示「先在仓库同步 REPO 推送一次画布」。</p>
+    `
+  },
+  {
+    title: '最近改动：还原被替换 / 删除的画布',
+    body: `
+      <p>「体型画布」列表下面固定一块 <b class="g-opt">最近改动</b>，最多保留 <b>5 张</b>：</p>
+      <ul class="g-ul">
+        <li><b>删除</b>画布 → 记一条「删除」（红色标签）</li>
+        <li>书签应用替换掉同名画布 → 记一条「替换」（黄色标签）</li>
+      </ul>
+      <p>每行都有缩略图、标题、Doll、部位数和时间。点一下是<b class="g-opt">只读预览</b>，
+         <b class="g-opt">右键那行 → 还原</b>（只有这一个选项）把画布放回项目，之后就能正常编辑。</p>
+    `
+  },
+  {
+    title: '推送弹窗：为什么有些文件默认锁住',
+    body: `
+      <p>推送前会先列出本地改动，默认全部勾选，但下面这些会<b class="g-opt">默认锁定（红色）</b>：</p>
+      <ul class="g-ul">
+        <li><code>Editor/history</code>：本地保存快照，每次都不同</li>
+        <li><code>Editor/nht-project.js</code>：你自己的画布数据</li>
+        <li><code>Editor/assets</code>：本机导入的素材库</li>
+        <li><code>*.bak</code> / <code>*.tmp</code> / <code>*.log</code> / <code>Source/bin</code> / <code>Source/obj</code> / <code>Source/build</code></li>
+      </ul>
+      <p>原因：这些是<b class="g-bad">每个人本地不同</b>的数据，推上去会把别人拉下来的覆盖掉。
+         需要共享时点锁图标解锁即可。</p>
+      <p>提交说明必填（会变成提交标题），下面的「提交描述」是可选的多行正文，
+         可以直接写这次改了哪些种族 / 部位。</p>
+    `
   }
 ];
