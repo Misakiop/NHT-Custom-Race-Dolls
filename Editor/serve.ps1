@@ -382,8 +382,11 @@ while ($true) {
             $git = Get-GitExe
             if (-not $git) { Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $false; installed = $false }) ; continue }
             $ver = Invoke-Git $git @('--version')
+            $un = Invoke-Git $git @('config', '--global', 'user.name')
+            $ue = Invoke-Git $git @('config', '--global', 'user.email')
             Send-Json $stream '200 OK' ([pscustomobject]@{
                 ok = $true; installed = $true; path = $git; version = $ver.text.Trim()
+                userName = $un.text.Trim(); userEmail = $ue.text.Trim()
             })
             continue
         }
@@ -396,6 +399,25 @@ while ($true) {
             }
             catch { }
             Send-Json $stream '200 OK' ([pscustomobject]@{ ok = [bool]$picked; path = $picked })
+            continue
+        }
+        elseif ($pathPart -eq '/__self' -and $method -eq 'GET') {
+            $name = Split-Path -Leaf $ModRoot
+            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $true; name = $name; dir = $ModRoot; root = $Root })
+            continue
+        }
+        elseif ($pathPart -eq '/__about' -and $method -eq 'GET') {
+            $f = Join-Path $ModRoot 'About\About.xml'
+            if (Test-Path -LiteralPath $f) {
+                try {
+                    $txt = [System.IO.File]::ReadAllText($f, [System.Text.Encoding]::UTF8)
+                    Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $true; path = $f; text = $txt })
+                } catch {
+                    Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $false; error = $_.Exception.Message })
+                }
+            } else {
+                Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $false; error = 'About.xml not found' })
+            }
             continue
         }
         elseif ($pathPart -eq '/__git' -or $pathPart -eq '/__gitpush' -or $pathPart -eq '/__gitpull') {
@@ -485,8 +507,12 @@ while ($true) {
             if ($pathPart -eq '/__gitpush') {
                 $msg = $query['message']
                 if (-not $msg) { $msg = 'Update from NHT editor' }
-                $name = $query['name']; if (-not $name) { $name = 'NHT Editor' }
-                $email = $query['email']; if (-not $email) { $email = 'nht-editor@localhost' }
+                $name = $query['name']
+                $email = $query['email']
+                if (-not $name) { $name = (Invoke-Git $git @('config', '--global', 'user.name')).text.Trim() }
+                if (-not $email) { $email = (Invoke-Git $git @('config', '--global', 'user.email')).text.Trim() }
+                if (-not $name) { $name = 'NHT Editor' }
+                if (-not $email) { $email = 'nht-editor@localhost' }
                 # sync=1：先把当前模组目录的内容镜像到仓库目录（不删除仓库独有文件）
                 $syncText = ''
                 if ($query['sync'] -eq '1') {
@@ -525,61 +551,57 @@ while ($true) {
                     $commitR = Invoke-Git $git @('-C', $dir, '-c', ('user.name=' + $name), '-c', ('user.email=' + $email), 'commit', '-m', $msg)
                 }
 
-                # 先看远端有没有新提交：落后就要求先拉取，避免 non-fast-forward
-                $null = Invoke-GitNet $git @('-C', $dir, 'fetch', 'origin', '--quiet') 8
-                $behindR = Invoke-Git $git @('-C', $dir, 'rev-list', '--count', ('HEAD..origin/' + $branch))
-                $behind = 0
-                [int]::TryParse($behindR.text.Trim(), [ref]$behind) | Out-Null
-                if ($behind -gt 0) {
-                    $aheadR = Invoke-Git $git @('-C', $dir, 'rev-list', '--count', ('origin/' + $branch + '..HEAD'))
-                    $ahead = 0
-                    [int]::TryParse($aheadR.text.Trim(), [ref]$ahead) | Out-Null
-                    if ($ahead -eq 0) {
-                        # 只是落后：直接快进，然后继续推送，用户不用手动点拉取
-                        $ffR = Invoke-GitNet $git @('-C', $dir, 'pull', '--ff-only', 'origin', $branch) 20
-                        if ($ffR.code -eq 0) {
-                            $behind = 0
-                        } else {
-                            $text = ($syncText + $addR.text + $commitR.text + $ffR.text + "自动快进失败，请手动点「拉取远端」。")
-                            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $false; hint = 'pull-first'; behind = $behind; commitCode = $commitR.code; pushCode = -1; log = $text })
-                            continue
-                        }
-                    } else {
-                        $text = ($syncText + $addR.text + $commitR.text + "本地和远端都有新提交（本地领先 $ahead / 落后 $behind），已阻止推送。`n请先点「拉取远端」合并后再推送。")
-                        Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $false; hint = 'diverged'; behind = $behind; ahead = $ahead; commitCode = $commitR.code; pushCode = -1; log = $text })
-                        continue
-                    }
-                }
-
-                # 请求的分支和当前本地分支不同 → 从当前 HEAD 建一个同名分支推上去，推完切回
+                # ---- 目标分支 = 设置里的 branch；当前分支只决定推送方式 ----
                 $curR = Invoke-Git $git @('-C', $dir, 'rev-parse', '--abbrev-ref', 'HEAD')
                 $cur = $curR.text.Trim()
-                $switchBack = $false
+                $sameBranch = [bool]($cur -and $cur -eq $branch)
                 $switchText = ''
-                if ($cur -and $cur -ne $branch) {
-                    $coR = Invoke-Git $git @('-C', $dir, 'checkout', '-B', $branch)
-                    $switchText = $coR.text
-                    if ($coR.code -ne 0) {
-                        Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $false; hint = 'branch-switch'; commitCode = $commitR.code; pushCode = -1; log = ($syncText + $addR.text + $commitR.text + $switchText) })
-                        continue
-                    }
-                    $switchBack = $true
+                if (-not $sameBranch -and $cur) {
+                    $switchText = ("推送到分支：" + $branch + "（本地当前是 " + $cur + "，用 HEAD:" + $branch + " 推送）`n")
                 }
 
-                $commitTxt = [string]$commitR.text
-                if ($commitR.code -ne 0 -and ($commitTxt -match 'nothing to commit|no changes added|nothing added')) {
-                    $text = ($syncText + $addR.text + $commitTxt + "选中的文件没有产生任何改动（可能路径不匹配或已被忽略）。")
-                    Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $false; hint = 'nothing-staged'; commitCode = $commitR.code; pushCode = -1; log = $text })
-                    continue
+                $null = Invoke-GitNet $git @('-C', $dir, 'fetch', 'origin', '--quiet') 8
+                $hasRemoteR = Invoke-Git $git @('-C', $dir, 'rev-parse', '--verify', '--quiet', ('origin/' + $branch))
+                $hasRemote = ($hasRemoteR.code -eq 0)
+
+                if ($sameBranch) {
+                    $behindR = Invoke-Git $git @('-C', $dir, 'rev-list', '--count', ('HEAD..origin/' + $branch))
+                    $behind = 0
+                    [int]::TryParse($behindR.text.Trim(), [ref]$behind) | Out-Null
+                    if ($behind -gt 0) {
+                        $aheadR = Invoke-Git $git @('-C', $dir, 'rev-list', '--count', ('origin/' + $branch + '..HEAD'))
+                        $ahead = 0
+                        [int]::TryParse($aheadR.text.Trim(), [ref]$ahead) | Out-Null
+                        if ($ahead -eq 0) {
+                            $ffR = Invoke-GitNet $git @('-C', $dir, 'pull', '--ff-only', 'origin', $branch) 20
+                            if ($ffR.code -eq 0) { $behind = 0 }
+                            else {
+                                $text = ($syncText + $addR.text + $commitR.text + $ffR.text + "自动快进失败，请点「拉取远端」。")
+                                Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $false; hint = 'pull-first'; behind = $behind; commitCode = $commitR.code; pushCode = -1; log = $text })
+                                continue
+                            }
+                        } else {
+                            $text = ($syncText + $addR.text + $commitR.text + "本地和远端都有新提交（本地领先 $ahead / 落后 $behind），已阻止推送。`n请先点「拉取远端」合并后再推送。")
+                            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $false; hint = 'diverged'; behind = $behind; ahead = $ahead; commitCode = $commitR.code; pushCode = -1; log = $text })
+                            continue
+                        }
+                    }
                 }
-                $pushR = Invoke-GitNet $git @('-C', $dir, 'push', '-u', 'origin', $branch) 25
+
+                if ($sameBranch) {
+                    $pushR = Invoke-GitNet $git @('-C', $dir, 'push', '-u', 'origin', $branch) 25
+                } else {
+                    # 推到别的分支时不改本地分支的上游，否则下次状态会盯着那个分支
+                    $pushR = Invoke-GitNet $git @('-C', $dir, 'push', 'origin', ('HEAD:' + $branch)) 25
+                }
                 $text = ($syncText + $addR.text + $commitR.text + $switchText + $pushR.text)
                 $ok = ($pushR.code -eq 0)
-
-                if ($switchBack) {
-                    $backR = Invoke-Git $git @('-C', $dir, 'checkout', $cur, '--quiet')
-                    $text = $text + $backR.text
+                if (-not $ok -and ($pushR.text -match 'non-fast-forward|fetch first|rejected')) {
+                    $text = $text + ("`n分支「" + $branch + "」上有本地没有的提交，git 拒绝了覆盖。`n把设置里的分支改成当前分支（" + $cur + "）再推送，或先切到该分支拉取。")
+                    Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $false; hint = 'target-diverged'; branch = $branch; commitCode = $commitR.code; pushCode = $pushR.code; log = $text })
+                    continue
                 }
+
                 Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $ok; commitCode = $commitR.code; pushCode = $pushR.code; log = $text })
                 continue
             }
@@ -587,7 +609,27 @@ while ($true) {
             if ($pathPart -eq '/__gitpull') {
                 $fetchR = Invoke-GitNet $git @('-C', $dir, 'fetch', 'origin') 12
                 $pullR = Invoke-GitNet $git @('-C', $dir, 'pull', '--ff-only', 'origin', $branch) 20
-                Send-Json $stream '200 OK' ([pscustomobject]@{ ok = ($pullR.code -eq 0); log = ($fetchR.text + $pullR.text) })
+                $mode = 'ff'
+                $log = $fetchR.text + $pullR.text
+                if ($pullR.code -ne 0 -and ($pullR.text -match 'Not possible to fast-forward|diverging|diverged')) {
+                    # 分叉：先「以本地为准」合并（单人/多机时远端多半是旧的同一批编辑器文件）
+                    $mrg = Invoke-GitNet $git @('-C', $dir, 'merge', '--no-ff', '--no-edit', '-X', 'ours', 'origin/' + $branch) 25
+                    $log = $log + "`n—— 检测到分叉，改用「以本地为准」合并 ——`n" + $mrg.text
+                    if ($mrg.code -eq 0) {
+                        $mode = 'merge-ours'
+                        $pullR = $mrg
+                    } else {
+                        $null = Invoke-Git $git @('-C', $dir, 'merge', '--abort')
+                        $mrg2 = Invoke-GitNet $git @('-C', $dir, 'merge', '--no-ff', '--no-edit', 'origin/' + $branch) 25
+                        $log = $log + "`n—— 普通合并 ——`n" + $mrg2.text
+                        if ($mrg2.code -eq 0) { $mode = 'merge'; $pullR = $mrg2 }
+                        else {
+                            $null = Invoke-Git $git @('-C', $dir, 'merge', '--abort')
+                            $log = $log + "`n合并失败，仓库已恢复到拉取前的状态。"
+                        }
+                    }
+                }
+                Send-Json $stream '200 OK' ([pscustomobject]@{ ok = ($pullR.code -eq 0); mode = $mode; log = $log })
                 continue
             }
         }
@@ -603,6 +645,15 @@ while ($true) {
                 $skip = @('Editor', '.git', '.vs', 'bin', 'obj')
                 Get-ChildItem -LiteralPath $ModRoot -Force | Where-Object { $skip -notcontains $_.Name } | ForEach-Object {
                     Copy-Item -LiteralPath $_.FullName -Destination $stage -Recurse -Force
+                }
+                # 用编辑器里配置的 About.xml 覆盖模组目录里的那份（导出时忽略原文件）
+                if ($query['about']) {
+                    try {
+                        $aboutText = $query['about']
+                        $aboutDir = Join-Path $stage 'About'
+                        if (-not (Test-Path -LiteralPath $aboutDir)) { New-Item -ItemType Directory -Path $aboutDir -Force | Out-Null }
+                        [System.IO.File]::WriteAllText((Join-Path $aboutDir 'About.xml'), $aboutText, (New-Object System.Text.UTF8Encoding($false)))
+                    } catch { }
                 }
                 Get-ChildItem -LiteralPath $stage -Recurse -Force -File -ErrorAction SilentlyContinue | Where-Object { $_.Extension -eq '.bak' -or $_.Extension -eq '.tmp' -or $_.Extension -eq '.orig' } | Remove-Item -Force -ErrorAction SilentlyContinue
                 foreach ($junk in @('Source\bin', 'Source\obj')) {

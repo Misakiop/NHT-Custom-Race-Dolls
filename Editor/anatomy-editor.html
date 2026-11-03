@@ -1677,21 +1677,44 @@ html,body{overflow-anchor:none}
   border:1px solid rgba(255,255,255,.14);box-shadow:0 14px 34px rgba(0,0,0,.6)}
 
 /* 只读预览：右栏编辑控件禁用 */
+/* 只读预览：只做视觉提示，交互由 JS 拦截并给出提示（否则看起来像整块面板坏了） */
 body.is-preview .col--r input,
 body.is-preview .col--r select,
 body.is-preview .col--r textarea,
-body.is-preview .col--r .btn,
 body.is-preview .col--r .switch,
-body.is-preview .col--r .cv,
-body.is-preview .col--r .swrow{pointer-events:none;opacity:.5}
-body.is-preview .col--l .cv,
-body.is-preview .col--l .ctr{pointer-events:none;opacity:.55}
+body.is-preview .col--r .swrow{opacity:.55}
+body.is-preview .col--r .btn,
+body.is-preview .col--r .cv{opacity:.75}
+body.is-preview #stage{cursor:not-allowed}
 body.is-preview #stage{cursor:not-allowed}
 .gmkview.is-preview{border-color:rgba(255,160,90,.6);background:linear-gradient(180deg,rgba(38,26,16,.97),rgba(22,16,10,.97));color:#ffd9b3}
 .gmkview.is-preview b{color:#fff1de}
 .gmkview.is-preview .gmkview__ico{background:#ffb066;color:#241505}
 .gmkview.is-preview .gmkview__x{border-color:rgba(255,180,110,.6);background:rgba(255,180,110,.14);color:#ffd9b3}
 .gmkview.is-preview .gmkview__x:hover{background:rgba(255,180,110,.28)}
+
+/* ---------- 设置 → About ---------- */
+.issue--err{border-left-color:var(--danger)}
+.aboutstat{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.03);font-size:11.5px}
+.aboutstat b{font-size:12px}
+.aboutstat span{color:#8d9499;font-size:11px}
+.aboutstat.is-ok{border-color:rgba(120,230,160,.5);background:rgba(80,200,130,.08)}
+.aboutstat.is-ok b{color:#8ff0bb}
+.aboutstat.is-warn{border-color:rgba(255,200,110,.5);background:rgba(255,190,90,.08)}
+.aboutstat.is-warn b{color:#ffd08a}
+.aboutstat.is-bad{border-color:rgba(255,110,90,.55);background:rgba(255,90,70,.09)}
+.aboutstat.is-bad b{color:#ff9a86}
+.aboutgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 14px;margin:8px 0 2px;
+  padding:8px 10px;border:1px dashed rgba(255,255,255,.12);border-radius:8px;font-size:11px}
+.aboutgrid > div{display:flex;gap:8px;min-width:0}
+.aboutgrid b{flex:0 0 40px;color:#8d9499;font-weight:500}
+.aboutgrid span{color:#dfe7ea;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.aboutta{width:100%;min-height:190px;resize:vertical;font:11px/1.55 var(--font-mono);white-space:pre;
+  tab-size:2;padding:8px 10px}
+
+.gitcurrow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px;font-size:10.5px;color:#8d9499}
+.gitcurrow b{color:#cfd7da;font-weight:600}
 </style>
   <script src="ui/guides.js"></script>
 </head>
@@ -1756,7 +1779,7 @@ body.is-preview #stage{cursor:not-allowed}
       <span class="vsep"></span>
       <button class="btn btn--ghost" data-act="history" title="查看最近 5 份本地保存历史，可挑一份载入"><svg><use href="#i-undo"/></svg>历史</button>
       <button class="btn btn--ghost" data-act="save" title="保存**全部画布**与素材清单到项目文件 nht-project.js（html 同目录），不是只存当前画布。Ctrl+S"><svg><use href="#i-save"/></svg>本地保存（全部画布）</button>
-      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-03 20:49</span>
+      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-04 03:44</span>
             <span class="notif" id="notifWrap">
         <button class="iconbtn notif__btn" data-act="notif-toggle" id="notifBtn" title="Git 更新通知：点「收到」后不再弹出，仓库有新的 Push 会再次提醒">
           <svg class="notif__ico"><use href="#i-bell"/></svg>
@@ -2268,6 +2291,23 @@ function normalizeCanvas(c) {
   return c;
 }
 
+
+/* 模组文件夹改过名时：把保存路径里的旧前缀换成实际文件夹名（/__self 读到的） */
+function migrateModPaths() {
+  try {
+    const paths = (S.settings && S.settings.paths) || {};
+    let touched = false;
+    Object.keys(paths).forEach(k => {
+      const v = String(paths[k] || '');
+      if (/^NHT_CustomDolls\//.test(v) && SELF.name && SELF.name !== 'NHT_CustomDolls') {
+        paths[k] = SELF.name + v.slice('NHT_CustomDolls'.length);
+        touched = true;
+      }
+    });
+    return touched;
+  } catch (e) { return false; }
+}
+
 function applyProject(st) {
   S.trash = Array.isArray(st.trash) ? st.trash : (S.trash || []);
   S.project = Object.assign(S.project, st.project || {});
@@ -2309,6 +2349,7 @@ function applyProject(st) {
   if (st.settings && typeof st.settings === 'object') {
     S.settings = Object.assign(saveSettings(), st.settings);
     S.settings.paths = Object.assign({}, saveSettings().paths, st.settings.paths || {});
+    if (migrateModPaths()) { try { persist(); } catch (e) { } }
   }
   if (st.view && typeof st.view === 'object') {
     if (Number.isFinite(st.view.z)) S.view.z = st.view.z;
@@ -2859,6 +2900,25 @@ function cvGroupDel(gid) {
 /* ---------- 画布右键菜单 ---------- */
 let cvMenuEl = null;
 function closeCvMenu() { if (cvMenuEl) { cvMenuEl.remove(); cvMenuEl = null; } }
+
+/* 默认体型画布恢复成 NHT 自带坐标：用最新的 bodytype 定义重建，保留 id / 标题 / 分组 */
+function resetCanvasToBase(id) {
+  const cv = S.canvases.find(x => x.id === id);
+  if (!cv || cv.kind !== 'default') return;
+  const fresh = baseCanvasFor(cv);
+  if (!fresh) { toast('找不到这个体型的原始定义', true); return; }
+  fresh.id = cv.id;
+  fresh.title = cv.title;
+  fresh.group = cv.group;
+  fresh.locked = cv.locked;
+  fresh.savedSig = canvasSig(fresh);
+  const idx = S.canvases.indexOf(cv);
+  S.canvases[idx] = fresh;
+  if (S.active === cv.id) S.sel = null;
+  renderAll(); persist(); pushHistory();
+  toast('已恢复「' + (cv.title || '') + '」为 NHT 原始坐标（这张画布不会再导出补丁）');
+}
+
 function openCvMenu(ev, id) {
   const c = S.canvases.find(x => x.id === id);
   if (!c) return;
@@ -2873,7 +2933,7 @@ function openCvMenu(ev, id) {
     ${groups.map(g => `<button class="cvmenu__i${c.group === g.id ? ' is-on' : ''}" data-cvm="move" data-gid="${esc(g.id)}">${c.group === g.id ? '✓ ' : ''}${esc(g.name)}</button>`).join('')}
     ${c.group ? '<button class="cvmenu__i" data-cvm="move" data-gid="">移出分组（游离）</button>' : ''}
     <div class="cvmenu__sep"></div>
-    ${c.kind === 'default' ? '' : `<button class="cvmenu__i cvmenu__i--danger" data-cvm="del">删除画布</button>`}
+    ${c.kind === 'default' ? `<button class="cvmenu__i" data-cvm="reset-base" data-id="${esc(c.id)}" title="把这张画布恢复成 Nice Health Tab 自带的坐标（恢复后不会导出补丁）">↺ 恢复 NHT 原始坐标</button>` : `<button class="cvmenu__i cvmenu__i--danger" data-cvm="del">删除画布</button>`}
   `;
   document.body.appendChild(menu);
   const w = menu.offsetWidth, h = menu.offsetHeight;
@@ -2887,6 +2947,12 @@ function openCvMenu(ev, id) {
     if (!b) return;
     e.stopPropagation();
     const act = b.dataset.cvm;
+    if (act === 'reset-base') {
+      const id = b.dataset.id || c.id;
+      resetCanvasToBase(id);
+      closeCvMenu();
+      return;
+    }
     if (act === 'lock') {
       if (c.locked) { c.locked = false; toast('已解除锁定'); }
       else { c.locked = true; toast('已锁定画布'); }
@@ -4088,7 +4154,11 @@ function renderStage() {
     hp.style.backgroundImage = `url("${imgURL(hImg)}")`;
     applyHairBox(hp, hImg, size, cx, cy, 0);
     syncHairTintMask(hp, c.hairTint, c.hairTintShow !== false);
-    hp.style.zIndex = String(((Number.isFinite(c.hairPreviewLayer) ? c.hairPreviewLayer : (Number.isFinite(c.hairLayer) ? c.hairLayer : 29)) + 1) * 10);
+    const hlNow = Number.isFinite(c.hairPreviewLayer) ? c.hairPreviewLayer
+      : (Number.isFinite(c.hairLayer) ? c.hairLayer
+        : (c.hairFit && Number.isFinite(c.hairFit.layer) ? c.hairFit.layer : 29));
+    // 和部位同一套换算：头发层级*10 + 5 —— 层级比头发高的部位（腮、角、耳机）才会画在头发上面
+    hp.style.zIndex = String(hlNow * 10 + 5);
   } else {
     hp.style.display = 'none';
   }
@@ -4965,8 +5035,9 @@ function partEl(p, z) {
   el.style.width = (w * (empty ? 1 : p.sx)) + 'px';
   el.style.height = (h * (empty ? 1 : p.sy)) + 'px';
   const cv0 = activeCanvas();
-  const hairZ = ((cv0 && Number.isFinite(cv0.hairLayer) ? cv0.hairLayer : 29) + 1) * 10;
-  el.style.zIndex = String((p.overHair && cv0) ? (10000 + (z || 0)) : (z + 1) * 10);
+  // 层级用 layer 换算（和头发预览同一套坐标），同一层里再按排序序号微调，保证前后顺序稳定
+  const layerZ = (Number(p.layer) || 0) * 10 + ((z || 0) % 10);
+  el.style.zIndex = String((p.overHair && cv0) ? (10000 + (z || 0)) : layerZ);
   el.style.transform = `translate(-50%,-50%) translate(${p.x}px,${p.y}px) rotate(${p.rot || 0}deg)`;
   if (p.state === 'missing') el.classList.add('is-missing');
   if (p.state === 'hurt') el.classList.add('part--hurt');
@@ -6493,6 +6564,7 @@ function resetHairFit() {
    RENDER: patch pane
    ========================================================================== */
 function renderPatch() {
+  { const old0 = document.getElementById('gitPrefixMenu'); if (old0 && old0.parentElement === document.body) old0.remove(); }
   const pane = $('#panePatch');
   const issues = validateAll();
   const errs = issues.filter(i => i.lv === 'error').length;
@@ -6533,6 +6605,10 @@ function renderPatch() {
         <input class="inp${gitBranchBad(ensureGitSettings().branch) ? ' is-bad' : ''}" id="gitBranchInput" data-f="g.branch"
           value="${esc(ensureGitSettings().branch || '')}" spellcheck="false" placeholder="分支名，例如 feature-milira-hair"
           title="${gitBranchBad(ensureGitSettings().branch) ? '不能直接推 main，请换成自己的分支' : '推送 / 拉取使用的分支（会自动在远端创建）'}">
+      </div>
+      <div class="gitcurrow">
+        <span>当前本地分支：<b>${esc((gitState.status && gitState.status.branch) || '—')}</b></span>
+        <button class="btn btn--xs" data-act="git-use-current" title="把「分支」改成当前本地分支">用当前分支</button>
       </div>
       <div class="gitstat gitstat--three">
         <span class="st-left" data-tip="未推送 = 还没推的提交 ${gitPendingCount().commits} 个 + 未提交的可推送文件 ${gitPendingCount().files} 个（默认锁定的文件不计入）">未推送 <b id="gitAhead">${gitPendingCount().total}</b></span>
@@ -6674,6 +6750,9 @@ document.addEventListener('click', e => {
 window.addEventListener('scroll', hideQpop, true);
 
 
+
+
+
 /* 分支前缀下拉：切换时改写分支名并刷新状态 */
 document.addEventListener('change', e => {
   const el = e.target && e.target.closest && e.target.closest('[data-act="git-prefix"]');
@@ -6740,6 +6819,7 @@ window.addEventListener('resize', () => {
 
 /* ---------------- Git 同步（本地服务提供 /__git* 接口） ---------------- */
 let gitState = { status: null, logs: [], note: '', stateText: '未同步', stateOk: null, info: null, remote: null, busy: false };
+let GIT_PUSH_AUTORETRY = false;
 const GIT_LOG_MAX = 20;
 
 function gitDefaults() {
@@ -6836,6 +6916,10 @@ async function gitRefresh(fetchRemote) {
     const r = await fetch('/__git?dir=' + encodeURIComponent(g.dir) + '&branch=' + encodeURIComponent(g.branch || 'main') + extra, { cache: 'no-store' });
     const j = await r.json();
     if (j && j.ok) {
+      if (gitState.pushGuardUntil && Date.now() < gitState.pushGuardUntil && Number(j.behind) > 0) {
+        j.behind = 0;                     // 保护期内：这个“落后”基本都是刚 push 上去的提交
+        j.ahead = Math.max(0, Number(j.ahead) || 0);
+      }
       gitState.status = j;
       const t = new Date();
       const hh = String(t.getHours()).padStart(2, '0'), mm = String(t.getMinutes()).padStart(2, '0'), ss = String(t.getSeconds()).padStart(2, '0');
@@ -7174,12 +7258,22 @@ function pushDialogHTML() {
       <button class="iconbtn x" data-act="push-cancel">${icon('x')}</button></div>
     <div class="modal__body">
       <p class="mini-note" style="margin:0 0 8px">
+        ${(() => {
+          const g0 = ensureGitSettings();
+          const cur = (gitState.status && gitState.status.branch) || '';
+          const target = g0.branch || cur || 'main';
+          const warn = cur && target !== cur;
+          return `目标分支：<b>${esc(target)}</b>${warn
+            ? `　<b style="color:#ffb066">⚠ 当前本地分支是 ${esc(cur)}，会以 HEAD:${esc(target)} 推送</b>（如果远端该分支有自己的提交会被拒绝）`
+            : ''}`;
+        })()}<br>
         <b>怎么用：</b>默认全部勾选 → 不想传的取消勾选，或点右侧锁图标把整块锁住（红色、勾选框消失、不参与本次推送）。
         勾/取消父文件夹会连带子项；点 <b>▾ / ▸</b> 折叠或展开。<br>
         <b>为什么有些文件默认锁住：</b><code>Editor/history</code>（本地保存快照）、<code>Editor/nht-project.js</code>（你自己的画布数据）、
         <code>*.bak</code> 备份、<code>Editor/body-map.json</code> 都是「个人本地数据」—— 传到仓库会把别人拉下来的数据覆盖掉，所以默认锁住，
         需要时你可以手动解锁。
       </p>
+      ${PUSH_STATE.aheadOnly ? `<p class="mini-note" style="margin:0 0 8px;color:#ffd08a">本次没有新的文件改动，只推送本地已有的 <b>${PUSH_STATE.aheadCount || 0}</b> 个未推送提交。</p>` : ''}
       <div class="pushtree" id="pushTree">${PUSH_STATE.tree.children.map(c => pushRow(c, 0, false)).join('')}</div>
       <div class="pushtools">
         <button class="btn btn--sm" data-act="push-all">全选</button>
@@ -7196,7 +7290,7 @@ function pushDialogHTML() {
     </div>
     <div class="modal__foot">
       <button class="btn btn--danger" data-act="push-cancel">取消</button>
-      <button class="btn btn--multi" data-act="push-go" id="pushGoBtn" ${sel ? '' : 'disabled'}>推送 ${sel} 个文件</button>
+      <button class="btn btn--multi" data-act="push-go" id="pushGoBtn" ${(sel || PUSH_STATE.aheadOnly) ? '' : 'disabled'}>${PUSH_STATE.aheadOnly ? '推送本地提交' : ('推送 ' + sel + ' 个文件')}</button>
     </div>`;
 }
 
@@ -7235,7 +7329,25 @@ async function gitOpenPushDialog() {
     const r = await fetch('/__gitchanges?dir=' + encodeURIComponent(g.dir) + '&sync=' + syncQ, { cache: 'no-store' });
     const j = await r.json();
     if (!j || !j.ok) { toast('读取本地更改失败：' + ((j && j.error) || '未知错误'), true); return; }
-    if (!j.files || !j.files.length) { toast('没有需要推送的更改'); return; }
+    if (!j.files || !j.files.length) {
+      // 没有新改动：如果本地还有没推的提交（比如上次推送失败），仍然允许推送
+      let ahead = 0;
+      try {
+        const st = await (await fetch('/__git?dir=' + encodeURIComponent(ensureGitSettings().dir) +
+          '&branch=' + encodeURIComponent(ensureGitSettings().branch || 'main'), { cache: 'no-store' })).json();
+        if (st && st.ok) { gitState.status = st; ahead = Number(st.ahead) || 0; }
+      } catch (e) { }
+      if (!ahead) { toast('没有需要推送的更改'); return; }
+      PUSH_STATE.aheadOnly = true;
+      PUSH_STATE.aheadCount = ahead;
+      PUSH_STATE.lockedCount = 0;
+      PUSH_STATE.lockedNames = [];
+      PUSH_STATE.files = [];
+      PUSH_STATE.tree = buildPushTree([]);
+      renderPushDialog();
+      return;
+    }
+    PUSH_STATE.aheadOnly = false;
     const allFiles = j.files || [];
     const shown = allFiles.filter(f => !pushIsDefaultLocked(f.path));
     PUSH_STATE.lockedCount = allFiles.length - shown.length;
@@ -7260,8 +7372,9 @@ async function gitPushNow() {
   if (!gitValid()) return;
   const g = ensureGitSettings();
   const files = pushCollect(PUSH_STATE.tree, []);
-  if (!files.length) { toast('没有选中任何文件', true); return; }
+  if (!files.length && !PUSH_STATE.aheadOnly) { toast('没有选中任何文件', true); return; }
   const message = (PUSH_STATE.msg || '').trim() || 'Update from NHT editor';
+  if (!GIT_PUSH_AUTORETRY) { /* 第一次进入：允许一次自动重试 */ }
   gitState.busy = true;
   gitFlash(false);
   const goBtn = document.getElementById('pushGoBtn');
@@ -7283,24 +7396,41 @@ async function gitPushNow() {
       gitFlash(true, 'push');
       gitLog('Push 成功', (j.log || '').trim() || '已推送');
       closeModal();
+      gitState.pushGuardUntil = Date.now() + 6000;   // 刚推完：短暂忽略“落后”判定，避免自己刚推的提交被当成新提交
       await gitRefresh();                      // 立刻刷新「未推送 / 已同步」
       try { renderPatch(); } catch (e) { }      // 右侧区块重画
       try { gmkCheckNew(); } catch (e) { }      // 书签检查新版本
-      toast('已推送 ' + files.length + ' 个文件并同步状态：' + message);
+      toast(files.length ? ('已推送 ' + files.length + ' 个文件并同步状态：' + message) : ('已推送本地未推送的提交：' + message));
     } else if (j && j.hint === 'nothing-staged') {
       gitFlash(false, 'push');
       gitLog('Push 失败：没有改动', (j.log || ''));
       toast('选中的文件没有产生改动（可能路径不匹配/被忽略），已阻止推送空分支；刷新后重试', true);
       await gitRefresh();
       gitFlash(false, 'push');
-    } else if (j && j.hint === 'diverged') {
-      gitLog('Push 被阻止', ((j.log || '') + '\n本地领先 ' + (j.ahead || 0) + ' / 落后 ' + (j.behind || 0) + '，先拉取合并。').trim());
-      toast('本地和远端都有新提交：先点「拉取远端」合并后再推送', true);
-      await gitRefresh();
-      gitFlash(false, 'push');
-    } else if (j && j.hint === 'pull-first') {
-      gitLog('Push 被阻止', ((j.log || '') + '\n远端有 ' + (j.behind || '若干') + ' 个新提交，请先拉取。').trim());
-      toast('远端有 ' + (j.behind || '') + ' 个新提交：先点「拉取远端」再推送', true);
+    } else if (j && (j.hint === 'diverged' || j.hint === 'pull-first')) {
+      gitLog('Push 被阻止', (j.log || '').trim());
+      if (!GIT_PUSH_AUTORETRY) {
+        // 第一次遇到：自动拉取（服务端会 ff 或「以本地为准」合并），然后重试一次推送
+        GIT_PUSH_AUTORETRY = true;
+        toast('远端有更新，正在自动拉取后重试推送…');
+        const g2 = ensureGitSettings();
+        try {
+          const pr = await fetch('/__gitpull?dir=' + encodeURIComponent(g2.dir) + '&branch=' + encodeURIComponent(g2.branch || 'main'),
+            { cache: 'no-store', method: 'POST' });
+          const pj = await pr.json();
+          if (pj && pj.ok) {
+            gitLog('自动拉取完成', (pj.log || '').trim());
+            await gitRefresh();
+            gitFlash(false, 'push');
+            setTimeout(() => { try { gitPushNow(); } catch (e) { } }, 60);
+            return;
+          }
+          gitLog('自动拉取失败', (pj && (pj.log || pj.error)) || '未知错误');
+        } catch (e) {
+          gitLog('自动拉取失败', e && e.message);
+        }
+      }
+      toast('本地和远端都有新提交：拉取未能自动完成，请手动点「拉取远端」后再推送', true);
       await gitRefresh();
       gitFlash(false, 'push');
     } else {
@@ -7352,8 +7482,11 @@ async function gitDoPull() {
     const j = await r.json();
     if (j && j.ok) {
       gitFlash(true, 'pull');
-      gitLog('拉取成功', (j.log || '').trim() || '已是最新');
-      toast('已拉取仓库更新');
+      const modeTxt = j.mode === 'rebase' ? '（本地提交已变基到远端）'
+        : (j.mode === 'merge' ? '（生成了一个合并提交）'
+          : (j.mode === 'merge-ours' ? '（分叉冲突：已按「本地为准」合并）' : ''));
+      gitLog('拉取成功' + modeTxt, (j.log || '').trim() || '已是最新');
+      toast('已拉取仓库更新' + modeTxt);
     } else {
       gitFlash(false, 'pull');
       const pl = String((j && (j.log || j.error)) || '未知错误');
@@ -7433,7 +7566,19 @@ async function doExportModFiles() {
   }
   progStart('打包模组文件夹…', 2);
   try {
-    const r = await fetch('/__modzip', { cache: 'no-store' });
+    const aboutTxt = aboutCurrent();
+    let aboutQ = '';
+    if (aboutTxt.trim()) {
+      const chk = aboutCheck(aboutTxt);
+      if (!chk.ok) {
+        toast('About.xml 有错误，先修好再导出：' + chk.errors[0], true);
+        setSettingsTab('about'); modalSettings();
+        progDone();
+        return;
+      }
+      aboutQ = '?about=' + encodeURIComponent(aboutTxt);
+    }
+    const r = await fetch('/__modzip' + aboutQ, { cache: 'no-store' });
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const blob = await r.blob();
     const d = new Date();
@@ -7456,8 +7601,8 @@ async function doExportModFiles() {
 /* ---------------- 保存路径设置 ---------------- */
 const SAVE_TARGETS = [
   { key: 'project', name: '本地保存（每个画布 → canvases/<种族>/）', hint: 'index.json + 每个画布一个 json，同时生成 nht-project.js', def: 'Editor/canvases/', pick: false },
-  { key: 'patch',   name: '注入模组（单个/多选 → Patches/*.xml）', hint: '补丁 XML 写到模组的 Patches/', def: 'NHT_CustomDolls/Patches/', pick: true },
-  { key: 'texture', name: '贴图（Textures/）', hint: '部位/发型贴图写到模组 Textures/', def: 'NHT_CustomDolls/Textures/', pick: true },
+  { key: 'patch',   name: '注入模组（单个/多选 → Patches/*.xml）', hint: '补丁 XML 写到模组的 Patches/', def: '__MOD__/Patches/', pick: true },
+  { key: 'texture', name: '贴图（Textures/）', hint: '部位/发型贴图写到模组 Textures/', def: '__MOD__/Textures/', pick: true },
   { key: 'assets',  name: '素材目录（assets/）', hint: '「按勾选写入」使用的目录', def: 'Editor/assets/', pick: true }
 ];
 function saveSettings() {
@@ -7472,7 +7617,11 @@ function saveSettings() {
 }
 const SAVE_DIRS = {};       // 手动选的目录句柄（仅本次会话可用）
 
-function pathLabel(key) { saveSettings(); return S.settings.paths[key] || (SAVE_TARGETS.find(x => x.key === key) || {}).def || ''; }
+function pathLabel(key) {
+  saveSettings();
+  const d = (SAVE_TARGETS.find(x => x.key === key) || {}).def || '';
+  return S.settings.paths[key] || String(d).replace('__MOD__', SELF.name);
+}
 
 /* 保存前校验路径：本地服务模式固定路径；否则必须有可用目录句柄 */
 async function ensureSavePath(key) {
@@ -7519,6 +7668,69 @@ function renderSettingsPaths() {
 }
 
 function setSettingsTab(tab) { S.ui.settingsTab = tab; }
+
+/* ---------------- About.xml ---------------- */
+/* 简单校验：能不能被游戏读取、必填项有没有、packageId 格式对不对 */
+function aboutCheck(text) {
+  const out = { ok: false, level: 'bad', errors: [], warns: [], info: {} };
+  const raw = String(text || '');
+  if (!raw.trim()) { out.errors.push('还没有内容：点「上传 About.xml」或粘贴一份进来'); return out; }
+  let doc = null;
+  try {
+    doc = new DOMParser().parseFromString(raw, 'application/xml');
+  } catch (e) {
+    out.errors.push('XML 解析失败：' + e.message);
+    return out;
+  }
+  const pe = doc.querySelector('parsererror');
+  if (pe) {
+    out.errors.push('XML 语法错误：' + (pe.textContent || '').trim().split('\n')[0].slice(0, 200));
+    return out;
+  }
+  const root = doc.documentElement;
+  if (!root || root.nodeName !== 'ModMetaData') {
+    out.errors.push('根节点必须是 <ModMetaData>，现在是 <' + (root ? root.nodeName : '空') + '>');
+    return out;
+  }
+  const txt = (tag) => {
+    const el = root.querySelector(tag);
+    if (!el) return '';
+    // 只取根节点下的直接子节点，避免 modDependencies 里的 name 混进来
+    for (let i = root.children.length - 1; i >= 0; i--) { }
+    return (el.textContent || '').trim();
+  };
+  const name = txt('name'), author = txt('author'), pkg = txt('packageId');
+  const vers = Array.from(root.querySelectorAll('supportedVersions > li')).map(x => (x.textContent || '').trim()).filter(Boolean);
+  const desc = txt('description');
+  const deps = Array.from(root.querySelectorAll('modDependencies > li > packageId')).map(x => (x.textContent || '').trim()).filter(Boolean);
+  out.info = { name: name, author: author, packageId: pkg, versions: vers, deps: deps, descLen: desc.length };
+
+  if (!name) out.errors.push('缺少 <name>（模组列表里显示的名字）');
+  else if (name.length > 80) out.warns.push('<name> 有点长（' + name.length + ' 字），列表里会被截断');
+  if (!pkg) out.errors.push('缺少 <packageId>（下载别人存档时用来定位模组，必须唯一）');
+  else if (!/^[A-Za-z0-9_.\-]+$/.test(pkg)) out.errors.push('<packageId> 有非法字符：只能用字母 / 数字 / . _ -');
+  else if (pkg.indexOf('.') < 0) out.warns.push('<packageId> 建议写成 author.mod 的格式（例如 atian.nht.customdolls）');
+  else if (pkg.length > 100) out.warns.push('<packageId> 太长了');
+  if (!author) out.warns.push('缺少 <author>（作者名，可以不填但建议写上）');
+  if (!vers.length) out.errors.push('缺少 <supportedVersions>，游戏不知道该在哪个版本加载');
+  else {
+    const okVers = vers.filter(v => /^(1\.[5-7])$/.test(v));
+    if (!okVers.length) out.warns.push('supportedVersions 里没有 1.5 / 1.6 / 1.7：现在是 ' + vers.join('、'));
+    if (okVers.indexOf('1.6') < 0) out.warns.push('没有声明 1.6：这个模组在当前版本可能不会显示');
+  }
+  if (!desc) out.warns.push('缺少 <description>（模组页里的说明，可留空但看起来像坏包）');
+  else if (desc.length < 20) out.warns.push('<description> 很短（' + desc.length + ' 字）');
+  if (/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/.test(raw)) out.warns.push('内容里有不可见控制字符，建议删掉');
+  if (raw.indexOf('\uFEFF') === 0) out.warns.push('文件带 BOM：RimWorld 能读，但有些工具会出问题，建议存成无 BOM');
+  out.ok = out.errors.length === 0;
+  out.level = out.ok ? (out.warns.length ? 'warn' : 'ok') : 'bad';
+  return out;
+}
+
+function aboutCurrent() {
+  return String((S.project && S.project.aboutXml) || '');
+}
+
 function settingsBodyHTML(tab) {
   const g = ensureGitSettings();
   const gi = gitState.info;
@@ -7528,12 +7740,57 @@ function settingsBodyHTML(tab) {
       : (gi && gi.installed
         ? `<p class="gitlocal is-ok">本机 Git：<b>${esc(gi.version || '已安装')}</b></p>`
         : '<p class="gitlocal is-fail">没检测到本机 Git：请先安装 <b>Git for Windows</b>，否则推送/拉取不可用。</p>'));
+  if (tab === 'about') {
+    const txt = aboutCurrent();
+    const chk = aboutCheck(txt);
+    const lv = chk.level;
+    const rowCls = lv === 'ok' ? 'is-ok' : (lv === 'warn' ? 'is-warn' : 'is-bad');
+    const inf = chk.info || {};
+    const issues = []
+      .concat(chk.errors.map(m => `<div class="issue issue--err"><b>err</b><span>${esc(m)}</span></div>`))
+      .concat(chk.warns.map(m => `<div class="issue issue--warn"><b>warn</b><span>${esc(m)}</span></div>`));
+    return `
+      <div class="setabs">
+        <button class="setab" data-act="set-tab" data-tab="paths">保存</button>
+        <button class="setab" data-act="set-tab" data-tab="git">Git</button>
+        <button class="setab" data-act="set-tab" data-tab="ui">界面</button>
+        <button class="setab is-on" data-act="set-tab" data-tab="about">About</button>
+      </div>
+      <p class="mini-note" style="margin:0 0 8px">
+        导出模组文件时会<b>忽略模组目录里的 About/About.xml</b>，用这里的内容写进 zip。
+        如果这里没配置，才回退到模组目录里的那份。
+      </p>
+      <div class="aboutstat ${rowCls}">
+        <b>${lv === 'ok' ? 'About.xml 正常' : (lv === 'warn' ? '能读，但有警告' : '有问题，导出会被拦下')}</b>
+        <span>${chk.ok ? (chk.warns.length ? chk.warns.length + ' 条警告' : '没有发现问题') : chk.errors.length + ' 处错误'}</span>
+      </div>
+      ${issues.length ? `<div class="issues" style="margin:8px 0">${issues.join('')}</div>` : ''}
+      <div class="aboutgrid">
+        <div><b>名称</b><span>${esc(inf.name || '—')}</span></div>
+        <div><b>作者</b><span>${esc(inf.author || '—')}</span></div>
+        <div><b>包名</b><span>${esc(inf.packageId || '—')}</span></div>
+        <div><b>版本</b><span>${esc((inf.versions || []).join(' / ') || '—')}</span></div>
+        <div><b>依赖</b><span>${esc((inf.deps || []).join('、') || '无')}</span></div>
+        <div><b>说明</b><span>${(inf.descLen || 0)} 字</span></div>
+      </div>
+      <div class="rowflex" style="gap:6px;margin:10px 0 6px;flex-wrap:wrap">
+        <button class="btn btn--sm" data-act="about-up">${icon('file')}上传 About.xml</button>
+        <button class="btn btn--sm" data-act="about-load-cur" ${LOCAL_HTTP ? '' : 'disabled'}>读取模组目录现有</button>
+        <button class="btn btn--sm" data-act="about-auto">用项目信息生成</button>
+        <button class="btn btn--sm btn--danger" data-act="about-clear">清空</button>
+      </div>
+      <textarea class="inp aboutta" id="aboutTa" spellcheck="false"
+        placeholder="在这里粘贴 About.xml 内容，或点上面的「上传 About.xml」">${esc(txt)}</textarea>
+      <p class="mini-note" style="margin:6px 0 0">修改后会随项目一起保存；导出模组文件时用这份。</p>
+    `;
+  }
   if (tab === 'ui') {
     return `
       <div class="setabs">
         <button class="setab" data-act="set-tab" data-tab="paths">保存</button>
         <button class="setab" data-act="set-tab" data-tab="git">Git</button>
         <button class="setab is-on" data-act="set-tab" data-tab="ui">界面</button>
+        <button class="setab" data-act="set-tab" data-tab="about">About</button>
       </div>
       <p class="mini-note" style="margin:0 0 10px">鼠标悬停提示（气泡）。关掉之后左下两块面板里就不再弹气泡，界面更干净。</p>
       <div class="swrow" style="margin:0 0 10px">
@@ -7559,6 +7816,7 @@ function settingsBodyHTML(tab) {
         <button class="setab" data-act="set-tab" data-tab="paths">保存</button>
         <button class="setab is-on" data-act="set-tab" data-tab="git">Git</button>
         <button class="setab" data-act="set-tab" data-tab="ui">界面</button>
+        <button class="setab" data-act="set-tab" data-tab="about">About</button>
       </div>
       ${gitLine}
       <div class="repoline">远程仓库：
@@ -7568,10 +7826,10 @@ function settingsBodyHTML(tab) {
       <div class="repoline">本机仓库：<b data-tip="${esc(g.dir || '（未设置）')}">${esc(g.dir || '（未设置）')}</b>
         <button class="iconbtn iconbtn--xs" data-act="g-pick" title="选择本机文件夹">${icon('folder')}</button>
       </div>
-      <div class="field"><label>提交者名</label><div class="ctl">
+      <div class="field"><label>提交者名</label><div class="ctl" title="会写进 git 提交记录，GitHub 上显示的就是这个名字">
         <input class="inp" data-f="g.name" value="${esc(g.name || '')}" spellcheck="false" placeholder="可空">
       </div></div>
-      <div class="field"><label>提交者邮箱</label><div class="ctl">
+      <div class="field"><label>提交者邮箱</label><div class="ctl" title="会写进 git 提交记录；留空则用本机 git 全局配置">
         <input class="inp" data-f="g.email" value="${esc(g.email || '')}" spellcheck="false" placeholder="可空">
       </div></div>
       <div class="swrow" style="margin:8px 0 2px">
@@ -7599,6 +7857,7 @@ function settingsBodyHTML(tab) {
         <button class="setab is-on" data-act="set-tab" data-tab="paths">保存</button>
         <button class="setab" data-act="set-tab" data-tab="git">Git</button>
         <button class="setab" data-act="set-tab" data-tab="ui">界面</button>
+        <button class="setab" data-act="set-tab" data-tab="about">About</button>
       </div>
       <div class="swrow" style="margin:0 0 10px">
         <button class="switch${S.settings.checkPath ? ' is-on' : ''}" data-act="set-checkpath" role="switch"
@@ -7649,6 +7908,21 @@ function modalSettings() {
 }
 
 
+
+async function loadSelf() {
+  if (!LOCAL_HTTP) return;
+  try {
+    const r = await fetch('/__self', { cache: 'no-store' });
+    const j = await r.json();
+    if (j && j.ok) {
+      SELF.name = j.name || SELF.name;
+      SELF.dir = j.dir || '';
+      // 文件夹改过名：把保存路径里旧的模组名前缀换成新的
+      if (migrateModPaths()) { try { persist(); } catch (e) { } }
+    }
+  } catch (e) { }
+}
+
 async function gitLoadRemote() {
   if (!LOCAL_HTTP) return null;
   try {
@@ -7686,6 +7960,14 @@ async function gitLoadInfo() {
   try {
     const r = await fetch('/__gitinfo', { cache: 'no-store' });
     gitState.info = await r.json();
+    try {
+      const g = ensureGitSettings();
+      const inf = gitState.info || {};
+      let changed = false;
+      if (!String(g.name || '').trim() && inf.userName) { g.name = inf.userName; changed = true; }
+      if (!String(g.email || '').trim() && inf.userEmail) { g.email = inf.userEmail; changed = true; }
+      if (changed) { saveSettings(); try { refreshSettingsInPlace(); } catch (e) { } }
+    } catch (e) { }
   } catch (e) { gitState.info = { installed: false, error: e && e.message }; }
 }
 
@@ -7719,12 +8001,48 @@ function canvasSig(c) {
     d: c.displayBox ? [Math.round(c.displayBox.w), Math.round(c.displayBox.h), c.displayBox.pos] : null
   }));
 }
-function canvasDirty(c) { return !c.savedSig || c.savedSig !== canvasSig(c); }
+
+/* 默认体型画布（Male / Female / Fat / Hulk / Kid）如果和 NHT 自带坐标一致，
+   就不该被导出成补丁 —— 那样等于用同一份数据覆盖原版，还会盖掉别人的改动。 */
+
+/* 按 bodytype 造一张「原版坐标」画布，并沿用给定画布的 RJW 开关 */
+function baseCanvasFor(c) {
+  const bt = (D.bodytypes || []).find(b => b.doll === c.doll) || (D.bodytypes || []).find(b => b.id === c.base);
+  if (!bt) return null;
+  const fresh = canvasFromBodytype(bt);
+  if (c && c.rjw === false) {
+    fresh.rjw = false;
+    fresh.parts = (fresh.parts || []).filter(p => p.source !== 'rjw');
+    fresh.detached = [];
+  } else if (c && c.rjw) {
+    fresh.rjw = true;
+  }
+  return fresh;
+}
+
+let SELF = { name: 'NHT_CustomDolls', dir: '' };   // 运行时从 /__self 读实际模组文件夹名
+const PRISTINE_SIG = new Map();
+function canvasIsPristineDefault(c) {
+  if (!c || c.kind !== 'default') return false;
+  const key = (c.doll || '') + '|' + (c.rjw ? 1 : 0);
+  let sig = PRISTINE_SIG.get(key);
+  if (!sig) {
+    try { const fresh = baseCanvasFor(c); sig = fresh ? canvasSig(fresh) : ''; } catch (e) { sig = ''; }
+    if (sig) PRISTINE_SIG.set(key, sig);
+  }
+  return !!sig && canvasSig(c) === sig;
+}
+
+function canvasDirty(c) { if (canvasIsPristineDefault(c)) return false; return !c.savedSig || c.savedSig !== canvasSig(c); }
 
 function mxRowHTML(c) {
   const bad = canvasDirty(c);
+  const prim = canvasIsPristineDefault(c);
+  const right = bad ? '<em>已修改</em>'
+    : (prim ? '<span class="dim" style="margin-left:auto">默认（NHT 坐标）</span>'
+      : '<span class="dim" style="margin-left:auto">未改动</span>');
   return `<label class="mxrow"><input type="checkbox" data-mx-cv="${esc(c.id)}">
-      <span>${esc(c.title)}</span>${bad ? '<em>已修改</em>' : '<span class="dim" style="margin-left:auto">未改动</span>'}</label>`;
+      <span>${esc(c.title)}</span>${right}</label>`;
 }
 
 function modalMultiExport() {
@@ -7754,7 +8072,7 @@ function modalMultiExport() {
     <div class="modal__head"><span class="idx">MULTI</span><h3>多选注入模组</h3>
       <button class="iconbtn x" data-act="close-modal">${icon('x')}</button></div>
     <div class="modal__body">
-      <p class="mini-note" style="margin:0 0 8px">勾选要写进 <code>NHT_CustomDolls/Patches/</code> 的画布，每个画布生成一个 <code>nht-*.xml</code>。
+      <p class="mini-note" style="margin:0 0 8px">勾选要写进 <code>${esc(SELF.name)}/Patches/</code> 的画布，每个画布生成一个 <code>nht-*.xml</code>。
         默认折叠，<b>改过的画布会自动勾上</b>（带「已修改」标记）。</p>
       <div class="artsave__bar" style="margin-bottom:6px">
         <button class="btn btn--xs" data-act="mx-all">全选</button>
@@ -7949,6 +8267,31 @@ function hairSectionHTML(c) {
 
 
 /* 只要当前就在 HAR 分栏，立刻重绘它，让开关按钮的状态跟上 */
+
+/* HAR 面板的开关状态就地同步（不重建 DOM，避免闪烁/丢焦点） */
+function syncHairSwitches() {
+  try {
+    const c = activeCanvas();
+    if (!c) return;
+    const pane = document.getElementById('paneHair');
+    if (!pane) return;
+    const state = {
+      'hairfit-toggle': !!c.hairFitEnabled,
+      'hairfit-useoff': !!c.hairFitUseWhenOff,
+      'hair-tint-toggle': c.hairTintShow !== false,
+      'hair-back': c.hairBackShow !== false,
+      'hair-xray': !!c.hairShowInXray,
+      'hair-follow': !!c.hairFollowOffset,
+    };
+    pane.querySelectorAll('.switch[data-act]').forEach(el => {
+      const act = el.dataset.act;
+      if (!(act in state)) return;
+      el.classList.toggle('is-on', state[act]);
+      el.setAttribute('aria-checked', state[act] ? 'true' : 'false');
+    });
+  } catch (e) { }
+}
+
 function refreshHairPaneIfActive() {
   try { if (S.tab === 'hair') renderHairPane(); } catch (e) { }
 }
@@ -9192,8 +9535,104 @@ function renderGuides(c) {
 }
 
 const HAIRFIT_DEF = new Map();
+
+/* ---------------- NHT 种族部位对照表 ---------------- */
+/* NHT 的 64 个标准槽位（顺序 = bodyPartId），和 DLL 里的 NHT_SLOT_DEFS 一致 */
+const NHT_SLOT_DEFS = ['Torso','Ribcage','Sternum','Pelvis','Spine','Stomach','Heart','Lung','Lung',
+  'Kidney','Kidney','Liver','Neck','Head','Skull','Brain','Eye','Eye','Ear','Ear','Nose','Jaw','Tongue',
+  'Shoulder','Clavicle','Arm','Humerus','Radius','Hand','Finger','Finger','Finger','Finger','Finger',
+  'Shoulder','Clavicle','Arm','Humerus','Radius','Hand','Finger','Finger','Finger','Finger','Finger',
+  'Waist','Leg','Femur','Tibia','Foot','Toe','Toe','Toe','Toe','Toe','Leg','Femur','Tibia','Foot',
+  'Toe','Toe','Toe','Toe','Toe'];
+
+/* 从画布里记录的种族身体部位表算对照：[[nhtSlot, bodyIndex], ...] */
+function raceBodyRemap(c) {
+  const rp = (c && c.race && Array.isArray(c.race.bodyParts)) ? c.race.bodyParts : null;
+  if (!rp || !rp.length) return null;
+  const defs = rp.map(x => String((x && x.def) || ''));
+  const used = new Array(defs.length).fill(false);
+  const pairs = [];
+  let slot = 0;
+  NHT_SLOT_DEFS.forEach(want => {
+    for (let i = 0; i < defs.length; i++) {
+      if (used[i] || defs[i].toLowerCase() !== want.toLowerCase()) continue;
+      used[i] = true;
+      pairs.push([slot, i]);
+      break;
+    }
+    slot++;
+  });
+  // 种族多出来的部位（尾巴、腮、翅……）按身体顺序排到 64+
+  for (let i = 0; i < defs.length; i++) {
+    if (used[i]) continue;
+    pairs.push([slot, i]);
+    slot++;
+  }
+  return pairs.length ? pairs : null;
+}
+
+/* 确保画布上存着对照表（导入时 / 导出时都会补） */
+function ensureRaceRemap(c) {
+  if (!c || c.kind !== 'race' || !c.race) return null;
+  const body = c.race.bodyDef;
+  if (!body || /^Human$/i.test(body)) return null;
+  // 游戏写回来的对照表最准（下标就是 AllParts 顺序），有就优先用
+  if (c.race.remapSrc === 'game' && Array.isArray(c.race.remap) && c.race.remap.length) return c.race.remap;
+  const pairs = raceBodyRemap(c);
+  if (!pairs) return null;
+  c.race.remap = pairs;
+  c.race.remapBody = body;
+  c.race.remapSrc = 'guess';
+  return pairs;
+}
+
+/* 从 Editor/body-map-<body>.json 读游戏给的对照表（多个画布共用同一个身体时只读一次） */
+async function loadRaceRemaps() {
+  if (!LOCAL_HTTP) return 0;
+  const cache = new Map();
+  let n = 0;
+  const list = (S.canvases || []).filter(c => c && c.kind === 'race' && c.race && c.race.bodyDef && !/^Human$/i.test(c.race.bodyDef));
+  for (const c of list) {
+    const body = c.race.bodyDef;
+    let j = cache.get(body);
+    if (j === undefined) {
+      j = null;
+      try {
+        const r = await fetch('body-map-' + encodeURIComponent(body) + '.json', { cache: 'no-store' });
+        if (r.ok) {
+          const t = await r.json();
+          if (t && Array.isArray(t.pairs) && t.pairs.length) j = t;
+        }
+      } catch (e) { }
+      cache.set(body, j);
+    }
+    if (!j) continue;
+    const pairs = j.pairs.map(p => [Number(p.nht), Number(p.body)]);
+    c.race.remap = pairs;
+    c.race.remapBody = j.body || body;
+    c.race.remapSrc = 'game';
+    n++;
+  }
+  if (n) persist();
+  return n;
+}
+
+function bodyRemapXML(bodyDef, pairs, indent) {
+  const pad = indent || '      ';
+  const defName = 'NHTCD_BodyRemap_' + String(bodyDef).replace(/[^\w.-]+/g, '_');
+  const rows = pairs.map(([a, b]) => pad + '      <li>' + a + ', ' + b + '</li>').join('\n');
+  return pad + '<!-- ' + bodyDef + ' · 种族部位对照表（NHT 槽位 → 身体部位下标） -->\n'
+    + pad + '<NiceHealthTab.BodyPartIndexesRemap>\n'
+    + pad + '  <defName>' + xesc(defName) + '</defName>\n'
+    + pad + '  <bodyDefName>' + xesc(bodyDef) + '</bodyDefName>\n'
+    + pad + '  <parts>\n' + rows + '\n' + pad + '  </parts>\n'
+    + pad + '</NiceHealthTab.BodyPartIndexesRemap>';
+}
+
 function buildPatchXML(scope) {
-  const list = (scope === 'one' ? [activeCanvas()] : S.canvases).filter(Boolean);
+  const list = (scope === 'one' ? [activeCanvas()] : S.canvases)
+    .filter(Boolean)
+    .filter(c => !canvasIsPristineDefault(c));   // 默认坐标没动过 → 不导出
   const d = new Date();
   const stamp = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
   const ops = [];
@@ -9355,6 +9794,19 @@ ${detailPartXML(now, base, dd.doll, '      ')}
     });
   });
 
+  // 每个种族身体各写一份对照表（同 bodyDef 只写一次）
+  try {
+    const seenBody = new Set();
+    list.forEach(c => {
+      if (!c || c.kind !== 'race') return;
+      const pairs = ensureRaceRemap(c);
+      const body = c.race && c.race.remapBody;
+      if (!pairs || !body || seenBody.has(body)) return;
+      seenBody.add(body);
+      adds.push(bodyRemapXML(body, pairs));
+    });
+  } catch (e) { }
+
   if (adds.length) {
     ops.push(`  <!-- 新增定义 -->`);
     ops.push(`  <Operation Class="PatchOperationAdd">
@@ -9372,12 +9824,16 @@ ${adds.join('\n')}
   基准模组：Nice Health Tab (${MOD.packageId}) v${MOD.version} · 创意工坊 ${MOD.workshop}
 ${RJW_PARTS.length ? `  RJW 层：${xesc(RJW_MOD.name)} (${RJW_MOD.packageId}) · 相关操作带 MayRequire rim.job.world
 ` : ''}  画布：${list.length} 个 · 部位：${list.reduce((n, c) => n + c.parts.length, 0)} 个 · 补丁操作：${opCount()} 段
-  贴图路径指向 Nice Health Tab（以及 RJW 补丁）的 Textures/ 目录。直接点「保存到注入模组」写进 NHT_CustomDolls/Patches/ 即可，也可以手动放进任意模组的 Patches/。
+  贴图路径指向 Nice Health Tab（以及 RJW 补丁）的 Textures/ 目录。直接点「保存到注入模组」写进 ${esc(SELF.name)}/Patches/ 即可，也可以手动放进任意模组的 Patches/。
   ${S.project.note ? '备注：' + xesc(S.project.note).replace(/\n/g, ' ') : ''}
 -->`;
+  // 给每段 Operation 加 <success>Always</success>：别的模组换了 Def / 少了某个部位时，
+  // 补丁不会在日志里刷红色错误，也不会中断后续操作
+  const body = ops.join('\n').replace(/<Operation Class="([^"]+)">/g,
+    '<Operation Class="$1">\n    <success>Always</success>');
   return `${head}
 <Patch>
-${ops.join('\n')}
+${body}
 </Patch>
 `;
 }
@@ -10129,7 +10585,7 @@ function openTexFix(missing) {
     <div class="modal__head"><span class="idx">TEXTURES</span><h3>缺少 ${missing.length} 张贴图</h3>
       <button class="iconbtn x" data-act="close-modal">${icon('x')}</button></div>
     <div class="modal__body">
-      <p class="mini-note">下面这些贴图在 <code>NHT_CustomDolls/Textures/</code> 里找不到，游戏会报
+      <p class="mini-note">下面这些贴图在 <code>${esc(SELF.name)}/Textures/</code> 里找不到，游戏会报
         <code>Could not load Texture2D</code>：</p>
       <ul class="mini-note" style="margin:6px 0 10px">${list}</ul>
       <p class="mini-note">点下面的按钮选本机 PNG（文件名对应即可，比如 <b>MihoTail2.png</b> → <code>Custom/MihoTail2</code>），
@@ -10211,7 +10667,7 @@ async function savePatchToMod() {
       let hasAbout = false;
       try { await dir.getDirectoryHandle('About'); hasAbout = true; } catch (e) { hasAbout = false; }
       if (!hasAbout) {
-        toast('这个文件夹里没有 About/ —— 再选一次 NHT_CustomDolls 根目录', true);
+        toast('这个文件夹里没有 About/ —— 再选一次模组根目录', true);
         continue;
       }
       injectDir = dir;
@@ -10219,7 +10675,7 @@ async function savePatchToMod() {
     if (!injectDir) return;
   }
   try {
-    if (injectDir.name !== 'NHT_CustomDolls') injectDir = injectDir;   // any mod folder is fine
+    // 任意模组文件夹都可以注入
     let isMod = false;
     try { await injectDir.getDirectoryHandle('About'); isMod = true; } catch (e) { isMod = false; }
     progStart('准备写入…', 4);
@@ -10959,6 +11415,8 @@ function createRaceCanvas(res, baseId, title) {
   };
   // 自动把部位编号对齐到 NHT 槽位（避免“左耳变鼻、右耳变下颚”）
   try { autoAlignRaceBids(c); } catch (e) { }
+  // 同时生成 NHT 部位对照表（尾巴/腮这类多出来的部位会被排到 64+）
+  try { ensureRaceRemap(c); } catch (e) { }
   c.parts.forEach(p => { p.name = p.name; });
   c.notes = (res.race
     ? `从模组「${res.modName}」读取的种族画布：${res.race.defName} / ${res.bodyDefName}。基础几何来自「${bt.title}」${noParts ? '（这个种族没有自带身体部位，默认套用标准女性）' : ''}，请按种族贴图重新摆位。`
@@ -11241,6 +11699,29 @@ function toast(msg, danger) {
 /* ==========================================================================
    global events
    ========================================================================== */
+
+/* 只读预览时，右栏输入框改动一律回滚并提示（不再靠 CSS 封死交互） */
+function blockPreviewEdit(el) {
+  if (!S.preview) return false;
+  if (!el || !el.closest || !el.closest('.col--r')) return false;
+  toast('只读预览：要编辑请先点「应用」或「还原」', true);
+  try { renderInspector(); } catch (e) { }
+  return true;
+}
+['input', 'change'].forEach(evt => {
+  document.addEventListener(evt, e => {
+    if (!S.preview) return;
+    const t = e.target;
+    if (!t || !t.closest) return;
+    if (blockPreviewEdit(t)) { try { e.stopPropagation(); } catch (err) { } }
+  }, true);
+});
+document.addEventListener('click', e => {
+  if (!S.preview) return;
+  const t = e.target;
+  if (t && t.closest && t.closest('.col--l .cv')) { /* 切画布会自己退出预览 */ }
+}, true);
+
 const PREVIEW_BLOCKED_ACTS = new Set([
   'add-part', 'del-part', 'duplicate-part', 'part-img', 'part-img-clear', 'apply-bodytype',
   'flip-h', 'flip-v', 'auto-align', 'canvas-new', 'new-canvas', 'del-canvas-ok', 'import-race',
@@ -11310,6 +11791,27 @@ document.addEventListener('click', e => {
     }); break;
     case 'git-open-folder': gitRefresh().then(() => { refreshSettingsInPlace(); toast(gitState.status ? ('分支 ' + gitState.status.branch + ' · 待推送 ' + (gitState.status.ahead || 0) + ' · 待拉取 ' + (gitState.status.behind || 0)) : '还没有连接成功', !gitState.status); }); break;
 
+    case 'git-use-current': {
+      const apply = (cur) => {
+        ensureGitSettings().branch = cur;
+        saveSettings();
+        const inp = document.getElementById('gitBranchInput');
+        if (inp) inp.value = cur;
+        try { renderPatch(); } catch (e) { }
+        try { if (document.querySelector('.modal')) refreshSettingsInPlace(); } catch (e) { }
+        toast('分支已改为当前分支：' + cur);
+      };
+      const cur = (gitState.status && gitState.status.branch) || (gitState.remote && gitState.remote.branch) || '';
+      if (cur) { apply(cur); break; }
+      fetch('/__gitremote?dir=' + encodeURIComponent(ensureGitSettings().dir || ''), { cache: 'no-store' })
+        .then(r => r.json())
+        .then(j => {
+          const b = (j && j.branch) || '';
+          if (b) apply(b); else toast('读不到当前分支（仓库没连上？）', true);
+        })
+        .catch(() => toast('读不到当前分支', true));
+      break;
+    }
     case 'git-sync-now': e.stopPropagation(); toast('正在连接远端检查…'); gitRefresh(true).then(() => { toast(gitState.status ? '已同步仓库状态' : '同步失败，看下方日志', !gitState.status); }); break;
 
     case 'git-prefix': {
@@ -11321,13 +11823,26 @@ document.addEventListener('click', e => {
     }
     case 'git-prefix-menu': {
       const m = document.getElementById('gitPrefixMenu');
-      if (m) m.hidden = !m.hidden;
+      if (!m) break;
+      if (!m.hidden) { m.hidden = true; break; }
+      // 面板里有 overflow:hidden，会把绝对定位的菜单裁掉 → 挂到 body 上做成浮层
+      if (m.parentElement !== document.body) document.body.appendChild(m);
+      const btn = document.querySelector('#gitPrefixSel .gitsel__btn');
+      const r = btn ? btn.getBoundingClientRect() : { left: 8, bottom: 8 };
+      m.style.position = 'fixed';
+      m.style.left = Math.max(8, Math.min(r.left, innerWidth - 210)) + 'px';
+      m.style.top = Math.min(r.bottom + 5, innerHeight - 220) + 'px';
+      m.style.zIndex = '220000';
+      m.style.minWidth = '190px';
+      m.hidden = false;
       break;
     }
     case 'git-prefix-set': {
       const m = document.getElementById('gitPrefixMenu');
       if (m) m.hidden = true;
       gitApplyPrefix(el.dataset.prefix || '');
+      // 重画右栏，让“分支开头”按钮文字和分支输入框立刻跟着变
+      try { renderPatch(); } catch (err) { }
       renderGitUI();
       gitRefresh();
       break;
@@ -11688,10 +12203,9 @@ document.addEventListener('click', e => {
     }
     case 'hair-follow': {
       const c = activeCanvas(); if (!c) break;
-      c.hairFollowOffset = !c.hairFollowOffset;
-      if (c.hairFollowOffset) c.hairFitEnabled = true;
-      renderInspector(); renderStage(); persist(); pushHistory();
-      toast(c.hairFollowOffset ? '发型将跟随导出偏移（导出时自动扣除 Y）' : '发型不再跟随导出偏移');
+      c.hairFollowOffset = !c.hairFollowOffset;      // 只切自己，不再顺手打开「发型重绘」
+      renderStage(); renderInspector(); syncHairSwitches(); persist(); pushHistory();
+      toast(c.hairFollowOffset ? '已开启：发型跟随导出偏移' : '已关闭：发型跟随导出偏移');
       break;
     }
     case 'canvas-lock': {
@@ -12139,9 +12653,17 @@ document.addEventListener('click', e => {
     case 'export-patch': exportPatch(); break;
     case 'patch-to-mod': savePatchToMod(); break;
     case 'fix-body-map': applyBodyMapFix(); break;
-    case 'hairfit-useoff': { const c0 = activeCanvas(); if (c0) { c0.hairFitUseWhenOff = !c0.hairFitUseWhenOff; renderInspector(); pushHistory(); } break; }
-    case 'hair-tint-toggle': { const c0 = activeCanvas(); if (c0) { c0.hairTintShow = c0.hairTintShow === false; renderStage(); renderInspector(); refreshHairPaneIfActive(); pushHistory(); } break; }
-    case 'hair-tint-reset': { const c0 = activeCanvas(); if (c0) { c0.hairTint = '#c8b48a'; renderStage(); renderInspector(); refreshHairPaneIfActive(); pushHistory(); } break; }
+    case 'hairfit-useoff': {
+      const c0 = activeCanvas();
+      if (c0) {
+        c0.hairFitUseWhenOff = !c0.hairFitUseWhenOff;
+        renderInspector(); syncHairSwitches(); pushHistory();
+        toast(c0.hairFitUseWhenOff ? '已开启：导出发型坐标' : '已关闭：导出发型坐标');
+      }
+      break;
+    }
+    case 'hair-tint-toggle': { const c0 = activeCanvas(); if (c0) { c0.hairTintShow = c0.hairTintShow === false; renderStage(); renderInspector(); syncHairSwitches(); pushHistory(); } break; }
+    case 'hair-tint-reset': { const c0 = activeCanvas(); if (c0) { c0.hairTint = '#c8b48a'; renderStage(); renderInspector(); syncHairSwitches(); pushHistory(); } break; }
     case 'sync-body-parts': syncBodyPartsFromGame(); break;
     case 'norm-box': {
       const c = activeCanvas();
@@ -12198,30 +12720,16 @@ document.addEventListener('click', e => {
     }
     case 'hairfit-toggle': {
       const c = activeCanvas(); if (!c) break;
-      c.hairFitEnabled = !c.hairFitEnabled;
-      if (c.hairFitEnabled) {
-        // 打开“发型重绘”：记住「导出发型坐标」原来的状态并打开它
-        c.hairFitUsePrev = !!c.hairFitUseWhenOff;
-        c.hairFitUseWhenOff = true;
-      } else if (typeof c.hairFitUsePrev === 'boolean') {
-        // 关闭“发型重绘”：恢复打开前的状态
-        c.hairFitUseWhenOff = c.hairFitUsePrev;
-        delete c.hairFitUsePrev;
-      }
-
+      c.hairFitEnabled = !c.hairFitEnabled;          // 只切这一个开关，不再联动「导出发型坐标」
       if (c.hairFitEnabled && !c.hairFit) c.hairFit = { scale: 0.78, offsetX: 0, offsetY: -0.21 };
-      renderStage(); renderInspector(); pushHistory();
-      toast(c.hairFitEnabled
-        ? '已开启发型重绘（导出发型坐标已同步打开）'
-        : (c.hairFitUseWhenOff
-            ? '已关闭发型重绘（导出发型坐标保持打开）'
-            : '已关闭发型重绘（导出发型坐标已恢复为关闭）'));
+      renderStage(); renderInspector(); syncHairSwitches(); pushHistory();
+      toast(c.hairFitEnabled ? '已开启发型重绘' : '已关闭发型重绘');
       break;
     }
     case 'hair-xray': {
       const c = activeCanvas(); if (!c) break;
       c.hairShowInXray = !c.hairShowInXray;
-      renderInspector(); refreshHairPaneIfActive(); persist();
+      renderInspector(); syncHairSwitches(); persist();
       toast(c.hairShowInXray ? '骨骼/器官视图会显示头发' : '骨骼/器官视图隐藏头发');
       break;
     }
@@ -12230,7 +12738,7 @@ document.addEventListener('click', e => {
       c.hairPreviewImg = el.dataset.p;
       c.hairPreviewShow = true;          // 选了预览就一定要看得见
       c.hairFitEnabled = true;           // 允许在画布里点选/拖动
-      closeModal(); renderStage(); renderInspector(); refreshHairPaneIfActive(); pushHistory();
+      closeModal(); renderStage(); renderInspector(); syncHairSwitches(); pushHistory();
       toast('头发预览已设为：' + String(el.dataset.p).split('/').pop());
       break;
     }
@@ -12246,7 +12754,7 @@ document.addEventListener('click', e => {
     case 'hair-lock-fit': {
       const c = activeCanvas(); if (!c) break;
       c.hairLocked = !c.hairLocked;
-      renderStage(); renderInspector(); refreshHairPaneIfActive(); persist(); pushHistory();
+      renderStage(); renderInspector(); syncHairSwitches(); persist(); pushHistory();
       toast(c.hairLocked ? '头发已锁定（拖动/滚轮不再移动它）' : '头发已解锁');
       break;
     }
@@ -12299,7 +12807,7 @@ document.addEventListener('click', e => {
     case 'hair-back': {
       const c = activeCanvas(); if (!c) break;
       c.hairBackShow = c.hairBackShow === false;
-      renderStage(); renderInspector(); refreshHairPaneIfActive(); persist();
+      renderStage(); renderInspector(); syncHairSwitches(); persist();
       toast(c.hairBackShow === false ? '已隐藏后背层预览' : '已显示后背层预览');
       break;
     }
@@ -12327,6 +12835,36 @@ document.addEventListener('click', e => {
     }
     case 'pick-part': { const p = (activeCanvas() || {}).parts.find(x => String(x.uid) === el.dataset.uid); if (p) select(p.uid); break; }
     case 'export-json': exportJSON(); break;
+    case 'about-up': {
+      const fi = $('#fileInput');
+      fi.accept = '.xml,application/xml,text/xml';
+      fi.multiple = false;
+      filePurpose = 'about';
+      fi.click();
+      break;
+    }
+    case 'about-load-cur': {
+      fetch('/__about', { cache: 'no-store' }).then(r => r.json()).then(j => {
+        if (j && j.ok) {
+          S.project.aboutXml = j.text;
+          persist(); modalSettings();
+          toast('已读取模组目录里的 About.xml');
+        } else toast('读取失败：' + ((j && j.error) || '未知错误'), true);
+      }).catch(err => toast('读取失败：' + err.message, true));
+      break;
+    }
+    case 'about-auto': {
+      S.project.aboutXml = aboutXML();
+      persist(); modalSettings();
+      toast('已按项目信息生成 About.xml');
+      break;
+    }
+    case 'about-clear': {
+      S.project.aboutXml = '';
+      persist(); modalSettings();
+      toast('已清空：导出时会回退到模组目录里的 About.xml');
+      break;
+    }
     case 'import-json': {
       const fi = $('#fileInput');
       fi.accept = '.json,application/json';
@@ -12961,9 +13499,37 @@ $('#hairInput').addEventListener('change', e => {
   }, 250));
 });
 
+
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (!t || t.id !== 'aboutTa') return;
+  S.project.aboutXml = t.value;
+  persist();
+  clearTimeout(window.__aboutTaT);
+  window.__aboutTaT = setTimeout(() => {
+    try { if (document.querySelector('.modal')) modalSettings(); } catch (err) { }
+  }, 900);
+});
+
 $('#fileInput').addEventListener('change', e => {
   if (filePurpose === 'asset') { addAssetFiles(e.target.files); e.target.value = ''; return; }
   const f = e.target.files && e.target.files[0];
+  if (filePurpose === 'about') {
+    if (f) {
+      const rd = new FileReader();
+      rd.onload = () => {
+        S.project.aboutXml = String(rd.result || '');
+        persist();
+        try { modalSettings(); } catch (err) { }
+        const chk = aboutCheck(S.project.aboutXml);
+        toast(chk.ok ? 'About.xml 已载入（' + (chk.warns.length ? chk.warns.length + ' 条警告' : '格式正常') + '）'
+          : 'About.xml 有问题：' + chk.errors[0], !chk.ok);
+      };
+      rd.readAsText(f, 'utf-8');
+    }
+    e.target.value = '';
+    return;
+  }
   if (f) importJSON(f);
   e.target.value = '';
 });
@@ -13979,7 +14545,8 @@ function boot() {
   // 进入页面时弹一次通知气泡（内容来自 notice.html）
   loadNotice();
   loadTips();
-  setTimeout(() => { try { notifHint(); } catch (e) { } try { refreshAttention(); } catch (e) { } if (LOCAL_HTTP) { gitRefresh(); loadTexIndex().then(() => { try { renderPatch(); } catch (e) { } }); } }, 700);
+  loadSelf().then(() => { try { renderSettingsPaths(); } catch (e) { } try { renderPatch(); } catch (e) { } });
+setTimeout(() => { try { notifHint(); } catch (e) { } try { refreshAttention(); } catch (e) { } if (LOCAL_HTTP) { gitRefresh(); loadTexIndex().then(() => { try { renderPatch(); } catch (e) { } }); } }, 700);
 
   // 先看浏览器缓存，等文件到了再比 savedAt，谁新用谁（避免旧文件把新数据盖掉）
   const saved = loadSaved();
@@ -14031,6 +14598,7 @@ function boot() {
       renderAll();
       try { if (typeof persist === 'function') persist(); } catch (e) { }
       setSaveStatus('已载入 ' + res.canvases.length + ' 个画布文件 · ' + now());
+      loadRaceRemaps().then(k => { if (k) { try { renderAll(); } catch (e) { } } }).catch(() => { });
     }).catch(() => { });
   }
   try { gmkMount(); gmkRender(); setTimeout(() => { try { gmkCheckNew(); } catch (e) { } }, 1600); } catch (e) { }

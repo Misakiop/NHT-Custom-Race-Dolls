@@ -19,12 +19,15 @@ namespace NHT_CustomDolls
         public bool showHairInXray = false;
         // 调试模式：输出启动信息、诊断日志、缺图警告等（默认关闭）
         public bool debug = false;
+        // 把所有发型类 addon 全画出来（默认关闭：只画主发 + 后发，避免多个发型叠在头上）
+        public bool drawAllHairLayers = false;
 
         public override void ExposeData()
         {
             Scribe_Collections.Look(ref rules, "rules", LookMode.Value, LookMode.Value);
             Scribe_Values.Look(ref showHairInXray, "showHairInXray", false);
             Scribe_Values.Look(ref debug, "debug", false);
+            Scribe_Values.Look(ref drawAllHairLayers, "drawAllHairLayers", false);
             if (Scribe.mode == LoadSaveMode.PostLoadInit && rules == null)
             {
                 rules = new Dictionary<string, string>();
@@ -625,6 +628,7 @@ namespace NHT_CustomDolls
                 public readonly List<string> extraPath = new List<string>();
                 public readonly List<int> backExtra = new List<int>();
                 public readonly List<string> backExtraPath = new List<string>();
+                public readonly List<string> skipped = new List<string>();
             }
             private static readonly Dictionary<string, AddonSet> addonSets = new Dictionary<string, AddonSet>();
             private static AddonSet cur = new AddonSet();
@@ -736,16 +740,40 @@ namespace NHT_CustomDolls
                             && pt.IndexOf("Hair", StringComparison.OrdinalIgnoreCase) < 0) continue;
                         if (isBg)
                         {
-                            // 后层一律在最底层画：第一个记成 bg，多余的进 backExtra
+                            // 后层一律在最底层画：第一个记成 bg；其它后层默认不画（可能又是另一套发型）
+                            bool allLayersBg = (CustomDollsMod.Settings != null && CustomDollsMod.Settings.drawAllHairLayers);
                             if (cur.bg < 0) { cur.bg = i; cur.bgPath = pt; }
-                            else { cur.backExtra.Add(i); cur.backExtraPath.Add(pt); }
+                            else if (allLayersBg) { cur.backExtra.Add(i); cur.backExtraPath.Add(pt); }
+                            else { cur.skipped.Add(nm + " -> " + pt); }
                         }
-                        else if (cur.main < 0) { cur.main = i; cur.mainPath = pt; }
-                        else if (nm.IndexOf("ahoge", StringComparison.OrdinalIgnoreCase) >= 0
-                              || nm.IndexOf("highlight", StringComparison.OrdinalIgnoreCase) >= 0
-                              || nm.IndexOf("hair", StringComparison.OrdinalIgnoreCase) >= 0
-                              || pt.IndexOf("Hair", StringComparison.OrdinalIgnoreCase) >= 0)
-                        { cur.extra.Add(i); cur.extraPath.Add(pt); }
+                        else
+                        {
+                            // 呆毛 / 高光：永远只算「附加层」，不能当主发（否则真发会被当成多余层丢掉）
+                            bool small = nm.IndexOf("ahoge", StringComparison.OrdinalIgnoreCase) >= 0
+                                      || nm.IndexOf("highlight", StringComparison.OrdinalIgnoreCase) >= 0
+                                      || pt.IndexOf("ahoge", StringComparison.OrdinalIgnoreCase) >= 0
+                                      || pt.IndexOf("highlight", StringComparison.OrdinalIgnoreCase) >= 0;
+                            bool allLayers = (CustomDollsMod.Settings != null && CustomDollsMod.Settings.drawAllHairLayers);
+                            if (small)
+                            {
+                                if (allLayers || cur.extra.Count < 2) { cur.extra.Add(i); cur.extraPath.Add(pt); }
+                                else { cur.skipped.Add(nm + " -> " + pt); }
+                            }
+                            else if (cur.main < 0)
+                            {
+                                // 第一层「正片头发」= 主发（前发 / 整头）
+                                cur.main = i; cur.mainPath = pt;
+                            }
+                            else if (allLayers)
+                            {
+                                // 旧行为：其它发型也叠着画
+                                cur.extra.Add(i); cur.extraPath.Add(pt);
+                            }
+                            else
+                            {
+                                cur.skipped.Add(nm + " -> " + pt);
+                            }
+                        }
                     }
                     StringBuilder dump = new StringBuilder("[NHT Custom Dolls] addon list:");
                     for (int i = 0; i < addons.Count; i++)
@@ -759,7 +787,10 @@ namespace NHT_CustomDolls
                     if (Dolls.DebugOn) Log.Message(dump.ToString());
                     if (Dolls.DebugOn) Log.Message("[NHT Custom Dolls] hair addons(" + key + "): main=" + cur.main + " bg=" + cur.bg
                         + " extra=" + cur.extra.Count + " backExtra=" + cur.backExtra.Count
-                        + " paths=" + cur.mainPath + " / " + cur.bgPath);
+                        + " paths=" + cur.mainPath + " / " + cur.bgPath
+                        + " 主发=" + (cur.mainPath ?? "-")
+                        + " 附加=" + string.Join(", ", cur.extraPath.ToArray())
+                        + (cur.skipped.Count > 0 ? " 跳过=" + string.Join(", ", cur.skipped.ToArray()) : ""));
                 }
                 catch (Exception) { }
             }
@@ -769,6 +800,7 @@ namespace NHT_CustomDolls
                就按发型贴图自己在头部位置画一层，NHT 里也能看到。 */
             private static void DrawVanillaHair(Pawn pawn, Rect dollRect)
             {
+                if (cur.main >= 0) return;   // 这个种族已经有 HAR 头发 addon，别再叠一层原版发型
                 try
                 {
                     HairDef hd = pawn.story == null ? null : pawn.story.hairDef;

@@ -33,7 +33,17 @@ namespace NHT_CustomDolls
                     CustomDollsMod.Settings.Write();
                 }
 
-                Rect dbgRect = new Rect(inRect.x, inRect.y + 70f, inRect.width, 26f);
+                Rect allRect = new Rect(inRect.x, inRect.y + 70f, inRect.width, 26f);
+                bool allLayers = CustomDollsMod.Settings != null && CustomDollsMod.Settings.drawAllHairLayers;
+                Widgets.CheckboxLabeled(allRect, Translator.Translate("NHTCD_DrawAllHairLayers").ToString(), ref allLayers);
+                if (CustomDollsMod.Settings != null && allLayers != CustomDollsMod.Settings.drawAllHairLayers)
+                {
+                    CustomDollsMod.Settings.drawAllHairLayers = allLayers;
+                    CustomDollsMod.Settings.Write();
+                    Dolls.Invalidate();
+                }
+
+                Rect dbgRect = new Rect(inRect.x, inRect.y + 96f, inRect.width, 26f);
                 bool dbg = CustomDollsMod.Settings != null && CustomDollsMod.Settings.debug;
                 Widgets.CheckboxLabeled(dbgRect, Translator.Translate("NHTCD_Debug").ToString(), ref dbg);
                 if (CustomDollsMod.Settings != null && dbg != CustomDollsMod.Settings.debug)
@@ -43,12 +53,12 @@ namespace NHT_CustomDolls
                 }
 
                 // 默认策略说明（写死在设置页里，方便一眼看到）
-                Rect hintRect = new Rect(inRect.x, inRect.y + 98f, inRect.width, 22f);
+                Rect hintRect = new Rect(inRect.x, inRect.y + 124f, inRect.width, 22f);
                 GUI.color = new Color(0.72f, 0.78f, 0.8f);
                 Widgets.Label(hintRect, Translator.Translate("NHTCD_DefaultHint").ToString());
                 GUI.color = Color.white;
 
-                Rect listRect = new Rect(inRect.x, inRect.y + 126f, inRect.width, inRect.height - 126f);
+                Rect listRect = new Rect(inRect.x, inRect.y + 152f, inRect.width, inRect.height - 152f);
                 if (map == null || map.Count == 0)
                 {
                     Widgets.Label(listRect, Translator.Translate("NHTCD_NoDolls").ToString());

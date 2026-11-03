@@ -14,4 +14,5 @@
   <NHTCD_BaseDolls>基础 NHT 体型</NHTCD_BaseDolls>
   <NHTCD_BaseTag>（原版体型）</NHTCD_BaseTag>
   <NHTCD_UseRacePatch>用种族补丁</NHTCD_UseRacePatch>
+    <NHTCD_DrawAllHairLayers>画出所有发型层（默认关：只画一层主发，避免多个发型叠在头上）</NHTCD_DrawAllHairLayers>
 </LanguageData>
