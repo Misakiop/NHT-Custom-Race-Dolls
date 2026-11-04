@@ -15,4 +15,37 @@
   <NHTCD_BaseTag>(vanilla body)</NHTCD_BaseTag>
   <NHTCD_UseRacePatch>race patch</NHTCD_UseRacePatch>
     <NHTCD_DrawAllHairLayers>Draw all hair layers (off by default: only one main hairstyle, avoids overlapping hair)</NHTCD_DrawAllHairLayers>
+  <NHTCD_DesatColors>Part colors (when off, parts flagged in the editor are drawn in grayscale)</NHTCD_DesatColors>
+  <NHTCD_DesatCustom>Customize...</NHTCD_DesatCustom>
+  <NHTCD_DesatCustomUsed>Custom in use</NHTCD_DesatCustomUsed>
+  <NHTCD_DesatReset>Reset to default</NHTCD_DesatReset>
+  <NHTCD_DesatNoParts>No flagged parts yet: tick "controlled by part color switch" on a part in the editor.</NHTCD_DesatNoParts>
+  <NHTCD_TintVanillaHair>Tint vanilla hairstyles with hair color</NHTCD_TintVanillaHair>
+  <NHTCD_DetectedVanillaRaces>Races using vanilla hair: {0}</NHTCD_DetectedVanillaRaces>
+  <NHTCD_TintVanillaHint>Draws a colored hair layer over the doll. Parts marked "linked top" are redrawn after the hair so it does not cover ears or decorations; as a trade-off those parts (and the hair) no longer show injury/scar layers.</NHTCD_TintVanillaHint>
+  <NHTCD_None>none detected</NHTCD_None>
+  <NHTCD_VanillaCoords>Use custom coordinates for vanilla hairstyles (off = keep NHT default)</NHTCD_VanillaCoords>
+  <NHTCD_HarHairTint>Show HAR hair color (off = keep texture colors)</NHTCD_HarHairTint>
+<NHTCD_SecDisplay>Display</NHTCD_SecDisplay>
+  <NHTCD_SecColor>Colors</NHTCD_SecColor>
+  <NHTCD_SecCoord>Coordinates</NHTCD_SecCoord>
+  <NHTCD_SecDebug>Debug</NHTCD_SecDebug>
+  <NHTCD_SecAssign>Races and dolls</NHTCD_SecAssign>
+  <NHTCD_HarHairCoords>Use in-game coordinates for HAR hair</NHTCD_HarHairCoords>
+  <NHTCD_ColorHelp>Details</NHTCD_ColorHelp>
+  <NHTCD_AutoFixHair>Auto-correct misplaced hair (cached after first check)</NHTCD_AutoFixHair>
+  <NHTCD_RecheckHair>Re-detect hair position</NHTCD_RecheckHair>
+  <NHTCD_WinTitle>Hair position</NHTCD_WinTitle>
+  <NHTCD_WinReset>Reset</NHTCD_WinReset>
+  <NHTCD_WinMaster>Use custom coordinates</NHTCD_WinMaster>
+  <NHTCD_WinSync>Sync to whole race</NHTCD_WinSync>
+  <NHTCD_WinColor>Color display</NHTCD_WinColor>
+  <NHTCD_WinScale>Scale</NHTCD_WinScale>
+  <NHTCD_WinX>X offset</NHTCD_WinX>
+  <NHTCD_WinY>Y offset</NHTCD_WinY>
+  <NHTCD_WarnCurrent>Current: non-HAR hair</NHTCD_WarnCurrent>
+  <NHTCD_WarnNonHar>With tinting on, injured head decorations/ears no longer show wound layers.</NHTCD_WarnNonHar>
+  <NHTCD_WarnSync1>Enabling race sync also syncs: scale/offsets,</NHTCD_WarnSync1>
+  <NHTCD_WarnSync2>custom coordinates and color display; reset also resets the whole race.</NHTCD_WarnSync2>
+  <NHTCD_WarnMore>More options: Settings → NHT Custom Dolls.</NHTCD_WarnMore>
 </LanguageData>

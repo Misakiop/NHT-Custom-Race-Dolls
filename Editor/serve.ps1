@@ -339,10 +339,14 @@ while ($true) {
             $aheadN = 0
             $aheadLog = @()
             if ($curBr -and $curBr -ne 'HEAD') {
-                $cntR = Invoke-Git $git @('-C', $dir, 'rev-list', '--count', ('origin/' + $curBr + '..HEAD'))
+                $cntR = Invoke-Git $git @('-C', $dir, 'rev-list', '--count', 'HEAD', '--not', '--remotes')
                 [int]::TryParse("$($cntR.text)".Trim(), [ref]$aheadN) | Out-Null
+                if ($cntR.code -ne 0) {
+                    $cntR2 = Invoke-Git $git @('-C', $dir, 'rev-list', '--count', ('origin/' + $curBr + '..HEAD'))
+                    [int]::TryParse("$($cntR2.text)".Trim(), [ref]$aheadN) | Out-Null
+                }
                 if ($aheadN -gt 0) {
-                    $lgR = Invoke-Git $git @('-C', $dir, '-c', 'core.quotepath=false', 'log', '--pretty=format:%h %s', '-n', '8', ('origin/' + $curBr + '..HEAD'))
+                    $lgR = Invoke-Git $git @('-C', $dir, '-c', 'core.quotepath=false', 'log', '--pretty=format:%h %s', '-n', '8', 'HEAD', '--not', '--remotes')
                     foreach ($ln in ("$($lgR.text)" -split "`n")) {
                         if ($ln.Trim()) { $aheadLog += $ln.Trim() }
                     }
@@ -479,10 +483,15 @@ while ($true) {
                     $didFetch = $false
                 }
                 $behindR = Invoke-Git $git @('-C', $dir, 'rev-list', '--count', ('HEAD..origin/' + $branch))
-                $aheadR = Invoke-Git $git @('-C', $dir, 'rev-list', '--count', ('origin/' + $branch + '..HEAD'))
+                # 未推送 = 不在任何远端分支里的提交（推到别的分支也算已推送）
+                $aheadR = Invoke-Git $git @('-C', $dir, 'rev-list', '--count', 'HEAD', '--not', '--remotes')
                 $behind = 0; $ahead = 0
-                [int]::TryParse($behindR.text.Trim(), [ref]$behind) | Out-Null
-                [int]::TryParse($aheadR.text.Trim(), [ref]$ahead) | Out-Null
+                [int]::TryParse("$($behindR.text)".Trim(), [ref]$behind) | Out-Null
+                [int]::TryParse("$($aheadR.text)".Trim(), [ref]$ahead) | Out-Null
+                if ($aheadR.code -ne 0) {
+                    $aheadR2 = Invoke-Git $git @('-C', $dir, 'rev-list', '--count', ('origin/' + $branch + '..HEAD'))
+                    [int]::TryParse("$($aheadR2.text)".Trim(), [ref]$ahead) | Out-Null
+                }
 
                 # 未提交的改动（供客户端排除默认锁定后计数）
                 $dirtyR = Invoke-Git $git @('-C', $dir, '-c', 'core.quotepath=false', 'status', '--porcelain=v1', '-uall')
@@ -704,7 +713,7 @@ while ($true) {
                 $stage = Join-Path $tmp ('nhtstage-' + $stamp)
                 $zip = Join-Path $tmp ('nhtmod-' + $stamp + '.zip')
                 New-Item -ItemType Directory -Path $stage -Force | Out-Null
-                $skip = @('Editor', '.git', '.vs', 'bin', 'obj')
+                $skip = @('Editor', '.git', '.vs', 'bin', 'obj', 'build', 'node_modules')
                 Get-ChildItem -LiteralPath $ModRoot -Force | Where-Object { $skip -notcontains $_.Name } | ForEach-Object {
                     Copy-Item -LiteralPath $_.FullName -Destination $stage -Recurse -Force
                 }
@@ -717,8 +726,8 @@ while ($true) {
                         [System.IO.File]::WriteAllText((Join-Path $aboutDir 'About.xml'), $aboutText, (New-Object System.Text.UTF8Encoding($false)))
                     } catch { }
                 }
-                Get-ChildItem -LiteralPath $stage -Recurse -Force -File -ErrorAction SilentlyContinue | Where-Object { $_.Extension -eq '.bak' -or $_.Extension -eq '.tmp' -or $_.Extension -eq '.orig' } | Remove-Item -Force -ErrorAction SilentlyContinue
-                foreach ($junk in @('Source\bin', 'Source\obj')) {
+                Get-ChildItem -LiteralPath $stage -Recurse -Force -File -ErrorAction SilentlyContinue | Where-Object { $_.Extension -eq '.bak' -or $_.Extension -eq '.tmp' -or $_.Extension -eq '.orig' -or $_.Name -like '*.old-*' } | Remove-Item -Force -ErrorAction SilentlyContinue
+                foreach ($junk in @('Source\bin', 'Source\obj', 'Source\build')) {
                     $jp = Join-Path $stage $junk
                     if (Test-Path -LiteralPath $jp) { Remove-Item -LiteralPath $jp -Recurse -Force -ErrorAction SilentlyContinue }
                 }

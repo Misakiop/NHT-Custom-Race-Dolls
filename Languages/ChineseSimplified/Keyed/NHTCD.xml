@@ -15,4 +15,37 @@
   <NHTCD_BaseTag>（原版体型）</NHTCD_BaseTag>
   <NHTCD_UseRacePatch>用种族补丁</NHTCD_UseRacePatch>
     <NHTCD_DrawAllHairLayers>画出所有发型层（默认关：只画一层主发，避免多个发型叠在头上）</NHTCD_DrawAllHairLayers>
+  <NHTCD_DesatColors>部位颜色（关闭后，编辑器里标记过的部位显示为黑白）</NHTCD_DesatColors>
+  <NHTCD_DesatCustom>自定义…</NHTCD_DesatCustom>
+  <NHTCD_DesatCustomUsed>已使用自定义</NHTCD_DesatCustomUsed>
+  <NHTCD_DesatReset>重置为默认</NHTCD_DesatReset>
+  <NHTCD_DesatNoParts>还没有标记过的部位：在编辑器里给部位勾选「受部位颜色开关控制」。</NHTCD_DesatNoParts>
+  <NHTCD_TintVanillaHair>非 HAR 发型按发色重绘</NHTCD_TintVanillaHair>
+  <NHTCD_DetectedVanillaRaces>检测到使用原版发型的种族：{0}</NHTCD_DetectedVanillaRaces>
+  <NHTCD_TintVanillaHint>开启后会在娃娃上按发色补画一层发型。为避免头发盖住耳朵/装饰，标记了「联动置顶」的部位会改为在发型之后重画；代价是这些部位（连同头发）受伤后不再显示伤口 / 疤痕层。</NHTCD_TintVanillaHint>
+  <NHTCD_None>未检测到</NHTCD_None>
+  <NHTCD_VanillaCoords>非 HAR 发型使用自定义坐标（关闭 = 保持 NHT 原版位置）</NHTCD_VanillaCoords>
+  <NHTCD_HarHairTint>HAR 发色显示（关闭 = 保留头发贴图原色）</NHTCD_HarHairTint>
+<NHTCD_SecDisplay>显示</NHTCD_SecDisplay>
+  <NHTCD_SecColor>颜色</NHTCD_SecColor>
+  <NHTCD_SecCoord>坐标</NHTCD_SecCoord>
+  <NHTCD_SecDebug>调试</NHTCD_SecDebug>
+  <NHTCD_SecAssign>种族与娃娃</NHTCD_SecAssign>
+  <NHTCD_HarHairCoords>HAR 发型使用游戏内坐标</NHTCD_HarHairCoords>
+  <NHTCD_ColorHelp>说明</NHTCD_ColorHelp>
+  <NHTCD_AutoFixHair>自动校正发型错位（首次检测后缓存）</NHTCD_AutoFixHair>
+  <NHTCD_RecheckHair>重新检测发型位置</NHTCD_RecheckHair>
+  <NHTCD_WinTitle>发型位置</NHTCD_WinTitle>
+  <NHTCD_WinReset>重置</NHTCD_WinReset>
+  <NHTCD_WinMaster>使用自定义坐标</NHTCD_WinMaster>
+  <NHTCD_WinSync>与全族同步</NHTCD_WinSync>
+  <NHTCD_WinColor>色彩显示</NHTCD_WinColor>
+  <NHTCD_WinScale>缩放</NHTCD_WinScale>
+  <NHTCD_WinX>左右</NHTCD_WinX>
+  <NHTCD_WinY>上下</NHTCD_WinY>
+  <NHTCD_WarnCurrent>当前：非HAR发型</NHTCD_WarnCurrent>
+  <NHTCD_WarnNonHar>非HAR发型上色后，头部装饰/耳朵受伤时不显示伤口层。</NHTCD_WarnNonHar>
+  <NHTCD_WarnSync1>打开与全族同步后，会同步：缩放/偏移、</NHTCD_WarnSync1>
+  <NHTCD_WarnSync2>使用自定义坐标、色彩显示；重置也会重置全族。</NHTCD_WarnSync2>
+  <NHTCD_WarnMore>更多选项见 设置 → NHT Custom Dolls。</NHTCD_WarnMore>
 </LanguageData>
