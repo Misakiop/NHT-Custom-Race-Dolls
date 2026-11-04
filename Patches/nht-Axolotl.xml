@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   NHT_CustomDolls
-  由 NHT Anatomy Editor 生成 · 2026-11-04 01:59
+  由 NHT Anatomy Editor 生成 · 2026-11-04 12:18
   基准模组：Nice Health Tab (Andromeda.NiceHealthTab) v1.6 · 创意工坊 3328729902
   RJW 层：Nice Health Tab - RJW Genitalia (zoc2k.nicehealthtab.rjwgenitalia) · 相关操作带 MayRequire rim.job.world
   画布：1 个 · 部位：30 个 · 补丁操作：8 段
@@ -19,10 +19,10 @@
         <race>Axolotl</race>
         <scale>0.360</scale>
         <offsetX>0.000</offsetX>
-        <offsetY>-0.344</offsetY>
+        <offsetY>-0.363</offsetY>
         <front>true</front>
         <layer>15</layer>
-        <showInXray>false</showInXray>
+        <showInXray>true</showInXray>
         <aboveParts>
         </aboveParts>
       </NHT_CustomDolls.HairFitDef>
@@ -38,10 +38,10 @@
         <race>MoeLotl</race>
         <scale>0.360</scale>
         <offsetX>0.000</offsetX>
-        <offsetY>-0.344</offsetY>
+        <offsetY>-0.363</offsetY>
         <front>true</front>
         <layer>15</layer>
-        <showInXray>false</showInXray>
+        <showInXray>true</showInXray>
         <aboveParts>
         </aboveParts>
       </NHT_CustomDolls.HairFitDef>
