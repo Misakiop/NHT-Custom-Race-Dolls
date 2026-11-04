@@ -333,6 +333,21 @@ while ($true) {
             if ($query['sync'] -eq '1') {
                 try { $null = & robocopy $ModRoot $dir /E /XD .git .vs bin obj /XF *.bak *.bak.* /NFL /NDL /NJH /NJS /NP 2>&1 } catch { }
             }
+            # 已提交但还没推送的提交：推送窗口里不逐条列，但会随本次推送一起上传
+            $curBrR = Invoke-Git $git @('-C', $dir, 'rev-parse', '--abbrev-ref', 'HEAD')
+            $curBr = "$($curBrR.text)".Trim()
+            $aheadN = 0
+            $aheadLog = @()
+            if ($curBr -and $curBr -ne 'HEAD') {
+                $cntR = Invoke-Git $git @('-C', $dir, 'rev-list', '--count', ('origin/' + $curBr + '..HEAD'))
+                [int]::TryParse("$($cntR.text)".Trim(), [ref]$aheadN) | Out-Null
+                if ($aheadN -gt 0) {
+                    $lgR = Invoke-Git $git @('-C', $dir, '-c', 'core.quotepath=false', 'log', '--pretty=format:%h %s', '-n', '8', ('origin/' + $curBr + '..HEAD'))
+                    foreach ($ln in ("$($lgR.text)" -split "`n")) {
+                        if ($ln.Trim()) { $aheadLog += $ln.Trim() }
+                    }
+                }
+            }
             $st = Invoke-Git $git @('-C', $dir, '-c', 'core.quotepath=false', 'status', '--porcelain=v1', '-uall')
             $list = @()
             foreach ($line in ($st.text -split "`n")) {
@@ -350,7 +365,7 @@ while ($true) {
                 }
                 $list += [pscustomobject]@{ path = $rest; status = $code }
             }
-            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $true; files = $list })
+            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $true; files = $list; ahead = $aheadN; aheadCommits = $aheadLog })
             continue
         }
         elseif ($pathPart -eq '/__gitremote' -and $method -eq 'GET') {
@@ -608,6 +623,11 @@ while ($true) {
 
             if ($pathPart -eq '/__gitpull') {
               try {
+                $pullLog = ''
+                $mode = 'ff'
+                $stashed = $false
+                $stashNote = ''
+                $pullR = $null
                 # 以当前分支为准：设置里的分支可能是空的 / 拼错的，空分支会拼出 'origin/' 这种坏 ref
                 $curPullR = Invoke-Git $git @('-C', $dir, 'rev-parse', '--abbrev-ref', 'HEAD')
                 $curPull = "$($curPullR.text)".Trim()
@@ -621,9 +641,9 @@ while ($true) {
                     $headBranch = ($("$($headRefR.text)".Trim()) -replace '^origin/', '')
                     if ($headBranch) {
                         $branch = $headBranch
-                        $log = "远端没有当前分支，改用 origin/$branch。`n"
+                        $pullLog = "远端没有当前分支，改用 origin/$branch。`n"
                     } else {
-                        $log = "远端没有分支「$branch」。`n"
+                        $pullLog = "远端没有分支「$branch」。`n"
                     }
                 }
                 # 工作区有未提交改动时 git 会拒绝 pull/merge → 先自动 stash，完事再恢复
@@ -633,37 +653,37 @@ while ($true) {
                 if ($("$($dirtyChk.text)".Trim())) {
                     $stR = Invoke-GitNet $git @('-C', $dir, 'stash', 'push', '-m', 'nht-pull-autostash') 25
                     if ($stR.code -eq 0) { $stashed = $true; $stashNote = "已暂存本地未提交改动，拉取后恢复。`n" }
-                    else { $stashNote = "本地改动暂存失败：" + $stR.text + "`n" }
+                    else { $stashNote = "本地改动暂存失败：" + [string]$stR.text + "`n" }
                 }
                 $pullR = Invoke-GitNet $git @('-C', $dir, 'pull', '--ff-only', 'origin', $branch) 20
                 $mode = 'ff'
-                if (-not $log) { $log = '' }
-                $log = $log + $fetchR.text + $pullR.text
+                if (-not $pullLog) { $pullLog = '' }
+                $pullLog = [string]$pullLog + [string]$fetchR.text + [string]$pullR.text
                 if (-not $branch) { $branch = 'main' }
                 if ($pullR.code -ne 0 -and ($pullR.text -match 'Not possible to fast-forward|diverging|diverged')) {
                     # 分叉：先「以本地为准」合并（单人/多机时远端多半是旧的同一批编辑器文件）
                     $mrg = Invoke-GitNet $git @('-C', $dir, 'merge', '--no-ff', '--no-edit', '-X', 'ours', ('origin/' + $branch)) 25
-                    $log = $log + "`n—— 检测到分叉，改用「以本地为准」合并 ——`n" + $mrg.text
+                    $pullLog = [string]$pullLog + "`n—— 检测到分叉，改用「以本地为准」合并 ——`n" + [string]$mrg.text
                     if ($mrg.code -eq 0) {
                         $mode = 'merge-ours'
                         $pullR = $mrg
                     } else {
                         $null = Invoke-Git $git @('-C', $dir, 'merge', '--abort')
                         $mrg2 = Invoke-GitNet $git @('-C', $dir, 'merge', '--no-ff', '--no-edit', ('origin/' + $branch)) 25
-                        $log = $log + "`n—— 普通合并 ——`n" + $mrg2.text
+                        $pullLog = [string]$pullLog + "`n—— 普通合并 ——`n" + [string]$mrg2.text
                         if ($mrg2.code -eq 0) { $mode = 'merge'; $pullR = $mrg2 }
                         else {
                             $null = Invoke-Git $git @('-C', $dir, 'merge', '--abort')
-                            $log = $log + "`n合并失败，仓库已恢复到拉取前的状态。"
+                            $pullLog = $pullLog + "`n合并失败，仓库已恢复到拉取前的状态。"
                         }
                     }
                 }
                 if ($stashed) {
                     $popR = Invoke-GitNet $git @('-C', $dir, 'stash', 'pop') 25
-                    $stashNote = $stashNote + ($(if ($popR.code -eq 0) { "本地改动已恢复。`n" } else { "恢复本地改动失败（改动还在 stash 里）：`n" + $popR.text }))
+                    $stashNote = [string]$stashNote + $(if ($popR.code -eq 0) { "本地改动已恢复。`n" } else { "恢复本地改动失败（改动还在 stash 里）：`n" + [string]$popR.text })
                 }
-                $log = $stashNote + $log
-                Send-Json $stream '200 OK' ([pscustomobject]@{ ok = ($pullR.code -eq 0); mode = $mode; log = $log })
+                $pullLog = [string]$stashNote + [string]$pullLog
+                Send-Json $stream '200 OK' ([pscustomobject]@{ ok = ($pullR.code -eq 0); mode = $mode; log = $pullLog })
               } catch {
                 $errText = "拉取出错：" + $_.Exception.Message
                 try {

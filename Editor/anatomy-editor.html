@@ -1779,7 +1779,7 @@ body.is-preview #stage{cursor:not-allowed}
       <span class="vsep"></span>
       <button class="btn btn--ghost" data-act="history" title="查看最近 5 份本地保存历史，可挑一份载入"><svg><use href="#i-undo"/></svg>历史</button>
       <button class="btn btn--ghost" data-act="save" title="保存**全部画布**与素材清单到项目文件 nht-project.js（html 同目录），不是只存当前画布。Ctrl+S"><svg><use href="#i-save"/></svg>本地保存（全部画布）</button>
-      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-04 12:29</span>
+      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-04 12:40</span>
             <span class="notif" id="notifWrap">
         <button class="iconbtn notif__btn" data-act="notif-toggle" id="notifBtn" title="Git 更新通知：点「收到」后不再弹出，仓库有新的 Push 会再次提醒">
           <svg class="notif__ico"><use href="#i-bell"/></svg>
@@ -7278,6 +7278,11 @@ function pushDialogHTML() {
         需要时你可以手动解锁。
       </p>
       ${PUSH_STATE.aheadOnly ? `<p class="mini-note" style="margin:0 0 8px;color:#ffd08a">本次没有新的文件改动，只推送本地已有的 <b>${PUSH_STATE.aheadCount || 0}</b> 个未推送提交。</p>` : ''}
+      ${(!PUSH_STATE.aheadOnly && PUSH_STATE.ahead) ? `<p class="mini-note" style="margin:0 0 8px">
+        本地已有 <b>${PUSH_STATE.ahead}</b> 个未推送提交（不在下面的文件列表里，点推送会一起上传）：
+        <br><code style="opacity:.8">${(PUSH_STATE.aheadCommits || []).slice(0, 5).map(esc).join('<br>')}</code>
+        ${PUSH_STATE.ahead > 5 ? '<br><span style="opacity:.6">…</span>' : ''}
+      </p>` : ''}
       <div class="pushtree" id="pushTree">${PUSH_STATE.tree.children.map(c => pushRow(c, 0, false)).join('')}</div>
       <div class="pushtools">
         <button class="btn btn--sm" data-act="push-all">全选</button>
@@ -7333,6 +7338,8 @@ async function gitOpenPushDialog() {
     const r = await fetch('/__gitchanges?dir=' + encodeURIComponent(g.dir) + '&sync=' + syncQ, { cache: 'no-store' });
     const j = await r.json();
     if (!j || !j.ok) { toast('读取本地更改失败：' + ((j && j.error) || '未知错误'), true); return; }
+    PUSH_STATE.ahead = Number(j.ahead) || 0;
+    PUSH_STATE.aheadCommits = Array.isArray(j.aheadCommits) ? j.aheadCommits : [];
     if (!j.files || !j.files.length) {
       // 没有新改动：如果本地还有没推的提交（比如上次推送失败），仍然允许推送
       let ahead = 0;
