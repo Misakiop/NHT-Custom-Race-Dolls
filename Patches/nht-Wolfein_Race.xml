@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   NHT_CustomDolls
-  由 NHT Anatomy Editor 生成 · 2026-11-04 00:40
+  由 NHT Anatomy Editor 生成 · 2026-11-05 03:05
   基准模组：Nice Health Tab (Andromeda.NiceHealthTab) v1.6 · 创意工坊 3328729902
   RJW 层：Nice Health Tab - RJW Genitalia (zoc2k.nicehealthtab.rjwgenitalia) · 相关操作带 MayRequire rim.job.world
-  画布：1 个 · 部位：30 个 · 补丁操作：8 段
+  画布：1 个 · 部位：30 个 · 补丁操作：11 段
   贴图路径指向 Nice Health Tab（以及 RJW 补丁）的 Textures/ 目录。直接点「保存到注入模组」写进 NHT_CustomDollTest/Patches/ 即可，也可以手动放进任意模组的 Patches/。
   备注：以 Nice Health Tab 模组 1.6 默认体型为基准制作的部位补丁。
 -->
@@ -23,8 +23,13 @@
         <front>true</front>
         <layer>14</layer>
         <showInXray>false</showInXray>
+        <vanillaScale>1.000</vanillaScale>
+        <vanillaOffsetX>0.000</vanillaOffsetX>
+        <vanillaOffsetY>0.000</vanillaOffsetY>
         <aboveParts>
         </aboveParts>
+        <topParts>
+        </topParts>
       </NHT_CustomDolls.HairFitDef>
     </value>
   </Operation>
@@ -42,9 +47,32 @@
         <front>true</front>
         <layer>14</layer>
         <showInXray>false</showInXray>
+        <vanillaScale>1.000</vanillaScale>
+        <vanillaOffsetX>0.000</vanillaOffsetX>
+        <vanillaOffsetY>0.000</vanillaOffsetY>
         <aboveParts>
         </aboveParts>
+        <topParts>
+        </topParts>
       </NHT_CustomDolls.HairFitDef>
+    </value>
+  </Operation>
+  <!-- Wolfein race · 部位颜色开关：关闭后这些部位显示为黑白 -->
+  <Operation Class="PatchOperationAdd">
+    <success>Always</success>
+    <xpath>Defs</xpath>
+    <value>
+      <NHT_CustomDolls.DesatPartsDef>
+        <defName>NHTCD_Desat_Wolfein_Race</defName>
+        <label>Wolfein race</label>
+        <race>Wolfein_Race</race>
+        <doll>Wolfein_Race</doll>
+        <parts>
+          <li><part>Wolfein_Race_u5c3eu5df4</part><id>64</id><label>尾巴</label></li>
+          <li><part>Wolfein_Race_u5de6u8033</part><id>18</id><label>左耳</label></li>
+          <li><part>Wolfein_Race_u53f3u8033</part><id>19</id><label>右耳</label></li>
+        </parts>
+      </NHT_CustomDolls.DesatPartsDef>
     </value>
   </Operation>
   <!-- Wolfein race · 画在头发之上的部位（NHTCD_HairFit_Wolfein_Race） -->
@@ -56,6 +84,14 @@
       </aboveParts>
     </value>
   </Operation>
+  <Operation Class="PatchOperationReplace">
+    <success>Always</success>
+    <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_Wolfein_Race"]/topParts</xpath>
+    <value>
+      <topParts>
+      </topParts>
+    </value>
+  </Operation>
   <!-- Wolfein race · 画在头发之上的部位（NHTCD_HairFit_Wolfein_race） -->
   <Operation Class="PatchOperationReplace">
     <success>Always</success>
@@ -63,6 +99,14 @@
     <value>
       <aboveParts>
       </aboveParts>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationReplace">
+    <success>Always</success>
+    <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_Wolfein_race"]/topParts</xpath>
+    <value>
+      <topParts>
+      </topParts>
     </value>
   </Operation>
   <!-- HandDoll · 手掌基底 #39 -->
@@ -150,10 +194,30 @@
         <headOverlayOffset><x>-2</x><y>-2</y></headOverlayOffset>
         <headOverlayScale><x>310</x><y>310</y></headOverlayScale>
       </NiceHealthTab.HumanlikeDoll>
-      <!-- 自定义部位 · tail_east -->
+      <!-- 自定义部位 · 尾巴 -->
       <NiceHealthTab.DollBodyPart>
-        <defName>WolfeinRaceTailWolfeinTail</defName>
+        <defName>Wolfein_Race_u5c3eu5df4</defName>
         <imagePath>Custom/tail_north</imagePath>
+        <position>
+          <x>-115.4</x>
+          <y>99.2</y>
+        </position>
+        <layer>0</layer>
+        <dollName>Wolfein_Race</dollName>
+        <bodyPartId>64</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1.65</width>
+        <height>1.65</height>
+        <hitboxScale><x>0.9</x><y>1.25</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+
+      <!-- 自定义部位 · 尾巴（灰） -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Wolfein_Race_u5c3eu5df4_NHTCD_Gray</defName>
+        <imagePath>Custom/NHTCD_Gray/Wolfein_Race_Wolfein_Race_u5c3eu5df4</imagePath>
         <position>
           <x>-115.4</x>
           <y>99.2</y>
@@ -514,9 +578,9 @@
         <height>0.6</height>
         <hitboxScale><x>0.8</x><y>0.75</y></hitboxScale>
       </NiceHealthTab.DollEye>
-      <!-- left ear -->
+      <!-- 左耳 -->
       <NiceHealthTab.DollBodyPart>
-        <defName>Wolfein_Race_1</defName>
+        <defName>Wolfein_Race_u5de6u8033</defName>
         <imagePath>Custom/earL2_south</imagePath>
         <position>
           <x>35</x>
@@ -533,10 +597,50 @@
         <height>0.8</height>
         <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
       </NiceHealthTab.DollBodyPart>
-      <!-- right ear -->
+
+      <!-- 左耳（灰） -->
       <NiceHealthTab.DollBodyPart>
-        <defName>Wolfein_Race_1_2</defName>
+        <defName>Wolfein_Race_u5de6u8033_NHTCD_Gray</defName>
+        <imagePath>Custom/NHTCD_Gray/Wolfein_Race_Wolfein_Race_u5de6u8033</imagePath>
+        <position>
+          <x>35</x>
+          <y>-405</y>
+        </position>
+        <layer>15</layer>
+        <dollName>Wolfein_Race</dollName>
+        <bodyPartId>18</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>0.8</width>
+        <height>0.8</height>
+        <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 右耳 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Wolfein_Race_u53f3u8033</defName>
         <imagePath>Custom/earR2_south</imagePath>
+        <position>
+          <x>-35</x>
+          <y>-405</y>
+        </position>
+        <layer>15</layer>
+        <dollName>Wolfein_Race</dollName>
+        <bodyPartId>19</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>0.8</width>
+        <height>0.8</height>
+        <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+
+      <!-- 右耳（灰） -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Wolfein_Race_u53f3u8033_NHTCD_Gray</defName>
+        <imagePath>Custom/NHTCD_Gray/Wolfein_Race_Wolfein_Race_u53f3u8033</imagePath>
         <position>
           <x>-35</x>
           <y>-405</y>
@@ -732,6 +836,79 @@
         <hitboxScale><x>0.77</x><y>0.95</y></hitboxScale>
         <extraLayer>30</extraLayer>
       </NiceHealthTab.DollBone>
+      <!-- Wolfein_Body · 种族部位对照表（NHT 槽位 → 身体部位下标） -->
+      <NiceHealthTab.BodyPartIndexesRemap>
+        <defName>NHTCD_BodyRemap_Wolfein_Body</defName>
+        <bodyDefName>Wolfein_Body</bodyDefName>
+        <parts>
+            <li>0, 0</li>
+            <li>1, 1</li>
+            <li>2, 2</li>
+            <li>3, 3</li>
+            <li>4, 4</li>
+            <li>5, 7</li>
+            <li>6, 8</li>
+            <li>7, 9</li>
+            <li>8, 10</li>
+            <li>9, 11</li>
+            <li>10, 12</li>
+            <li>11, 13</li>
+            <li>12, 14</li>
+            <li>13, 15</li>
+            <li>14, 16</li>
+            <li>15, 17</li>
+            <li>16, 18</li>
+            <li>17, 19</li>
+            <li>18, 20</li>
+            <li>19, 21</li>
+            <li>20, 22</li>
+            <li>21, 23</li>
+            <li>22, 24</li>
+            <li>23, 25</li>
+            <li>24, 26</li>
+            <li>25, 27</li>
+            <li>26, 28</li>
+            <li>27, 29</li>
+            <li>28, 30</li>
+            <li>29, 31</li>
+            <li>30, 32</li>
+            <li>31, 33</li>
+            <li>32, 34</li>
+            <li>33, 35</li>
+            <li>34, 36</li>
+            <li>35, 37</li>
+            <li>36, 38</li>
+            <li>37, 39</li>
+            <li>38, 40</li>
+            <li>39, 41</li>
+            <li>40, 42</li>
+            <li>41, 43</li>
+            <li>42, 44</li>
+            <li>43, 45</li>
+            <li>44, 46</li>
+            <li>45, 47</li>
+            <li>46, 48</li>
+            <li>47, 49</li>
+            <li>48, 50</li>
+            <li>49, 51</li>
+            <li>50, 52</li>
+            <li>51, 53</li>
+            <li>52, 54</li>
+            <li>53, 55</li>
+            <li>54, 56</li>
+            <li>55, 57</li>
+            <li>56, 58</li>
+            <li>57, 59</li>
+            <li>58, 60</li>
+            <li>59, 61</li>
+            <li>60, 62</li>
+            <li>61, 63</li>
+            <li>62, 64</li>
+            <li>63, 65</li>
+            <li>64, 5</li>
+            <li>65, 6</li>
+        </parts>
+      </NiceHealthTab.BodyPartIndexesRemap>
     </value>
   </Operation>
 </Patch>

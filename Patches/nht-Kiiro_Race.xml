@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   NHT_CustomDolls
-  由 NHT Anatomy Editor 生成 · 2026-11-04 12:18
+  由 NHT Anatomy Editor 生成 · 2026-11-05 03:05
   基准模组：Nice Health Tab (Andromeda.NiceHealthTab) v1.6 · 创意工坊 3328729902
   RJW 层：Nice Health Tab - RJW Genitalia (zoc2k.nicehealthtab.rjwgenitalia) · 相关操作带 MayRequire rim.job.world
-  画布：1 个 · 部位：30 个 · 补丁操作：8 段
+  画布：1 个 · 部位：30 个 · 补丁操作：11 段
   贴图路径指向 Nice Health Tab（以及 RJW 补丁）的 Textures/ 目录。直接点「保存到注入模组」写进 NHT_CustomDollTest/Patches/ 即可，也可以手动放进任意模组的 Patches/。
   备注：以 Nice Health Tab 模组 1.6 默认体型为基准制作的部位补丁。
 -->
@@ -23,8 +23,13 @@
         <front>true</front>
         <layer>14</layer>
         <showInXray>false</showInXray>
+        <vanillaScale>1.000</vanillaScale>
+        <vanillaOffsetX>0.000</vanillaOffsetX>
+        <vanillaOffsetY>0.000</vanillaOffsetY>
         <aboveParts>
         </aboveParts>
+        <topParts>
+        </topParts>
       </NHT_CustomDolls.HairFitDef>
     </value>
   </Operation>
@@ -42,9 +47,32 @@
         <front>true</front>
         <layer>14</layer>
         <showInXray>false</showInXray>
+        <vanillaScale>1.000</vanillaScale>
+        <vanillaOffsetX>0.000</vanillaOffsetX>
+        <vanillaOffsetY>0.000</vanillaOffsetY>
         <aboveParts>
         </aboveParts>
+        <topParts>
+        </topParts>
       </NHT_CustomDolls.HairFitDef>
+    </value>
+  </Operation>
+  <!-- kiiro race · 部位颜色开关：关闭后这些部位显示为黑白 -->
+  <Operation Class="PatchOperationAdd">
+    <success>Always</success>
+    <xpath>Defs</xpath>
+    <value>
+      <NHT_CustomDolls.DesatPartsDef>
+        <defName>NHTCD_Desat_Kiiro_Race</defName>
+        <label>kiiro race</label>
+        <race>Kiiro_Race</race>
+        <doll>Kiiro_Race</doll>
+        <parts>
+          <li><part>Kiiro_Race_u5c3eu5df4</part><id>64</id><label>尾巴</label></li>
+          <li><part>Kiiro_Race_u5de6u8033</part><id>18</id><label>左耳</label></li>
+          <li><part>Kiiro_Race_u53f3u8033</part><id>19</id><label>右耳</label></li>
+        </parts>
+      </NHT_CustomDolls.DesatPartsDef>
     </value>
   </Operation>
   <!-- kiiro race · 画在头发之上的部位（NHTCD_HairFit_Kiiro_Race） -->
@@ -56,6 +84,14 @@
       </aboveParts>
     </value>
   </Operation>
+  <Operation Class="PatchOperationReplace">
+    <success>Always</success>
+    <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_Kiiro_Race"]/topParts</xpath>
+    <value>
+      <topParts>
+      </topParts>
+    </value>
+  </Operation>
   <!-- kiiro race · 画在头发之上的部位（NHTCD_HairFit_kiiro_race） -->
   <Operation Class="PatchOperationReplace">
     <success>Always</success>
@@ -63,6 +99,14 @@
     <value>
       <aboveParts>
       </aboveParts>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationReplace">
+    <success>Always</success>
+    <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_kiiro_race"]/topParts</xpath>
+    <value>
+      <topParts>
+      </topParts>
     </value>
   </Operation>
   <!-- HandDoll · 手掌基底 #39 -->
@@ -150,10 +194,30 @@
         <headOverlayOffset><x>-2</x><y>-2</y></headOverlayOffset>
         <headOverlayScale><x>310</x><y>310</y></headOverlayScale>
       </NiceHealthTab.HumanlikeDoll>
-      <!-- Tail -->
+      <!-- 尾巴 -->
       <NiceHealthTab.DollBodyPart>
-        <defName>KiiroRaceTailKiiroTail</defName>
+        <defName>Kiiro_Race_u5c3eu5df4</defName>
         <imagePath>Custom/Tail_east</imagePath>
+        <position>
+          <x>-132.8</x>
+          <y>69.5</y>
+        </position>
+        <layer>0</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>64</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1.61</width>
+        <height>1.61</height>
+        <hitboxScale><x>0.82</x><y>1.67</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+
+      <!-- 尾巴（灰） -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Kiiro_Race_u5c3eu5df4_NHTCD_Gray</defName>
+        <imagePath>Custom/NHTCD_Gray/Kiiro_Race_Kiiro_Race_u5c3eu5df4</imagePath>
         <position>
           <x>-132.8</x>
           <y>69.5</y>
@@ -514,9 +578,9 @@
         <height>0.6</height>
         <hitboxScale><x>0.8</x><y>0.75</y></hitboxScale>
       </NiceHealthTab.DollEye>
-      <!-- left ear -->
+      <!-- 左耳 -->
       <NiceHealthTab.DollBodyPart>
-        <defName>Kiiro_Race_1</defName>
+        <defName>Kiiro_Race_u5de6u8033</defName>
         <imagePath>Custom/LeftEar_south</imagePath>
         <position>
           <x>33</x>
@@ -533,10 +597,50 @@
         <height>0.9</height>
         <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
       </NiceHealthTab.DollBodyPart>
-      <!-- right ear -->
+
+      <!-- 左耳（灰） -->
       <NiceHealthTab.DollBodyPart>
-        <defName>Kiiro_Race_1_2</defName>
+        <defName>Kiiro_Race_u5de6u8033_NHTCD_Gray</defName>
+        <imagePath>Custom/NHTCD_Gray/Kiiro_Race_Kiiro_Race_u5de6u8033</imagePath>
+        <position>
+          <x>33</x>
+          <y>-401</y>
+        </position>
+        <layer>15</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>18</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>0.9</width>
+        <height>0.9</height>
+        <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 右耳 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Kiiro_Race_u53f3u8033</defName>
         <imagePath>Custom/RightEar_south</imagePath>
+        <position>
+          <x>-33</x>
+          <y>-401</y>
+        </position>
+        <layer>15</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>19</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>0.9</width>
+        <height>0.9</height>
+        <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+
+      <!-- 右耳（灰） -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Kiiro_Race_u53f3u8033_NHTCD_Gray</defName>
+        <imagePath>Custom/NHTCD_Gray/Kiiro_Race_Kiiro_Race_u53f3u8033</imagePath>
         <position>
           <x>-33</x>
           <y>-401</y>

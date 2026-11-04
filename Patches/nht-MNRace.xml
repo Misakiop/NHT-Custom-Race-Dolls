@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   NHT_CustomDolls
-  由 NHT Anatomy Editor 生成 · 2026-11-04 12:18
+  由 NHT Anatomy Editor 生成 · 2026-11-05 03:05
   基准模组：Nice Health Tab (Andromeda.NiceHealthTab) v1.6 · 创意工坊 3328729902
   RJW 层：Nice Health Tab - RJW Genitalia (zoc2k.nicehealthtab.rjwgenitalia) · 相关操作带 MayRequire rim.job.world
-  画布：1 个 · 部位：30 个 · 补丁操作：8 段
+  画布：1 个 · 部位：30 个 · 补丁操作：11 段
   贴图路径指向 Nice Health Tab（以及 RJW 补丁）的 Textures/ 目录。直接点「保存到注入模组」写进 NHT_CustomDollTest/Patches/ 即可，也可以手动放进任意模组的 Patches/。
   备注：以 Nice Health Tab 模组 1.6 默认体型为基准制作的部位补丁。
 -->
@@ -23,8 +23,13 @@
         <front>true</front>
         <layer>15</layer>
         <showInXray>false</showInXray>
+        <vanillaScale>1.000</vanillaScale>
+        <vanillaOffsetX>0.000</vanillaOffsetX>
+        <vanillaOffsetY>0.000</vanillaOffsetY>
         <aboveParts>
         </aboveParts>
+        <topParts>
+        </topParts>
       </NHT_CustomDolls.HairFitDef>
     </value>
   </Operation>
@@ -42,9 +47,32 @@
         <front>true</front>
         <layer>15</layer>
         <showInXray>false</showInXray>
+        <vanillaScale>1.000</vanillaScale>
+        <vanillaOffsetX>0.000</vanillaOffsetX>
+        <vanillaOffsetY>0.000</vanillaOffsetY>
         <aboveParts>
         </aboveParts>
+        <topParts>
+        </topParts>
       </NHT_CustomDolls.HairFitDef>
+    </value>
+  </Operation>
+  <!-- Monolyn · 部位颜色开关：关闭后这些部位显示为黑白 -->
+  <Operation Class="PatchOperationAdd">
+    <success>Always</success>
+    <xpath>Defs</xpath>
+    <value>
+      <NHT_CustomDolls.DesatPartsDef>
+        <defName>NHTCD_Desat_MNRace</defName>
+        <label>Monolyn</label>
+        <race>MNRace</race>
+        <doll>MNRace</doll>
+        <parts>
+          <li><part>MNRace_u63d0u706f</part><id>0</id><label>提灯</label></li>
+          <li><part>MNRace_u5de6u5929u7ebf</part><id>13</id><label>左天线</label></li>
+          <li><part>MNRace_u53f3u5929u7ebf</part><id>13</id><label>右天线</label></li>
+        </parts>
+      </NHT_CustomDolls.DesatPartsDef>
     </value>
   </Operation>
   <!-- Monolyn · 画在头发之上的部位（NHTCD_HairFit_MNRace） -->
@@ -53,8 +81,17 @@
     <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_MNRace"]/aboveParts</xpath>
     <value>
       <aboveParts>
-        <li>MNRaceTorso</li>
+        <li>MNRace_u63d0u706f</li>
       </aboveParts>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationReplace">
+    <success>Always</success>
+    <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_MNRace"]/topParts</xpath>
+    <value>
+      <topParts>
+        <li><part>MNRace_u63d0u706f</part><level>2</level><vanilla>false</vanilla></li>
+      </topParts>
     </value>
   </Operation>
   <!-- Monolyn · 画在头发之上的部位（NHTCD_HairFit_Monolyn） -->
@@ -63,8 +100,17 @@
     <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_Monolyn"]/aboveParts</xpath>
     <value>
       <aboveParts>
-        <li>MNRaceTorso</li>
+        <li>MNRace_u63d0u706f</li>
       </aboveParts>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationReplace">
+    <success>Always</success>
+    <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_Monolyn"]/topParts</xpath>
+    <value>
+      <topParts>
+        <li><part>MNRace_u63d0u706f</part><level>2</level><vanilla>false</vanilla></li>
+      </topParts>
     </value>
   </Operation>
   <!-- HandDoll · 手掌基底 #39 -->
@@ -152,10 +198,30 @@
         <headOverlayOffset><x>-2</x><y>-2</y></headOverlayOffset>
         <headOverlayScale><x>310</x><y>310</y></headOverlayScale>
       </NiceHealthTab.HumanlikeDoll>
-      <!-- 自定义部位 · MNLantern -->
+      <!-- 自定义部位 · 提灯 -->
       <NiceHealthTab.DollBodyPart>
-        <defName>MNRaceTorso</defName>
+        <defName>MNRace_u63d0u706f</defName>
         <imagePath>Custom/MNLantern1</imagePath>
+        <position>
+          <x>68.4</x>
+          <y>13.3</y>
+        </position>
+        <layer>29</layer>
+        <dollName>MNRace</dollName>
+        <bodyPartId>0</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>0.47</width>
+        <height>0.47</height>
+        <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+
+      <!-- 自定义部位 · 提灯（灰） -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>MNRace_u63d0u706f_NHTCD_Gray</defName>
+        <imagePath>Custom/NHTCD_Gray/MNRace_MNRace_u63d0u706f</imagePath>
         <position>
           <x>68.4</x>
           <y>13.3</y>
@@ -491,7 +557,7 @@
         <bodyPartId>16</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
         <showArmorCover>false</showArmorCover>
-        <visibleByDefault>true</visibleByDefault>
+        <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.6</width>
         <height>0.6</height>
@@ -510,7 +576,7 @@
         <bodyPartId>17</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
         <showArmorCover>false</showArmorCover>
-        <visibleByDefault>true</visibleByDefault>
+        <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>-0.6</width>
         <height>0.6</height>
@@ -676,9 +742,9 @@
         <hitboxScale><x>0.75</x><y>0.75</y></hitboxScale>
         <extraLayer>0</extraLayer>
       </NiceHealthTab.DollOrgan>
-      <!-- 自定义部位 · LHeadAddo -->
+      <!-- 自定义部位 · 左天线 -->
       <NiceHealthTab.DollBodyPart>
-        <defName>MNRace_LHeadAddo</defName>
+        <defName>MNRace_u5de6u5929u7ebf</defName>
         <imagePath>Custom/MHeadAddo</imagePath>
         <position>
           <x>45</x>
@@ -695,10 +761,50 @@
         <height>0.38</height>
         <hitboxScale><x>0.94</x><y>0.9</y></hitboxScale>
       </NiceHealthTab.DollBodyPart>
-      <!-- 自定义部位 · RHeadAddo -->
+
+      <!-- 自定义部位 · 左天线（灰） -->
       <NiceHealthTab.DollBodyPart>
-        <defName>MNRace_RHeadAddo</defName>
+        <defName>MNRace_u5de6u5929u7ebf_NHTCD_Gray</defName>
+        <imagePath>Custom/NHTCD_Gray/MNRace_MNRace_u5de6u5929u7ebf</imagePath>
+        <position>
+          <x>45</x>
+          <y>-410</y>
+        </position>
+        <layer>25</layer>
+        <dollName>MNRace</dollName>
+        <bodyPartId>13</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>0.38</width>
+        <height>0.38</height>
+        <hitboxScale><x>0.94</x><y>0.9</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 自定义部位 · 右天线 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>MNRace_u53f3u5929u7ebf</defName>
         <imagePath>Custom/WHeadAddo</imagePath>
+        <position>
+          <x>-45</x>
+          <y>-410</y>
+        </position>
+        <layer>25</layer>
+        <dollName>MNRace</dollName>
+        <bodyPartId>13</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>0.38</width>
+        <height>0.38</height>
+        <hitboxScale><x>0.94</x><y>0.9</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+
+      <!-- 自定义部位 · 右天线（灰） -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>MNRace_u53f3u5929u7ebf_NHTCD_Gray</defName>
+        <imagePath>Custom/NHTCD_Gray/MNRace_MNRace_u53f3u5929u7ebf</imagePath>
         <position>
           <x>-45</x>
           <y>-410</y>

@@ -1779,7 +1779,7 @@ body.is-preview #stage{cursor:not-allowed}
       <span class="vsep"></span>
       <button class="btn btn--ghost" data-act="history" title="查看最近 5 份本地保存历史，可挑一份载入"><svg><use href="#i-undo"/></svg>历史</button>
       <button class="btn btn--ghost" data-act="save" title="保存**全部画布**与素材清单到项目文件 nht-project.js（html 同目录），不是只存当前画布。Ctrl+S"><svg><use href="#i-save"/></svg>本地保存（全部画布）</button>
-      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-04 12:40</span>
+      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-05 04:29</span>
             <span class="notif" id="notifWrap">
         <button class="iconbtn notif__btn" data-act="notif-toggle" id="notifBtn" title="Git 更新通知：点「收到」后不再弹出，仓库有新的 Push 会再次提醒">
           <svg class="notif__ico"><use href="#i-bell"/></svg>
@@ -1787,8 +1787,8 @@ body.is-preview #stage{cursor:not-allowed}
         </button>
         <div class="notif__pop" id="notifPop" hidden>
           <div class="notif__body" id="notifBody">
-            <b>HAR 发型提示</b>
-            <p>HAR 种族的头发是 <b>bodyAddon</b>（附加件），要在游戏里显示必须由本模组自绘。</p>
+            <b>发型提示</b>
+            <p><b>HAR 种族</b>的头发是 bodyAddon（附加件），由模组按本栏参数自绘；<b>非 HAR 种族</b>用原版 HairDef，位置改由下面的「非 HAR 微调」控制。</p>
           </div>
           <div class="notif__foot">
             <button class="btn btn--sm btn--ack" data-act="notif-ack" id="notifAck" title="点一次之后，同样的内容不会再弹出">收到</button>
@@ -1873,7 +1873,7 @@ body.is-preview #stage{cursor:not-allowed}
           <button data-act="jump-section" data-sec="边界 BOUNDS">边界</button>
           <button data-act="jump-section" data-sec="导出偏移">导出偏移</button>
           <button data-act="jump-section" data-sec="实际显示框">实际显示框</button>
-          <button data-act="jump-section" data-sec="HAR 头发">HAR 头发</button>
+          <button data-act="jump-section" data-sec="发型 HAIR">发型</button>
           <button data-act="jump-section" data-sec="轮廓贴图">轮廓贴图</button>
           <button data-act="jump-section" data-sec="说明 NOTES">说明</button>
         </div>
@@ -1924,7 +1924,7 @@ body.is-preview #stage{cursor:not-allowed}
       <div class="tabs" id="tabs">
         <button class="tab is-on" data-tab="global" id="tabGlobal" title="画布与项目（全局）属性">全局</button>
         <button class="tab" data-tab="inspect" id="tabPart" title="当前选中部位的属性">部位</button>
-        <button class="tab" data-tab="hair" id="tabHair" title="HAR 发型重绘 / 导出发型坐标">HAR</button>
+        <button class="tab" data-tab="hair" id="tabHair" title="发型：重绘 / 导出发型坐标 / 预览">发型</button>
         <button class="tab" data-tab="assets">素材</button>
         <button class="tab tab--export" data-tab="patch" title="项目 / 导出 / 注入 / Git 同步"><svg class="tab__ico"><use href="#i-code"/></svg>项目<span class="dot" id="vdot"></span></button>
       </div>
@@ -2328,7 +2328,13 @@ function applyProject(st) {
     }
   });
   // 记录每张画布的“干净基线”：只有之后改动过才会被判定为「已修改」
-  try { S.canvases.forEach(c => { if (!c.savedSig) c.savedSig = canvasSig(c); }); } catch (e) { }
+  try {
+  S.canvases.forEach(c => {
+    if (!c) return;
+    if (c.sigVer !== CANVAS_SIG_VER) { c.savedSig = canvasSig(c); c.sigVer = CANVAS_SIG_VER; c.sigVer = CANVAS_SIG_VER; }
+    else if (!c.savedSig) c.savedSig = canvasSig(c);
+  });
+} catch (e) { }
   S.wins = (st.wins && typeof st.wins === 'object') ? st.wins : {};
   if (st.flags && typeof st.flags === 'object') {
     const f = Object.assign({}, st.flags);
@@ -2673,10 +2679,10 @@ function sortParts(list) {
 
 
 function overLevelOf(p) {
-  if (!p) return 29;
+  if (!p) return 1;
   if (Number.isFinite(p.overLevel)) return p.overLevel;
   if (Number.isFinite(p.overRank)) return p.overRank;
-  return 29;
+  return 1;
 }
 
 function overRankLabel(c, p) {
@@ -2689,7 +2695,7 @@ function normalizeOverRanks(c) {
   (c.parts || []).forEach(p => {
     if (!p.overHair) return;
     if (!Number.isFinite(p.overLevel)) {
-      p.overLevel = Number.isFinite(p.overRank) ? p.overRank : 29;
+      p.overLevel = Number.isFinite(p.overRank) ? p.overRank : 1;
     }
     delete p.overRank;
   });
@@ -2730,7 +2736,7 @@ function cvItemHTML(c) {
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">
         <span class="cv__tag">${kind}</span>
         ${harHairOf(c) ? '<span class="cv__tag cv__tag--har" title="这个种族用 HAR 附加件头发（bodyAddon）">HAR</span>' : ''}
-        ${(!harHairOf(c) && c.race && c.race.hairDefCount) ? '<span class="cv__tag cv__tag--hairdef" title="这个种族用原版 HairDef 头发">HAIR</span>' : ''}
+        ${(!harHairOf(c) && c.race) ? '<span class="cv__tag cv__tag--hairdef" title="这个种族用原版 HairDef 头发">HAIR</span>' : ''}
       </div>
     </div>`;
 }
@@ -4142,7 +4148,16 @@ function renderStage() {
     hp.appendChild(g); pl.appendChild(hp);
   }
   const hImg = c.hairPreviewImg || null;      // 只要有预览图就显示（不再依赖 hairFitEnabled）
-  const hf = c.hairFit || { scale: 0.78, offsetX: 0, offsetY: -0.21 };
+  let hf = c.hairFit || { scale: 0.78, offsetX: 0, offsetY: -0.21 };
+  if (isVanillaHairRace(c)) {
+    // 非 HAR：预览 = 原发型基准 × 非 HAR 微调（缩放倍数 + 像素偏移换算成画布比例）
+    const vf0 = c.vanillaFit || { scale: 1, offsetX: 0, offsetY: 0 };
+    hf = {
+      scale: (hf.scale || 0.78) * (Number(vf0.scale) || 1),
+      offsetX: (hf.offsetX || 0) + (Number(vf0.offsetX) || 0) / 1024,
+      offsetY: (hf.offsetY || -0.21) + (Number(vf0.offsetY) || 0) / 1024
+    };
+  }
   if (hImg && c.hairPreviewShow !== false) {
     hp.onwheel = e => {
       if (c.hairLocked) return;
@@ -4984,7 +4999,7 @@ function openHairModeMenu() {
         <button class="btn btn--sm${okRef ? '' : ' is-disabled'}" data-act="hair-mode-ref" ${okRef ? '' : 'disabled'}>
           ${icon('layers')}移动 参考头发</button>
       </div>
-      <p class="mini-note">HAR 头发预览：${okPrev ? '已选 ' + esc(c.hairPreviewImg) : '这张画布还没选（点「选择预览头发」）'}</p>
+      <p class="mini-note">发型预览：${okPrev ? '已选 ' + esc(c.hairPreviewImg) : '这张画布还没选（点「选择预览头发」）'}</p>
       <p class="mini-note">参考头发：${okRef ? '已放 ' + esc(HAIR_REF.img) : '这张画布没有（在素材里点一个发型）'}</p>
     </div>`);
 }
@@ -5490,11 +5505,17 @@ function partInspector(p) {
         <span>${bidLabel(c, p.bid)}</span>${icon('search')}
       </button>
     </div></div>
-    <div class="field"><label>图层${p.overHair ? `（置顶重画 ${overRankLabel(c, p)}）` : ''}</label><div class="ctl">
-      <input class="inp" type="number" data-f="${p.overHair ? 'overlevel' : 'layer'}" value="${p.overHair ? overLevelOf(p) : p.layer}" step="1"
-        min="0" max="${p.overHair ? 99 : 29}" title="${p.overHair ? '置顶重画等级 0–99（越大越靠上）' : '图层 0–29'}">
-      <button class="iconbtn iconbtn--xs" data-act="layer-down" title="${p.overHair ? '在「置顶重画」组里往下排（越后画越靠上）' : '下移一层'}">${icon('arrdn')}</button>
-      <button class="iconbtn iconbtn--xs" data-act="layer-up" title="${p.overHair ? '在「置顶重画」组里往上排' : '上移一层'}">${icon('arrup')}</button>
+    <div class="field"><label>图层</label><div class="ctl">
+      <input class="inp" type="number" data-f="layer" value="${p.layer}" step="1" min="0" max="29" title="原版图层 0–29">
+      <button class="iconbtn iconbtn--xs" data-act="layer-down" title="下移一层">${icon('arrdn')}</button>
+      <button class="iconbtn iconbtn--xs" data-act="layer-up" title="上移一层">${icon('arrup')}</button>
+    </div></div>
+    <div class="field"><label>置顶层级
+<span class="qmark" title="置顶系列专用层级（0–99，默认 1）：只有开启「置顶重画」或「联动置顶」时才生效，但数值一直保存。它独立于原版图层 0–29——哪怕填 0，也在所有原版图层之上。越大越靠上。">?</span>
+    </label><div class="ctl num2">
+      <input class="inp" type="number" data-f="overlevel" value="${overLevelOf(p)}" step="1" min="0" max="99">
+      <button class="iconbtn iconbtn--xs" data-act="over-level-down" title="置顶层级 -1">${icon('arrdn')}</button>
+      <button class="iconbtn iconbtn--xs" data-act="over-level-up" title="置顶层级 +1">${icon('arrup')}</button>
     </div></div>
     ${(() => {
       if (!c) return '';
@@ -5513,9 +5534,28 @@ function partInspector(p) {
     </label><div class="ctl">
       <button class="switch${p.overHair ? ' is-on' : ''}" data-act="over-hair" role="switch"
         aria-checked="${p.overHair ? 'true' : 'false'}"
-        title="置顶重画：所有部位画完后再画一遍，永远在最上面（图层会设为 29 作为标记）。装饰物用；会盖掉该部位的疤痕/伤口"><i></i></button>
+        title="置顶重画：所有部位画完后再画一遍，永远在最上面（用「置顶层级」排序）。装饰物用；会盖掉该部位的疤痕/伤口"><i></i></button>
+    </div></div>
+    <div class="field"><label>联动置顶
+<span class="qmark" title="联动置顶：模组设置里打开「非 HAR 发型按发色重绘」时，这个部位会在补画的发型之后重画，避免被头发盖住。和「置顶重画」互斥；同样使用上面的「置顶层级」排序。">?</span>
+    </label><div class="ctl">
+      <button class="switch${p.linkTop ? ' is-on' : ''}" data-act="part-linktop" role="switch"
+        aria-checked="${p.linkTop ? 'true' : 'false'}"
+        title="联动置顶：只在模组设置打开「非 HAR 发型按发色重绘」时生效；与置顶重画互斥"><i></i></button>
     </div></div>
   </div>
+
+  ${(() => {
+    const cc = activeCanvas();
+    const raceOk = !!(cc && cc.race && cc.race.defName);
+    return raceOk ? `<div class="field"><label>部位颜色
+<span class="qmark" title="受「部位颜色」开关控制：模组设置里关掉总开关（或单独关掉这一格）后，这个部位会以黑白显示；开启时和现在完全一样。只对种族画布有效。">?</span>
+    </label><div class="ctl">
+      <button class="switch${p.desat ? ' is-on' : ''}" data-act="part-desat" role="switch"
+        aria-checked="${p.desat ? 'true' : 'false'}"
+        title="勾上后，模组设置里关闭「部位颜色」时这个部位会变黑白"><i></i></button>
+    </div></div>` : '';
+  })()}
 
   <div class="sec">
     <div class="sec__h"><b>变换 TRANSFORM</b></div>
@@ -6615,7 +6655,7 @@ function renderPatch() {
         <button class="btn btn--xs" data-act="git-use-current" title="把「分支」改成当前本地分支">用当前分支</button>
       </div>
       <div class="gitstat gitstat--three">
-        <span class="st-left" data-tip="未推送 = 还没推的提交 ${gitPendingCount().commits} 个 + 未提交的可推送文件 ${gitPendingCount().files} 个（默认锁定的文件不计入）">未推送 <b id="gitAhead">${gitPendingCount().total}</b></span>
+        <span class="st-left" data-tip="未推送 = 还没推到 GitHub 任何分支的提交 ${gitPendingCount().commits} 个 + 未提交的可推送文件 ${gitPendingCount().files} 个（默认锁定的文件不计入）">未推送 <b id="gitAhead">${gitPendingCount().total}</b></span>
         <span class="st-mid" data-tip="GitHub 上还没拉到本地的提交数（不是文件数）">未拉取 <b id="gitBehind">${(gitState.status && gitState.status.behind) || 0}</b></span>
         <span class="st-right gitstate is-${gitState.stateOk === true ? 'ok' : (gitState.stateOk === false ? 'fail' : 'idle')}" id="gitLastFetch" data-tip="${esc(gitStateTip())}">${esc(gitState.stateText || '未同步')}</span>
       </div>
@@ -6824,6 +6864,7 @@ window.addEventListener('resize', () => {
 /* ---------------- Git 同步（本地服务提供 /__git* 接口） ---------------- */
 let gitState = { status: null, logs: [], note: '', stateText: '未同步', stateOk: null, info: null, remote: null, busy: false };
 let GIT_PUSH_AUTORETRY = false;
+let MOD_EXPORT_VERSION = '';
 const GIT_LOG_MAX = 20;
 
 function gitDefaults() {
@@ -7013,7 +7054,7 @@ function renderGitUI() {
     ahead.textContent = pend.total;
     const wrap = ahead.parentElement;
     if (wrap) wrap.setAttribute('data-tip',
-      '未推送 = 还没推的提交 ' + pend.commits + ' 个 + 未提交的可推送文件 ' + pend.files + ' 个（默认锁定的文件不计入）');
+      '未推送 = 还没推到 GitHub 任何分支的提交 ' + pend.commits + ' 个 + 未提交的可推送文件 ' + pend.files + ' 个（默认锁定的文件不计入）');
   }
   const behind = document.getElementById('gitBehind');
   if (behind) behind.textContent = (st && st.behind) || 0;
@@ -7064,6 +7105,7 @@ const PUSH_DEFAULT_LOCK = [
   'Editor/history',            // 本地保存快照（个人数据，会覆盖别人）
   'Editor/canvases/.backup',   // 画布备份
   'Editor/body-map',           // 部位序号调试产物（含 body-map-*.json）
+  'Editor/hair-map.js',        // 旧版 HAR 判定缓存（新版写到 Editor/history/）
   'Editor/nht-project.js',     // 项目聚合文件（每个人自己的画布）
   'Editor/assets',             // 本机素材库（导入的图、参考图）
   'Editor/ui/notice1.html',    // 早期重复的通知文件
@@ -7548,6 +7590,25 @@ function modDirtyList() {
 }
 
 async function exportModFiles() {
+  // 先问版本号：默认用编辑器里保存的 About.xml 的 modVersion
+  const v0 = aboutVersion();
+  openModal(`<div style="width:min(460px,92vw)">
+    <div class="modal__head"><span class="idx">MOD</span><h3>导出模组文件</h3>
+      <button class="iconbtn x" data-act="close-modal">${icon('x')}</button></div>
+    <div class="modal__body">
+      <div class="field"><label>版本号</label><div class="ctl">
+        <input class="inp" id="modExportVersion" value="${esc(v0)}" spellcheck="false" placeholder="例如 0.2">
+      </div></div>
+      <p class="mini-note" style="margin:2px 0 0">导出使用的 <code>About.xml</code> 是<b>编辑器里保存的那份</b>（设置 → About 里编辑的），不是模组文件夹里的文件；这里的版本号会写进那份 About.xml 的 <code>&lt;modVersion&gt;</code>。</p>
+    </div>
+    <div class="modal__foot">
+      <button class="btn" data-act="close-modal">取消</button>
+      <button class="btn btn--modx" data-act="mod-export-do">导出</button>
+    </div></div>`);
+  return;
+}
+
+async function exportModFilesStage2() {
   const dirty = modDirtyList();
   if (dirty.length) {
     openModal(`<div style="width:min(520px,92vw)">
@@ -7575,20 +7636,52 @@ async function doExportModFiles() {
     toast('导出模组文件需要本地服务：请用「启动编辑器.bat」打开编辑器', true);
     return;
   }
-  progStart('打包模组文件夹…', 2);
+  const prev = S.active;
+  progStart('准备导出…', 5);
   try {
-    const aboutTxt = aboutCurrent();
+    // 1) 生成灰色贴图
+    progStep(1, '生成灰色贴图…');
+    try { await ensureGrayArt(S.canvases); } catch (e) { }
+
+    // 2) 重建种族补丁（只处理 race 画布，保证 zip 里是最新数据）
+    progStep(2, '重建种族补丁…');
+    const raceCanvases = (S.canvases || []).filter(c => c && c.kind === 'race' && c.race);
+    let patched = 0;
+    for (const c of raceCanvases) {
+      S.active = c.id;
+      let xml = '';
+      try { xml = buildPatchXML('one'); } catch (e) { continue; }
+      const name = 'nht-' + slug(c.doll || c.title) + '.xml';
+      const ok = await apiSave('to=patch&name=' + encodeURIComponent(name), xml);
+      if (!ok) continue;
+      try { await pushCustomTextures(c); } catch (e) { }
+      c.savedSig = canvasSig(c); c.sigVer = CANVAS_SIG_VER;
+      patched++;
+    }
+
+    // 3) About 版本
+    progStep(3, '写入 About.xml…');
+    const aboutTxt = (typeof MOD_EXPORT_VERSION !== 'undefined' && MOD_EXPORT_VERSION)
+      ? aboutWithVersion(MOD_EXPORT_VERSION)
+      : aboutCurrent();
+    if (typeof MOD_EXPORT_VERSION !== 'undefined' && MOD_EXPORT_VERSION) {
+      try { aboutSetVersion(MOD_EXPORT_VERSION); } catch (e) { }
+    }
     let aboutQ = '';
     if (aboutTxt.trim()) {
       const chk = aboutCheck(aboutTxt);
       if (!chk.ok) {
         toast('About.xml 有错误，先修好再导出：' + chk.errors[0], true);
+        S.active = prev;
         setSettingsTab('about'); modalSettings();
         progDone();
         return;
       }
       aboutQ = '?about=' + encodeURIComponent(aboutTxt);
     }
+
+    // 4) 打包并下载
+    progStep(4, '打包模组文件夹…');
     const r = await fetch('/__modzip' + aboutQ, { cache: 'no-store' });
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const blob = await r.blob();
@@ -7597,13 +7690,15 @@ async function doExportModFiles() {
     const base = slug((S.project && S.project.name) || 'NHT_CustomDolls');
     const stampOn = S.settings.zipStamp !== false;
     download(`${base}${stampOn ? '-mod-' + ts : ''}.zip`, blob, 'application/zip');
-    progStep(2, '已下载 zip');
-    progDone();
-    // 打包用的是磁盘上已有的 Patches，等于把当前注入状态一起带走
-    S.canvases.forEach(c => { c.savedSig = canvasSig(c); });
+    progStep(5, '已下载 zip');
+
+    S.active = prev;
+    S.canvases.forEach(c => { c.savedSig = canvasSig(c); c.sigVer = CANVAS_SIG_VER; });
     persist();
-    toast(`已导出模组文件夹（${Math.round(blob.size / 1024)} KB，不含 Editor）`);
+    progDone();
+    toast(`已导出（版本 ${esc(MOD_EXPORT_VERSION || aboutVersion() || '—')}，${patched} 个种族补丁，${Math.round(blob.size / 1024)} KB，不含 Editor）`);
   } catch (e) {
+    S.active = prev;
     progDone();
     toast('打包失败：' + (e && e.message), true);
   }
@@ -7736,6 +7831,29 @@ function aboutCheck(text) {
   out.ok = out.errors.length === 0;
   out.level = out.ok ? (out.warns.length ? 'warn' : 'ok') : 'bad';
   return out;
+}
+
+/* About.xml 版本号：编辑器保存的那份（S.project.aboutXml）里的 <modVersion> */
+function aboutVersion() {
+  const m = String(aboutCurrent()).match(/<modVersion>([\s\S]*?)<\/modVersion>/i);
+  return m ? m[1].trim() : '';
+}
+function aboutWithVersion(v) {
+  const val = String(v == null ? '' : v).trim();
+  let t = aboutCurrent();
+  if (!val) return t;
+  if (/<modVersion>[\s\S]*?<\/modVersion>/i.test(t)) {
+    return t.replace(/<modVersion>[\s\S]*?<\/modVersion>/i, '<modVersion>' + val + '</modVersion>');
+  }
+  return t.replace(/<\/ModMetaData>/i, '\t<modVersion>' + val + '</modVersion>\n</ModMetaData>');
+}
+function aboutSetVersion(v) {
+  const t = aboutWithVersion(v);
+  if (!t) return false;
+  S.project.aboutXml = t;
+  try { const ta = document.getElementById('aboutTa'); if (ta) ta.value = t; } catch (e) { }
+  persist();
+  return true;
 }
 
 function aboutCurrent() {
@@ -8001,14 +8119,26 @@ async function gitPickDir() {
 }
 
 
+const CANVAS_SIG_VER = 2;
 function canvasSig(c) {
   if (!c) return '';
   return hashStr(JSON.stringify({
-    p: (c.parts || []).map(p => [p.img, p.bid, Math.round(p.x || 0), Math.round(p.y || 0),
+    // 部位：位置/缩放/旋转/图层/置顶/联动置顶/部位颜色/可见/镜像/名字/编号
+    p: (c.parts || []).map(p => [p.img, p.id, p.name, p.bid, p.kind,
+      Math.round(p.x || 0), Math.round(p.y || 0),
       +(+p.sx || 1).toFixed(3), +(+p.sy || 1).toFixed(3), Math.round(p.rot || 0),
-      p.layer, p.overHair ? 1 : 0, p.state || 'ok', p.extra || 0]),
+      p.layer, p.overHair ? 1 : 0, p.linkTop ? 1 : 0, Math.round(overLevelOf(p)),
+      p.desat ? 1 : 0, p.grayImg || '', p.vis === false ? 0 : 1, p.flip ? 1 : 0,
+      p.state || 'ok', p.extra || 0]),
     h: c.hairFit || null, en: !!c.hairFitEnabled, uo: !!c.hairFitUseWhenOff,
+    fol: !!c.hairFollowOffset,
+    hp: c.hairPreviewImg || '', hs: c.hairPreviewShow !== false ? 1 : 0,
+    hl: Number.isFinite(c.hairPreviewLayer) ? c.hairPreviewLayer : null,
+    hb: Number.isFinite(c.hairBackLayer) ? c.hairBackLayer : null,
+    ht: c.hairTint || '', hts: c.hairTintShow !== false ? 1 : 0,
+    hx: c.hairShowInXray ? 1 : 0,
     hd: c.hairDisabled ? 1 : 0,
+    eo: c.exportOffset ? [Math.round(c.exportOffset.x || 0), Math.round(c.exportOffset.y || 0)] : null,
     d: c.displayBox ? [Math.round(c.displayBox.w), Math.round(c.displayBox.h), c.displayBox.pos] : null
   }));
 }
@@ -8042,6 +8172,16 @@ function canvasIsPristineDefault(c) {
     if (sig) PRISTINE_SIG.set(key, sig);
   }
   return !!sig && canvasSig(c) === sig;
+}
+
+function migrateCanvasSigs() {
+  try {
+    (S.canvases || []).forEach(c => {
+      if (!c) return;
+      if (c.sigVer !== CANVAS_SIG_VER) { c.savedSig = canvasSig(c); c.sigVer = CANVAS_SIG_VER; }
+      else if (!c.savedSig) c.savedSig = canvasSig(c);
+    });
+  } catch (e) { }
 }
 
 function canvasDirty(c) { if (canvasIsPristineDefault(c)) return false; return !c.savedSig || c.savedSig !== canvasSig(c); }
@@ -8153,6 +8293,7 @@ async function multiExportRun(ids) {
     const c = S.canvases.find(x => x.id === id);
     if (!c) continue;
     S.active = id;
+    try { await ensureGrayArt([c]); } catch (e) { }
     let xml = '';
     try { xml = buildPatchXML('one'); } catch (e) { fail++; continue; }
     const name = 'nht-' + slug(c.doll || c.title) + '.xml';
@@ -8162,7 +8303,7 @@ async function multiExportRun(ids) {
       const tex = await pushCustomTextures(c);
       if (tex.missing && tex.missing.length) missing.push(...tex.missing);
     } catch (e) { }
-    c.savedSig = canvasSig(c);
+    c.savedSig = canvasSig(c); c.sigVer = CANVAS_SIG_VER;
     ok++;
   }
   S.active = prev;
@@ -8187,9 +8328,47 @@ function applyPanelCollapse() {
 }
 
 /* ====== HAR 头发（独立分栏） ====== */
+/* 非 HAR 发型种族（原版 HairDef）：上色/坐标/跟随偏移统一由模组设置控制 */
+function isVanillaHairRace(c) {
+  return !!(c && c.kind === 'race' && c.race && !harHairOf(c));
+}
+function lockVanillaHairControls(c, pane) {
+  if (!pane || !isVanillaHairRace(c)) return;
+  try {
+    ['hairfit-toggle', 'hairfit-useoff', 'hair-follow'].forEach(act => {
+      const btn = pane.querySelector('[data-act="' + act + '"]');
+      if (!btn) return;
+      const row = btn.closest('.swrow') || btn.closest('.field');
+      if (row) row.style.display = 'none';
+    });
+    const sec = pane.querySelector('.sec');
+    if (sec && !sec.querySelector('.vanillahairlock')) {
+      const p = document.createElement('p');
+      p.className = 'mini-note warnline vanillahairlock';
+      p.textContent = '非 HAR 发型种族：是否上色、发型坐标、跟随偏移都由模组设置「非 HAR 发型按发色重绘」统一控制；'
+        + '这里的数值照常可调，导出时始终写入坐标。';
+      const rows = sec.querySelector('.swrow');
+      if (rows) sec.insertBefore(p, rows); else sec.appendChild(p);
+
+      // 非 HAR 微调（缩放 / 偏移），导出到 HairFitDef 的 vanilla* 字段
+      pane.querySelectorAll('.haronly').forEach(x => { x.style.display = 'none'; });
+      const vf = c.vanillaFit || (c.vanillaFit = { scale: 1, offsetX: 0, offsetY: 0 });
+      const box = document.createElement('div');
+      box.className = 'field vfitbox';
+      box.style.marginTop = '6px';
+      box.innerHTML = '<label>非 HAR 微调</label><div class="ctl num3">'
+        + '<input class="inp" type="number" step="0.01" data-f="c.vfs" value="' + (Number(vf.scale) || 1).toFixed(2) + '" title="缩放（1 = NHT 原版大小）">'
+        + '<input class="inp" type="number" step="1" data-f="c.vfx" value="' + (Number(vf.offsetX) || 0).toFixed(0) + '" title="左右偏移（像素，±80）">'
+        + '<input class="inp" type="number" step="1" data-f="c.vfy" value="' + (Number(vf.offsetY) || 0).toFixed(0) + '" title="上下偏移（像素，±80）">'
+        + '</div>';
+      sec.insertBefore(box, p.nextSibling);
+    }
+  } catch (e) { }
+}
+
 function hairSectionHTML(c) {
   return `  <div class="sec">
-    <div class="sec__h"><b>HAR 头发 HAIR</b><span class="tagx">模组自绘</span></div>
+    <div class="sec__h"><b>发型 HAIR</b><span class="tagx">模组自绘</span></div>
     <div class="swrow">
       <button class="switch${c.hairFitEnabled ? ' is-on' : ''}" data-act="hairfit-toggle" role="switch"
         aria-checked="${c.hairFitEnabled ? 'true' : 'false'}"
@@ -8198,7 +8377,7 @@ function hairSectionHTML(c) {
         <b>发型重绘<span class="qmark" title="发型重绘：在原有头发之上再补画一遍，用这里的位置/缩放/层级参数。主要是让「非 HAR 发型」（原版 HairDef，如 RatKin/Wolfein 那种没有 bodyAddon 的种族）也能显示发色；HAR 种族用它微调。注意：重画只还原贴图，会盖住该部位原有的疤痕/伤口表现。">?</span></b>
       </div>
     </div>
-    <div class="field" style="margin-top:6px"><label>缩放 / 偏移X / 偏移Y</label><div class="ctl num3">
+    <div class="field haronly" style="margin-top:6px"><label>缩放 / 偏移X / 偏移Y</label><div class="ctl num3">
       <input class="inp" type="number" data-f="c.hfs" value="${((c.hairFit && c.hairFit.scale) || 0.78).toFixed(3)}" step="0.001" min="0.1" max="3">
       <input class="inp" type="number" data-f="c.hfx" value="${((c.hairFit && c.hairFit.offsetX) || 0).toFixed(3)}" step="0.001">
       <input class="inp" type="number" data-f="c.hfy" value="${((c.hairFit && c.hairFit.offsetY) || -0.21).toFixed(3)}" step="0.001">
@@ -8326,6 +8505,7 @@ function renderHairPane() {
   const head = `<div class="selhead"><div class="selhead__badge">${esc(String(c.doll || '').slice(0, 1).toUpperCase())}</div>
     <div class="selhead__t"><b>${esc(c.title || '')}</b><span>${esc(c.doll || '')} · 发型显示设置</span></div></div>`;
   pane.innerHTML = head + (typeof hairSectionHTML === 'function' ? hairSectionHTML(c) : '');
+  try { lockVanillaHairControls(c, pane); } catch (e) { }
 }
 
 function renderTabs() {
@@ -9097,6 +9277,61 @@ function exportHitbox(p) {
   return [w, h];
 }
 
+/* 部位颜色：把贴图转成灰度（保留 alpha 与明暗），返回 dataURL */
+function grayPngDataURL(srcKey) {
+  return new Promise(resolve => {
+    const im = new Image();
+    im.onload = () => {
+      try {
+        const cv = document.createElement('canvas');
+        cv.width = im.naturalWidth; cv.height = im.naturalHeight;
+        const g = cv.getContext('2d');
+        g.drawImage(im, 0, 0);
+        const d = g.getImageData(0, 0, cv.width, cv.height);
+        const px = d.data;
+        for (let i = 0; i < px.length; i += 4) {
+          const l = Math.round(0.299 * px[i] + 0.587 * px[i + 1] + 0.114 * px[i + 2]);
+          px[i] = l; px[i + 1] = l; px[i + 2] = l;
+        }
+        g.putImageData(d, 0, 0);
+        resolve({ data: cv.toDataURL('image/png'), w: cv.width, h: cv.height });
+      } catch (e) { resolve(null); }
+    };
+    im.onerror = () => resolve(null);
+    try { im.src = imgURL(srcKey); } catch (e) { resolve(null); }
+  });
+}
+
+function grayKeyFor(doll, p) {
+  return 'Custom/NHTCD_Gray/' + slug(String(doll || 'doll')) + '_' + slug(String((p && (p.id || p.name)) || 'part'));
+}
+function grayArtKey(c, p) {
+  return grayKeyFor((c && (c.doll || c.title)) || 'doll', p);
+}
+
+/* 导出前确保所有标记过的部位都有灰度贴图（没有就现生成） */
+async function ensureGrayArt(list) {
+  const canvases = list || S.canvases || [];
+  for (const c of canvases) {
+    for (const p of (c.parts || [])) {
+      if (!p.desat || !p.img) continue;
+      const key = grayArtKey(c, p);
+      let has = false;
+      try { const idx = artLoadIndex(); has = !!(idx[key] && idx[key].d); } catch (e) { }
+      if (has) { p.grayImg = key; continue; }
+      const g = await grayPngDataURL(p.img);
+      if (!g) continue;
+      try {
+        const idx = artLoadIndex();
+        idx[key] = { d: g.data, w: g.w, h: g.h };
+        artSaveIndex();
+        EXT.set(key, { url: g.data, w: g.w, h: g.h });
+      } catch (e) { }
+      p.grayImg = key;
+    }
+  }
+}
+
 function partXML(p, doll, indent, fit, idOverride) {  const tag = tagOf(p.kind);
   const f = fit || { k: 1, cx: 0, cy: 0 };
   const i2 = indent || '';
@@ -9136,6 +9371,13 @@ function partXML(p, doll, indent, fit, idOverride) {  const tag = tagOf(p.kind);
   lines.push(`${i2}  <hitboxScale><x>${nf(hbOut[0])}</x><y>${nf(hbOut[1])}</y></hitboxScale>`);
   if (p.kind === 'organ' || p.kind === 'bone') lines.push(`${i2}  <extraLayer>${p.extra || 0}</extraLayer>`);
   lines.push(`${i2}</${tag}>`);
+  if (p.desat && p.img) {
+    const gkey = grayKeyFor(doll, p);
+    const gc = Object.assign({}, p, { img: gkey, desat: false, grayImg: null, name: String(p.name || '') + '（灰）' });
+    const gid = String(idOverride || p.id || 'Part') + '_NHTCD_Gray';
+    lines.push('');
+    lines.push(partXML(gc, doll, indent, fit, gid));
+  }
   return lines.join('\n');
 }
 
@@ -9574,6 +9816,7 @@ function renderGuides(c) {
 }
 
 const HAIRFIT_DEF = new Map();
+  const DESAT_DEFS = new Set();   // 每个种族只导一条 DesatPartsDef
 
 /* ---------------- NHT 种族部位对照表 ---------------- */
 /* NHT 的 64 个标准槽位（顺序 = bodyPartId），和 DLL 里的 NHT_SLOT_DEFS 一致 */
@@ -9679,13 +9922,15 @@ function buildPatchXML(scope) {
   const opCount = () => ops.filter(s => s.startsWith('  <Operation')).length;
   // 每次生成补丁前清掉上一轮记录的 HairFitDef，否则会留下指向不存在的 Def 的 aboveParts
   list.forEach(cv => { try { HAIRFIT_DEF.delete(cv.id); } catch (e) { } });
+  try { DESAT_DEFS.clear(); } catch (e) { }   // 每次生成都重算，别被上一次预览占掉
   // 导出前把过小的命中框自动放大到可用尺寸（太小的框在游戏里点不到）
   list.forEach(cv => (cv.parts || []).forEach(pp => { try { ensureHitbox(pp); } catch (e) { } }));
 
   list.forEach(c => {
     // 只要有人开了「置顶重画」，就必须导出 HairFitDef（aboveParts 存在里面），否则补丁里会出现悬空的 xpath
     const anyAbove = (c.parts || []).some(p => p.overHair && p.img);
-    if ((c.hairFitEnabled || c.hairFitUseWhenOff || anyAbove) && c.doll) {
+    const vanillaHairRace = c.kind === 'race' && !!c.race && !harHairOf(c);
+    if ((c.hairFitEnabled || c.hairFitUseWhenOff || anyAbove || vanillaHairRace) && c.doll) {
       const f = c.hairFit || { scale: 0.78, offsetX: 0, offsetY: -0.21 };
       // NHT 用 pawn.def.defName 查表：可能是 doll 名，也可能是异种/种族名，两个都写一份
       const rawKeys = (Array.isArray(c.hairRaceKeys) && c.hairRaceKeys.length ? c.hairRaceKeys : [])
@@ -9693,8 +9938,9 @@ function buildPatchXML(scope) {
         .filter(v => v && String(v).trim() && String(v).trim() !== '*');
       const raceKeys = [...new Set(rawKeys.map(v => String(v).trim()))];
       const sx = (+f.scale || 0.78).toFixed(3);
-      const ox = ((+f.offsetX || 0) + (c.hairFollowOffset ? hairOffsetShift(c).dx : 0)).toFixed(3);
-      const oy = ((+f.offsetY || 0) + (c.hairFollowOffset ? hairOffsetShift(c).dy : 0)).toFixed(3);
+      const followOff = c.hairFollowOffset || vanillaHairRace;
+      const ox = ((+f.offsetX || 0) + (followOff ? hairOffsetShift(c).dx : 0)).toFixed(3);
+      const oy = ((+f.offsetY || 0) + (followOff ? hairOffsetShift(c).dy : 0)).toFixed(3);
       const lay = (Number.isFinite(c.hairPreviewLayer) ? c.hairPreviewLayer
         : (Number.isFinite(c.hairLayer) ? c.hairLayer : 29)).toFixed(0);
       const backLay = (Number.isFinite(c.hairBackLayer) ? c.hairBackLayer : 0).toFixed(0);
@@ -9715,14 +9961,49 @@ function buildPatchXML(scope) {
         <front>true</front>
         <layer>${lay}</layer>
         <showInXray>${c.hairShowInXray ? 'true' : 'false'}</showInXray>
+        <vanillaScale>${(+((c.vanillaFit && c.vanillaFit.scale) || 1)).toFixed(3)}</vanillaScale>
+        <vanillaOffsetX>${(+((c.vanillaFit && c.vanillaFit.offsetX) || 0)).toFixed(3)}</vanillaOffsetX>
+        <vanillaOffsetY>${(+((c.vanillaFit && c.vanillaFit.offsetY) || 0)).toFixed(3)}</vanillaOffsetY>
         <aboveParts>
         </aboveParts>
+        <topParts>
+        </topParts>
       </NHT_CustomDolls.HairFitDef>
     </value>
   </Operation>`);
       });
       HAIRFIT_DEF.set(c.id, defs);
     }
+    // 部位颜色：编辑器里标记过的部位（关闭模组设置的总开关后变黑白）
+    {
+      const desatParts = sortParts(c.parts || []).filter(p =>
+        p.desat && p.img && Number.isFinite(Number(p.bid)) && Number(p.bid) >= 0);
+      const raceKey = (c.race && c.race.defName) ? String(c.race.defName) : '';
+      const dollKey = String(c.doll || '');
+      const key = raceKey || dollKey;
+      if (desatParts.length && key && !DESAT_DEFS.has(key)) {
+        DESAT_DEFS.add(key);
+        const defName = 'NHTCD_Desat_' + safeDefName(key, 'Parts');
+        const rows = desatParts.map(p =>
+          `          <li><part>${xesc(p.id || '')}</part><id>${Math.trunc(Number(p.bid))}</id><label>${xesc(p.name || ('#' + p.bid))}</label></li>`).join('\n');
+        ops.push(`  <!-- ${c.title} · 部位颜色开关：关闭后这些部位显示为黑白 -->`);
+        ops.push(`  <Operation Class="PatchOperationAdd">
+    <xpath>Defs</xpath>
+    <value>
+      <NHT_CustomDolls.DesatPartsDef>
+        <defName>${defName}</defName>
+        <label>${xesc(c.title || key)}</label>
+        <race>${xesc(raceKey || '*')}</race>
+        <doll>${xesc(dollKey || '*')}</doll>
+        <parts>
+${rows}
+        </parts>
+      </NHT_CustomDolls.DesatPartsDef>
+    </value>
+  </Operation>`);
+      }
+    }
+
     const orig = originalDefs(c.doll);
     const rjwOrig = originalRjwDefs(c.doll);
     const present = new Set();
@@ -9740,6 +10021,10 @@ function buildPatchXML(scope) {
     {
       // 手动指定：哪些部位画在头发之上（列表为空 = 不重画任何部位）
       const above = sortParts(c.parts).filter(p => p.overHair && p.img).map(p => nameOf(p));
+      const topParts = sortParts(c.parts)
+        .filter(p => p.img && (p.overHair || p.linkTop))
+        .map(p => ({ id: nameOf(p), lv: Math.round(overLevelOf(p)), vanilla: !!p.linkTop && !p.overHair }));
+      const topXml = topParts.map(t => `\n        <li><part>${t.id}</part><level>${t.lv}</level><vanilla>${t.vanilla ? 'true' : 'false'}</vanilla></li>`).join('');
       // 只有本次真的写了 HairFitDef 才去改它的 aboveParts；
       // 没写的话 xpath 会指向不存在的 Def，游戏加载时会报 Patch operation failed
       const fitDefs2 = HAIRFIT_DEF.get(c.id);
@@ -9749,6 +10034,12 @@ function buildPatchXML(scope) {
     <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="${fitDef2}"]/aboveParts</xpath>
     <value>
       <aboveParts>${above.map(n => `\n        <li>${n}</li>`).join('')}\n      </aboveParts>
+    </value>
+  </Operation>`);
+        ops.push(`  <Operation Class="PatchOperationReplace">
+    <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="${fitDef2}"]/topParts</xpath>
+    <value>
+      <topParts>${topXml}\n      </topParts>
     </value>
   </Operation>`);
       });
@@ -10593,7 +10884,10 @@ async function pushCustomTextures(c) {
   if (!c || !LOCAL_HTTP) return { tried: 0, ok: 0, missing: [] };
   const idx = artLoadIndex();
   const keys = new Set();
-  (c.parts || []).forEach(p => { if (p.img && String(p.img).indexOf('Custom/') === 0) keys.add(p.img); });
+  (c.parts || []).forEach(p => {
+    if (p.img && String(p.img).indexOf('Custom/') === 0) keys.add(p.img);
+    if (p.grayImg && String(p.grayImg).indexOf('Custom/') === 0) keys.add(p.grayImg);
+  });
   const missing = [];
   let ok = 0;
   for (const key of keys) {
@@ -10666,6 +10960,7 @@ async function fillMissingTextures(files) {
 async function savePatchToMod() {
   if (!(await ensureSavePath('patch'))) return;
   const cur = activeCanvas();
+  try { await ensureGrayArt(cur ? [cur] : []); } catch (e) { }
   const xml = buildPatchXML('one');
   const name = 'nht-' + slug(cur ? (cur.doll || cur.title) : 'patch') + '.xml';
   if (LOCAL_HTTP) {
@@ -10913,6 +11208,7 @@ async function parseRaceMod(files) {
     : allXml).slice(0, 900);
   const hairDefXmls = [];          // <HairDef> 定义（原版发型）
   const raceCandidates = [];
+  let modHasHairAddon = false;     // 模组里是否有 hair bodyAddon（可能在父级 def 上）
   let bodyDef = null;
   const bodyDefs = new Map();
   for (const [k, f] of xmls) {
@@ -10920,6 +11216,7 @@ async function parseRaceMod(files) {
     let text;
     try { text = await f.text(); } catch (e) { continue; }
     if (!/ThingDef|BodyDef/.test(text)) continue;
+    if (!modHasHairAddon && /bodyAddons[\s\S]{0,6000}?<path>[^<]*Hair/i.test(text)) modHasHairAddon = true;
     let doc;
     try { doc = new DOMParser().parseFromString(text, 'text/xml'); } catch (e) { continue; }
     if (!doc || doc.querySelector('parsererror')) continue;
@@ -10929,11 +11226,26 @@ async function parseRaceMod(files) {
         const raceNode = node.querySelector(':scope > race');
         const defName = node.querySelector(':scope > defName')?.textContent?.trim();
         if (raceNode && defName) {
+          // HAR 头发：只有 bodyAddons 里 path 含 Hair 才算（原版 HairDef 的贴图不算）
+          let addonPaths = [];
+          try {
+            const ba = raceNode.querySelector('bodyAddons') || node.querySelector('bodyAddons');
+            if (ba) Array.from(ba.querySelectorAll('path')).forEach(pn => {
+              const v = (pn.textContent || '').trim();
+              if (v) addonPaths.push(v);
+            });
+          } catch (e) { }
+          const parentName = node.getAttribute('ParentName') || '';
+          const hairAddon = addonPaths.some(v => /hair/i.test(v))
+            || (!!parentName && modHasHairAddon);   // 继承自父级 def 的 bodyAddons
           raceCandidates.push({
             defName,
             label: node.querySelector(':scope > label')?.textContent?.trim() || defName,
             body: raceNode.querySelector(':scope > body')?.textContent?.trim() || '',
-            kind: tag
+            kind: tag,
+            parentName,
+            addonPaths,
+            hairAddon
           });
         }
       }
@@ -11382,10 +11694,53 @@ function detectHarHair(res, title) {
 }
 
 /* 老画布没存过 harHair：按"发型贴图的模组/路径"反推 */
+/* 游戏运行时写出的权威判定：Editor/hair-map.js（window.__NHT_HAIRMAP） */
+function applyHairMap() {
+  const m = (typeof window !== 'undefined' && window.__NHT_HAIRMAP) || null;
+  if (!m) return 0;
+  let n = 0;
+  (S.canvases || []).forEach(c => {
+    if (!c || c.kind !== 'race' || !c.race) return;
+    const keys = [c.race.defName, c.doll, c.title].filter(Boolean);
+    let e = null;
+    for (const k of keys) { if (m[k]) { e = m[k]; break; } }
+    if (!e) return;
+    c.harHairChecked = true;
+    c.race.hairAddon = !!e.addon;
+    c.harHair = e.addon
+      ? { mod: c.race.modName || '', count: Number(e.count) || 0, samples: [], addon: true }
+      : null;
+    n++;
+  });
+  return n;
+}
+
+function loadHairMap() {
+  // 新路径：Editor/history/hair-map.js（本地，默认锁定）；旧路径兜底
+  const load = src => new Promise(resolve => {
+    try {
+      const sc = document.createElement('script');
+      sc.src = src + '?t=' + Date.now();
+      sc.onload = () => resolve(true);
+      sc.onerror = () => resolve(false);
+      document.head.appendChild(sc);
+    } catch (e) { resolve(false); }
+  });
+  return new Promise(async resolve => {
+    if (!LOCAL_HTTP) { resolve(0); return; }
+    let ok = await load('/history/hair-map.js');
+    if (!ok) ok = await load('/hair-map.js');
+    const n = ok ? applyHairMap() : 0;
+    try { if (n) { renderAll(); renderHairPane(); } } catch (e) { }
+    resolve(n);
+  });
+}
+
 function harHairOf(c) {
   if (!c) return null;
-  if (c.harHair) return c.harHair;
-  if (c.harHairChecked) return null;      // 已经明确判定过“这张画布没有 HAR 头发”
+  if (c.harHair && c.harHair.addon) return c.harHair;   // 新数据/游戏写出的 hair-map：确认是 bodyAddon 头发
+  if (c.harHairChecked) return c.harHair || null;       // 已判定过（true=HAR，null=原版发型）
+  if (c.harHair) return c.harHair;                      // 老画布：先沿用旧结论，等 Editor/hair-map.js 纠正
   if (c.kind !== 'race') return null;
   const keys = [c.race && c.race.modName, c.title, c.race && c.race.defName].filter(Boolean).map(x => String(x).toLowerCase());
   const hits = (typeof HAIRS !== 'undefined' ? HAIRS : []).filter(h => {
@@ -11396,7 +11751,9 @@ function harHairOf(c) {
   // 只认 bodyAddon 的头发（.../Addon/Hair.../），原版 HairDef 的 Textures/Hair/ 不算
   const addon = hits.filter(h => /\/addon\/[^/]*hair/i.test(String(h.p || '')));
   if (!addon.length) return null;
-  return detectHarHair({ hairs: addon.map(h => ({ path: h.p })), modName: c.title }, c.title);
+  const hit = detectHarHair({ hairs: addon.map(h => ({ path: h.p })), modName: c.title }, c.title);
+  if (hit) hit.addon = true;
+  return hit;
 }
 
 function createFromRace(res) {
@@ -11406,8 +11763,15 @@ function createFromRace(res) {
   const hasHair = hasStoredArt(res.modName || title, 'hair');
   const added = hasAssets ? 0 : addRaceAssets(res, title);
   if (!hasHair) setHairs(res, title);
-  // 记录：这个模组用了 HAR 头发（贴图在 Hair / HairBack 里，靠 bodyAddon 自绘）
-  try { c.harHair = detectHarHair(res, title); } catch (e) { }
+  // 只有种族 bodyAddons 里真的有 Hair 附加件，才算 HAR 头发；
+  // 原版 HairDef 的 Textures/.../Hairs/*.png 是普通发型，不能当成 HAR
+  try {
+    const isHarHair = !!(res.race && res.race.hairAddon);
+    const addonHairs = (res.hairs || []).filter(h => /\/Addon\/[^/]*Hair/i.test(String(h.path || h.key || '')));
+    c.harHair = isHarHair ? detectHarHair({ hairs: addonHairs, modName: res.modName || title }, title) : null;
+    c.harHairChecked = true;
+    if (c.harHair) c.harHair.addon = true;
+  } catch (e) { }
   const stored = hasAssets && hasHair;
   S.canvases.push(c);
   S.active = c.id;
@@ -11691,7 +12055,7 @@ function raceInfoHTML(res) {
       <div><span>包名</span><em>${esc(res.packageId || '—')}</em></div>
       <div><span>贴图</span><em>${res.matched.length} / ${res.parts.length} 已匹配</em></div>
       <div><span>头发</span><em>${(() => {
-        const h = res.harHair;
+const h = (res.race && res.race.hairAddon) ? res.harHair : null;
         if (h) return `<b style="color:#7fd18a">HAR 附加件</b> · 共 ${h.count} 张${h.back ? `（后层 ${h.back}）` : ''}`;
         if (res.hairDefCount) return `<b style="color:#e3b558">原版 HairDef</b> · ${res.hairDefCount} 个样式`;
         return '<b style="color:#e2564a">未检测到头发</b>';
@@ -12002,6 +12366,16 @@ document.addEventListener('click', e => {
 
     case 'git-pull': gitDoPull(); break;
     case 'mod-export': exportModFiles(); break;
+    case 'mod-export-do': {
+      const inp = document.getElementById('modExportVersion');
+      const v = (inp && inp.value || '').trim() || aboutVersion();
+      MOD_EXPORT_VERSION = v;
+      if (v) { try { aboutSetVersion(v); } catch (e) { } }
+      closeModal();
+      exportModFilesStage2();
+      break;
+    }
+
     case 'mod-export-go': doExportModFiles(); break;
 
     case 'set-zipstamp': saveSettings(); S.settings.zipStamp = S.settings.zipStamp === false; persist(); refreshSettingsInPlace(); break;
@@ -12147,7 +12521,7 @@ document.addEventListener('click', e => {
       const c = activeCanvas(); if (!c) break;
       S.tab = 'hair'; S.sel = null;
       renderAll();
-      toast('已打开「HAR 头发」分栏：检查「发型重绘 / 导出发型坐标」和缩放、偏移');
+      toast('已打开「发型」分栏：检查「发型重绘 / 导出发型坐标」和缩放、偏移');
       break;
     }
 
@@ -12167,7 +12541,7 @@ document.addEventListener('click', e => {
       S.tab = 'global'; S.sel = null;
       renderAll();
       setTimeout(() => {
-        const sec = [...document.querySelectorAll('#paneInspect .sec')].find(x => /HAR 头发/.test(x.textContent));
+        const sec = [...document.querySelectorAll('#paneInspect .sec')].find(x => /发型 HAIR/.test(x.textContent));
         if (sec) {
           sec.scrollIntoView({ block: 'center' });
           const fold = sec.querySelector('details'); if (fold) fold.open = true;
@@ -12461,20 +12835,33 @@ document.addEventListener('click', e => {
     }
     case 'layer-up': {
       const p = selPart();
-      if (p && p.overHair) {
-        const c0 = activeCanvas();
-        if (moveOverRank(c0, p, +1)) { renderStage(); renderInspector(); renderTree(); pushHistory(); toast('置顶等级 +1（更靠上）'); }
-        else toast('已经是置顶组最上面', true);
-        break;
-      } if (p) { p.layer = Math.min(29, p.layer + 1); renderStage(); renderInspector(); renderTree(); pushHistory(); } break; }
+      if (p) { p.layer = Math.min(29, p.layer + 1); renderStage(); renderInspector(); renderTree(); pushHistory(); } break; }
     case 'layer-down': {
       const p = selPart();
-      if (p && p.overHair) {
-        const c0 = activeCanvas();
-        if (moveOverRank(c0, p, -1)) { renderStage(); renderInspector(); renderTree(); pushHistory(); toast('置顶等级 -1（更靠下）'); }
-        else toast('已经是置顶组最下面', true);
-        break;
-      } if (p) { p.layer = Math.max(0, p.layer - 1); renderStage(); renderInspector(); renderTree(); pushHistory(); } break; }
+      if (p) { p.layer = Math.max(0, p.layer - 1); renderStage(); renderInspector(); renderTree(); pushHistory(); } break; }
+    case 'over-level-up':
+    case 'over-level-down': {
+      const p = selPart(); if (!p) break;
+      const dir = act === 'over-level-up' ? 1 : -1;
+      const before = overLevelOf(p);
+      const next = clamp(before + dir, 0, 99);
+      if (next === before) { toast(dir > 0 ? '已经是最高置顶层级' : '已经是最低置顶层级', true); break; }
+      p.overLevel = next;
+      renderStage(); renderInspector(); renderTree(); pushHistory();
+      toast('置顶层级 ' + (dir > 0 ? '+1' : '-1') + '：' + next);
+      break;
+    }
+    case 'part-linktop': {
+      const p = selPart(); if (!p) break;
+      p.linkTop = !p.linkTop;
+      let cleared = false;
+      if (p.linkTop && p.overHair) { p.overHair = false; cleared = true; delete p.layerBefore; }
+      if (p.linkTop && !Number.isFinite(p.overLevel)) p.overLevel = 1;
+      renderStage(); renderInspector(); renderTree(); pushHistory();
+      toast((p.linkTop ? '已开启联动置顶（模组开关打开时在发型之后重画）' : '已关闭联动置顶')
+        + (cleared ? '；置顶重画已关闭（两者互斥）' : ''));
+      break;
+    }
     case 'flip': {
       const p = selPart();
       if (p && p.overHair) {
@@ -12509,24 +12896,29 @@ document.addEventListener('click', e => {
       renderStage(); renderInspector(); renderTree(); pushHistory();
       break;
     }
+    case 'part-desat': {
+      const p = selPart(); if (!p) break;
+      const cc = activeCanvas();
+      if (!cc || !cc.race || !cc.race.defName) { toast('只有种族画布的部位可以设置颜色开关', true); break; }
+      p.desat = !p.desat;
+      renderInspector(); syncHairSwitches(); pushHistory(); persist();
+      toast(p.desat ? '已设为受「部位颜色」开关控制（关闭后会变黑白）' : '已取消颜色开关控制');
+      break;
+    }
     case 'over-hair': {
       const p = selPart(); if (!p) break;
       p.overHair = !p.overHair;
       const fixed = [];
       if (p.overHair) {
-        p.layerBefore = Number.isFinite(p.layer) ? p.layer : 15;   // 记住开启前的值
-        p.layer = 29;                                             // 置顶重画 = 图层 29
-        p.overLevel = 29;                                         // 默认等级 29
+        if (p.linkTop) { p.linkTop = false; fixed.push('联动置顶'); }
+        if (!Number.isFinite(p.overLevel)) p.overLevel = 1;
         // 补画时只按 position/width/height 画贴图，镜像和旋转会错位 → 直接关掉
         if (p.flip) { p.flip = false; fixed.push('水平翻转'); }
         if (Number(p.rot || 0) !== 0) { p.rot = 0; fixed.push('旋转'); }
-      } else {
-        p.layer = Number.isFinite(p.layerBefore) ? p.layerBefore : Math.min(p.layer || 15, 28);
-        delete p.layerBefore;
       }
       renderStage(); renderInspector(); pushHistory();
       toast(p.overHair
-        ? `已启用置顶重画：图层锁定 29；补画只支持平移/缩放${fixed.length ? '，已自动关闭 ' + fixed.join('、') : ''}`
+        ? `已启用置顶重画：用「置顶层级」排序，补画只支持平移/缩放${fixed.length ? '，已自动关闭 ' + fixed.join('、') : ''}`
         : `已关闭置顶重画：图层恢复为 ${p.layer}`);
       break;
     }
@@ -13188,6 +13580,13 @@ document.addEventListener('input', e => {
       const v = num(e.target.value, 0);
       if (key === 'offx') c.exportOffset.x = v; else c.exportOffset.y = v;
     }
+    else if (key === 'vfs' || key === 'vfx' || key === 'vfy') {
+      c.vanillaFit = c.vanillaFit || { scale: 1, offsetX: 0, offsetY: 0 };
+      if (key === 'vfs') c.vanillaFit.scale = clamp(num(e.target.value, 1), 0.2, 3);
+      else if (key === 'vfx') c.vanillaFit.offsetX = clamp(num(e.target.value, 0), -80, 80);
+      else c.vanillaFit.offsetY = clamp(num(e.target.value, 0), -80, 80);
+      renderStage(); persist();
+    }
     else if (key === 'hlayer') {
       c.hairLayer = clamp(Math.round(num(e.target.value, 29)), 0, 29);
       c.hairFront = true;   // 游戏里始终在最上层
@@ -13262,7 +13661,7 @@ document.addEventListener('input', e => {
       const v = clamp(raw, 0, 99);
       p2.overLevel = v;
       if (String(raw) !== String(v)) e.target.value = String(v);
-      renderStage(); renderOverlay(); renderTree(); break;
+      renderStage(); renderOverlay(); renderTree(); renderInspector(); break;
     }
     case 'x': p.x = round(num(e.target.value, p.x), 1); paintPart(p); renderOverlay(); renderSelInfo(); break;
     case 'y': p.y = round(num(e.target.value, p.y), 1); paintPart(p); renderOverlay(); renderSelInfo(); break;
@@ -14682,6 +15081,7 @@ setTimeout(() => { try { notifHint(); } catch (e) { } try { refreshAttention(); 
     if (fileProj.flags) { const f = Object.assign({}, fileProj.flags); Object.assign(S.flags, f); }
     if (fileProj.wins && typeof fileProj.wins === 'object') S.wins = fileProj.wins;
     setSaveStatus('已载入 nht-project.js · ' + now());
+    migrateCanvasSigs();
     renderAll();
     try { if (typeof persist === 'function') persist(); } catch (e) { }
   });
@@ -14691,12 +15091,14 @@ setTimeout(() => { try { notifHint(); } catch (e) { } try { refreshAttention(); 
       const keepActive = S.active;                 // 进入页面时用户看到的那张
       applyProject(res.payload);
       S.canvases = res.canvases;
+      migrateCanvasSigs();
       if (keepActive && S.canvases.some(c => c.id === keepActive)) S.active = keepActive;
       else if (!S.canvases.some(c => c.id === S.active)) S.active = S.canvases[0].id;
       renderAll();
       try { if (typeof persist === 'function') persist(); } catch (e) { }
       setSaveStatus('已载入 ' + res.canvases.length + ' 个画布文件 · ' + now());
       loadRaceRemaps().then(k => { if (k) { try { renderAll(); } catch (e) { } } }).catch(() => { });
+      loadHairMap().then(n => { if (n) { try { renderAll(); renderHairPane(); } catch (e) { } } }).catch(() => { });
     }).catch(() => { });
   }
   try { gmkMount(); gmkRender(); setTimeout(() => { try { gmkCheckNew(); } catch (e) { } }, 1600); } catch (e) { }
@@ -14778,7 +15180,7 @@ boot();
 
 /* dev hook: open the page with #dev to script the editor from the console */
 if (location.hash === '#dev') {
-  window.__nhtDev = { S, D, EXT, parseRaceMod, findBackHair, hairBackIndex, bodyPartList, canvasBodyIdx, hairNormBase, hairIsBackName, migrateRaceBids, nhtSlotMap, autoAlignRaceBids, syncBodyPartsFromGame, loadBodyMap, fixBidsWithMap, applyBodyMapFix, registerRaceTextures, createRaceCanvas, pickRace, createFromRace, addRaceAssets, setHairs, applyHair, renderAll, fitView, pushHistory, renderTabs, renderInspector, renderTree, addPart, canvasBounds, validateAll, buildPatchXML, renderStatus, importArtFolder, addHairFiles, saveArtToAssets, artSavePlan, modalArtSave, artProgress, modalArtProgress, pickArtDir, artClearAll, artPut, hydrateArt, getHAIRS: () => HAIRS, getASSETS: () => ASSETS, artNeedsLocalSave, injectArtChecks, artSelList, setDiskArt: (rows) => { DISK_ART = rows || []; }, progStart, progStep, progDone, renderLibrary, imgURL, alphaBoxAsync, applyProject, partXML, exportFit, syncDisplayBox, placeDisplayBox, renderInspector, renderStage, getModalState: () => modalState, boundOf, BOUND_PRESETS, normalizeBox, dollXML, projectPayload, hairFits, detailPartXML, raceSlotFor, apiSave, pickAt, hairSolidAt, pushCustomTextures, partPixelSolid, alphaDataOf: (k) => ALPHA_DATA.get(k) || null, fixCanvasBids, officialBidFor, exportHitbox, originalHitbox, defPrefix, uniqueNewId, nhtDefNames, exportBid, humanSlotIndex, paintPart, registerCustomAsset, CUSTOM, measureAlpha, alphaBoxAsync, bakeRotation, overflowParts, gameCanvasOf, validateAll, mineState, mineAssign, mineNewFolder, mineRenameFolder, assetMenu, exportAsset };
+  window.__nhtDev = { S, D, EXT, parseRaceMod, findBackHair, hairBackIndex, bodyPartList, canvasBodyIdx, aboutVersion, aboutSetVersion, harHairOf, isVanillaHairRace, canvasDirty, canvasSig, loadHairMap, applyHairMap, ensureGrayArt, savePatchToMod, saveProjectFile, hairNormBase, hairIsBackName, migrateRaceBids, nhtSlotMap, autoAlignRaceBids, syncBodyPartsFromGame, loadBodyMap, fixBidsWithMap, applyBodyMapFix, registerRaceTextures, createRaceCanvas, pickRace, createFromRace, addRaceAssets, setHairs, applyHair, renderAll, fitView, pushHistory, renderTabs, renderInspector, renderTree, addPart, canvasBounds, validateAll, buildPatchXML, renderStatus, importArtFolder, addHairFiles, saveArtToAssets, artSavePlan, modalArtSave, artProgress, modalArtProgress, pickArtDir, artClearAll, artPut, hydrateArt, getHAIRS: () => HAIRS, getASSETS: () => ASSETS, artNeedsLocalSave, injectArtChecks, artSelList, setDiskArt: (rows) => { DISK_ART = rows || []; }, progStart, progStep, progDone, renderLibrary, imgURL, alphaBoxAsync, applyProject, partXML, exportFit, syncDisplayBox, placeDisplayBox, renderInspector, renderStage, getModalState: () => modalState, boundOf, BOUND_PRESETS, normalizeBox, dollXML, projectPayload, hairFits, detailPartXML, raceSlotFor, apiSave, pickAt, hairSolidAt, pushCustomTextures, partPixelSolid, alphaDataOf: (k) => ALPHA_DATA.get(k) || null, fixCanvasBids, officialBidFor, exportHitbox, originalHitbox, defPrefix, uniqueNewId, nhtDefNames, exportBid, humanSlotIndex, paintPart, registerCustomAsset, CUSTOM, measureAlpha, alphaBoxAsync, bakeRotation, overflowParts, gameCanvasOf, validateAll, mineState, mineAssign, mineNewFolder, mineRenameFolder, assetMenu, exportAsset };
 }
 })();
 
