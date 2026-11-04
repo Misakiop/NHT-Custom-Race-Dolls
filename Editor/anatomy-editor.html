@@ -1779,7 +1779,7 @@ body.is-preview #stage{cursor:not-allowed}
       <span class="vsep"></span>
       <button class="btn btn--ghost" data-act="history" title="查看最近 5 份本地保存历史，可挑一份载入"><svg><use href="#i-undo"/></svg>历史</button>
       <button class="btn btn--ghost" data-act="save" title="保存**全部画布**与素材清单到项目文件 nht-project.js（html 同目录），不是只存当前画布。Ctrl+S"><svg><use href="#i-save"/></svg>本地保存（全部画布）</button>
-      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-04 03:44</span>
+      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-04 12:29</span>
             <span class="notif" id="notifWrap">
         <button class="iconbtn notif__btn" data-act="notif-toggle" id="notifBtn" title="Git 更新通知：点「收到」后不再弹出，仓库有新的 Push 会再次提醒">
           <svg class="notif__ico"><use href="#i-bell"/></svg>
@@ -3315,8 +3315,11 @@ function bodyPartList(c) {
   if (rp && rp.length) return rp.map(x => [x.i, `${x.label || x.def} ${x.def}`, x.src || tag]);
   // 没有存过部位表：用导入时记下的 BodyDef（优先当前身体）
   const defs = Array.isArray(race.bodyDefs) ? race.bodyDefs : null;
-  if (defs && defs.length) {
-    const cur = defs.find(d => d.defName && race.bodyDef && d.defName === race.bodyDef) || defs[0];
+  const bdName = String(race.bodyDef || '');
+  // 只有“本画布真的用自己的 BodyDef”时才列它的部位：
+  // 否则（body=Human / 空）会错误地列出模组里机械体那套 17 个部位
+  if (defs && defs.length && bdName && !/^human$/i.test(bdName)) {
+    const cur = defs.find(d => d.defName === bdName);
     if (cur && cur.parts && cur.parts.length) {
       return cur.parts.map(x => [x.i, `${x.label || x.def} ${x.def}`, tag]);
     }
@@ -3449,8 +3452,9 @@ function canvasBodyIdx(c) {
   const rp = Array.isArray(race.bodyParts) ? race.bodyParts : null;
   if (rp && rp.length) return new Set(rp.map(x => Number(x.i)));
   const defs = Array.isArray(race.bodyDefs) ? race.bodyDefs : null;
-  if (defs && defs.length) {
-    const cur = defs.find(d => d.defName && race.bodyDef && d.defName === race.bodyDef) || defs[0];
+  const bdName0 = String(race.bodyDef || '');
+  if (defs && defs.length && bdName0 && !/^human$/i.test(bdName0)) {
+    const cur = defs.find(d => d.defName === bdName0);
     if (cur && cur.parts && cur.parts.length) return new Set(cur.parts.map(x => Number(x.i)));
   }
   const bd = String(race.bodyDef || '');
@@ -8289,6 +8293,14 @@ function syncHairSwitches() {
       el.classList.toggle('is-on', state[act]);
       el.setAttribute('aria-checked', state[act] ? 'true' : 'false');
     });
+    // 锁定头发：文字 + 图标 + 高亮都要跟着变（之前只改数据，按钮看起来没反应）
+    const lockBtn = pane.querySelector('[data-act="hair-lock-fit"]');
+    if (lockBtn) {
+      const on = !!c.hairLocked;
+      lockBtn.classList.toggle('btn--on', on);
+      lockBtn.innerHTML = icon(on ? 'lock' : 'unlock') + (on ? '已锁定' : '未锁定');
+      lockBtn.title = on ? '头发已锁定，点击解锁' : '锁定头发：对齐好后防止被拖动';
+    }
   } catch (e) { }
 }
 
@@ -9134,6 +9146,8 @@ let BACK_IDX = null, BACK_IDX_N = -1;
 function hairNormBase(name) {
   return String(name || '')
     .replace(/\.png$/i, '')
+    // Monolyn 这类：HairF / HairB + 编号（HairF1 / HairB1）→ 都归一成 Hair + 编号
+    .replace(/^(hair)[_-]?[fb](?=\d*$)/i, '$1')
     .replace(/BG(?=\d*$)/i, '')
     .replace(/BackGround(?=\d*$)/i, '')
     .replace(/Back(?=\d*$)/i, '')
@@ -9145,6 +9159,7 @@ function hairIsBackName(name) {
   if (/back/i.test(n) || /bg\d*$/i.test(n)) return true;
   if (/_b\d*$/i.test(n)) return true;                 // hair1_b
   if (/\d+b$/i.test(n)) return true;                  // hair1b
+  if (/^hair[_-]?b\d*$/i.test(n)) return true;        // Monolyn: HairB / HairB1
   return false;
 }
 function hairBackIndex() {
@@ -9158,9 +9173,14 @@ function hairBackIndex() {
     if (!/hair/i.test(name)) return;
     const base = hairNormBase(name);
     if (!base || !/\d*$/.test(base)) return;
-    const rec = idx.get(base) || { front: null, back: null };
-    if (hairIsBackName(name)) { if (!rec.back) rec.back = k; }
-    else if (!rec.front) rec.front = k;
+    const rec = idx.get(base) || { front: null, back: null, backs: [], fronts: [] };
+    if (hairIsBackName(name)) {
+      if (!rec.back) rec.back = k;
+      rec.backs.push(k);
+    } else {
+      if (!rec.front) rec.front = k;
+      rec.fronts.push(k);
+    }
     idx.set(base, rec);
   });
   return idx;
@@ -9172,21 +9192,33 @@ function findBackHair(key) {
   if (!key) return null;
   const name = String(key).split('/').pop();
   if (hairIsBackName(name)) return null;
+  const baseKey = hairNormBase(name);
   const idx = hairBackIndex();
-  const rec = idx.get(hairNormBase(name));
-  if (!rec || !rec.back) {
+  // 把所有同名的后层候选都拿出来，选和当前贴图“目录前缀重合最长”的那个
+  const cands = [];
+  idx.forEach((rec, b) => {
+    if (b !== baseKey) return;
+    (rec.backs && rec.backs.length ? rec.backs : (rec.back ? [rec.back] : [])).forEach(x => cands.push(x));
+  });
+  if (!cands.length) {
     // 没有独立后层：退回同名 _north 图（Wolfein 这类只有 south/north 的模组）
     const northKey = /_south$/i.test(key) ? key.replace(/_south$/i, '_north') : null;
     if (northKey && hairKeyExists(northKey)) return northKey;
     return null;
   }
-  const root = key.split('/').slice(0, 2).join('/');
-  if (rec.back.split('/').slice(0, 2).join('/') === root) return rec.back;
-  // 同种族根目录优先，找不到就用全局命中
-  const alt = [...idx.entries()]
-    .filter(([b, r]) => r.back && b === hairNormBase(name) && r.back.split('/').slice(0, 2).join('/') === root)
-    .map(([, r]) => r.back)[0];
-  return alt || rec.back;
+  const parts = String(key).split('/');
+  const common = (other) => {
+    const op = String(other).split('/');
+    let n = 0;
+    while (n < parts.length - 1 && n < op.length - 1 && parts[n] === op[n]) n++;
+    return n;
+  };
+  let best = null, bestLen = -1;
+  cands.forEach(c => {
+    const len = common(c);
+    if (len > bestLen) { bestLen = len; best = c; }
+  });
+  return best;
 }
 
 /* 呆毛配对：按编号（hair3 ↔ Ahoge3），没有编号就用 Ahoge */
@@ -10275,6 +10307,7 @@ function onPointerMove(e) {
     return;
   }
   if (d.mode === 'hairmove') {
+    if (d.c.hairLocked) return;          // 锁定后即使指针事件漏进来也不移动
     d.c.hairFitEnabled = true;
     const hf = d.c.hairFit;
     let nx = d.x0 + (pt.x - d.start.x) / 1024;
@@ -10929,7 +10962,50 @@ async function parseRaceMod(files) {
   }).sort((a, b) => b.s - a.s);
   const race = scored.length ? scored[0].r : null;
   if (race && race.body && bodyDefs.has(race.body)) bodyDef = bodyDefs.get(race.body);
-  if (!bodyDef && bodyDefs.size) bodyDef = bodyDefs.values().next().value;
+  if (!bodyDef && bodyDefs.size) {
+    // 种族写了 body 但本模组没有这个 BodyDef（Monolyn 用 Human 就是这样）：
+    // 绝对不能拿模组里别的 BodyDef（机械体 / 载具）硬套 —— 只按名字猜，猜不到就留空
+    const nameOf = r => norm(((r && r.defName) || '') + ((r && r.label) || ''));
+    const rk = nameOf(race) || '';
+    for (const [dn, node] of bodyDefs) {
+      const n = norm(dn);
+      if (!n) continue;
+      if (rk && (rk.includes(n) || n.includes(norm(race && race.defName)) || n.includes(norm(race && race.label)))) {
+        bodyDef = node;
+        break;
+      }
+    }
+    // 只有“种族根本没写 body”才允许唯一 BodyDef 兜底；写了别的 body 就宁可不导部位
+    if (!bodyDef && (!race || !race.body) && bodyDefs.size === 1) bodyDef = bodyDefs.values().next().value;
+  }
+
+  // 有些模组只在 Languages/*/DefInjected/BodyPartDef 里给部位起名（本体 label 是英文甚至缺失）
+  const injLabels = new Map();
+  {
+    const order = ['ChineseSimplified (简体中文)', 'ChineseSimplified', 'ChineseTraditional (繁體中文)', 'ChineseTraditional'];
+    const files = [...map.entries()]
+      .filter(([k]) => /(^|\/)(\d+\.\d+\/)?Languages\/[^/]+\/DefInjected\/BodyPartDef\/.*\.xml$/i.test(k));
+    const rank = (k) => {
+      const m = k.match(/Languages\/([^/]+)\//i);
+      const lang = m ? m[1] : '';
+      const i = order.indexOf(lang);
+      if (i >= 0) return i;
+      return /(^|\/)English/i.test(k) ? 50 : 20;
+    };
+    files.sort((a, b) => rank(a[0]) - rank(b[0]));
+    for (const [, f] of files) {
+      let doc;
+      try { doc = new DOMParser().parseFromString(await f.text(), 'text/xml'); } catch (e) { continue; }
+      if (!doc || doc.querySelector('parsererror')) continue;
+      Array.from(doc.documentElement.children).forEach(node => {
+        const m = (node.tagName || '').match(/^(.+)\.label$/);
+        if (!m) return;
+        const dn = m[1].trim();
+        const val = (node.textContent || '').trim();
+        if (dn && val && !injLabels.has(dn)) injLabels.set(dn, val);
+      });
+    }
+  }
 
   const parts = [];
   if (bodyDef) {
@@ -10937,7 +11013,8 @@ async function parseRaceMod(files) {
       const defName = node.querySelector(':scope > defName')?.textContent?.trim()
         || node.querySelector(':scope > def')?.textContent?.trim()
         || node.querySelector(':scope > customLabel')?.textContent?.trim() || '';
-      const label = node.querySelector(':scope > customLabel')?.textContent?.trim()
+      const label = injLabels.get(defName)
+        || node.querySelector(':scope > customLabel')?.textContent?.trim()
         || node.querySelector(':scope > label')?.textContent?.trim() || defName;
       if (!defName && !label) return;
       parts.push({ defName, label, depth, parent: parentName });
@@ -11008,7 +11085,8 @@ async function parseRaceMod(files) {
       const defName = n.querySelector(':scope > defName')?.textContent?.trim()
         || n.querySelector(':scope > def')?.textContent?.trim()
         || n.querySelector(':scope > customLabel')?.textContent?.trim() || '';
-      const label = n.querySelector(':scope > customLabel')?.textContent?.trim()
+      const label = injLabels.get(defName)
+        || n.querySelector(':scope > customLabel')?.textContent?.trim()
         || n.querySelector(':scope > label')?.textContent?.trim() || defName;
       if (!defName && !label) return;
       out.push({ defName, label, depth, parent: parentName, index: out.length });
@@ -11731,6 +11809,12 @@ const PREVIEW_BLOCKED_ACTS = new Set([
   'export-patch', 'export-png', 'export-json', 'copy-xml', 'mod-export', 'mod-export-go',
   'patch-to-mod', 'multi-export', 'set-save', 'import-json', 'import-assets', 'import-hair',
   'hair-import', 'hair-clear', 'hair-reset', 'asset-del', 'del-canvas', 'delete-part', 'over-hair'
+]);
+/* HAR 面板里“开关类”动作由 syncHairSwitches 就地同步（不重建 DOM，避免闪烁）；
+   其余动作改的是文字 / 图标 / 数值，执行完统一刷新一次面板 */
+const HAIR_SYNCED_ACTS = new Set([
+  'hairfit-toggle', 'hairfit-useoff', 'hair-tint-toggle', 'hair-back', 'hair-xray', 'hair-follow',
+  'hair-lock-fit', 'hair-prev-toggle',
 ]);
 document.addEventListener('click', e => {
   const el = e.target.closest('[data-act]');
@@ -13011,6 +13095,13 @@ document.addEventListener('click', e => {
     case 'save': saveProjectFile(); break;
     case 'help': modalHelp(); seenSet('help', hashStr(helpVersion())); refreshAttention(); break;
     case 'export-patch-top': exportPatch(); break;
+  // hair-* 动作改完状态后，把 HAR 面板/参考图坞刷新一遍（开关类已在 syncHairSwitches 就地更新）
+  try {
+    if (/^hair[-]/.test(act) && !HAIR_SYNCED_ACTS.has(act)) {
+      refreshHairPaneIfActive();
+      try { renderRefDock(); } catch (e2) { }
+    }
+  } catch (e1) { }
   }
 });
 
@@ -14680,7 +14771,7 @@ boot();
 
 /* dev hook: open the page with #dev to script the editor from the console */
 if (location.hash === '#dev') {
-  window.__nhtDev = { S, D, EXT, parseRaceMod, migrateRaceBids, nhtSlotMap, autoAlignRaceBids, syncBodyPartsFromGame, loadBodyMap, fixBidsWithMap, applyBodyMapFix, registerRaceTextures, createRaceCanvas, pickRace, createFromRace, addRaceAssets, setHairs, applyHair, renderAll, fitView, pushHistory, renderTabs, renderInspector, renderTree, addPart, canvasBounds, validateAll, buildPatchXML, renderStatus, importArtFolder, addHairFiles, saveArtToAssets, artSavePlan, modalArtSave, artProgress, modalArtProgress, pickArtDir, artClearAll, artPut, hydrateArt, getHAIRS: () => HAIRS, getASSETS: () => ASSETS, artNeedsLocalSave, injectArtChecks, artSelList, setDiskArt: (rows) => { DISK_ART = rows || []; }, progStart, progStep, progDone, renderLibrary, imgURL, alphaBoxAsync, applyProject, partXML, exportFit, syncDisplayBox, placeDisplayBox, renderInspector, renderStage, getModalState: () => modalState, boundOf, BOUND_PRESETS, normalizeBox, dollXML, projectPayload, hairFits, detailPartXML, raceSlotFor, apiSave, pickAt, hairSolidAt, pushCustomTextures, partPixelSolid, alphaDataOf: (k) => ALPHA_DATA.get(k) || null, fixCanvasBids, officialBidFor, exportHitbox, originalHitbox, defPrefix, uniqueNewId, nhtDefNames, exportBid, humanSlotIndex, paintPart, registerCustomAsset, CUSTOM, measureAlpha, alphaBoxAsync, bakeRotation, overflowParts, gameCanvasOf, validateAll, mineState, mineAssign, mineNewFolder, mineRenameFolder, assetMenu, exportAsset };
+  window.__nhtDev = { S, D, EXT, parseRaceMod, findBackHair, hairBackIndex, bodyPartList, canvasBodyIdx, hairNormBase, hairIsBackName, migrateRaceBids, nhtSlotMap, autoAlignRaceBids, syncBodyPartsFromGame, loadBodyMap, fixBidsWithMap, applyBodyMapFix, registerRaceTextures, createRaceCanvas, pickRace, createFromRace, addRaceAssets, setHairs, applyHair, renderAll, fitView, pushHistory, renderTabs, renderInspector, renderTree, addPart, canvasBounds, validateAll, buildPatchXML, renderStatus, importArtFolder, addHairFiles, saveArtToAssets, artSavePlan, modalArtSave, artProgress, modalArtProgress, pickArtDir, artClearAll, artPut, hydrateArt, getHAIRS: () => HAIRS, getASSETS: () => ASSETS, artNeedsLocalSave, injectArtChecks, artSelList, setDiskArt: (rows) => { DISK_ART = rows || []; }, progStart, progStep, progDone, renderLibrary, imgURL, alphaBoxAsync, applyProject, partXML, exportFit, syncDisplayBox, placeDisplayBox, renderInspector, renderStage, getModalState: () => modalState, boundOf, BOUND_PRESETS, normalizeBox, dollXML, projectPayload, hairFits, detailPartXML, raceSlotFor, apiSave, pickAt, hairSolidAt, pushCustomTextures, partPixelSolid, alphaDataOf: (k) => ALPHA_DATA.get(k) || null, fixCanvasBids, officialBidFor, exportHitbox, originalHitbox, defPrefix, uniqueNewId, nhtDefNames, exportBid, humanSlotIndex, paintPart, registerCustomAsset, CUSTOM, measureAlpha, alphaBoxAsync, bakeRotation, overflowParts, gameCanvasOf, validateAll, mineState, mineAssign, mineNewFolder, mineRenameFolder, assetMenu, exportAsset };
 }
 })();
 
