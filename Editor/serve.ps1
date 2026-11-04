@@ -423,7 +423,7 @@ while ($true) {
         elseif ($pathPart -eq '/__git' -or $pathPart -eq '/__gitpush' -or $pathPart -eq '/__gitpull') {
             $git = Get-GitExe
             $dir = $query['dir']
-            $branch = $query['branch']
+            $branch = "$($query['branch'])".Trim().Trim('"')
             if (-not $branch) { $branch = 'main' }
             if (-not $git) { Send-Json $stream '200 OK' @{ ok = $false; error = 'git.exe not found' }; continue }
             if (-not $dir -or -not (Test-Path -LiteralPath $dir)) { Send-Json $stream '200 OK' @{ ok = $false; error = ('repo dir not found: ' + $dir) }; continue }
@@ -607,20 +607,49 @@ while ($true) {
             }
 
             if ($pathPart -eq '/__gitpull') {
+              try {
+                # 以当前分支为准：设置里的分支可能是空的 / 拼错的，空分支会拼出 'origin/' 这种坏 ref
+                $curPullR = Invoke-Git $git @('-C', $dir, 'rev-parse', '--abbrev-ref', 'HEAD')
+                $curPull = "$($curPullR.text)".Trim()
+                if ($curPull -and $curPull -ne 'HEAD') { $branch = $curPull }
+                if (-not $branch) { $branch = 'main' }
                 $fetchR = Invoke-GitNet $git @('-C', $dir, 'fetch', 'origin') 12
+                # 远端没有这个分支时退回 origin/HEAD 指向的分支，避免直接报错
+                $chkRef = Invoke-Git $git @('-C', $dir, 'rev-parse', '--verify', '--quiet', ('origin/' + $branch))
+                if ($chkRef.code -ne 0) {
+                    $headRefR = Invoke-Git $git @('-C', $dir, 'symbolic-ref', '--short', 'refs/remotes/origin/HEAD')
+                    $headBranch = ($("$($headRefR.text)".Trim()) -replace '^origin/', '')
+                    if ($headBranch) {
+                        $branch = $headBranch
+                        $log = "远端没有当前分支，改用 origin/$branch。`n"
+                    } else {
+                        $log = "远端没有分支「$branch」。`n"
+                    }
+                }
+                # 工作区有未提交改动时 git 会拒绝 pull/merge → 先自动 stash，完事再恢复
+                $stashed = $false
+                $stashNote = ''
+                $dirtyChk = Invoke-Git $git @('-C', $dir, 'status', '--porcelain')
+                if ($("$($dirtyChk.text)".Trim())) {
+                    $stR = Invoke-GitNet $git @('-C', $dir, 'stash', 'push', '-m', 'nht-pull-autostash') 25
+                    if ($stR.code -eq 0) { $stashed = $true; $stashNote = "已暂存本地未提交改动，拉取后恢复。`n" }
+                    else { $stashNote = "本地改动暂存失败：" + $stR.text + "`n" }
+                }
                 $pullR = Invoke-GitNet $git @('-C', $dir, 'pull', '--ff-only', 'origin', $branch) 20
                 $mode = 'ff'
-                $log = $fetchR.text + $pullR.text
+                if (-not $log) { $log = '' }
+                $log = $log + $fetchR.text + $pullR.text
+                if (-not $branch) { $branch = 'main' }
                 if ($pullR.code -ne 0 -and ($pullR.text -match 'Not possible to fast-forward|diverging|diverged')) {
                     # 分叉：先「以本地为准」合并（单人/多机时远端多半是旧的同一批编辑器文件）
-                    $mrg = Invoke-GitNet $git @('-C', $dir, 'merge', '--no-ff', '--no-edit', '-X', 'ours', 'origin/' + $branch) 25
+                    $mrg = Invoke-GitNet $git @('-C', $dir, 'merge', '--no-ff', '--no-edit', '-X', 'ours', ('origin/' + $branch)) 25
                     $log = $log + "`n—— 检测到分叉，改用「以本地为准」合并 ——`n" + $mrg.text
                     if ($mrg.code -eq 0) {
                         $mode = 'merge-ours'
                         $pullR = $mrg
                     } else {
                         $null = Invoke-Git $git @('-C', $dir, 'merge', '--abort')
-                        $mrg2 = Invoke-GitNet $git @('-C', $dir, 'merge', '--no-ff', '--no-edit', 'origin/' + $branch) 25
+                        $mrg2 = Invoke-GitNet $git @('-C', $dir, 'merge', '--no-ff', '--no-edit', ('origin/' + $branch)) 25
                         $log = $log + "`n—— 普通合并 ——`n" + $mrg2.text
                         if ($mrg2.code -eq 0) { $mode = 'merge'; $pullR = $mrg2 }
                         else {
@@ -629,8 +658,21 @@ while ($true) {
                         }
                     }
                 }
+                if ($stashed) {
+                    $popR = Invoke-GitNet $git @('-C', $dir, 'stash', 'pop') 25
+                    $stashNote = $stashNote + ($(if ($popR.code -eq 0) { "本地改动已恢复。`n" } else { "恢复本地改动失败（改动还在 stash 里）：`n" + $popR.text }))
+                }
+                $log = $stashNote + $log
                 Send-Json $stream '200 OK' ([pscustomobject]@{ ok = ($pullR.code -eq 0); mode = $mode; log = $log })
-                continue
+              } catch {
+                $errText = "拉取出错：" + $_.Exception.Message
+                try {
+                    $errFile = Join-Path ([System.IO.Path]::GetTempPath()) 'nht-pull-error.txt'
+                    [System.IO.File]::WriteAllText($errFile, ($errText + "`n" + $_.ScriptStackTrace), (New-Object System.Text.UTF8Encoding($false)))
+                } catch { }
+                Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $false; mode = 'error'; log = $errText })
+              }
+              continue
             }
         }
         elseif ($pathPart -eq '/__modzip' -and ($method -eq 'GET' -or $method -eq 'HEAD')) {
