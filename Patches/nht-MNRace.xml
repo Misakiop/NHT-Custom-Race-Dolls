@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   NHT_CustomDolls
-  由 NHT Anatomy Editor 生成 · 2026-11-05 03:05
+  由 NHT Anatomy Editor 生成 · 2026-11-05 15:05
   基准模组：Nice Health Tab (Andromeda.NiceHealthTab) v1.6 · 创意工坊 3328729902
   RJW 层：Nice Health Tab - RJW Genitalia (zoc2k.nicehealthtab.rjwgenitalia) · 相关操作带 MayRequire rim.job.world
   画布：1 个 · 部位：30 个 · 补丁操作：11 段
@@ -201,7 +201,7 @@
       <!-- 自定义部位 · 提灯 -->
       <NiceHealthTab.DollBodyPart>
         <defName>MNRace_u63d0u706f</defName>
-        <imagePath>Custom/MNLantern1</imagePath>
+        <imagePath>Custom/MNRace/MNLantern1</imagePath>
         <position>
           <x>68.4</x>
           <y>13.3</y>
@@ -221,7 +221,7 @@
       <!-- 自定义部位 · 提灯（灰） -->
       <NiceHealthTab.DollBodyPart>
         <defName>MNRace_u63d0u706f_NHTCD_Gray</defName>
-        <imagePath>Custom/NHTCD_Gray/MNRace_MNRace_u63d0u706f</imagePath>
+        <imagePath>Custom/NHTCD_Gray/Monolyn/MNRace_MNRace_u63d0u706f</imagePath>
         <position>
           <x>68.4</x>
           <y>13.3</y>
@@ -745,7 +745,7 @@
       <!-- 自定义部位 · 左天线 -->
       <NiceHealthTab.DollBodyPart>
         <defName>MNRace_u5de6u5929u7ebf</defName>
-        <imagePath>Custom/MHeadAddo</imagePath>
+        <imagePath>Custom/MNRace/MHeadAddo</imagePath>
         <position>
           <x>45</x>
           <y>-410</y>
@@ -765,7 +765,7 @@
       <!-- 自定义部位 · 左天线（灰） -->
       <NiceHealthTab.DollBodyPart>
         <defName>MNRace_u5de6u5929u7ebf_NHTCD_Gray</defName>
-        <imagePath>Custom/NHTCD_Gray/MNRace_MNRace_u5de6u5929u7ebf</imagePath>
+        <imagePath>Custom/NHTCD_Gray/Monolyn/MNRace_MNRace_u5de6u5929u7ebf</imagePath>
         <position>
           <x>45</x>
           <y>-410</y>
@@ -784,7 +784,7 @@
       <!-- 自定义部位 · 右天线 -->
       <NiceHealthTab.DollBodyPart>
         <defName>MNRace_u53f3u5929u7ebf</defName>
-        <imagePath>Custom/WHeadAddo</imagePath>
+        <imagePath>Custom/MNRace/WHeadAddo</imagePath>
         <position>
           <x>-45</x>
           <y>-410</y>
@@ -804,7 +804,7 @@
       <!-- 自定义部位 · 右天线（灰） -->
       <NiceHealthTab.DollBodyPart>
         <defName>MNRace_u53f3u5929u7ebf_NHTCD_Gray</defName>
-        <imagePath>Custom/NHTCD_Gray/MNRace_MNRace_u53f3u5929u7ebf</imagePath>
+        <imagePath>Custom/NHTCD_Gray/Monolyn/MNRace_MNRace_u53f3u5929u7ebf</imagePath>
         <position>
           <x>-45</x>
           <y>-410</y>

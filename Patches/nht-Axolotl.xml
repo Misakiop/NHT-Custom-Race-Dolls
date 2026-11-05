@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   NHT_CustomDolls
-  由 NHT Anatomy Editor 生成 · 2026-11-05 03:05
+  由 NHT Anatomy Editor 生成 · 2026-11-05 15:05
   基准模组：Nice Health Tab (Andromeda.NiceHealthTab) v1.6 · 创意工坊 3328729902
   RJW 层：Nice Health Tab - RJW Genitalia (zoc2k.nicehealthtab.rjwgenitalia) · 相关操作带 MayRequire rim.job.world
   画布：1 个 · 部位：30 个 · 补丁操作：11 段
@@ -201,7 +201,7 @@
       <!-- 尾巴 -->
       <NiceHealthTab.DollBodyPart>
         <defName>Axolotl_u5c3eu5df4</defName>
-        <imagePath>Custom/Axolotl_Tail</imagePath>
+        <imagePath>Custom/Axolotl/Axolotl_Tail</imagePath>
         <position>
           <x>-112.9</x>
           <y>70.7</y>
@@ -221,7 +221,7 @@
       <!-- 尾巴（灰） -->
       <NiceHealthTab.DollBodyPart>
         <defName>Axolotl_u5c3eu5df4_NHTCD_Gray</defName>
-        <imagePath>Custom/NHTCD_Gray/Axolotl_Axolotl_u5c3eu5df4</imagePath>
+        <imagePath>Custom/NHTCD_Gray/MoeLotl/Axolotl_Axolotl_u5c3eu5df4</imagePath>
         <position>
           <x>-112.9</x>
           <y>70.7</y>
@@ -585,7 +585,7 @@
       <!-- 自定义部位 · 左腮 -->
       <NiceHealthTab.DollBodyPart>
         <defName>Axolotl_u5de6u816e</defName>
-        <imagePath>Custom/Axolotl_GillRightD</imagePath>
+        <imagePath>Custom/Axolotl/Axolotl_GillRightD</imagePath>
         <position>
           <x>60</x>
           <y>-358</y>
@@ -605,7 +605,7 @@
       <!-- 自定义部位 · 左腮（灰） -->
       <NiceHealthTab.DollBodyPart>
         <defName>Axolotl_u5de6u816e_NHTCD_Gray</defName>
-        <imagePath>Custom/NHTCD_Gray/Axolotl_Axolotl_u5de6u816e</imagePath>
+        <imagePath>Custom/NHTCD_Gray/MoeLotl/Axolotl_Axolotl_u5de6u816e</imagePath>
         <position>
           <x>60</x>
           <y>-358</y>
@@ -624,7 +624,7 @@
       <!-- 自定义部位 · 右腮 -->
       <NiceHealthTab.DollBodyPart>
         <defName>Axolotl_u53f3u816e</defName>
-        <imagePath>Custom/Axolotl_GillLeftD</imagePath>
+        <imagePath>Custom/Axolotl/Axolotl_GillLeftD</imagePath>
         <position>
           <x>-60</x>
           <y>-358</y>
@@ -644,7 +644,7 @@
       <!-- 自定义部位 · 右腮（灰） -->
       <NiceHealthTab.DollBodyPart>
         <defName>Axolotl_u53f3u816e_NHTCD_Gray</defName>
-        <imagePath>Custom/NHTCD_Gray/Axolotl_Axolotl_u53f3u816e</imagePath>
+        <imagePath>Custom/NHTCD_Gray/MoeLotl/Axolotl_Axolotl_u53f3u816e</imagePath>
         <position>
           <x>-60</x>
           <y>-358</y>

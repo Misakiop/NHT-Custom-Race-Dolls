@@ -1715,6 +1715,21 @@ body.is-preview #stage{cursor:not-allowed}
 
 .gitcurrow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px;font-size:10.5px;color:#8d9499}
 .gitcurrow b{color:#cfd7da;font-weight:600}
+
+.swrow-inline{display:flex;align-items:center;gap:14px}
+.sw-inline{display:inline-flex;align-items:center;gap:4px}
+.sw-inline b{font-size:11px;font-weight:500;opacity:.85}
+
+.libgrp--mine{color:#e8c56a;border:1px solid rgba(232,197,106,.35);border-radius:3px;background:rgba(232,197,106,.06)}
+.libgrp--mine b{color:#f0d68a}
+.libgrp--cat{cursor:grab}
+.btn--on{color:#f0d68a;border-color:rgba(232,197,106,.55)}
+.cropmenu{position:fixed;z-index:99999;background:#141a1d;border:1px solid var(--line);border-radius:3px;padding:3px;display:flex;flex-direction:column;box-shadow:0 6px 20px rgba(0,0,0,.5)}
+.cropmenu button{background:none;border:0;color:#d7dde0;text-align:left;padding:6px 12px;font-size:12px;cursor:pointer;border-radius:2px}
+.cropmenu button:hover{background:rgba(255,255,255,.08)}
+
+.btn--off{opacity:.42;filter:grayscale(1);color:#9aa3a8;border-color:var(--line)}
+.btn--off:hover{opacity:.6}
 </style>
   <script src="ui/guides.js"></script>
 </head>
@@ -1779,7 +1794,7 @@ body.is-preview #stage{cursor:not-allowed}
       <span class="vsep"></span>
       <button class="btn btn--ghost" data-act="history" title="查看最近 5 份本地保存历史，可挑一份载入"><svg><use href="#i-undo"/></svg>历史</button>
       <button class="btn btn--ghost" data-act="save" title="保存**全部画布**与素材清单到项目文件 nht-project.js（html 同目录），不是只存当前画布。Ctrl+S"><svg><use href="#i-save"/></svg>本地保存（全部画布）</button>
-      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-05 04:29</span>
+      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-05 15:04</span>
             <span class="notif" id="notifWrap">
         <button class="iconbtn notif__btn" data-act="notif-toggle" id="notifBtn" title="Git 更新通知：点「收到」后不再弹出，仓库有新的 Push 会再次提醒">
           <svg class="notif__ico"><use href="#i-bell"/></svg>
@@ -5529,21 +5544,16 @@ function partInspector(p) {
       <div class="inp" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;color:#8d9499">${esc(p.img.split('/').pop())}</div>
       <button class="iconbtn iconbtn--xs" data-act="pick-img" title="从模组素材替换">${icon('img')}</button>
     </div></div>
-    <div class="field"><label>置顶重画
-<span class="qmark" title="置顶重画：在所有部位（以及头发）画完之后，再把本部位补画一遍，所以永远在最上面。打开后会有一个独立的「置顶等级」，可以和其他置顶部位排先后；这个等级的最低值也高于所有普通图层（0–29）。重画只还原贴图/位置/大小，会盖掉 NHT 自己叠加的疤痕/伤口，建议只给装饰件用。">?</span>
-    </label><div class="ctl">
-      <button class="switch${p.overHair ? ' is-on' : ''}" data-act="over-hair" role="switch"
+    <div class="field"><label>置顶
+<span class="qmark" title="置顶重画：所有部位（以及头发）画完之后再补画一遍，永远在最上面，用「置顶层级」排序；会盖掉该部位的疤痕/伤口，建议只给装饰件用。联动置顶：只在模组设置打开「非 HAR 发型按发色重绘」时生效，在补画的发型之后重画，避免被头发盖住；与置顶重画互斥。">?</span>
+    </label><div class="ctl swrow-inline">
+      <span class="sw-inline"><button class="switch${p.overHair ? ' is-on' : ''}" data-act="over-hair" role="switch"
         aria-checked="${p.overHair ? 'true' : 'false'}"
-        title="置顶重画：所有部位画完后再画一遍，永远在最上面（用「置顶层级」排序）。装饰物用；会盖掉该部位的疤痕/伤口"><i></i></button>
-    </div></div>
-    <div class="field"><label>联动置顶
-<span class="qmark" title="联动置顶：模组设置里打开「非 HAR 发型按发色重绘」时，这个部位会在补画的发型之后重画，避免被头发盖住。和「置顶重画」互斥；同样使用上面的「置顶层级」排序。">?</span>
-    </label><div class="ctl">
-      <button class="switch${p.linkTop ? ' is-on' : ''}" data-act="part-linktop" role="switch"
+        title="置顶重画：所有部位画完后再画一遍，永远在最上面（用「置顶层级」排序）。装饰物用；会盖掉该部位的疤痕/伤口"><i></i></button><b>重画</b></span>
+      <span class="sw-inline"><button class="switch${p.linkTop ? ' is-on' : ''}" data-act="part-linktop" role="switch"
         aria-checked="${p.linkTop ? 'true' : 'false'}"
-        title="联动置顶：只在模组设置打开「非 HAR 发型按发色重绘」时生效；与置顶重画互斥"><i></i></button>
+        title="联动置顶：只在模组设置打开「非 HAR 发型按发色重绘」时生效；与置顶重画互斥"><i></i></button><b>联动</b></span>
     </div></div>
-  </div>
 
   ${(() => {
     const cc = activeCanvas();
@@ -5882,24 +5892,28 @@ function mineRenameFolder(id, name) {
 /* right-click menu for any asset tile */
 function assetMenu(path, x, y) {
   closeAssetMenu();
-  const m = mineState();
-  const cur = mineFolderOf(path);
-  const items = m.folders.map(f =>
-    `<button class="ctx__i${cur && cur.id === f.id ? ' is-on' : ''}" data-act="asset-to-folder" data-p="${esc(path)}" data-folder="${f.id}">
-       <span>${cur && cur.id === f.id ? '●' : '○'}</span>${esc(f.name)}</button>`).join('');
+  const cropOn = !!(S.settings && S.settings.autoCrop);
+  const cats = (MINE_DIRS && MINE_DIRS.length ? MINE_DIRS.slice() : mineCats(ASSETS || []).map(c => c.name));
+  const curCat = (String(path).split('/').length > 2) ? String(path).split('/')[1] : '未分类';
+  const catItems = cats.filter(c => c !== curCat).map(c =>
+    `<button class="ctx__i" data-act="mine-move-asset" data-p="${esc(path)}" data-cat="${esc(c)}"><span>→</span>${esc(c)}</button>`).join('');
   const el = document.createElement('div');
   el.className = 'ctx';
   el.id = 'assetMenu';
-  el.style.left = Math.min(x, window.innerWidth - 210) + 'px';
-  el.style.top = Math.min(y, window.innerHeight - 260) + 'px';
+  el.style.left = Math.min(x, window.innerWidth - 230) + 'px';
+  el.style.top = Math.min(y, window.innerHeight - 300) + 'px';
   el.innerHTML = `
     <div class="ctx__h">素材</div>
     <div class="ctx__t">${esc(path.split('/').pop())}</div>
+    ${(String(path).indexOf('Custom/') === 0)
+      ? (!isCroppedAsset(path) ? `<button class="ctx__i" data-act="crop-inplace" data-key="${esc(path)}" title="裁掉透明边缘并覆盖保存当前素材"><span>✂</span>裁剪</button>` : '')
+      : `<button class="ctx__i" data-act="crop-save-mod" data-key="${esc(path)}" title="裁掉透明边缘并保存到对应种族的分类"><span>✂</span>裁剪并保存</button>`}
     <button class="ctx__i" data-act="asset-export" data-p="${esc(path)}"><span>⤓</span>导出 PNG（选择保存位置）</button>
-    ${assetDiskPath(path) ? `<button class="ctx__i" data-act="asset-reveal" data-p="${esc(path)}"><span>📂</span>打开文件所在文件夹</button>` : `<button class="ctx__i is-dim" data-act="asset-reveal" data-p="${esc(path)}"><span>📂</span>打开所在文件夹（内存图，无路径）</button>`}
-    <div class="ctx__h">复制到子栏</div>
-    <div class="ctx__list">${items}</div>
-    <button class="ctx__i" data-act="asset-new-folder" data-p="${esc(path)}"><span>＋</span>新建子栏并放入…</button>`;
+    ${assetDiskPath(path) ? `<button class="ctx__i" data-act="asset-reveal" data-p="${esc(path)}"><span>📂</span>打开文件所在文件夹</button>` : ''}
+    ${(String(path).indexOf('Custom/') === 0) ? `
+      <div class="ctx__h">移动到分类</div>
+      <div class="ctx__list">${catItems || '<span class="ctx__empty">没有其它分类</span>'}</div>
+      <button class="ctx__i" data-act="mine-new-cat-asset" data-p="${esc(path)}"><span>＋</span>新建分类并保存…</button>` : ''}`;
   document.body.appendChild(el);
 }
 function closeAssetMenu() {
@@ -6184,7 +6198,7 @@ function renderLibrary() {
     groups.push({ g: '', items: matches, total: matches.length });
   }
   groups.sort((a, b) => {
-    const rank = g => /^模组/.test(g) ? 0 : (g === '我的素材' ? 1 : 2);
+    const rank = g => (g === '我的素材' ? 0 : (/^模组/.test(g) ? 1 : 2));
     const d = rank(a.g) - rank(b.g);
     return d || String(a.g).localeCompare(String(b.g));
   });
@@ -6211,22 +6225,26 @@ function renderLibrary() {
     const open = !!S.ui.open[g];
     // 我的素材 has its own layout: user made sub folders, drag to sort, rename
     if (g === '我的素材') {
-      const m = mineState();
-      const assigned = new Set();
-      m.folders.forEach(f => (f.paths || []).forEach(p => assigned.add(p)));
-      const body = !open ? '' : `<div class="mine__bar"><button class="btn btn--xs" data-act="mine-new">${icon('plus')}新建子栏</button></div>` +
-        m.folders.map((f, fi) => {
-          const list = items.filter(a => (f.paths || []).includes(a.p) || (fi === 0 && !assigned.has(a.p)));
-          const key = 'mine:' + f.id;
-          const so = !!S.ui.open[key];
-          return `<div class="libgrp sub mine__f${so ? ' is-open' : ''}" data-act="lib-grp" data-g="${esc(key)}" data-drop-folder="${f.id}">
-              <span>${so ? '▾' : '▸'}</span><b>${esc(f.name)}</b><i>${list.length}</i>
-              <button class="row__act" data-act="mine-rename" data-folder="${f.id}" title="重命名子栏">${icon('tag')}</button>
-            </div>
-            ${so ? `<div class="grid" data-drop-folder="${f.id}">${list.map(a => `<span class="tile__wrap" draggable="true" data-p="${esc(a.p)}" data-folder="${f.id}">${tile(a)}</span>`).join('')}</div>` : ''}`;
-        }).join('');
-      return `<div class="libgrp${open ? ' is-open' : ''}" data-act="lib-grp" data-g="我的素材"><span>${open ? '▾' : '▸'}</span><b>我的素材</b><i>${total || items.length}</i></div>${body}`;
+      const cats = mineCats(items);
+      const open = !!S.ui.open['我的素材'];
+      const mineHead = `<div class="libgrp libgrp--mine${open ? ' is-open' : ''}" data-act="lib-grp" data-g="我的素材"><span>${open ? '▾' : '▸'}</span><b>★ 我的素材</b><i>${items.length}</i></div>`;
+      if (!open) return mineHead;
+      const body = cats.map(cat => {
+        const key = 'mine:' + cat.name;
+        const so = !!S.ui.open[key];
+        const list = cat.list;
+        const head = `<div class="libgrp sub mine__f libgrp--cat${so ? ' is-open' : ''}" data-act="lib-grp" data-g="${esc(key)}"
+            draggable="true" data-minecat="${esc(cat.name)}">
+            <span>${so ? '▾' : '▸'}</span><b>${esc(cat.name)}</b><i>${list.length}</i>
+            <button class="row__act" data-act="mine-rename-cat" data-cat="${esc(cat.name)}" title="重命名分类（会改文件夹名）">${icon('tag')}</button>
+            <button class="row__act" data-act="mine-del-cat" data-cat="${esc(cat.name)}" title="删除分类（会删除文件夹）">${icon('trash')}</button>
+          </div>`;
+        const grid = so ? `<div class="grid">${list.map(a => `<span class="tile__wrap" draggable="true" data-p="${esc(a.p)}">${tile(a)}</span>`).join('')}</div>` : '';
+        return head + grid;
+      }).join('');
+      return mineHead + `<p class="mini-note" style="padding:2px 4px 6px">拖动分类可排序 · 点标签改名 / 删除会同步 Custom 文件夹</p>` + body;
     }
+
     // mod groups get one more level: sub-folders (the body part the art belongs to)
     if (/^模组/.test(g)) {
       let inner = '';
@@ -6257,6 +6275,10 @@ function renderLibrary() {
   };
   pane.innerHTML = `
     <div class="libsearch">${icon('search')}<input class="inp inp--txt" data-f="lib.q" value="${esc(S.ui.q)}" placeholder="搜索贴图：翅膀 / tail / organ …" spellcheck="false"></div>
+    <div class="libadd libadd--two" style="align-items:center">
+      <button class="btn btn--sm${S.settings && S.settings.autoCrop ? ' btn--on' : ' btn--off'}" data-act="crop-toggle"
+        title="自动裁剪：点击素材时把透明边缘裁掉并缓存（最多 ${S.settings && S.settings.cropMax ? S.settings.cropMax : 4} 个）。只有真正用到画布上的素材会在本地保存时写进 Custom。">✂ 自动裁剪</button>
+    </div>
     <div class="libadd libadd--two">
       <button class="btn btn--sm" data-act="import-assets" title="从图片文件或整个模组文件夹把素材收进素材库">${icon('folder')}导入素材</button>
       <button class="btn btn--sm" data-act="import-hair" title="从图片文件或模组文件夹导入发型">${icon('folder')}导入发型</button>
@@ -6334,7 +6356,8 @@ function setHairs(res, label) {
   add.forEach(h => {
     if (have.has(h.key)) return;
     const name = h.key.split('/').pop().replace(/^Hair_?/i, '');
-    HAIRS.push({ p: h.key, n: name, modKey, a: !!h.ahoge });
+    if (h.back) HAIR_BACK_KEYS.add(h.key);
+    HAIRS.push({ p: h.key, n: name, modKey, a: !!h.ahoge, b: !!h.back });
     have.add(h.key);
     n++;
     const dim = EXT.get(h.key) || {};
@@ -6349,7 +6372,7 @@ async function addHairFiles(files) {
   for (const f of files || []) {
     if (!/^image\//.test(f.type || '')) continue;
     const name = f.name.replace(/\.[^.]+$/, '').replace(/^Hair_?/i, '');
-    const key = 'Custom/Hair/' + (name || 'hair') + '_' + Date.now().toString(36) + n;
+    const key = 'Custom/' + customCat() + '/Hair_' + (name || 'hair') + '_' + Date.now().toString(36) + n;
     const url = URL.createObjectURL(f);
     const dim = await new Promise(r => {
       const im = new Image();
@@ -7717,6 +7740,9 @@ function saveSettings() {
   if (typeof S.settings.tipCanvas !== 'boolean') S.settings.tipCanvas = true;
   if (typeof S.settings.tipTree !== 'boolean') S.settings.tipTree = true;
   if (typeof S.settings.zipStamp !== 'boolean') S.settings.zipStamp = true;
+  if (typeof S.settings.autoCrop !== 'boolean') S.settings.autoCrop = false;
+  if (!Number.isFinite(Number(S.settings.cropMax))) S.settings.cropMax = 4;
+  if (!Array.isArray(S.settings.mineOrder)) S.settings.mineOrder = [];
   if (!S.settings.paths || typeof S.settings.paths !== 'object') S.settings.paths = {};
   SAVE_TARGETS.forEach(t2 => { if (!S.settings.paths[t2.key]) S.settings.paths[t2.key] = t2.def; });
   return S.settings;
@@ -7996,6 +8022,13 @@ function settingsBodyHTML(tab) {
           <span>关掉后保存不再检查目录，失败会直接报错</span></div>
       </div>
       <p class="mini-note" style="margin:0 0 8px">下面是每个保存按钮对应的路径。用文件夹图标可以手动指定（本地服务模式下路径由服务固定，图标仅作记录）。</p>
+      <div class="swrow" style="margin:6px 0 8px">
+        <div style="min-width:0"><b>自动裁剪缓存数量</b>
+          <span>素材页「自动裁剪」最多同时缓存几张（1–12）</span></div>
+        <input class="inp" type="number" min="1" max="12" step="1" style="width:64px"
+          data-f="cropMax" value="${S.settings && S.settings.cropMax ? S.settings.cropMax : 4}"
+          title="同时缓存的自动裁剪素材数量">
+      </div>
       <div id="setPaths"></div>
       <hr class="sec__rule">
       <div class="swrow" style="margin:8px 0 6px">
@@ -9302,8 +9335,43 @@ function grayPngDataURL(srcKey) {
   });
 }
 
+/* 我的素材分类：优先用当前画布种族 defName，其次未分类 */
+function assetsCatFor(rec) {
+  try {
+    const name = String((rec && (rec.mod || rec.group || rec.modKey)) || '');
+    const key = String((rec && rec.key) || '');
+    const probe = (name + ' ' + key).toLowerCase();
+    const c = (S.canvases || []).find(cv => {
+      const t = String(cv.title || '').toLowerCase();
+      const r = String((cv.race && (cv.race.label || cv.race.defName)) || '').toLowerCase();
+      return (t && probe.indexOf(t) >= 0) || (r && probe.indexOf(r) >= 0);
+    });
+    if (c) return customCatFor(c);
+    return (name || '本地素材').replace(/[^\w\u4e00-\u9fa5-]+/g, '_');
+  } catch (e) { return '本地素材'; }
+}
+
+function customCatFor(c) {
+  try {
+    if (c && c.title) return String(cleanTitle(c.title)).replace(/[^\w\u4e00-\u9fa5-]+/g, '_');
+    const r = c && c.race && (c.race.defName || c.doll);
+    if (r) return String(r).replace(/[^\w\u4e00-\u9fa5-]+/g, '_');
+  } catch (e) { }
+  return '未分类';
+}
+
+function customCat() {
+  try {
+    const c = (S.canvases || []).find(x => x.id === S.active);
+    if (c && c.title) return String(cleanTitle(c.title)).replace(/[^\w\u4e00-\u9fa5-]+/g, '_');
+    const r = c && c.race && (c.race.defName || c.doll);
+    if (r) return String(r).replace(/[^\w\u4e00-\u9fa5-]+/g, '_');
+  } catch (e) { }
+  return '未分类';
+}
+
 function grayKeyFor(doll, p) {
-  return 'Custom/NHTCD_Gray/' + slug(String(doll || 'doll')) + '_' + slug(String((p && (p.id || p.name)) || 'part'));
+  return 'Custom/NHTCD_Gray/' + customCat() + '/' + slug(String(doll || 'doll')) + '_' + slug(String((p && (p.id || p.name)) || 'part'));
 }
 function grayArtKey(c, p) {
   return grayKeyFor((c && (c.doll || c.title)) || 'doll', p);
@@ -9392,11 +9460,232 @@ const BACK_HAIR_CACHE = new Map();
 let BACK_IDX = null, BACK_IDX_N = -1;
 
 /* 归一化名字：去掉 BG / Back / _back / _b 标记，只留"主名 + 编号" */
+/* ---------------- 我的素材：分类来自 Custom 文件夹 ---------------- */
+let MINE_DIRS = null;
+let DISK_TEX_KEYS = null;
+function mineCatOrder() {
+  const o = (S.settings && S.settings.mineOrder) || [];
+  return Array.isArray(o) ? o.slice() : [];
+}
+/* 磁盘上贴图已被移动/重新分类时，把浏览器里旧的 Custom/ 路径同步到真实位置 */
+async function syncCustomPathsFromDisk(silent) {
+  if (!LOCAL_HTTP) return 0;
+  try {
+    const r = await fetch('/__texindex?t=' + Date.now(), { cache: 'no-store' });
+    const j = await r.json();
+    if (!j || !j.ok || !Array.isArray(j.keys)) return 0;
+    const all = new Set(j.keys);
+    DISK_TEX_KEYS = all;
+    const norm = new Map(), gray = new Map();
+    j.keys.forEach(k => {
+      if (!/^Custom\//.test(k)) return;
+      const isG = k.indexOf('Custom/NHTCD_Gray/') === 0;
+      const name = k.split('/').pop();
+      (isG ? gray : norm).set(name, k);
+    });
+    const rep = v => {
+      if (!v || !/^Custom\//.test(v) || all.has(v)) return v;
+      const isG = v.indexOf('Custom/NHTCD_Gray/') === 0;
+      const name = v.split('/').pop();
+      return (isG ? gray : norm).get(name) || v;
+    };
+    let n = 0;
+    (S.customAssets || []).forEach(a => { const nk = rep(a.p); if (nk !== a.p) { a.p = nk; n++; } });
+    (ASSETS || []).forEach(a => { const nk = rep(a.p); if (nk !== a.p) { a.p = nk; n++; } });
+    (S.canvases || []).forEach(c => {
+      (c.parts || []).concat(c.detached || []).forEach(p => {
+        if (p.img) { const nk = rep(p.img); if (nk !== p.img) { p.img = nk; n++; } }
+        if (p.grayImg) { const nk = rep(p.grayImg); if (nk !== p.grayImg) { p.grayImg = nk; n++; } }
+      });
+    });
+    (S.hairRefs || []).forEach(h => { if (h && h.key) { const nk = rep(h.key); if (nk !== h.key) h.key = nk; } });
+    if (n) {
+      persist();
+      if (typeof renderAll === 'function') renderAll();
+      if (typeof renderLibrary === 'function') renderLibrary();
+      if (!silent) toast('已同步 ' + n + ' 个素材路径到磁盘分类');
+    }
+    return n;
+  } catch (e) { return 0; }
+}
+
+async function loadMineDirs(refresh) {
+  if (!LOCAL_HTTP) return;
+  try {
+    const r = await fetch('/__customdirs?t=' + Date.now(), { cache: 'no-store' });
+    const j = await r.json();
+    if (j && j.ok) {
+      MINE_DIRS = (j.dirs || []).slice();
+      if (refresh) renderLibrary();
+    }
+  } catch (e) { }
+}
+
+function modCategoryFor(key) {
+  try {
+    const a = (ASSETS || []).find(x => x.p === key);
+    let g = String((a && a.g) || '').replace(/^模组\s*·\s*/, '').trim();
+    if (!g) g = String(key).split('/')[0];
+    const k = g.toLowerCase();
+    const c = (S.canvases || []).find(cv => {
+      const t = String(cv.title || '').toLowerCase();
+      const r = String((cv.race && (cv.race.label || cv.race.defName)) || '').toLowerCase();
+      return k && (t === k || r === k || t.indexOf(k) >= 0 || k.indexOf(t) >= 0 || (r && (r.indexOf(k) >= 0 || k.indexOf(r) >= 0)));
+    });
+    if (c) return customCatFor(c);
+    if (g) return g.replace(/[^\w\u4e00-\u9fa5-]+/g, '_');
+  } catch (e) { }
+  return '未分类';
+}
+
+async function mineMoveAsset(key, cat, createCat) {
+  try {
+    const safeCat = String(cat || '').replace(/[^\w\u4e00-\u9fa5-]+/g, '_') || '未分类';
+    const idx = artLoadIndex();
+    const rec = idx[key] || {};
+    let data = rec.d || '';
+    if (!data) {
+      try {
+        const u = imgURL(key);
+        if (u) { const b = await (await fetch(u)).blob(); data = await fileToDataURL(b); }
+      } catch (e) { }
+    }
+    let newKey = key;
+    if (data) {
+      // 只存在浏览器里的素材：先写到 Textures/Custom/<分类>/ 再删旧文件
+      newKey = 'Custom/' + safeCat + '/' + String(key).split('/').pop();
+      const good = await apiSave('to=texture&key=' + encodeURIComponent(newKey), data);
+      if (!good) { toast('移动失败：写入贴图失败', true); return; }
+      try {
+        idx[newKey] = Object.assign({}, rec, { d: data });
+        artSaveIndex();
+        EXT.set(newKey, { url: data, w: rec.w | 0, h: rec.h | 0 });
+      } catch (e) { }
+      try { fetch('/__customdelfile?key=' + encodeURIComponent(key), { cache: 'no-store' }); } catch (e) { }
+      const a = (S.customAssets || []).find(x => x.p === key);
+      if (a) { a.p = newKey; a.cat = safeCat; }
+    } else {
+      const r = await fetch('/__custommove?key=' + encodeURIComponent(key) + '&cat=' + encodeURIComponent(safeCat), { cache: 'no-store' });
+      const j = await r.json();
+      if (!j || !j.ok) { toast('移动失败：' + ((j && j.error) || '找不到素材文件'), true); return; }
+      newKey = j.key;
+      const a = (S.customAssets || []).find(x => x.p === key);
+      if (a) { a.p = newKey; a.cat = safeCat; }
+    }
+    S.canvases.forEach(c => (c.parts || []).concat(c.detached || []).forEach(p => {
+      if (p.img === key) p.img = newKey;
+      if (p.grayImg === key) p.grayImg = newKey;
+    }));
+    (ASSETS || []).forEach(a => { if (a.p === key) a.p = newKey; });
+    persist();
+    if (typeof loadMineDirs === 'function') await loadMineDirs(false);
+    if (typeof renderAll === 'function') renderAll();
+    renderLibrary();
+    toast('已放入分类：' + safeCat);
+  } catch (e) { toast('移动失败：' + (e && e.message), true); }
+}
+
+async function mineRenameCat(oldName, newName) {
+  if (!LOCAL_HTTP) { toast('需要本地服务', true); return; }
+  try {
+    const r = await fetch('/__customrename?old=' + encodeURIComponent(oldName) + '&new=' + encodeURIComponent(newName), { cache: 'no-store' });
+    const j = await r.json();
+    if (!j || !j.ok) { toast('改名失败：' + ((j && j.error) || '未知错误'), true); return; }
+    const rep = (v) => String(v)
+      .replace('Custom/' + oldName + '/', 'Custom/' + newName + '/')
+      .replace('Custom/NHTCD_Gray/' + oldName + '/', 'Custom/NHTCD_Gray/' + newName + '/');
+    (S.customAssets || []).forEach(a => { if (a.p) a.p = rep(a.p); });
+    (S.canvases || []).forEach(c => {
+      (c.parts || []).concat(c.detached || []).forEach(p => {
+        if (p.img) p.img = rep(p.img);
+        if (p.grayImg) p.grayImg = rep(p.grayImg);
+      });
+    });
+    if (Array.isArray(S.settings.mineOrder)) S.settings.mineOrder = S.settings.mineOrder.map(x => x === oldName ? newName : x);
+    persist();
+    if (typeof loadMineDirs === 'function') await loadMineDirs(true);
+    toast('已改名：' + oldName + ' → ' + newName);
+  } catch (e) { toast('改名失败：' + (e && e.message), true); }
+}
+
+async function mineDeleteCat(name) {
+  if (!LOCAL_HTTP) { toast('需要本地服务', true); return; }
+  try {
+    const r = await fetch('/__customdelete?name=' + encodeURIComponent(name), { cache: 'no-store' });
+    const j = await r.json();
+    if (!j || !j.ok) { toast('删除失败：' + ((j && j.error) || '未知错误'), true); return; }
+    S.customAssets = (S.customAssets || []).filter(a => !String(a.p || '').startsWith('Custom/' + name + '/'));
+    if (typeof loadMineDirs === 'function') await loadMineDirs(true);
+    toast('已删除分类：' + name);
+  } catch (e) { toast('删除失败：' + (e && e.message), true); }
+}
+
+function mineReorder(src, target, after) {
+  const cats = (MINE_DIRS && MINE_DIRS.length ? MINE_DIRS.slice() : []);
+  const names = cats.filter(n => n !== src);
+  let idx = names.indexOf(target);
+  if (idx < 0) names.push(src);
+  else { if (after) idx++; names.splice(idx, 0, src); }
+  S.settings.mineOrder = names;
+  MINE_DIRS = names.slice();
+  persist();
+  renderLibrary();
+}
+
+function mineCats(items) {
+  const custom = (items || []).filter(a => /^Custom\//.test(String(a.p || '')));
+  let names = null;
+  if (MINE_DIRS && MINE_DIRS.length) names = MINE_DIRS.slice();
+  else {
+    const set = new Set();
+    custom.forEach(a => {
+      const parts = String(a.p).split('/');
+      if (parts.length > 2) set.add(parts[1]);
+    });
+    names = [...set];
+  }
+  const order = mineCatOrder();
+  names.sort((a, b) => {
+    const ia = order.indexOf(a), ib = order.indexOf(b);
+    if (a === '未分类') return 1;
+    if (b === '未分类') return -1;
+    if (ia >= 0 || ib >= 0) return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib);
+    return a.localeCompare(b, 'zh');
+  });
+  const out = names.map(name => ({
+    name,
+    list: custom.filter(a => String(a.p).startsWith('Custom/' + name + '/'))
+  }));
+  const loose = custom.filter(a => {
+    const parts = String(a.p).split('/');
+    if (parts.length !== 2) return false;   // Custom/xxx.png → 未分类
+    // 磁盘上已不存在、浏览器里也没有数据的旧引用，不再显示成“未分类素材”
+    if (!DISK_TEX_KEYS) return true;
+    if (DISK_TEX_KEYS.has(a.p)) return true;
+    try { return !!(EXT && EXT.has && EXT.has(a.p)); } catch (e) { return false; }
+  });
+  const un = out.find(x => x.name === '未分类');
+  if (un) un.list = un.list.concat(loose);
+  else if (loose.length) out.push({ name: '未分类', list: loose });
+  return out.filter(x => x.list.length || x.name === '未分类' || (MINE_DIRS && MINE_DIRS.includes(x.name)));
+}
+
+/* 从种族 XML 自动学到的“后层目录”（layerOffset < 0） */
+const HAIR_BACK_DIRS = new Set();
+const HAIR_BACK_KEYS = new Set();
+function hairPathIsBackDir(k) {
+  const s = String(k || '').toLowerCase();
+  if (!s) return false;
+  for (const d of HAIR_BACK_DIRS) if (s.startsWith(d)) return true;
+  return false;
+}
+
 function hairNormBase(name) {
   return String(name || '')
     .replace(/\.png$/i, '')
+    .replace(/_(north|south|east|west)$/i, '')
     // Monolyn 这类：HairF / HairB + 编号（HairF1 / HairB1）→ 都归一成 Hair + 编号
-    .replace(/^(hair)[_-]?[fb](?=\d*$)/i, '$1')
+    .replace(/(hair)[_-]?[fb](?=\d*$)/i, '$1')
     .replace(/BG(?=\d*$)/i, '')
     .replace(/BackGround(?=\d*$)/i, '')
     .replace(/Back(?=\d*$)/i, '')
@@ -9404,11 +9693,11 @@ function hairNormBase(name) {
     .replace(/_b(?=\d*$)/i, '');
 }
 function hairIsBackName(name) {
-  const n = String(name || '').replace(/\.png$/i, '');
+  const n = String(name || '').replace(/\.png$/i, '').replace(/_(north|south|east|west)$/i, '');
   if (/back/i.test(n) || /bg\d*$/i.test(n)) return true;
   if (/_b\d*$/i.test(n)) return true;                 // hair1_b
   if (/\d+b$/i.test(n)) return true;                  // hair1b
-  if (/^hair[_-]?b\d*$/i.test(n)) return true;        // Monolyn: HairB / HairB1
+  if (/hair[_-]?b\d*$/i.test(n)) return true;         // Monolyn / Maru: HairB / MRHairB10
   return false;
 }
 function hairBackIndex() {
@@ -9423,7 +9712,7 @@ function hairBackIndex() {
     const base = hairNormBase(name);
     if (!base || !/\d*$/.test(base)) return;
     const rec = idx.get(base) || { front: null, back: null, backs: [], fronts: [] };
-    if (hairIsBackName(name)) {
+    if (hairIsBackName(name) || hairPathIsBackDir(k) || HAIR_BACK_KEYS.has(k)) {
       if (!rec.back) rec.back = k;
       rec.backs.push(k);
     } else {
@@ -10305,7 +10594,7 @@ function addAssetFiles(files) {
       const im = new Image();
       im.onload = () => {
         const name = String(f.name || '素材').replace(/\.[^.]+$/, '');
-        const p = 'Custom/' + name.replace(/[^\w\u4e00-\u9fa5-]+/g, '_');
+        const p = 'Custom/' + customCat() + '/' + name.replace(/[^\w\u4e00-\u9fa5-]+/g, '_');
         const rec = { p, n: name, w: im.naturalWidth, h: im.naturalHeight, data: url };
         if (!S.customAssets) S.customAssets = [];
         const i = S.customAssets.findIndex(x => x.p === p);
@@ -10878,10 +11167,129 @@ function progDone() {
 
 
 /* 把画布上用到的本机素材写进 Mod/Textures/，否则游戏会报 Could not load Texture2D */
+/* ---------------- 自动裁剪 ---------------- */
+const CROP_CACHE = new Map();   // key -> {data,w,h}
+function isCroppedAsset(key) {
+  const k = String(key || '');
+  return /\/Crop_[^/]+$/.test(k) || CROP_CACHE.has(k);
+}
+
+function cropMaxCount() {
+  const n = Number(S.settings && S.settings.cropMax);
+  return Math.max(1, Math.min(12, Number.isFinite(n) && n > 0 ? n : 4));
+}
+function cropCachePut(key, rec) {
+  CROP_CACHE.delete(key);
+  CROP_CACHE.set(key, rec);
+  while (CROP_CACHE.size > cropMaxCount()) {
+    const first = CROP_CACHE.keys().next().value;
+    CROP_CACHE.delete(first);
+  }
+}
+function cropPng(key) {
+  return new Promise(resolve => {
+    try {
+      const url = imgURL(key);
+      if (!url) { resolve(null); return; }
+      const im = new Image();
+      im.onload = () => {
+        try {
+          const w = im.naturalWidth || im.width, h = im.naturalHeight || im.height;
+          if (!w || !h) { resolve(null); return; }
+          const cv = document.createElement('canvas');
+          cv.width = w; cv.height = h;
+          const g = cv.getContext('2d');
+          g.drawImage(im, 0, 0);
+          const d = g.getImageData(0, 0, w, h).data;
+          let x0 = w, y0 = h, x1 = -1, y1 = -1;
+          for (let y = 0; y < h; y++) {
+            for (let x = 0; x < w; x++) {
+              if (d[(y * w + x) * 4 + 3] > 4) {
+                if (x < x0) x0 = x; if (x > x1) x1 = x;
+                if (y < y0) y0 = y; if (y > y1) y1 = y;
+              }
+            }
+          }
+          if (x1 < x0 || y1 < y0) { resolve(null); return; }
+          const cw = x1 - x0 + 1, ch = y1 - y0 + 1;
+          const cv2 = document.createElement('canvas');
+          cv2.width = cw; cv2.height = ch;
+          cv2.getContext('2d').drawImage(cv, x0, y0, cw, ch, 0, 0, cw, ch);
+          resolve({ data: cv2.toDataURL('image/png'), w: cw, h: ch, from: key });
+        } catch (e) { resolve(null); }
+      };
+      im.onerror = () => resolve(null);
+      im.src = url;
+    } catch (e) { resolve(null); }
+  });
+}
+async function cropAssetKey(key) {
+  if (CROP_CACHE.has(key)) return CROP_CACHE.get(key);
+  if (/\/Crop_[^/]+$/.test(String(key))) return null;   // 已经是裁剪产物，不再二次裁剪
+  const rec = await cropPng(key);
+  if (rec) cropCachePut(key, rec);
+  return rec;
+}
+function cropTargetName(key) {
+  const base = String(key).split('/').pop().replace(/\.png$/i, '');
+  return 'Crop_' + base + '_' + Date.now().toString(36);
+}
+async function saveCroppedAsset(key, mode, targetCat) {
+  const rec = await cropAssetKey(key);
+  if (!rec) { toast('裁剪失败：读不到这张图', true); return null; }
+  const cat = targetCat || customCat();
+  const inplace = mode === 'inplace';
+  const newKey = inplace ? String(key) : ('Custom/' + cat + '/' + cropTargetName(key));
+  try {
+    const good = await apiSave('to=texture&key=' + encodeURIComponent(newKey), rec.data);
+    if (!good) { toast('保存裁剪素材失败', true); return null; }
+    try {
+      const idx = artLoadIndex();
+      idx[newKey] = { d: rec.data, w: rec.w, h: rec.h, aw: rec.w, ah: rec.h };
+      artSaveIndex();
+      EXT.set(newKey, { url: rec.data, w: rec.w, h: rec.h });
+    } catch (e) { }
+    if (!inplace) {
+      if (!S.customAssets) S.customAssets = [];
+      S.customAssets.push({ p: newKey, n: newKey.split('/').pop(), w: rec.w, h: rec.h, cat });
+      TEX_ON_DISK.add(newKey);
+    }
+    persist();
+    if (typeof renderAll === 'function') renderAll();
+    if (typeof renderLibrary === 'function') renderLibrary();
+    toast(inplace ? ('已裁剪并覆盖保存：我的素材 - ' + cat) : ('已裁剪并保存到「我的素材 - ' + cat + '」'));
+    return newKey;
+  } catch (e) { toast('保存裁剪素材失败：' + (e && e.message), true); return null; }
+}
+
+/* 本地保存时：把已裁剪且当前画布在用的素材写成正式文件 */
+async function flushCroppedForCanvas(c) {
+  if (!c || !LOCAL_HTTP || !CROP_CACHE.size) return;
+  for (const p of (c.parts || [])) {
+    const key = p.img;
+    if (!key || !CROP_CACHE.has(key)) continue;
+    const rec = CROP_CACHE.get(key);
+    const newKey = 'Custom/' + customCat() + '/' + cropTargetName(key);
+    try {
+      const good = await apiSave('to=texture&key=' + encodeURIComponent(newKey), rec.data);
+      if (!good) continue;
+      const idx = artLoadIndex();
+      idx[newKey] = { d: rec.data, w: rec.w, h: rec.h };
+      artSaveIndex();
+      EXT.set(newKey, { url: rec.data, w: rec.w, h: rec.h });
+      if (!S.customAssets) S.customAssets = [];
+      S.customAssets.push({ p: newKey, n: newKey.split('/').pop(), w: rec.w, h: rec.h, cat: customCat() });
+      p.img = newKey;
+      CROP_CACHE.delete(key);
+    } catch (e) { }
+  }
+}
+
 async function pushCustomTextures(c) {
   // 结束后会刷新一次 Textures 清单
 
   if (!c || !LOCAL_HTTP) return { tried: 0, ok: 0, missing: [] };
+  try { await flushCroppedForCanvas(c); } catch (e) { }
   const idx = artLoadIndex();
   const keys = new Set();
   (c.parts || []).forEach(p => {
@@ -10922,7 +11330,7 @@ function openTexFix(missing) {
       <p class="mini-note">下面这些贴图在 <code>${esc(SELF.name)}/Textures/</code> 里找不到，游戏会报
         <code>Could not load Texture2D</code>：</p>
       <ul class="mini-note" style="margin:6px 0 10px">${list}</ul>
-      <p class="mini-note">点下面的按钮选本机 PNG（文件名对应即可，比如 <b>MihoTail2.png</b> → <code>Custom/MihoTail2</code>），
+      <p class="mini-note">点下面的按钮选本机 PNG（文件名对应即可，比如 <b>MihoTail2.png</b> → <code>Custom/&lt;当前种族&gt;/MihoTail2</code>（没有种族画布时进 <code>Custom/未分类</code>）），
         选完会直接写进 Textures/。</p>
       <div class="rowline" style="margin-top:8px">
         <button class="btn btn--sm" data-act="tex-fill">选择 PNG 补齐…</button>
@@ -11226,14 +11634,27 @@ async function parseRaceMod(files) {
         const raceNode = node.querySelector(':scope > race');
         const defName = node.querySelector(':scope > defName')?.textContent?.trim();
         if (raceNode && defName) {
-          // HAR 头发：只有 bodyAddons 里 path 含 Hair 才算（原版 HairDef 的贴图不算）
+          // HAR 头发附加件：记录 path / layerOffset / inFrontOfBody，供“自动识别后层”使用
           let addonPaths = [];
+          let addonList = [];
           try {
             const ba = raceNode.querySelector('bodyAddons') || node.querySelector('bodyAddons');
-            if (ba) Array.from(ba.querySelectorAll('path')).forEach(pn => {
-              const v = (pn.textContent || '').trim();
-              if (v) addonPaths.push(v);
-            });
+            if (ba) {
+              Array.from(ba.querySelectorAll('li')).forEach(li => {
+                const pn = li.querySelector('path');
+                if (!pn) return;
+                const v = (pn.textContent || '').trim();
+                if (!v) return;
+                addonPaths.push(v);
+                const lo = li.querySelector('offsets > south > layerOffset') || li.querySelector('layerOffset');
+                const inf = li.querySelector('inFrontOfBody');
+                addonList.push({
+                  path: v,
+                  layer: lo ? parseFloat(lo.textContent) : NaN,
+                  front: inf ? /true/i.test(inf.textContent) : null
+                });
+              });
+            }
           } catch (e) { }
           const parentName = node.getAttribute('ParentName') || '';
           const hairAddon = addonPaths.some(v => /hair/i.test(v))
@@ -11245,6 +11666,7 @@ async function parseRaceMod(files) {
             kind: tag,
             parentName,
             addonPaths,
+            addonList,
             hairAddon
           });
         }
@@ -11429,13 +11851,30 @@ async function parseRaceMod(files) {
     };
   });
 
+  // 自动识别后层：按同一批头发附加件的 layerOffset 排序，最大的算前层，其余算后层
+  try {
+    (raceCandidates || []).forEach(r => {
+      const hair = (r.addonList || []).filter(a => a && /hair/i.test(a.path) && !/ahoge/i.test(a.path));
+      const nums = hair.map(a => a.layer).filter(v => Number.isFinite(v) && Math.abs(v) > 0.001);
+      if (!nums.length) return;
+      const maxLayer = Math.max.apply(null, nums);
+      hair.forEach(a => {
+        if (!Number.isFinite(a.layer)) return;
+        if (!(a.layer < maxLayer - 0.001)) return;
+        const dir = String(a.path).split('/').slice(0, -1).join('/') + '/';
+        if (dir.length > 1) HAIR_BACK_DIRS.add(dir.toLowerCase());
+      });
+    });
+  } catch (e) { }
+
   // every png in the mod that looks like body art, plus the hairstyles we can apply
   const assetList = [], hairList = [];
   const ART_RE = /(body|torso|tail|ear|wing|horn|head|pawn|tusk|fin|claw|skin|fur|face|eye|leg|arm|hand|foot|toe|finger)/i;
   tex.forEach(k => {
     const key = textureKey(k);
-    const isHair = /(^|\/)hair/i.test(k);
     const isAhoge = /ahoge/i.test(k);
+    const isHair = /(^|\/)hair/i.test(k) || isAhoge;
+    const isBack = hairPathIsBackDir(k) || hairIsBackName(k.split('/').pop());
     if (isHair) {
       // dolls face the viewer: keep the south-facing frame, drop north/east duplicates
       // 遮罩图（*_southm 之类，通常全透明）直接跳过
@@ -11447,7 +11886,7 @@ async function parseRaceMod(files) {
       if (hairList.length < 400) {
         hairList.push({
           key: key.replace(/_(north|south|east|west)$/i, ''),
-          path: k, file: map.get(k), ahoge: /ahoge/i.test(k),
+          path: k, file: map.get(k), ahoge: isAhoge, back: isBack,
         });
       }
       return;
@@ -11757,8 +12196,11 @@ function harHairOf(c) {
 }
 
 function createFromRace(res) {
-  const title = (res.race && res.race.label) || res.modName;
+  const title = cleanTitle((res.race && res.race.label) || res.modName);
   const c = createRaceCanvas(res, 'female', title);
+  try {
+    if (LOCAL_HTTP) fetch('/__custommkdir?name=' + encodeURIComponent(customCatFor(c)), { cache: 'no-store' });
+  } catch (e) { }
   const hasAssets = hasStoredArt(res.modName || title, 'asset');
   const hasHair = hasStoredArt(res.modName || title, 'hair');
   const added = hasAssets ? 0 : addRaceAssets(res, title);
@@ -11766,6 +12208,7 @@ function createFromRace(res) {
   // 只有种族 bodyAddons 里真的有 Hair 附加件，才算 HAR 头发；
   // 原版 HairDef 的 Textures/.../Hairs/*.png 是普通发型，不能当成 HAR
   try {
+    // 后层目录已在 parseRaceMod 里按 layerOffset 相对顺序登记
     const isHarHair = !!(res.race && res.race.hairAddon);
     const addonHairs = (res.hairs || []).filter(h => /\/Addon\/[^/]*Hair/i.test(String(h.path || h.key || '')));
     c.harHair = isHarHair ? detectHarHair({ hairs: addonHairs, modName: res.modName || title }, title) : null;
@@ -11827,6 +12270,10 @@ function autoAlignRaceBids(c) {
   return changed;
 }
 
+function cleanTitle(t) {
+  return String(t || '').replace(/\s*race\s*$/i, '').trim();
+}
+
 function createRaceCanvas(res, baseId, title) {
   // 记录这个画布对应的种族 key（游戏里用 pawn.def.defName 查 HAR 头发参数）
   // 放在画布上，导出时直接用，不再靠猜
@@ -11839,7 +12286,7 @@ function createRaceCanvas(res, baseId, title) {
   const c = canvasFromBodytype(bt);
   c.id = 'race-' + Date.now().toString(36);
   c.kind = 'race';
-  c.title = title || (res.race && res.race.label) || res.modName;
+  c.title = cleanTitle(title || (res.race && res.race.label) || res.modName);
   c.sub = res.race ? res.race.label : res.modName;
   c.base = bt.id;
   c.doll = res.race ? res.race.defName : bt.doll;
@@ -12974,6 +13421,7 @@ document.addEventListener('click', e => {
       let used = 0;
       S.canvases.forEach(c => c.parts.forEach(p => { if (p.img === path) { p.img = ''; used++; } }));
       S.customAssets = (S.customAssets || []).filter(x => x.p !== path);
+      if (/^Custom\//.test(path)) { try { fetch('/__customdelfile?key=' + encodeURIComponent(path), { cache: 'no-store' }); } catch (e) { } }
       CUSTOM.delete(path);
       ASSETMAP.delete(path);
       const at = ASSETS.findIndex(a => a.p === path);
@@ -12982,6 +13430,34 @@ document.addEventListener('click', e => {
       renderLibrary();
       persist();
       toast(`已删除素材「${rec.n || path}」${used ? `，并清空 ${used} 个部位的贴图` : ''}`);
+      break;
+    }
+    case 'mine-move-asset': {
+      const key = el.dataset.p, cat = el.dataset.cat;
+      if (key && cat) mineMoveAsset(key, cat);
+      break;
+    }
+    case 'mine-new-cat-asset': {
+      const key = el.dataset.p;
+      const nn = window.prompt('新建分类名称（会创建 Custom 下的文件夹）', '');
+      if (key && nn && nn.trim()) mineMoveAsset(key, nn.trim(), true);
+      break;
+    }
+    case 'crop-toggle': {
+      S.settings.autoCrop = !(S.settings && S.settings.autoCrop);
+      persist();
+      renderLibrary();
+      toast(S.settings.autoCrop ? '自动裁剪：开（点素材会裁剪并缓存）' : '自动裁剪：关');
+      break;
+    }
+    case 'crop-inplace': {
+      const k = el.dataset.key;
+      if (k) saveCroppedAsset(k, 'inplace');
+      break;
+    }
+    case 'crop-save-mod': {
+      const k = el.dataset.key;
+      if (k) saveCroppedAsset(k, 'new', modCategoryFor(k));
       break;
     }
     case 'mine-new': {
@@ -13550,6 +14026,7 @@ document.addEventListener('input', e => {
     S.settings.paths[f.slice(5)] = e.target.value;
     return;
   }
+  if (f === 'cropMax') { S.settings.cropMax = Math.max(1, Math.min(12, Math.round(Number(e.target.value) || 4))); persist(); return; }
   if (f === 'lib.q') { S.ui.q = e.target.value; SEARCH_FOCUS = { caret: e.target.selectionStart }; renderLibrary(); return; }
   if (f === 'ui.addName') { S.ui.addName = e.target.value; return; }
   if (f.startsWith('m.')) { if (modalState) modalState[f.slice(2)] = e.target.value; return; }
@@ -14712,7 +15189,9 @@ async function saveArtToAssets(planIn) {
       } catch (e) { data = ''; }
       if (!data) { fail++; artProgress(i + 1, plan.length, '跳过 ' + rec.key); continue; }
       // 按 模组/原路径 写入 → assets/<模组>/... 而不是平铺在 assets 根目录
-      const rel = String(rec.file || ((rec.mod || '本地素材') + '/' + rec.key)).replace(/\.png$/i, '');
+      const catName = assetsCatFor(rec);
+      const raw = String(rec.file || ((rec.mod || '本地素材') + '/' + rec.key)).replace(/\.png$/i, '');
+      const rel = raw.indexOf('/') >= 0 ? (catName + '/' + raw.split('/').slice(1).join('/')) : (catName + '/' + raw);
       const r = await apiSave('to=asset&key=' + encodeURIComponent(rel), data);
       if (r) { ok++; artProgress(i + 1, plan.length, rec.key); }
       else { fail++; artProgress(i + 1, plan.length, '失败 ' + rec.key); }
@@ -15101,6 +15580,7 @@ setTimeout(() => { try { notifHint(); } catch (e) { } try { refreshAttention(); 
       loadHairMap().then(n => { if (n) { try { renderAll(); renderHairPane(); } catch (e) { } } }).catch(() => { });
     }).catch(() => { });
   }
+  if (LOCAL_HTTP) { syncCustomPathsFromDisk(true); loadMineDirs(false); }
   try { gmkMount(); gmkRender(); setTimeout(() => { try { gmkCheckNew(); } catch (e) { } }, 1600); } catch (e) { }
   $('#projName').value = S.project.name;
 
@@ -15180,7 +15660,7 @@ boot();
 
 /* dev hook: open the page with #dev to script the editor from the console */
 if (location.hash === '#dev') {
-  window.__nhtDev = { S, D, EXT, parseRaceMod, findBackHair, hairBackIndex, bodyPartList, canvasBodyIdx, aboutVersion, aboutSetVersion, harHairOf, isVanillaHairRace, canvasDirty, canvasSig, loadHairMap, applyHairMap, ensureGrayArt, savePatchToMod, saveProjectFile, hairNormBase, hairIsBackName, migrateRaceBids, nhtSlotMap, autoAlignRaceBids, syncBodyPartsFromGame, loadBodyMap, fixBidsWithMap, applyBodyMapFix, registerRaceTextures, createRaceCanvas, pickRace, createFromRace, addRaceAssets, setHairs, applyHair, renderAll, fitView, pushHistory, renderTabs, renderInspector, renderTree, addPart, canvasBounds, validateAll, buildPatchXML, renderStatus, importArtFolder, addHairFiles, saveArtToAssets, artSavePlan, modalArtSave, artProgress, modalArtProgress, pickArtDir, artClearAll, artPut, hydrateArt, getHAIRS: () => HAIRS, getASSETS: () => ASSETS, artNeedsLocalSave, injectArtChecks, artSelList, setDiskArt: (rows) => { DISK_ART = rows || []; }, progStart, progStep, progDone, renderLibrary, imgURL, alphaBoxAsync, applyProject, partXML, exportFit, syncDisplayBox, placeDisplayBox, renderInspector, renderStage, getModalState: () => modalState, boundOf, BOUND_PRESETS, normalizeBox, dollXML, projectPayload, hairFits, detailPartXML, raceSlotFor, apiSave, pickAt, hairSolidAt, pushCustomTextures, partPixelSolid, alphaDataOf: (k) => ALPHA_DATA.get(k) || null, fixCanvasBids, officialBidFor, exportHitbox, originalHitbox, defPrefix, uniqueNewId, nhtDefNames, exportBid, humanSlotIndex, paintPart, registerCustomAsset, CUSTOM, measureAlpha, alphaBoxAsync, bakeRotation, overflowParts, gameCanvasOf, validateAll, mineState, mineAssign, mineNewFolder, mineRenameFolder, assetMenu, exportAsset };
+  window.__nhtDev = { S, D, EXT, parseRaceMod, findBackHair, hairBackIndex, bodyPartList, canvasBodyIdx, aboutVersion, aboutSetVersion, harHairOf, isVanillaHairRace, findBackHair, hairIsBackName, syncCustomPathsFromDisk, assetMenu, mineMoveAsset, modCategoryFor, cleanTitle, hairNormBase, HAIRS, HAIR_BACK_DIRS, canvasDirty, canvasSig, loadHairMap, applyHairMap, ensureGrayArt, savePatchToMod, saveProjectFile, hairNormBase, hairIsBackName, migrateRaceBids, nhtSlotMap, autoAlignRaceBids, syncBodyPartsFromGame, loadBodyMap, fixBidsWithMap, applyBodyMapFix, registerRaceTextures, createRaceCanvas, pickRace, createFromRace, addRaceAssets, setHairs, applyHair, renderAll, fitView, pushHistory, renderTabs, renderInspector, renderTree, addPart, canvasBounds, validateAll, buildPatchXML, renderStatus, importArtFolder, addHairFiles, saveArtToAssets, artSavePlan, modalArtSave, artProgress, modalArtProgress, pickArtDir, artClearAll, artPut, hydrateArt, getHAIRS: () => HAIRS, getASSETS: () => ASSETS, artNeedsLocalSave, injectArtChecks, artSelList, setDiskArt: (rows) => { DISK_ART = rows || []; }, progStart, progStep, progDone, renderLibrary, imgURL, alphaBoxAsync, applyProject, partXML, exportFit, syncDisplayBox, placeDisplayBox, renderInspector, renderStage, getModalState: () => modalState, boundOf, BOUND_PRESETS, normalizeBox, dollXML, projectPayload, hairFits, detailPartXML, raceSlotFor, apiSave, pickAt, hairSolidAt, pushCustomTextures, partPixelSolid, alphaDataOf: (k) => ALPHA_DATA.get(k) || null, fixCanvasBids, officialBidFor, exportHitbox, originalHitbox, defPrefix, uniqueNewId, nhtDefNames, exportBid, humanSlotIndex, paintPart, registerCustomAsset, CUSTOM, measureAlpha, alphaBoxAsync, bakeRotation, overflowParts, gameCanvasOf, validateAll, mineState, mineAssign, mineNewFolder, mineRenameFolder, assetMenu, exportAsset };
 }
 })();
 

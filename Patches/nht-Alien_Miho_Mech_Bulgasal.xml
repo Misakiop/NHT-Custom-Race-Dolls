@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   NHT_CustomDolls
-  由 NHT Anatomy Editor 生成 · 2026-11-05 03:05
+  由 NHT Anatomy Editor 生成 · 2026-11-05 15:05
   基准模组：Nice Health Tab (Andromeda.NiceHealthTab) v1.6 · 创意工坊 3328729902
   RJW 层：Nice Health Tab - RJW Genitalia (zoc2k.nicehealthtab.rjwgenitalia) · 相关操作带 MayRequire rim.job.world
   画布：1 个 · 部位：42 个 · 补丁操作：11 段
@@ -9,7 +9,7 @@
   备注：以 Nice Health Tab 模组 1.6 默认体型为基准制作的部位补丁。
 -->
 <Patch>
-  <!-- Miho race · HAR 头发参数（种族 Alien_Miho_Mech_Bulgasal） -->
+  <!-- Miho · HAR 头发参数（种族 Alien_Miho_Mech_Bulgasal） -->
   <Operation Class="PatchOperationAdd">
     <success>Always</success>
     <xpath>Defs</xpath>
@@ -33,7 +33,7 @@
       </NHT_CustomDolls.HairFitDef>
     </value>
   </Operation>
-  <!-- Miho race · HAR 头发参数（种族 Alien_Miho） -->
+  <!-- Miho · HAR 头发参数（种族 Alien_Miho） -->
   <Operation Class="PatchOperationAdd">
     <success>Always</success>
     <xpath>Defs</xpath>
@@ -57,14 +57,14 @@
       </NHT_CustomDolls.HairFitDef>
     </value>
   </Operation>
-  <!-- Miho race · 部位颜色开关：关闭后这些部位显示为黑白 -->
+  <!-- Miho · 部位颜色开关：关闭后这些部位显示为黑白 -->
   <Operation Class="PatchOperationAdd">
     <success>Always</success>
     <xpath>Defs</xpath>
     <value>
       <NHT_CustomDolls.DesatPartsDef>
         <defName>NHTCD_Desat_Alien_Miho_Mech_Bulgasal</defName>
-        <label>Miho race</label>
+        <label>Miho</label>
         <race>Alien_Miho_Mech_Bulgasal</race>
         <doll>Alien_Miho_Mech_Bulgasal</doll>
         <parts>
@@ -75,7 +75,7 @@
       </NHT_CustomDolls.DesatPartsDef>
     </value>
   </Operation>
-  <!-- Miho race · 画在头发之上的部位（NHTCD_HairFit_Alien_Miho_Mech_Bulgasal） -->
+  <!-- Miho · 画在头发之上的部位（NHTCD_HairFit_Alien_Miho_Mech_Bulgasal） -->
   <Operation Class="PatchOperationReplace">
     <success>Always</success>
     <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_Alien_Miho_Mech_Bulgasal"]/aboveParts</xpath>
@@ -92,7 +92,7 @@
       </topParts>
     </value>
   </Operation>
-  <!-- Miho race · 画在头发之上的部位（NHTCD_HairFit_Alien_Miho） -->
+  <!-- Miho · 画在头发之上的部位（NHTCD_HairFit_Alien_Miho） -->
   <Operation Class="PatchOperationReplace">
     <success>Always</success>
     <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_Alien_Miho"]/aboveParts</xpath>
@@ -177,7 +177,7 @@
     <success>Always</success>
     <xpath>Defs</xpath>
     <value>
-      <!-- Miho race · 新建 HumanlikeDoll Alien_Miho_Mech_Bulgasal -->
+      <!-- Miho · 新建 HumanlikeDoll Alien_Miho_Mech_Bulgasal -->
       <NiceHealthTab.HumanlikeDoll>
         <defName>Alien_Miho_Mech_Bulgasal</defName>
         <gender>Female</gender>
@@ -197,7 +197,7 @@
       <!-- 自定义部位 · 尾巴 -->
       <NiceHealthTab.DollBodyPart>
         <defName>Alien_Miho_Mech_Bulgasal_u5c3eu5df4</defName>
-        <imagePath>Custom/MihoTail2</imagePath>
+        <imagePath>Custom/Alien_Miho_Mech_Bulgasal/MihoTail2</imagePath>
         <position>
           <x>-125.1</x>
           <y>208.5</y>
@@ -217,7 +217,7 @@
       <!-- 自定义部位 · 尾巴（灰） -->
       <NiceHealthTab.DollBodyPart>
         <defName>Alien_Miho_Mech_Bulgasal_u5c3eu5df4_NHTCD_Gray</defName>
-        <imagePath>Custom/NHTCD_Gray/Alien_Miho_Mech_Bulgasal_Alien_Miho_Mech_Bulgasal_u5c3eu5df4</imagePath>
+        <imagePath>Custom/NHTCD_Gray/Miho/Alien_Miho_Mech_Bulgasal_Alien_Miho_Mech_Bulgasal_u5c3eu5df4</imagePath>
         <position>
           <x>-125.1</x>
           <y>208.5</y>
@@ -581,7 +581,7 @@
       <!-- 自定义部位 · 左耳 -->
       <NiceHealthTab.DollBodyPart>
         <defName>Alien_Miho_Mech_Bulgasal_u5de6u8033_2</defName>
-        <imagePath>Custom/Ear_south2</imagePath>
+        <imagePath>Custom/Alien_Miho_Mech_Bulgasal/Ear_south2</imagePath>
         <position>
           <x>40</x>
           <y>-405</y>
@@ -601,7 +601,7 @@
       <!-- 自定义部位 · 左耳（灰） -->
       <NiceHealthTab.DollBodyPart>
         <defName>Alien_Miho_Mech_Bulgasal_u5de6u8033_2_NHTCD_Gray</defName>
-        <imagePath>Custom/NHTCD_Gray/Alien_Miho_Mech_Bulgasal_Alien_Miho_Mech_Bulgasal_u5de6u8033_2</imagePath>
+        <imagePath>Custom/NHTCD_Gray/Miho/Alien_Miho_Mech_Bulgasal_Alien_Miho_Mech_Bulgasal_u5de6u8033_2</imagePath>
         <position>
           <x>40</x>
           <y>-405</y>
@@ -620,7 +620,7 @@
       <!-- 自定义部位 · 右耳 -->
       <NiceHealthTab.DollBodyPart>
         <defName>Alien_Miho_Mech_Bulgasal_u53f3u8033_2</defName>
-        <imagePath>Custom/Ear_south</imagePath>
+        <imagePath>Custom/Alien_Miho_Mech_Bulgasal/Ear_south</imagePath>
         <position>
           <x>-40</x>
           <y>-405</y>
@@ -640,7 +640,7 @@
       <!-- 自定义部位 · 右耳（灰） -->
       <NiceHealthTab.DollBodyPart>
         <defName>Alien_Miho_Mech_Bulgasal_u53f3u8033_2_NHTCD_Gray</defName>
-        <imagePath>Custom/NHTCD_Gray/Alien_Miho_Mech_Bulgasal_Alien_Miho_Mech_Bulgasal_u53f3u8033_2</imagePath>
+        <imagePath>Custom/NHTCD_Gray/Miho/Alien_Miho_Mech_Bulgasal_Alien_Miho_Mech_Bulgasal_u53f3u8033_2</imagePath>
         <position>
           <x>-40</x>
           <y>-405</y>

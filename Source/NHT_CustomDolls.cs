@@ -425,6 +425,9 @@ namespace NHT_CustomDolls
             all = null;
             byRace = null;
             vanillaCache = null;
+            // 同时让 UseFit 重新读取开关/按小人保存的覆盖值，
+            // 否则关同步、开自定义坐标后滑块写入的新值不会生效（非 HAR 尤其明显）
+            Bootstrap.ResetFitCache();
         }
 
         private static void Build()
@@ -610,6 +613,11 @@ namespace NHT_CustomDolls
     [StaticConstructorOnStartup]
     public static class Bootstrap
     {
+        public static void ResetFitCache()
+        {
+            HairFix.ResetFitCache();
+        }
+
         static Bootstrap()
         {
             try
@@ -1040,6 +1048,7 @@ namespace NHT_CustomDolls
             private class AddonMeta
             {
                 public bool alignHead;
+                public float layerOffset;
             }
 
             private class AddonSet
@@ -1097,6 +1106,12 @@ namespace NHT_CustomDolls
                 hairFits = new Dictionary<string, HairFitDef>();
                 foreach (HairFitDef d in DefDatabase<HairFitDef>.AllDefs)
                     if (!hairFits.ContainsKey(d.race ?? "*")) hairFits[d.race ?? "*"] = d;
+            }
+
+            public static void ResetFitCache()
+            {
+                hairFit = null;
+                hairOverrideValid = false;
             }
 
             private static void UseFit(string race)
@@ -1430,7 +1445,7 @@ namespace NHT_CustomDolls
                 catch (Exception) { return 0f; }
             }
 
-            /* 只关心 HAR addon 是否声明了 alignWithHead */
+            /* 读 HAR addon 的定位信息：alignWithHead + offsets.south.layerOffset */
             private static AddonMeta ReadAddonMeta(object ad)
             {
                 AddonMeta m = new AddonMeta();
@@ -1438,6 +1453,16 @@ namespace NHT_CustomDolls
                 {
                     FieldInfo ah = AccessTools.Field(ad.GetType(), "alignWithHead");
                     if (ah != null) m.alignHead = Convert.ToBoolean(ah.GetValue(ad));
+                    object offs = AccessTools.Field(ad.GetType(), "offsets") == null ? null : AccessTools.Field(ad.GetType(), "offsets").GetValue(ad);
+                    if (offs != null)
+                    {
+                        object south = AccessTools.Field(offs.GetType(), "south") == null ? null : AccessTools.Field(offs.GetType(), "south").GetValue(offs);
+                        if (south != null)
+                        {
+                            FieldInfo lo = AccessTools.Field(south.GetType(), "layerOffset");
+                            if (lo != null) m.layerOffset = Convert.ToSingle(lo.GetValue(south));
+                        }
+                    }
                 }
                 catch (Exception) { }
                 return m;
@@ -1565,6 +1590,22 @@ namespace NHT_CustomDolls
                 return false;
             }
 
+            /* 只把真正的 HairB / MRHairB10 当后层；HairBangs / HairBase 这类前发不能误判 */
+            private static bool PathHasHairB(string pt)
+            {
+                int i = 0;
+                while (true)
+                {
+                    i = pt.IndexOf("HairB", i, StringComparison.OrdinalIgnoreCase);
+                    if (i < 0) return false;
+                    bool leftOk = i == 0 || pt[i - 1] == '/' || pt[i - 1] == '_' || pt[i - 1] == '\\';
+                    int j = i + 5;
+                    bool rightOk = j >= pt.Length || char.IsDigit(pt[j]) || pt[j] == '.' || pt[j] == '_' || pt[j] == '/' || pt[j] == '\\';
+                    if (leftOk && rightOk) return true;
+                    i += 5;
+                }
+            }
+
             private static void InitAddons(ThingDef raceDef)
             {
                 string key = raceDef == null ? "?" : raceDef.defName;
@@ -1601,11 +1642,19 @@ namespace NHT_CustomDolls
                             cur.over.Add(i); cur.overPath.Add(pt); cur.meta[i] = meta;
                             continue;
                         }
-                        bool isBg = nm.IndexOf("BG", StringComparison.OrdinalIgnoreCase) >= 0
+                        // 一次识别：HAR 的 layerOffset（<0 在后，>0 在前）
+                        bool autoBack = meta.layerOffset < -0.001f;
+                        bool autoFront = meta.layerOffset > 0.001f;
+                        // 二次识别：命名/路径关键词（没有 layerOffset 的旧模组）
+                        bool keyBack = nm.IndexOf("BG", StringComparison.OrdinalIgnoreCase) >= 0
                                  || nm.IndexOf("back", StringComparison.OrdinalIgnoreCase) >= 0
                                  || pt.IndexOf("HairBack", StringComparison.OrdinalIgnoreCase) >= 0
                                  || pt.IndexOf("Hair_Back", StringComparison.OrdinalIgnoreCase) >= 0
-                                 || pt.IndexOf("Background", StringComparison.OrdinalIgnoreCase) >= 0;
+                                 || pt.IndexOf("Background", StringComparison.OrdinalIgnoreCase) >= 0
+                                 || pt.IndexOf("/addonB/", StringComparison.OrdinalIgnoreCase) >= 0
+                                 || pt.IndexOf("/addonC/", StringComparison.OrdinalIgnoreCase) >= 0
+                                 || PathHasHairB(pt);
+                        bool isBg = keyBack;
                         if (!isBg && nm.IndexOf("hair", StringComparison.OrdinalIgnoreCase) < 0
                             && pt.IndexOf("Hair", StringComparison.OrdinalIgnoreCase) < 0) continue;
                         if (isBg)
@@ -1613,6 +1662,11 @@ namespace NHT_CustomDolls
                             // 后层一律在最底层画：第一个记成 bg；其它后层默认不画（可能又是另一套发型）
                             bool allLayersBg = (CustomDollsMod.Settings != null && CustomDollsMod.Settings.drawAllHairLayers);
                             if (cur.bg < 0) { cur.bg = i; cur.bgPath = pt; }
+                            else if (string.Equals(pt.Replace("/addonC/", "/addonB/"), cur.bgPath.Replace("/addonC/", "/addonB/"), StringComparison.OrdinalIgnoreCase))
+                            {
+                                // addonB/addonC 是同一套后层贴图的重复目录：只画一次
+                                cur.skipped.Add(nm + " -> " + pt + " (duplicate bg)");
+                            }
                             else if (allLayersBg) { cur.backExtra.Add(i); cur.backExtraPath.Add(pt); }
                             else { cur.skipped.Add(nm + " -> " + pt); }
                         }
@@ -1959,9 +2013,14 @@ namespace NHT_CustomDolls
             {
                 scale = 1f; ox = 0f; oy = 0f;
                 CustomDollsSettings st = CustomDollsMod.Settings;
-                if (st == null || !st.vanillaHairUseEditor) return false;
+                if (st == null) return false;
                 int pid = curPawn != null ? curPawn.thingIDNumber : -1;
-                if (pid >= 0 && HairTuning.TryGet("p" + pid, out scale, out ox, out oy)) return true;
+                // 和 UseFit 用同一套权限：全局开关 + 未同步时的按小人「自定义坐标」开关
+                bool allowed = st.vanillaHairUseEditor;
+                if (pid >= 0 && !HairTuning.SyncPawn(pid))
+                    allowed = HairTuning.GetPawnFlag(st.pawnCustom, pid, allowed);
+                if (!allowed) return false;
+                if (pid >= 0 && !HairTuning.SyncPawn(pid) && HairTuning.TryGet("p" + pid, out scale, out ox, out oy)) return true;
                 if (HairTuning.TryGet(race, out scale, out ox, out oy)) return true;
                 if (hairFits == null) LoadHairFits();
                 HairFitDef f;
@@ -2819,6 +2878,7 @@ public class HairAdjustWindow : Window
         if (Mathf.Abs(scale - lastScale) < 1e-4f && Mathf.Abs(ox - lastOx) < 1e-4f && Mathf.Abs(oy - lastOy) < 1e-4f) return;
         lastScale = scale; lastOx = ox; lastOy = oy;
         HairTuning.Set(Key, scale, ox, oy);
+        Bootstrap.ResetFitCache();   // 让非 HAR 立即用新值重画
         if (pawnId >= 0) HairTuning.MarkManual(pawnId);
         ClearAutoFix();
     }
@@ -2928,12 +2988,23 @@ public class HairAdjustWindow : Window
         }
 
         float sw = inRect.width - 106f;
-        float scMin = isHar ? 0.2f : 0.5f;
-        float scMax = isHar ? 3f : 1.8f;
+        float scMin = isHar ? 0.1f : 0.5f;
+        float scMax = isHar ? 2.5f : 1.8f;
         float ofMin = isHar ? -1f : -80f;
         float ofMax = isHar ? 1f : 80f;
         Widgets.Label(new Rect(0f, y, 60f, 20f), Translator.Translate("NHTCD_WinScale").ToString());
-        scale = Widgets.HorizontalSlider(new Rect(62f, y + 2f, sw, 18f), scale, scMin, scMax);
+        if (isHar)
+        {
+            // HAR 用对数刻度：0.36 大约在滑块 40% 的位置（线性刻度会紧贴最左边）
+            float lr = Mathf.Log(scMax / scMin);
+            float t = lr > 0.0001f ? Mathf.Log(Mathf.Clamp(scale, scMin, scMax) / scMin) / lr : 0f;
+            float t2 = Widgets.HorizontalSlider(new Rect(62f, y + 2f, sw, 18f), t, 0f, 1f);
+            if (Mathf.Abs(t2 - t) > 0.0001f) scale = scMin * Mathf.Pow(scMax / scMin, t2);
+        }
+        else
+        {
+            scale = Widgets.HorizontalSlider(new Rect(62f, y + 2f, sw, 18f), scale, scMin, scMax);
+        }
         Widgets.Label(new Rect(inRect.width - 48f, y, 48f, 20f), scale.ToString("F2"));
         y += 22f;
 
