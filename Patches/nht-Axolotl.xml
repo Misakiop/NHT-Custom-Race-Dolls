@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <!--
   NHT_CustomDolls
   由 NHT Anatomy Editor 生成 · 2026-11-05 15:05
@@ -210,7 +210,7 @@
         <dollName>Axolotl</dollName>
         <bodyPartId>65</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>1.67</width>
@@ -230,7 +230,7 @@
         <dollName>Axolotl</dollName>
         <bodyPartId>65</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>1.67</width>
@@ -496,7 +496,7 @@
         <dollName>Axolotl</dollName>
         <bodyPartId>3</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>1</width>
@@ -516,7 +516,7 @@
         <dollName>Axolotl</dollName>
         <bodyPartId>4</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.7</width>
@@ -536,7 +536,7 @@
         <dollName>Axolotl</dollName>
         <bodyPartId>20</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>1</width>
@@ -556,7 +556,7 @@
         <dollName>Axolotl</dollName>
         <bodyPartId>16</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.6</width>
@@ -575,7 +575,7 @@
         <dollName>Axolotl</dollName>
         <bodyPartId>17</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>-0.6</width>
@@ -594,7 +594,7 @@
         <dollName>Axolotl</dollName>
         <bodyPartId>66</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.8</width>
@@ -614,7 +614,7 @@
         <dollName>Axolotl</dollName>
         <bodyPartId>66</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.8</width>
@@ -633,7 +633,7 @@
         <dollName>Axolotl</dollName>
         <bodyPartId>67</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.8</width>
@@ -653,7 +653,7 @@
         <dollName>Axolotl</dollName>
         <bodyPartId>67</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.8</width>
@@ -672,7 +672,7 @@
         <dollName>Axolotl</dollName>
         <bodyPartId>15</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>1</width>
@@ -692,7 +692,7 @@
         <dollName>Axolotl</dollName>
         <bodyPartId>6</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.85</width>
@@ -712,7 +712,7 @@
         <dollName>Axolotl</dollName>
         <bodyPartId>10</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>-0.85</width>
@@ -732,7 +732,7 @@
         <dollName>Axolotl</dollName>
         <bodyPartId>9</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.85</width>
@@ -752,7 +752,7 @@
         <dollName>Axolotl</dollName>
         <bodyPartId>11</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.85</width>
@@ -772,7 +772,7 @@
         <dollName>Axolotl</dollName>
         <bodyPartId>8</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>-0.85</width>
@@ -792,7 +792,7 @@
         <dollName>Axolotl</dollName>
         <bodyPartId>7</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.85</width>
@@ -812,7 +812,7 @@
         <dollName>Axolotl</dollName>
         <bodyPartId>5</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.85</width>
@@ -832,7 +832,7 @@
         <dollName>Axolotl</dollName>
         <bodyPartId>1</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.9</width>

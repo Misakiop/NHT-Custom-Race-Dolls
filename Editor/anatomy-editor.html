@@ -422,7 +422,8 @@ input[type=range]::-webkit-slider-runnable-track{height:3px;background:#2d363b;b
 .ico.is-on .ico__h{fill:rgba(120,220,120,.28);stroke:#fff}
 
 /* 护甲图标模式：只留整体轮廓 + 图标 */
-.is-icons .part img{opacity:.06;filter:grayscale(1) brightness(1.4)}
+/* 护甲视图：不再把身体压到几乎不可见；外形交给 .is-xray 变黑，器官/骨骼保持正常亮度 */
+.is-icons .part.is-outer img{opacity:1}
 .is-icons .part .wound,.is-icons .part .tint,.is-icons .part .cross,.is-icons .part .ovf{display:none}
 .is-icons .part.is-selected{filter:none}
 
@@ -1730,6 +1731,21 @@ body.is-preview #stage{cursor:not-allowed}
 
 .btn--off{opacity:.42;filter:grayscale(1);color:#9aa3a8;border-color:var(--line)}
 .btn--off:hover{opacity:.6}
+
+/* 护甲图标：关闭状态用红色 */
+.ico.is-off image{opacity:.32;filter:grayscale(1) brightness(.85)}
+.ico.is-off .ico__l{stroke:rgba(208,90,74,.5)}
+.ico.is-off .ico__h{fill:rgba(208,90,74,.14);stroke:rgba(208,90,74,.9)}
+.ico.is-off:hover .ico__h{fill:rgba(208,90,74,.3);stroke:#ff9a8a}
+
+/* 护甲 + 器官/骨骼：外形变黑且半透明，器官/骨骼变成 X 光观感 */
+.is-icons.is-xray .part.is-outer img{opacity:.55}
+.is-icons.is-xray .part.is-outer .wound{opacity:.2}
+.is-icons.is-xray .part.is-inner img{
+  filter:grayscale(1) brightness(1.45) drop-shadow(0 0 6px rgba(255,255,255,.35));
+  opacity:.92;
+}
+.is-icons.is-xray .part.is-inner .wound{opacity:.55}
 </style>
   <script src="ui/guides.js"></script>
 </head>
@@ -1794,7 +1810,7 @@ body.is-preview #stage{cursor:not-allowed}
       <span class="vsep"></span>
       <button class="btn btn--ghost" data-act="history" title="查看最近 5 份本地保存历史，可挑一份载入"><svg><use href="#i-undo"/></svg>历史</button>
       <button class="btn btn--ghost" data-act="save" title="保存**全部画布**与素材清单到项目文件 nht-project.js（html 同目录），不是只存当前画布。Ctrl+S"><svg><use href="#i-save"/></svg>本地保存（全部画布）</button>
-      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-05 15:04</span>
+      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-05 16:25</span>
             <span class="notif" id="notifWrap">
         <button class="iconbtn notif__btn" data-act="notif-toggle" id="notifBtn" title="Git 更新通知：点「收到」后不再弹出，仓库有新的 Push 会再次提醒">
           <svg class="notif__ico"><use href="#i-bell"/></svg>
@@ -1848,7 +1864,7 @@ body.is-preview #stage{cursor:not-allowed}
           <button class="chip bar-toggle" data-act="bar-toggle" id="barToggle" title="收起 / 展开工具栏（收起后可以点到被工具栏遮住的部位）"><svg><use href="#i-chev"/></svg></button>
           <button class="chip" data-act="flag" data-flag="grid"><svg><use href="#i-grid"/></svg>网格</button>
         <button class="chip" data-act="flag" data-flag="hitbox"><svg><use href="#i-target"/></svg>命中框</button>
-          <button class="chip" data-act="flag" data-flag="icons"><svg><use href="#i-target"/></svg>护甲图标</button>
+          <button class="chip" data-act="flag" data-flag="icons"><svg><use href="#i-target"/></svg>护甲</button>
           <button class="chip" data-act="kind" data-kind="organ"><span class="chip__ico" data-m="HediffTab/Common/OrganIcon"></span>器官</button>
           <button class="chip" data-act="kind" data-kind="bone"><span class="chip__ico" data-m="HediffTab/Common/BoneIcon"></span>骨骼</button>
           <span class="stage__bar-sep"></span>
@@ -3624,7 +3640,7 @@ function renderTree() {
   const box = $('#tree');
   if (!c) { box.innerHTML = ''; return; }
   const groups = KGROUPS.map(g => {
-    const list = sortTree(c.parts.filter(p => groupOf(p) === g.k));
+    const list = sortTree(c.parts.filter(p => groupOf(p) === g.k && !(c.rjw === false && p.source === 'rjw')));
     const closed = S.ui.allClosed ? !S.ui.closed[g.k] : !!S.ui.closed[g.k];
     const ico = g.tag
       ? `<span class="grp__tag">${g.tag}</span>`
@@ -4415,7 +4431,8 @@ function renderStage() {
   $('#gridLayer').classList.toggle('is-off', !S.flags.grid);
   // x-ray: skin becomes a dark silhouette so the white organs / bones read clearly
   $('#board').classList.toggle('is-icons', !!S.flags.icons);
-  $('#board').classList.toggle('is-xray', S.kinds.organ !== false || S.kinds.bone !== false);
+  // 护甲视图复用 X 光：身体变黑+半透明，图标直接画在上面
+  $('#board').classList.toggle('is-xray', S.kinds.organ === true || S.kinds.bone === true || !!S.flags.icons);
   applyView();
   syncLockChip();
   syncViewSwitches();
@@ -5260,14 +5277,22 @@ function renderOverlay() {
   // be placed per part (a new wing or ear needs its own badge spot)
   if (S.flags.icons) {
     const c = activeCanvas();
+    const organOn = S.kinds.organ === true, boneOn = S.kinds.bone === true;
     if (c) c.parts.forEach(p => {
       if (!p.vis || isWindowOnly(p)) return;
+      // RJW 关闭时这些部位并没有画出来，图标也不能留
+      if (c.rjw === false && p.source === 'rjw') return;
+      // 护甲图标联动器官/骨骼：打开哪个就只显示哪个；都没开只显示外形
+      if (organOn || boneOn) {
+        if (!((p.kind === 'organ' && organOn) || (p.kind === 'bone' && boneOn))) return;
+      } else if (p.kind === 'organ' || p.kind === 'bone') return;
+      const armorOn = !(p.armor === false || (p.armor == null && !defaultArmorFor(p)));
       const ix = p.x + (p.nx || 0), iy = p.y + (p.ny || 0);
       const s = 6 / z;
-      out += `<g class="ico${p.uid === S.sel ? ' is-on' : ''}" data-ico="${p.uid}">`
+      out += `<g class="ico${p.uid === S.sel ? ' is-on' : ''}${armorOn ? '' : ' is-off'}" data-ico="${p.uid}">`
         + `<line class="ico__l" x1="${round(p.x, 1)}" y1="${round(p.y, 1)}" x2="${round(ix, 1)}" y2="${round(iy, 1)}"/>`
         + `<image href="${imgURL('HediffTab/Common/ArmorIcon')}" x="${round(ix - s, 2)}" y="${round(iy - s, 2)}" width="${round(s * 2, 2)}" height="${round(s * 2, 2)}"/>`
-        + `<title>${esc(p.name)} · 图层 ${p.layer}</title>`
+        + `<title>${esc(p.name)} · 图层 ${p.layer} · 护甲图标：${armorOn ? "开" : "关"}（右键切换）</title>`
         + `<circle class="ico__hit" cx="${round(ix, 1)}" cy="${round(iy, 1)}" r="${round(s * 2.6, 2)}"/>`
         + `<circle class="ico__h" cx="${round(ix, 1)}" cy="${round(iy, 1)}" r="${round(s * 1.5, 2)}"/></g>`;
     });
@@ -5507,25 +5532,25 @@ function partInspector(p) {
 
   <div class="sec">
     <div class="sec__h"><b>标识 IDENTITY</b></div>
-    <div class="field"><label>名称</label><div class="ctl"><input class="inp inp--txt" data-f="name" value="${esc(p.name)}" spellcheck="false"></div></div>
-    <div class="field"><label>defName</label><div class="ctl"><div class="inp inp--ro" id="partDefName" title="自动生成：种族名 + 部位名（只读，改「名称」会跟着变）">${esc(partDefName(c, p))}</div></div></div>
+    <div class="field"><label>名称 NAME</label><div class="ctl"><input class="inp inp--txt" data-f="name" value="${esc(p.name)}" spellcheck="false"></div></div>
+    <div class="field"><label>defName ID</label><div class="ctl"><div class="inp inp--ro" id="partDefName" title="自动生成：种族名 + 部位名（只读，改「名称」会跟着变）">${esc(partDefName(c, p))}</div></div></div>
     ${(() => {
       if (p.bid == null || p.bid < 0) return `<p class="mini-note" style="margin:2px 0 0">装饰部位：只画图、不参与受伤。NHT 的部位定义里 bodyPartId 是整数，导出时不写这一项，游戏会按 <b>#0 躯干</b> 处理（不会影响受伤数据）。</p>`;
       const orig = origDefsByBid(c).get(p.bid);
       if (orig) return `<p class="mini-note" style="margin:2px 0 0">导出为 <b style="color:#ff9541">替换</b>：模组里那张 <code>${esc(orig)}</code> 会被覆盖。</p>`;
       return '';
     })()}
-    <div class="field"><label>部位</label><div class="ctl">
+    <div class="field"><label>部位 PART</label><div class="ctl">
       <button class="inp inp--pick" data-act="pick-bid" title="对应 BodyDef 里的部位序号；点开可以搜索">
         <span>${bidLabel(c, p.bid)}</span>${icon('search')}
       </button>
     </div></div>
-    <div class="field"><label>图层</label><div class="ctl">
+    <div class="field"><label>图层 LAYER</label><div class="ctl">
       <input class="inp" type="number" data-f="layer" value="${p.layer}" step="1" min="0" max="29" title="原版图层 0–29">
       <button class="iconbtn iconbtn--xs" data-act="layer-down" title="下移一层">${icon('arrdn')}</button>
       <button class="iconbtn iconbtn--xs" data-act="layer-up" title="上移一层">${icon('arrup')}</button>
     </div></div>
-    <div class="field"><label>置顶层级
+    <div class="field"><label>置顶层级 TOP LAYER
 <span class="qmark" title="置顶系列专用层级（0–99，默认 1）：只有开启「置顶重画」或「联动置顶」时才生效，但数值一直保存。它独立于原版图层 0–29——哪怕填 0，也在所有原版图层之上。越大越靠上。">?</span>
     </label><div class="ctl num2">
       <input class="inp" type="number" data-f="overlevel" value="${overLevelOf(p)}" step="1" min="0" max="99">
@@ -5540,9 +5565,10 @@ function partInspector(p) {
         : (Number.isFinite(c.hairLayer) ? c.hairLayer : 15);
       return `<p class="mini-note" style="color:#e3b558;margin:2px 0 0">当前头发层级 = <b>${hl}</b>：头发会在第一个「图层 ≥ ${hl}」的部位之前绘制，所以<b>图层大于 ${hl} 的部位会盖在头发之上</b>，小于它的会被头发盖住。</p>`;
     })()}
-    <div class="field"><label>贴图</label><div class="ctl">
+    <div class="field"><label>贴图 TEXTURE</label><div class="ctl">
       <div class="inp" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;color:#8d9499">${esc(p.img.split('/').pop())}</div>
       <button class="iconbtn iconbtn--xs" data-act="pick-img" title="从模组素材替换">${icon('img')}</button>
+      <button class="iconbtn iconbtn--xs" data-act="part-crop" title="裁剪：去掉透明边缘，保存到「我的素材 - ${esc(customCat())}」并换用裁剪后的贴图">✂</button>
     </div></div>
     <div class="field"><label>置顶
 <span class="qmark" title="置顶重画：所有部位（以及头发）画完之后再补画一遍，永远在最上面，用「置顶层级」排序；会盖掉该部位的疤痕/伤口，建议只给装饰件用。联动置顶：只在模组设置打开「非 HAR 发型按发色重绘」时生效，在补画的发型之后重画，避免被头发盖住；与置顶重画互斥。">?</span>
@@ -5558,7 +5584,7 @@ function partInspector(p) {
   ${(() => {
     const cc = activeCanvas();
     const raceOk = !!(cc && cc.race && cc.race.defName);
-    return raceOk ? `<div class="field"><label>部位颜色
+    return raceOk ? `<div class="field"><label>色彩 COLOR
 <span class="qmark" title="受「部位颜色」开关控制：模组设置里关掉总开关（或单独关掉这一格）后，这个部位会以黑白显示；开启时和现在完全一样。只对种族画布有效。">?</span>
     </label><div class="ctl">
       <button class="switch${p.desat ? ' is-on' : ''}" data-act="part-desat" role="switch"
@@ -5569,15 +5595,15 @@ function partInspector(p) {
 
   <div class="sec">
     <div class="sec__h"><b>变换 TRANSFORM</b></div>
-    <div class="field"><label>位置</label><div class="ctl num2">
+    <div class="field"><label>位置 POSITION</label><div class="ctl num2">
       <input class="inp" type="number" data-f="x" value="${round(p.x, 1)}" step="1" title="X">
       <input class="inp" type="number" data-f="y" value="${round(p.y, 1)}" step="1" title="Y">
     </div></div>
-    <div class="field"><label>缩放</label><div class="ctl num2">
+    <div class="field"><label>缩放 SCALE</label><div class="ctl num2">
       <input class="inp" type="number" data-f="sx" value="${round(p.sx, 2)}" step="0.05" title="横向缩放">
       <input class="inp" type="number" data-f="sy" value="${round(p.sy, 2)}" step="0.05" title="纵向缩放">
     </div></div>
-    <div class="field"><label>旋转</label><div class="ctl">
+    <div class="field"><label>旋转 ROTATE</label><div class="ctl">
       <input class="inp" type="number" data-f="rot" value="${round(p.rot || 0, 1)}" step="1" style="flex:1"${p.overHair ? ' disabled title="置顶重画不支持旋转"' : ''}>
       <span class="unit">°</span>
       <button class="iconbtn iconbtn--xs" data-act="flip" title="${p.overHair ? '置顶重画不支持水平翻转（补画会错位）' : '水平翻转'}"${p.overHair ? ' disabled style="opacity:.4"' : ''}>${icon('flip')}</button>
@@ -5587,21 +5613,28 @@ function partInspector(p) {
       <button class="btn btn--sm" data-act="reset-scale" title="缩放恢复成 100%（判定框按同比例回退）">${icon('rot')}重置缩放</button>
     </div>
     ${Math.abs(p.rot || 0) > 0.01 ? `<p class="mini-note" style="margin:-2px 0 6px;color:var(--warn)">模组的 DollBodyPart 没有旋转字段，角度不会导出；游戏里会按未旋转显示。<button class="linkbtn" data-act="bake-rot">把旋转烘焙进贴图</button></p>` : ''}
-    <div class="field"><label>命中框</label><div class="ctl num2">
-      <input class="inp" type="number" data-f="hx" value="${round(hb.dx, 1)}" step="1" title="命中框 X 偏移">
-      <input class="inp" type="number" data-f="hy" value="${round(hb.dy, 1)}" step="1" title="命中框 Y 偏移">
-    </div></div>
-    <div class="field"><label>图标位置</label><div class="ctl num2">
-      <input class="inp" type="number" data-f="nx" value="${round(p.nx || 0, 1)}" step="1" title="护甲 / 提示图标的 X 偏移">
-      <input class="inp" type="number" data-f="ny" value="${round(p.ny || 0, 1)}" step="1" title="护甲 / 提示图标的 Y 偏移">
-      <button class="iconbtn iconbtn--xs" data-act="icon-reset" title="图标回到部位中心">${icon('rot')}</button>
-    </div></div>
-    <div class="field"><label>框大小</label><div class="ctl num2">
-      <input class="inp" type="number" data-f="hw" value="${round(hb.w, 1)}" step="1" title="命中框宽度">
-      <input class="inp" type="number" data-f="hh" value="${round(hb.h, 1)}" step="1" title="命中框高度">
-      <button class="iconbtn iconbtn--xs" data-act="hit-reset" title="命中框复位（回到居中、按导出比例）">${icon('rot')}</button>
-    </div></div>
-    <p class="mini-note">打开工具栏的「命中框」后，选中的部位会出现四个角柄：<strong>只能拖角改大小</strong>。游戏里的判定框固定居中（Defs 只有 <code>hitboxScale</code>，没有偏移字段），所以这里也固定居中，所见即所得。</p>
+    <div class="sec">
+      <div class="sec__h"><b>命中框 HITBOX</b><span class="tagx">固定居中 · 只能改大小</span></div>
+      <div class="field"><label>判定框大小 HITBOX SIZE</label><div class="ctl num2">
+        <input class="inp" type="number" data-f="hw" value="${round(hb.w, 1)}" step="1" title="命中框宽度">
+        <input class="inp" type="number" data-f="hh" value="${round(hb.h, 1)}" step="1" title="命中框高度">
+        <button class="iconbtn iconbtn--xs" data-act="hit-reset" title="命中框复位（回到居中、按导出比例）">${icon('rot')}</button>
+      </div></div>
+      <p class="mini-note" style="margin:2px 0 0">打开工具栏的「命中框」后可拖角改大小；游戏 Defs 只有 <code>hitboxScale</code>，没有偏移字段，所以固定居中。</p>
+    </div>
+    <div class="sec">
+      <div class="sec__h"><b>护甲图标 ARMOR ICON</b><span class="tagx">护甲 / 提示图标</span></div>
+      <div class="field"><label>护甲图标</label><div class="ctl">
+        <button class="switch${p.armor !== false ? ' is-on' : ''}" data-act="part-armor" role="switch"
+          aria-checked="${p.armor !== false ? 'true' : 'false'}" title="是否在游戏里显示这个部位的护甲覆盖图标"><i></i></button>
+      </div></div>
+      <div class="field"><label>图标位置 ICON OFFSET</label><div class="ctl num2">
+        <input class="inp" type="number" data-f="nx" value="${round(p.nx || 0, 1)}" step="1" title="护甲 / 提示图标的 X 偏移">
+        <input class="inp" type="number" data-f="ny" value="${round(p.ny || 0, 1)}" step="1" title="护甲 / 提示图标的 Y 偏移">
+        <button class="iconbtn iconbtn--xs" data-act="icon-reset" title="图标回到部位中心">${icon('rot')}</button>
+      </div></div>
+      <p class="mini-note" style="margin:2px 0 0">图标位置相对于部位中心，用于护甲 / 提示图标。</p>
+    </div>
   </div>
 
   ${p.source === 'rjw' ? rjwPartSection(p) : ''}
@@ -5615,7 +5648,7 @@ function partInspector(p) {
       <button data-v="prosthetic" class="${p.state === 'prosthetic' ? 'on' : ''}">假体</button>
     </div>
     ${p.state === 'hurt' ? `
-      <div class="field" style="margin-top:8px"><label>伤情</label><div class="ctl">
+      <div class="field" style="margin-top:8px"><label>伤情 INJURY</label><div class="ctl">
         <input class="inp" type="range" min="1" max="100" data-f="sev" value="${p.sev}" style="height:20px;padding:0;border:0;background:none">
         <span class="unit" style="min-width:26px;text-align:right">${p.sev}%</span>
       </div></div>
@@ -5626,7 +5659,7 @@ function partInspector(p) {
         ${BANDAGE_LABELS.map(([v, n]) => `<button data-act="bandage" data-b="${v}" class="${(p.bandage || '') === v ? 'on' : ''}">${n}</button>`).join('')}
       </div>` : ''}
     ${p.state === 'prosthetic' ? `
-      <div class="field" style="margin-top:8px"><label>假体</label><div class="ctl">
+      <div class="field" style="margin-top:8px"><label>假体 PROSTHETIC</label><div class="ctl">
         <select class="inp" data-f="prosth">
           <option value="">— 选择假体贴图 —</option>
           ${prosthOpts.map(x => `<option value="${esc(x.img)}"${p.prosth && p.prosth.img === x.img ? ' selected' : ''}>${x.def ? esc(x.def) + ' · ' : ''}${esc(prettyAsset(x.img))}</option>`).join('')}
@@ -5660,7 +5693,7 @@ function rjwCounts(c) {
 function canvasInspector(c) {
   if (!c) return `<div class="empty">没有画布</div>`;
   const race = c.race;
-  const stack = sortParts(c.parts.filter(p => p.vis !== false)).reverse();
+  const stack = sortParts(c.parts.filter(p => p.vis !== false && !(c.rjw === false && p.source === 'rjw'))).reverse();
   const stackRows = stack.slice(0, 80).map(p => `<button class="stack__row${p.uid === S.sel ? ' is-on' : ''}" data-act="pick-part" data-uid="${p.uid}" title="选中这个部位">
       <span class="stack__n">${esc(p.name)}</span>
       <b>${p.layer}${p.extra ? ` <em>+${p.extra}</em>` : ''}</b>
@@ -9351,6 +9384,14 @@ function assetsCatFor(rec) {
   } catch (e) { return '本地素材'; }
 }
 
+function defaultArmorFor(p) {
+  if (!p) return true;
+  if (p.kind === 'organ' || p.kind === 'bone') return false;
+  const n = String(p.name || p.label || '');
+  if (/鼻子|下颚|脑|心|肺|肾|肝|胃|脊柱|肋骨|骨盆|nose|jaw|brain|heart|lung|kidney|liver|stomach|spine|ribcage|pelvis/i.test(n)) return false;
+  return true;
+}
+
 function customCatFor(c) {
   try {
     if (c && c.title) return String(cleanTitle(c.title)).replace(/[^\w\u4e00-\u9fa5-]+/g, '_');
@@ -9427,7 +9468,7 @@ function partXML(p, doll, indent, fit, idOverride) {  const tag = tagOf(p.kind);
   const bidOut = exportBid(activeCanvas(), p);
   if (bidOut >= 0) lines.push(`${i2}  <bodyPartId>${bidOut}</bodyPartId>`);
   lines.push(`${i2}  <notifyPosition><x>${nf(p.nx || 0)}</x><y>${nf(p.ny || 0)}</y></notifyPosition>`);
-  lines.push(`${i2}  <showArmorCover>${p.armor ? 'true' : 'false'}</showArmorCover>`);
+  lines.push(`${i2}  <showArmorCover>${p.armor === false ? 'false' : 'true'}</showArmorCover>`);
   // organs and bones are an x-ray layer in NHT: hidden until the toolbar buttons are used,
   // so they always export as visibleByDefault=false (matches the mod's own defs)
   const visibleByDefault = (p.kind === 'organ' || p.kind === 'bone') ? false : p.vis;
@@ -9536,6 +9577,39 @@ function modCategoryFor(key) {
     if (g) return g.replace(/[^\w\u4e00-\u9fa5-]+/g, '_');
   } catch (e) { }
   return '未分类';
+}
+
+async function cropSelectedPart() {
+  try {
+    const c = activeCanvas();
+    const p = c && (c.parts || []).concat(c.detached || []).find(x => x.uid === S.sel);
+    if (!p || !p.img) { toast('先选中一个有贴图的部位', true); return; }
+    const key = p.img;
+    const rec = await cropAssetKey(key);
+    if (!rec) { toast('裁剪失败：读不到这张图', true); return; }
+    // 分类跟随画布：有种族用种族 defName（和 Custom 现有分类一致），没有则用画布标题
+    const raceDef = c && c.race && c.race.defName;
+    const cat = raceDef ? String(raceDef).replace(/[^\w\u4e00-\u9fa5-]+/g, '_') : customCat();
+    const newKey = 'Custom/' + cat + '/' + cropTargetName(key);
+    const good = await apiSave('to=texture&key=' + encodeURIComponent(newKey), rec.data);
+    if (!good) { toast('裁剪失败：写入贴图失败', true); return; }
+    try {
+      const idx = artLoadIndex();
+      idx[newKey] = { d: rec.data, w: rec.w, h: rec.h };
+      artSaveIndex();
+      EXT.set(newKey, { url: rec.data, w: rec.w, h: rec.h });
+    } catch (e) { }
+    if (!S.customAssets) S.customAssets = [];
+    S.customAssets.push({ p: newKey, n: newKey.split('/').pop(), w: rec.w, h: rec.h, cat });
+    TEX_ON_DISK.add(newKey);
+    // 用回未裁剪的旧图时，别让缓存把新图当成“已裁剪”
+    CROP_CACHE.delete(key);
+    p.img = newKey;
+    persist();
+    renderAll();
+    renderLibrary();
+    toast('已裁剪并换用新贴图：我的素材 - ' + cat);
+  } catch (e) { toast('裁剪失败：' + (e && e.message), true); }
 }
 
 async function mineMoveAsset(key, cat, createCat) {
@@ -10517,7 +10591,7 @@ function addPart(opts) {
     sy: opts.sy == null ? 1 : opts.sy,
     flip: !!opts.flip, rot: opts.rot || 0,
     layer: opts.layer == null ? 30 : opts.layer, extra: 0,
-    hb: [0.9, 0.9], armor: false, vis: true, locked: false,
+    hb: [0.9, 0.9], armor: true, vis: true, locked: false,
     state: 'ok', sev: 0, wound: 'cut', prosth: null,
     atlas: null, uv: null, custom: true, source: opts.source || 'library'
   };
@@ -12371,7 +12445,7 @@ function addPartTo(c, opts) {
     nameEn: opts.name || prettyAsset(opts.img),
     kind: opts.kind || 'custom', bid: opts.bid == null ? -1 : opts.bid, img: opts.img,
     x: opts.x, y: opts.y, sx: opts.sx, sy: opts.sy, flip: !!opts.flip, rot: 0,
-    layer: opts.layer, extra: 0, hb: [0.9, 0.9], armor: false, vis: true, locked: false,
+    layer: opts.layer, extra: 0, hb: [0.9, 0.9], armor: true, vis: true, locked: false,
     state: 'ok', sev: 0, wound: 'cut', prosth: null, overHair: false, atlas: null, uv: null,
     custom: opts.custom == null ? true : !!opts.custom, source: opts.source || 'race'
   };
@@ -12528,7 +12602,7 @@ function modalHelp() {
           <p class="help-p"><b>导入种族</b>选种族模组的根文件夹后直接建画布：画布名用种族自己的名字，默认体型是<b>标准女性</b>，这个体型没有的部位会按种族 BodyDef 里的名称自动新建到「外形」栏。</p>
           <p class="help-p"><b>RJW 开关</b>在画布工具栏右端（也可在画布属性里）。打开后会按 Nice Health Tab - RJW Genitalia 的 Defs 自动补上该体型的 12 个 RJW 标记；关闭则从补丁里移除这些标记。成人向内容，需要 RimJobWorld。</p>
           <p class="help-p"><b>X 光视图</b>：点工具栏的「器官」或「骨骼」后，皮肤会变成深色剪影，只留白色的器官 / 骨骼浮在上面；再点一次回到正常外观。</p>
-          <p class="help-p"><b>命中框</b>：点工具栏「命中框」把判定框显示出来，选中的部位会出现四个角柄和中间圆点 —— 拖角柄改大小（跟着部位一起旋转），拖圆点整块移动；属性面板里也能精确输 X / Y / 宽 / 高，或一键复位。导出的补丁只写 <code>hitboxScale</code>（宽高比例），偏移量写不进 Defs。</p>
+          <p class="help-p"><b>命中框</b>：点工具栏「命中框」把判定框显示出来，选中的部位会出现四个角柄和中间圆点 —— 拖角柄改大小（跟着部位一起旋转），拖圆点整块移动；属性面板里也能精确输 宽 / 高，或一键复位（判定框固定居中，没有偏移字段）。导出的补丁只写 <code>hitboxScale</code>（宽高比例），偏移量写不进 Defs。</p>
           <p class="help-p"><b>加新部位 / 换贴图</b>：左栏「部位结构」每个分类右边有 <b>＋</b>，点它先给部位起名字，就会建在<b>点的那一栏</b>里（没有单独的「自定义」栏了）；选中这个部位后，在「素材」页点任意贴图，或者把贴图直接拖到部位结构里的那一行，就把贴图装进该部位。拖动画布里的部位行可以排序，拖到别的栏就换栏。素材页顶部的 <b>＋ 添加素材</b> 可以把自己电脑里的 PNG / WebP 加进素材库（存在 <b>我的素材</b> 分类里，卡片右上角的 <b>×</b> 连点两次即可删除）。</p>
           <p class="help-p"><b>从种族模组收素材</b>：导入种族时会把这个模组里的贴图一起收进来，按模组名单独归一组（素材页里的「模组 · 名字」，也在 <b>种族素材</b> 分类里）；素材页的分组都可以点标题折叠，默认全部收起。模组里的<b>发型</b>不进素材栏，单独出现在「**发型 HAIR**」里：点一个就换上去，同一时刻只留一个，自动贴在头部并锁住，不能拖动 —— 和游戏里发型跟着头走的行为一致。</p>
           <p class="help-p"><b>固定小窗</b>：右侧一列小窗（肛门 / RJW 下体 / 手掌·手指 / 脚掌·脚趾）默认停靠在画布右侧并已锁定，缩放画布时它们不会跟着变大；手掌窗里是左右两只手，脚掌窗里是左右两只脚，每个指头、脚趾、掌底都是独立部件。点标题栏右侧的锁解锁后，拖标题栏即可移动、拖右下角可等比缩放；窗内部位可以单独拖动，右侧属性面板还能精确调位置 / 宽度 / 旋转。肛门窗和下体窗的底图和摆位来自 RJW 模组自己的面板数据；下体窗按画布「性别」显示：男＝性腺+生殖器、女＝子宫+卵巢+阴道、无性别＝只显示底图。</p>
@@ -13450,6 +13524,16 @@ document.addEventListener('click', e => {
       toast(S.settings.autoCrop ? '自动裁剪：开（点素材会裁剪并缓存）' : '自动裁剪：关');
       break;
     }
+    case 'part-armor': {
+      const c = activeCanvas();
+      const p = c && (c.parts || []).concat(c.detached || []).find(x => x.uid === S.sel);
+      if (p) { p.armor = !(p.armor !== false); persist(); renderAll(); renderInspector(); renderLibrary(); }
+      break;
+    }
+    case 'part-crop': {
+      cropSelectedPart();
+      break;
+    }
     case 'crop-inplace': {
       const k = el.dataset.key;
       if (k) saveCroppedAsset(k, 'inplace');
@@ -14331,6 +14415,20 @@ if (libPane) {
     assetMenu(tile.dataset.p, e.clientX, e.clientY);
   });
 }
+document.addEventListener('contextmenu', e => {
+  const g = e.target.closest && e.target.closest('#overlay .ico');
+  if (!g) return;
+  e.preventDefault();
+  const c = activeCanvas();
+  const p = c && (c.parts || []).find(x => x.uid === g.dataset.ico);
+  if (!p) return;
+  p.armor = !(p.armor !== false);
+  persist();
+  renderAll();
+  renderInspector();
+  renderLibrary();
+  toast(p.name + '：护甲图标 ' + (p.armor !== false ? '开' : '关'));
+});
 document.addEventListener('click', e => {
   if (e.target.closest('#assetMenu')) return;
   closeAssetMenu();
