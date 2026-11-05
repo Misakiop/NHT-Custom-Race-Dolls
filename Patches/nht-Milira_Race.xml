@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   NHT_CustomDolls
-  由 NHT Anatomy Editor 生成 · 2026-11-05 03:05
+  由 NHT Anatomy Editor 生成 · 2026-11-05 15:05
   基准模组：Nice Health Tab (Andromeda.NiceHealthTab) v1.6 · 创意工坊 3328729902
   RJW 层：Nice Health Tab - RJW Genitalia (zoc2k.nicehealthtab.rjwgenitalia) · 相关操作带 MayRequire rim.job.world
   画布：1 个 · 部位：32 个 · 补丁操作：8 段
@@ -9,7 +9,7 @@
   备注：以 Nice Health Tab 模组 1.6 默认体型为基准制作的部位补丁。
 -->
 <Patch>
-  <!-- Milira race · HAR 头发参数（种族 Milira_Race） -->
+  <!-- Milira · HAR 头发参数（种族 Milira_Race） -->
   <Operation Class="PatchOperationAdd">
     <success>Always</success>
     <xpath>Defs</xpath>
@@ -33,14 +33,14 @@
       </NHT_CustomDolls.HairFitDef>
     </value>
   </Operation>
-  <!-- Milira race · 部位颜色开关：关闭后这些部位显示为黑白 -->
+  <!-- Milira · 部位颜色开关：关闭后这些部位显示为黑白 -->
   <Operation Class="PatchOperationAdd">
     <success>Always</success>
     <xpath>Defs</xpath>
     <value>
       <NHT_CustomDolls.DesatPartsDef>
         <defName>NHTCD_Desat_Milira_Race</defName>
-        <label>Milira race</label>
+        <label>Milira</label>
         <race>Milira_Race</race>
         <doll>Milira_Race</doll>
         <parts>
@@ -53,7 +53,7 @@
       </NHT_CustomDolls.DesatPartsDef>
     </value>
   </Operation>
-  <!-- Milira race · 画在头发之上的部位（NHTCD_HairFit_Milira_Race） -->
+  <!-- Milira · 画在头发之上的部位（NHTCD_HairFit_Milira_Race） -->
   <Operation Class="PatchOperationReplace">
     <success>Always</success>
     <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_Milira_Race"]/aboveParts</xpath>
@@ -138,7 +138,7 @@
     <success>Always</success>
     <xpath>Defs</xpath>
     <value>
-      <!-- Milira race · 新建 HumanlikeDoll Milira_Race -->
+      <!-- Milira · 新建 HumanlikeDoll Milira_Race -->
       <NiceHealthTab.HumanlikeDoll>
         <defName>Milira_Race</defName>
         <gender>Female</gender>
@@ -158,7 +158,7 @@
       <!-- 自定义部位 · 左翼 -->
       <NiceHealthTab.DollBodyPart>
         <defName>Milira_Race_u5de6u7ffc</defName>
-        <imagePath>Custom/LeftWingFront2_south</imagePath>
+        <imagePath>Custom/Milira_Race/LeftWingFront2_south</imagePath>
         <position>
           <x>147.91</x>
           <y>44.79</y>
@@ -178,7 +178,7 @@
       <!-- 自定义部位 · 左翼（灰） -->
       <NiceHealthTab.DollBodyPart>
         <defName>Milira_Race_u5de6u7ffc_NHTCD_Gray</defName>
-        <imagePath>Custom/NHTCD_Gray/Milira_Race_Milira_Race_u5de6u7ffc</imagePath>
+        <imagePath>Custom/NHTCD_Gray/Milira/Milira_Race_Milira_Race_u5de6u7ffc</imagePath>
         <position>
           <x>147.91</x>
           <y>44.79</y>
@@ -197,7 +197,7 @@
       <!-- 自定义部位 · 右翼 -->
       <NiceHealthTab.DollBodyPart>
         <defName>Milira_Race_u53f3u7ffc</defName>
-        <imagePath>Custom/RightWingFront2_south</imagePath>
+        <imagePath>Custom/Milira_Race/RightWingFront2_south</imagePath>
         <position>
           <x>-147.91</x>
           <y>44.79</y>
@@ -217,7 +217,7 @@
       <!-- 自定义部位 · 右翼（灰） -->
       <NiceHealthTab.DollBodyPart>
         <defName>Milira_Race_u53f3u7ffc_NHTCD_Gray</defName>
-        <imagePath>Custom/NHTCD_Gray/Milira_Race_Milira_Race_u53f3u7ffc</imagePath>
+        <imagePath>Custom/NHTCD_Gray/Milira/Milira_Race_Milira_Race_u53f3u7ffc</imagePath>
         <position>
           <x>-147.91</x>
           <y>44.79</y>
@@ -369,7 +369,7 @@
       <!-- 自定义部位 · 左耳 -->
       <NiceHealthTab.DollBodyPart>
         <defName>Milira_Race_u5de6u8033</defName>
-        <imagePath>Custom/elf_ear_left3</imagePath>
+        <imagePath>Custom/Milira_Race/elf_ear_left3</imagePath>
         <position>
           <x>65.1</x>
           <y>-325.84</y>
@@ -389,7 +389,7 @@
       <!-- 自定义部位 · 左耳（灰） -->
       <NiceHealthTab.DollBodyPart>
         <defName>Milira_Race_u5de6u8033_NHTCD_Gray</defName>
-        <imagePath>Custom/NHTCD_Gray/Milira_Race_Milira_Race_u5de6u8033</imagePath>
+        <imagePath>Custom/NHTCD_Gray/Milira/Milira_Race_Milira_Race_u5de6u8033</imagePath>
         <position>
           <x>65.1</x>
           <y>-325.84</y>
@@ -408,7 +408,7 @@
       <!-- 自定义部位 · 右耳 -->
       <NiceHealthTab.DollBodyPart>
         <defName>Milira_Race_u53f3u8033</defName>
-        <imagePath>Custom/elf_ear_right2</imagePath>
+        <imagePath>Custom/Milira_Race/elf_ear_right2</imagePath>
         <position>
           <x>-69.08</x>
           <y>-325.34</y>
@@ -428,7 +428,7 @@
       <!-- 自定义部位 · 右耳（灰） -->
       <NiceHealthTab.DollBodyPart>
         <defName>Milira_Race_u53f3u8033_NHTCD_Gray</defName>
-        <imagePath>Custom/NHTCD_Gray/Milira_Race_Milira_Race_u53f3u8033</imagePath>
+        <imagePath>Custom/NHTCD_Gray/Milira/Milira_Race_Milira_Race_u53f3u8033</imagePath>
         <position>
           <x>-69.08</x>
           <y>-325.34</y>
@@ -699,7 +699,7 @@
       <!-- 自定义部位 · 光环（灰） -->
       <NiceHealthTab.DollBodyPart>
         <defName>Milira_Race_u5149u73af_NHTCD_Gray</defName>
-        <imagePath>Custom/NHTCD_Gray/Milira_Race_Milira_Race_u5149u73af</imagePath>
+        <imagePath>Custom/NHTCD_Gray/Milira/Milira_Race_Milira_Race_u5149u73af</imagePath>
         <position>
           <x>45.77</x>
           <y>-393.75</y>

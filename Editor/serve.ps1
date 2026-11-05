@@ -239,6 +239,130 @@ while ($true) {
             }
             if ($yes) { Send-Text $stream '200 OK' 'yes' } else { Send-Text $stream '200 OK' 'no' }
         }
+        elseif ($pathPart -eq '/__customdirs' -and ($method -eq 'GET' -or $method -eq 'HEAD')) {
+            $croot = Join-Path (Join-Path $ModRoot 'Textures') 'Custom'
+            $dirs = @()
+            try {
+                if (Test-Path -LiteralPath $croot) {
+                    $dirs = @(Get-ChildItem -LiteralPath $croot -Directory -ErrorAction SilentlyContinue | Where-Object { $_.Name -notin @('NHTCD_Gray', 'Icons', 'Rot') } | Sort-Object Name | Select-Object -ExpandProperty Name)
+                }
+            } catch { }
+            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $true; dirs = $dirs })
+        }
+        elseif ($pathPart -eq '/__customrename' -and ($method -eq 'GET' -or $method -eq 'POST')) {
+            $oldN = "$($query['old'])".Trim()
+            $newN = "$($query['new'])".Trim()
+            $ok = $false; $msg = ''
+            if (-not $oldN -or -not $newN -or $oldN -match '\.\.' -or $newN -match '\.\.' -or $oldN -match '[\\/]' -or $newN -match '[\\/]') { $msg = 'bad name' }
+            else {
+                try {
+                    $croot = Join-Path (Join-Path $ModRoot 'Textures') 'Custom'
+                    $src = Join-Path $croot $oldN
+                    $dst = Join-Path $croot $newN
+                    if (-not (Test-Path -LiteralPath $src)) { $msg = 'source missing' }
+                    elseif (Test-Path -LiteralPath $dst) { $msg = 'target exists' }
+                    else {
+                        Move-Item -LiteralPath $src -Destination $dst -Force
+                        # 同步改写引用：画布 / 索引 / 补丁
+                        $files = @()
+                        $cvRoot = Join-Path $ModRoot 'Editor\canvases'
+                        if (Test-Path -LiteralPath $cvRoot) { $files += @(Get-ChildItem -LiteralPath $cvRoot -Recurse -File -Include *.json -ErrorAction SilentlyContinue) }
+                        $ptRoot = Join-Path $ModRoot 'Patches'
+                        if (Test-Path -LiteralPath $ptRoot) { $files += @(Get-ChildItem -LiteralPath $ptRoot -File -Include *.xml -ErrorAction SilentlyContinue) }
+                        foreach ($f in $files) {
+                            try {
+                                $t = [System.IO.File]::ReadAllText($f.FullName, [System.Text.Encoding]::UTF8)
+                                $t2 = $t.Replace('Custom/' + $oldN + '/', 'Custom/' + $newN + '/')
+                                $t2 = $t2.Replace('Custom/NHTCD_Gray/' + $oldN + '/', 'Custom/NHTCD_Gray/' + $newN + '/')
+                                if ($t2 -ne $t) { [System.IO.File]::WriteAllText($f.FullName, $t2, (New-Object System.Text.UTF8Encoding($false))) }
+                            } catch { }
+                        }
+                        $ok = $true
+                    }
+                } catch { $msg = $_.Exception.Message }
+            }
+            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $ok; error = $msg })
+        }
+        elseif ($pathPart -eq '/__customdelete' -and ($method -eq 'GET' -or $method -eq 'POST')) {
+            $name = "$($query['name'])".Trim()
+            $ok = $false; $msg = ''
+            if (-not $name -or $name -match '\.\.' -or $name -match '[\\/]') { $msg = 'bad name' }
+            else {
+                try {
+                    $croot = Join-Path (Join-Path $ModRoot 'Textures') 'Custom'
+                    $dir = Join-Path $croot $name
+                    if (-not (Test-Path -LiteralPath $dir)) { $msg = 'missing' }
+                    else { Remove-Item -LiteralPath $dir -Recurse -Force; $ok = $true }
+                } catch { $msg = $_.Exception.Message }
+            }
+            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $ok; error = $msg })
+        }
+        elseif ($pathPart -eq '/__custommkdir' -and ($method -eq 'GET' -or $method -eq 'POST')) {
+            $name = "$($query['name'])".Trim()
+            $ok = $false; $msg = ''
+            if (-not $name -or $name -match '\.\.' -or $name -match '[\\/]') { $msg = 'bad name' }
+            else {
+                try {
+                    foreach ($sub in @('Custom', 'Custom\NHTCD_Gray')) {
+                        $d = Join-Path (Join-Path $ModRoot 'Textures') $sub
+                        $d = Join-Path $d $name
+                        if (-not (Test-Path -LiteralPath $d)) { New-Item -ItemType Directory -Path $d -Force | Out-Null }
+                    }
+                    $ok = $true
+                } catch { $msg = $_.Exception.Message }
+            }
+            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $ok; error = $msg })
+        }
+        elseif ($pathPart -eq '/__customdelfile' -and ($method -eq 'GET' -or $method -eq 'POST')) {
+            $key = "$($query['key'])".Trim()
+            $ok = $false; $msg = ''
+            if (-not $key -or $key -notmatch '^Custom/' -or $key -match '\.\.') { $msg = 'bad key' }
+            else {
+                try {
+                    $rel = ($key -replace '/', '\') + '.png'
+                    $fp = Join-Path (Join-Path $ModRoot 'Textures') $rel
+                    if (Test-Path -LiteralPath $fp) { Remove-Item -LiteralPath $fp -Force; $ok = $true }
+                    else { $msg = 'missing' }
+                } catch { $msg = $_.Exception.Message }
+            }
+            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $ok; error = $msg })
+        }
+        elseif ($pathPart -eq '/__custommove' -and ($method -eq 'GET' -or $method -eq 'POST')) {
+            $key = "$($query['key'])".Trim()
+            $cat = "$($query['cat'])".Trim()
+            $newKey = ''; $ok = $false; $msg = ''
+            if (-not $key -or $key -notmatch '^Custom/' -or $key -match '\.\.' -or -not $cat -or $cat -match '\.\.' -or $cat -match '[\\/]') { $msg = 'bad args' }
+            else {
+                try {
+                    $croot = Join-Path (Join-Path $ModRoot 'Textures') 'Custom'
+                    $src = Join-Path (Join-Path $ModRoot 'Textures') (($key -replace '/', '\') + '.png')
+                    $name = [System.IO.Path]::GetFileName($src)
+                    $dstDir = Join-Path $croot $cat
+                    if (-not (Test-Path -LiteralPath $dstDir)) { New-Item -ItemType Directory -Path $dstDir -Force | Out-Null }
+                    $dst = Join-Path $dstDir $name
+                    if (-not (Test-Path -LiteralPath $src)) { $msg = 'source missing' }
+                    else {
+                        Move-Item -LiteralPath $src -Destination $dst -Force
+                        $newKey = 'Custom/' + $cat + '/' + $name.Substring(0, $name.Length - 4)
+                        # 改写引用
+                        $files = @()
+                        $cvRoot = Join-Path $ModRoot 'Editor\canvases'
+                        if (Test-Path -LiteralPath $cvRoot) { $files += @(Get-ChildItem -LiteralPath $cvRoot -Recurse -File -Include *.json -ErrorAction SilentlyContinue) }
+                        $ptRoot = Join-Path $ModRoot 'Patches'
+                        if (Test-Path -LiteralPath $ptRoot) { $files += @(Get-ChildItem -LiteralPath $ptRoot -File -Include *.xml -ErrorAction SilentlyContinue) }
+                        foreach ($f in $files) {
+                            try {
+                                $t = [System.IO.File]::ReadAllText($f.FullName, [System.Text.Encoding]::UTF8)
+                                $t2 = $t.Replace($key, $newKey).Replace(($key + '.png'), ($newKey + '.png'))
+                                if ($t2 -ne $t) { [System.IO.File]::WriteAllText($f.FullName, $t2, (New-Object System.Text.UTF8Encoding($false))) }
+                            } catch { }
+                        }
+                        $ok = $true
+                    }
+                } catch { $msg = $_.Exception.Message }
+            }
+            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $ok; key = $newKey; error = $msg })
+        }
         elseif ($pathPart -eq '/__texindex' -and ($method -eq 'GET' -or $method -eq 'HEAD')) {
             $list = @()
             $texRoot = Join-Path $ModRoot 'Textures'
