@@ -920,18 +920,6 @@ while ($true) {
                     if ($dp) { $dirty += $dp }
                 }
 
-                # 未提交的改动（供客户端排除默认锁定后计数）
-                $dirtyR = Invoke-Git $git @('-C', $dir, '-c', 'core.quotepath=false', 'status', '--porcelain=v1', '-uall')
-                $dirty = @()
-                foreach ($dl in ($dirtyR.text -split "`n")) {
-                    $dl = $dl.TrimEnd("`r")
-                    if (-not $dl.Trim() -or $dl.Length -lt 4) { continue }
-                    $dp = $dl.Substring(2).Trim()
-                    if ($dp -match ' -> ') { $dp = ($dp -split ' -> ')[-1] }
-                    $dp = $dp.Trim('"')
-                    if ($dp) { $dirty += $dp }
-                }
-
                 $sep = [string][char]31
                 $fmt = '--pretty=format:%h' + $sep + '%ad' + $sep + '%s' + $sep + '%an'
                 $dateFmt = '--date=format:%Y-%m-%d %H:%M'
