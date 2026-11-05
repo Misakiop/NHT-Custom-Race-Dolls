@@ -1,7 +1,7 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   NHT_CustomDolls
-  由 NHT Anatomy Editor 生成 · 2026-11-05 15:05
+  由 NHT Anatomy Editor 生成 · 2026-11-05 20:25
   基准模组：Nice Health Tab (Andromeda.NiceHealthTab) v1.6 · 创意工坊 3328729902
   RJW 层：Nice Health Tab - RJW Genitalia (zoc2k.nicehealthtab.rjwgenitalia) · 相关操作带 MayRequire rim.job.world
   画布：1 个 · 部位：30 个 · 补丁操作：11 段
@@ -197,21 +197,21 @@
       <!-- 自定义部位 · 尾巴 -->
       <NiceHealthTab.DollBodyPart>
         <defName>Wolfein_Race_u5c3eu5df4</defName>
-        <imagePath>Custom/Wolfein_Race/tail_north</imagePath>
+        <imagePath>Custom/Wolfein/Crop_tail_north_mw3ea5y8</imagePath>
         <position>
-          <x>-115.4</x>
-          <y>99.2</y>
+          <x>85.5</x>
+          <y>89.5</y>
         </position>
         <layer>0</layer>
         <dollName>Wolfein_Race</dollName>
         <bodyPartId>64</bodyPartId>
-        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <notifyPosition><x>34</x><y>67</y></notifyPosition>
         <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
-        <width>1.65</width>
-        <height>1.65</height>
-        <hitboxScale><x>0.9</x><y>1.25</y></hitboxScale>
+        <width>1.85</width>
+        <height>1.85</height>
+        <hitboxScale><x>1.42</x><y>1.41</y></hitboxScale>
       </NiceHealthTab.DollBodyPart>
 
       <!-- 自定义部位 · 尾巴（灰） -->
@@ -219,19 +219,19 @@
         <defName>Wolfein_Race_u5c3eu5df4_NHTCD_Gray</defName>
         <imagePath>Custom/NHTCD_Gray/Wolfein/Wolfein_Race_Wolfein_Race_u5c3eu5df4</imagePath>
         <position>
-          <x>-115.4</x>
-          <y>99.2</y>
+          <x>85.5</x>
+          <y>89.5</y>
         </position>
         <layer>0</layer>
         <dollName>Wolfein_Race</dollName>
         <bodyPartId>64</bodyPartId>
-        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <notifyPosition><x>34</x><y>67</y></notifyPosition>
         <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
-        <width>1.65</width>
-        <height>1.65</height>
-        <hitboxScale><x>0.9</x><y>1.25</y></hitboxScale>
+        <width>1.85</width>
+        <height>1.85</height>
+        <hitboxScale><x>1.42</x><y>1.41</y></hitboxScale>
       </NiceHealthTab.DollBodyPart>
       <!-- 躯干 -->
       <NiceHealthTab.DollBodyPart>
@@ -492,7 +492,7 @@
         <dollName>Wolfein_Race</dollName>
         <bodyPartId>3</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>1</width>
@@ -512,7 +512,7 @@
         <dollName>Wolfein_Race</dollName>
         <bodyPartId>4</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.7</width>
@@ -532,7 +532,7 @@
         <dollName>Wolfein_Race</dollName>
         <bodyPartId>20</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>1</width>
@@ -581,7 +581,7 @@
       <!-- 左耳 -->
       <NiceHealthTab.DollBodyPart>
         <defName>Wolfein_Race_u5de6u8033</defName>
-        <imagePath>Custom/Wolfein_Race/earL2_south</imagePath>
+        <imagePath>Custom/Wolfein/earL2_south</imagePath>
         <position>
           <x>35</x>
           <y>-405</y>
@@ -620,7 +620,7 @@
       <!-- 右耳 -->
       <NiceHealthTab.DollBodyPart>
         <defName>Wolfein_Race_u53f3u8033</defName>
-        <imagePath>Custom/Wolfein_Race/earR2_south</imagePath>
+        <imagePath>Custom/Wolfein/earR2_south</imagePath>
         <position>
           <x>-35</x>
           <y>-405</y>
@@ -668,7 +668,7 @@
         <dollName>Wolfein_Race</dollName>
         <bodyPartId>15</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>1</width>
@@ -688,7 +688,7 @@
         <dollName>Wolfein_Race</dollName>
         <bodyPartId>6</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.85</width>
@@ -708,7 +708,7 @@
         <dollName>Wolfein_Race</dollName>
         <bodyPartId>10</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>-0.85</width>
@@ -728,7 +728,7 @@
         <dollName>Wolfein_Race</dollName>
         <bodyPartId>9</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.85</width>
@@ -748,7 +748,7 @@
         <dollName>Wolfein_Race</dollName>
         <bodyPartId>11</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.85</width>
@@ -768,7 +768,7 @@
         <dollName>Wolfein_Race</dollName>
         <bodyPartId>8</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>-0.85</width>
@@ -788,7 +788,7 @@
         <dollName>Wolfein_Race</dollName>
         <bodyPartId>7</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.85</width>
@@ -808,7 +808,7 @@
         <dollName>Wolfein_Race</dollName>
         <bodyPartId>5</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.85</width>
@@ -828,7 +828,7 @@
         <dollName>Wolfein_Race</dollName>
         <bodyPartId>1</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.9</width>

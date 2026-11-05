@@ -138,6 +138,184 @@ function Send-Text($stream, [string]$status, [string]$text) {
     Send-Bytes $stream $status 'text/plain; charset=utf-8' ([System.Text.Encoding]::UTF8.GetBytes($text))
 }
 
+
+# ---------------- Custom 清理 / 备份 / 还原 ----------------
+function Get-CustomRefs {
+    $refs = New-Object 'System.Collections.Generic.HashSet[string]'
+    $cvRoot = Join-Path $ModRoot 'Editor\canvases'
+    if (Test-Path -LiteralPath $cvRoot) {
+        Get-ChildItem -LiteralPath $cvRoot -Recurse -File -Filter '*.json' -ErrorAction SilentlyContinue | ForEach-Object {
+            try {
+                if ($_.Name -ieq 'index.json') { return }
+                $t = [System.IO.File]::ReadAllText($_.FullName, [System.Text.Encoding]::UTF8)
+                if ($t.IndexOf('"parts"') -lt 0) { return }
+                foreach ($m in [regex]::Matches($t, 'Custom/[^"\\\s]+')) { [void]$refs.Add($m.Value) }
+            } catch { }
+        }
+    }
+    $ptRoot = Join-Path $ModRoot 'Patches'
+    if (Test-Path -LiteralPath $ptRoot) {
+        Get-ChildItem -LiteralPath $ptRoot -File -Filter '*.xml' -ErrorAction SilentlyContinue | ForEach-Object {
+            try {
+                $t = [System.IO.File]::ReadAllText($_.FullName, [System.Text.Encoding]::UTF8)
+                foreach ($m in [regex]::Matches($t, '<imagePath>(Custom/[^<]+)</imagePath>')) { [void]$refs.Add($m.Groups[1].Value) }
+            } catch { }
+        }
+    }
+    return $refs
+}
+
+function Get-CleanupCandidates([bool]$includeGray, [bool]$keepUncat) {
+    $refs = Get-CustomRefs
+    $croot = Join-Path (Join-Path $ModRoot 'Textures') 'Custom'
+    $out = @()
+    if (-not (Test-Path -LiteralPath $croot)) { return $out }
+    Get-ChildItem -LiteralPath $croot -Recurse -File -Filter '*.png' -ErrorAction SilentlyContinue | ForEach-Object {
+        $rel = $_.FullName.Substring($croot.Length + 1) -replace '\\', '/'
+        $key = 'Custom/' + ($rel -replace '\.png$', '')
+        if ($key -match '^Custom/Icons/') { return }   # UI 图标固定保留
+        if ($key -match '^Custom/Rot/' -and $refs.Contains($key)) { return }
+        if (-not $includeGray -and $key -match '^Custom/NHTCD_Gray/') { return }
+        if ($keepUncat -and $key -match '^Custom/未分类/') { return }
+        if ($refs.Contains($key)) { return }
+        $out += [pscustomobject]@{ key = $key; rel = $rel; size = $_.Length }
+    }
+    return $out
+}
+
+function Backup-CleanupFiles($files, [string]$mode) {
+    $hist = Join-Path $ModRoot 'Editor\history'
+    if (-not (Test-Path -LiteralPath $hist)) { New-Item -ItemType Directory -Path $hist -Force | Out-Null }
+    $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
+    $dir = Join-Path $hist ('cleanup-' + $stamp)
+    $filesDir = Join-Path $dir 'files'
+    New-Item -ItemType Directory -Path $filesDir -Force | Out-Null
+    $croot = Join-Path (Join-Path $ModRoot 'Textures') 'Custom'
+
+    # 完整快照（每次备份独立、数据完整）
+    $snapshot = @()
+    if (Test-Path -LiteralPath $croot) {
+        Get-ChildItem -LiteralPath $croot -Recurse -File -Filter '*.png' -ErrorAction SilentlyContinue | ForEach-Object {
+            $rel = $_.FullName.Substring($croot.Length + 1) -replace '\\', '/'
+            $snapshot += [pscustomobject]@{
+                path = 'Custom/' + ($rel -replace '\.png$', '')
+                size = $_.Length
+                sha256 = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash
+                mtime = $_.LastWriteTimeUtc.ToString('o')
+            }
+        }
+    }
+
+    if ($mode -eq 'full') {
+        Copy-Item -LiteralPath (Join-Path $croot '*') -Destination (Join-Path $filesDir 'Custom') -Recurse -Force -ErrorAction SilentlyContinue
+    }
+    foreach ($f in $files) {
+        $src = Join-Path (Join-Path $ModRoot 'Textures') (('Custom/' + $f.rel) -replace '/', '\')
+        if (-not (Test-Path -LiteralPath $src)) { continue }
+        $dst = Join-Path $filesDir (('Custom/' + $f.rel) -replace '/', '\')
+        $dstDir = Split-Path -Parent $dst
+        if (-not (Test-Path -LiteralPath $dstDir)) { New-Item -ItemType Directory -Path $dstDir -Force | Out-Null }
+        Copy-Item -LiteralPath $src -Destination $dst -Force
+    }
+    # 同时备份 index.json，方便回滚索引
+    $idxSrc = Join-Path (Join-Path $ModRoot 'Editor\canvases') 'index.json'
+    if (Test-Path -LiteralPath $idxSrc) { Copy-Item -LiteralPath $idxSrc -Destination (Join-Path $dir 'index.json') -Force }
+
+    $manifest = [pscustomobject]@{ time = (Get-Date).ToString('o'); mode = $mode; files = $snapshot }
+    [System.IO.File]::WriteAllText((Join-Path $dir 'manifest.json'), ($manifest | ConvertTo-Json -Depth 6), (New-Object System.Text.UTF8Encoding($false)))
+    $all = @(Get-ChildItem -LiteralPath $hist -Directory -Filter 'cleanup-*' -ErrorAction SilentlyContinue | Sort-Object Name)
+    while ($all.Count -gt 3) {
+        Remove-Item -LiteralPath $all[0].FullName -Recurse -Force -ErrorAction SilentlyContinue
+        $all = @($all | Select-Object -Skip 1)
+    }
+    return (Split-Path -Leaf $dir)
+}
+
+function Get-CleanupBackups {
+    $hist = Join-Path $ModRoot 'Editor\history'
+    $out = @()
+    if (Test-Path -LiteralPath $hist) {
+        Get-ChildItem -LiteralPath $hist -Directory -Filter 'cleanup-*' -ErrorAction SilentlyContinue | Sort-Object Name -Descending | ForEach-Object {
+            $mf = Join-Path $_.FullName 'manifest.json'
+            $count = 0; $bytes = 0; $mode = '?'; $time = $_.Name
+            if (Test-Path -LiteralPath $mf) {
+                try {
+                    $m = [System.IO.File]::ReadAllText($mf, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
+                    $count = @($m.files).Count; $mode = $m.mode; $time = $m.time
+                    foreach ($f in @($m.files)) { $bytes += [int64]$f.size }
+                } catch { }
+            }
+            $out += [pscustomobject]@{ name = $_.Name; time = $time; mode = $mode; count = $count; bytes = $bytes }
+        }
+    }
+    return $out
+}
+
+function Restore-CleanupBackup([string]$name) {
+    if ($name -notmatch '^cleanup-[0-9]{8}-[0-9]{6}$') { return -1 }
+    $dir = Join-Path (Join-Path $ModRoot 'Editor\history') $name
+    $filesDir = Join-Path $dir 'files'
+    if (-not (Test-Path -LiteralPath $filesDir)) { return -1 }
+    $texRoot = Join-Path $ModRoot 'Textures'
+    $n = 0
+    Get-ChildItem -LiteralPath $filesDir -Recurse -File -ErrorAction SilentlyContinue | ForEach-Object {
+        $rel = $_.FullName.Substring($filesDir.Length + 1)
+        $dst = Join-Path $texRoot $rel
+        $dstDir = Split-Path -Parent $dst
+        if (-not (Test-Path -LiteralPath $dstDir)) { New-Item -ItemType Directory -Path $dstDir -Force | Out-Null }
+        Copy-Item -LiteralPath $_.FullName -Destination $dst -Force
+        $n++
+    }
+    return $n
+}
+
+function Get-PngSize([string]$path) {
+    try {
+        $b = [System.IO.File]::ReadAllBytes($path)
+        if ($b.Length -lt 24 -or $b[0] -ne 137 -or $b[1] -ne 80) { return $null }
+        $w = ([int]$b[16] -shl 24) -bor ([int]$b[17] -shl 16) -bor ([int]$b[18] -shl 8) -bor [int]$b[19]
+        $h = ([int]$b[20] -shl 24) -bor ([int]$b[21] -shl 16) -bor ([int]$b[22] -shl 8) -bor [int]$b[23]
+        return @{ w = $w; h = $h }
+    } catch { return $null }
+}
+
+# 同步 index.json 的 customAssets：删掉已清理的条目；补回还原的条目；磁盘已有文件去掉内嵌 base64
+function Sync-CustomIndex($deletedKeys, $restoredKeys) {
+    try {
+        $idxPath = Join-Path (Join-Path $ModRoot 'Editor\canvases') 'index.json'
+        if (-not (Test-Path -LiteralPath $idxPath)) { return }
+        $raw = [System.IO.File]::ReadAllText($idxPath, [System.Text.Encoding]::UTF8)
+        $j = $raw | ConvertFrom-Json
+        if (-not $j.customAssets) { $j | Add-Member -NotePropertyName customAssets -NotePropertyValue @() -Force }
+        $del = @{}
+        foreach ($k in @($deletedKeys)) { if ($k) { $del[$k] = 1 } }
+        $out = @()
+        foreach ($a in @($j.customAssets)) {
+            if (-not $a.p) { continue }
+            if ($del.ContainsKey($a.p)) { continue }
+            $rel = ($a.p -replace '/', '\') + '.png'
+            $fp = Join-Path (Join-Path $ModRoot 'Textures') $rel
+            if ($a.data -and (Test-Path -LiteralPath $fp)) {
+                $a.PSObject.Properties.Remove('data')
+            }
+            $out += $a
+        }
+        foreach ($k in @($restoredKeys)) {
+            if (-not $k) { continue }
+            $exists = $false
+            foreach ($a in $out) { if ($a.p -eq $k) { $exists = $true; break } }
+            if ($exists) { continue }
+            $rel = ($k -replace '/', '\') + '.png'
+            $fp = Join-Path (Join-Path $ModRoot 'Textures') $rel
+            $sz = Get-PngSize $fp
+            $n = ($k -split '/')[-1]
+            $out += [pscustomobject]@{ p = $k; n = $n; w = $(if ($sz) { $sz.w } else { 0 }); h = $(if ($sz) { $sz.h } else { 0 }) }
+        }
+        $j.customAssets = @($out)
+        [System.IO.File]::WriteAllText($idxPath, ($j | ConvertTo-Json -Depth 10), (New-Object System.Text.UTF8Encoding($false)))
+    } catch { }
+}
+
 function Read-Request($stream) {
     $buf = New-Object byte[] 8192
     $ms = New-Object System.IO.MemoryStream
@@ -229,7 +407,24 @@ while ($true) {
             $query[$k] = $v
         }
 
-        if ($pathPart -eq '/__tex-exists' -and ($method -eq 'GET' -or $method -eq 'HEAD')) {
+        if ($pathPart -eq '/__tex' -and ($method -eq 'GET' -or $method -eq 'HEAD')) {
+            $key = "$($query['key'])".Trim()
+            $fp = ''
+            if ($key -and $key -notmatch '\.\.' -and $key -match '^Custom/') {
+                try {
+                    $rel = ($key -replace '/', '\') + '.png'
+                    $fp = Join-Path (Join-Path $ModRoot 'Textures') $rel
+                } catch { }
+            }
+            if ($fp -and (Test-Path -LiteralPath $fp)) {
+                $bytes = [System.IO.File]::ReadAllBytes($fp)
+                Send-Bytes $stream '200 OK' 'image/png' $bytes
+            } else {
+                Send-Text $stream '404 Not Found' 'no'
+            }
+            continue
+        }
+        elseif ($pathPart -eq '/__tex-exists' -and ($method -eq 'GET' -or $method -eq 'HEAD')) {
             $key = $query['key']
             $yes = $false
             if ($key -and $key -notmatch '\.\.') {
@@ -238,6 +433,102 @@ while ($true) {
                 $yes = Test-Path -LiteralPath $fp -PathType Leaf
             }
             if ($yes) { Send-Text $stream '200 OK' 'yes' } else { Send-Text $stream '200 OK' 'no' }
+        }
+        if ($pathPart -eq '/__cleanup-diff' -and ($method -eq 'GET' -or $method -eq 'HEAD')) {
+            $name = "$($query['name'])".Trim()
+            $dir = Join-Path (Join-Path $ModRoot 'Editor\history') $name
+            $mf = Join-Path $dir 'manifest.json'
+            $changes = @()
+            if ((Test-Path -LiteralPath $mf) -and $name -match '^cleanup-[0-9]{8}-[0-9]{6}$') {
+                $m = [System.IO.File]::ReadAllText($mf, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
+                $croot = Join-Path (Join-Path $ModRoot 'Textures') 'Custom'
+                foreach ($f in @($m.files)) {
+                    $rel = ($f.path -replace '^Custom/', '') -replace '/', '\'
+                    $fp = Join-Path $croot ($rel + '.png')
+                    $status = 'same'
+                    if (-not (Test-Path -LiteralPath $fp)) { $status = 'missing' }
+                    else {
+                        $sz = (Get-Item -LiteralPath $fp).Length
+                        if ([int64]$sz -ne [int64]$f.size) { $status = 'changed' }
+                    }
+                    if ($status -ne 'same') {
+                        $curSize = 0
+                        if (Test-Path -LiteralPath $fp) { $curSize = (Get-Item -LiteralPath $fp).Length }
+                        $changes += [pscustomobject]@{ path = $f.path; status = $status; size = $f.size; curSize = $curSize }
+                    }
+                }
+            }
+            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $true; name = $name; changes = $changes })
+        }
+        elseif ($pathPart -eq '/__cleanup-backup-tex' -and ($method -eq 'GET' -or $method -eq 'HEAD')) {
+            $name = "$($query['name'])".Trim()
+            $key = "$($query['key'])".Trim()
+            $fp = ''
+            if ($name -match '^cleanup-[0-9]{8}-[0-9]{6}$' -and $key -match '^Custom/') {
+                $rel = ($key -replace '/', '\') + '.png'
+                $fp = Join-Path (Join-Path (Join-Path (Join-Path $ModRoot 'Editor\history') $name) 'files') $rel
+            }
+            if ($fp -and (Test-Path -LiteralPath $fp)) { Send-Bytes $stream '200 OK' 'image/png' ([System.IO.File]::ReadAllBytes($fp)) }
+            else { Send-Text $stream '404 Not Found' 'no' }
+        }
+        elseif ($pathPart -eq '/__cleanup-restore-selected' -and ($method -eq 'GET' -or $method -eq 'POST')) {
+            $name = "$($query['name'])".Trim()
+            $paths = "$($query['paths'])".Split('|') | Where-Object { $_ -match '^Custom/' }
+            $n = 0
+            $restoredKeys = @()
+            if ($name -match '^cleanup-[0-9]{8}-[0-9]{6}$') {
+                $filesDir = Join-Path (Join-Path (Join-Path $ModRoot 'Editor\history') $name) 'files'
+                foreach ($k in $paths) {
+                    $rel = ($k -replace '^Custom/', '') -replace '/', '\'
+                    $src = Join-Path (Join-Path $filesDir 'Custom') ($rel + '.png')
+                    if (-not (Test-Path -LiteralPath $src)) { continue }
+                    $dst = Join-Path (Join-Path (Join-Path $ModRoot 'Textures') 'Custom') ($rel + '.png')
+                    $dd = Split-Path -Parent $dst
+                    if (-not (Test-Path -LiteralPath $dd)) { New-Item -ItemType Directory -Path $dd -Force | Out-Null }
+                    Copy-Item -LiteralPath $src -Destination $dst -Force
+                    $restoredKeys += $k
+                    $n++
+                }
+            }
+            Sync-CustomIndex @() $restoredKeys
+            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $true; restored = $n })
+        }
+        if ($pathPart -eq '/__cleanup-scan' -and ($method -eq 'GET' -or $method -eq 'HEAD')) {
+            $incGray = "$($query['includeGray'])" -ne '0'
+            $keepUncat = "$($query['keepUncat'])" -ne '0'
+            $files = @(Get-CleanupCandidates $incGray $keepUncat)
+            $bytes = 0; foreach ($f in $files) { $bytes += $f.size }
+            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $true; count = $files.Count; bytes = $bytes; files = @($files | Select-Object -First 50) })
+        }
+        elseif ($pathPart -eq '/__cleanup-apply' -and ($method -eq 'GET' -or $method -eq 'POST')) {
+            $incGray = "$($query['includeGray'])" -ne '0'
+            $keepUncat = "$($query['keepUncat'])" -ne '0'
+            $files = @(Get-CleanupCandidates $incGray $keepUncat)
+            $bytes = 0; foreach ($f in $files) { $bytes += $f.size }
+            $hist = Join-Path $ModRoot 'Editor\history'
+            $isFirst = -not (Test-Path -LiteralPath $hist) -or -not (@(Get-ChildItem -LiteralPath $hist -Directory -Filter 'cleanup-*' -ErrorAction SilentlyContinue).Count)
+            $mode = if ($isFirst) { 'full' } else { 'delta' }
+            $backup = Backup-CleanupFiles $files $mode
+            $del = 0
+            $deletedKeys = @()
+            foreach ($f in $files) {
+                $fp = Join-Path (Join-Path $ModRoot 'Textures') (('Custom/' + $f.rel) -replace '/', '\')
+                if (Test-Path -LiteralPath $fp) {
+                    Remove-Item -LiteralPath $fp -Force -ErrorAction SilentlyContinue
+                    $deletedKeys += $f.key
+                    $del++
+                }
+            }
+            Sync-CustomIndex $deletedKeys @()
+            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $true; deleted = $del; bytes = $bytes; backup = $backup; mode = $mode })
+        }
+        elseif ($pathPart -eq '/__cleanup-list' -and ($method -eq 'GET' -or $method -eq 'HEAD')) {
+            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $true; backups = @(Get-CleanupBackups) })
+        }
+        elseif ($pathPart -eq '/__cleanup-restore' -and ($method -eq 'GET' -or $method -eq 'POST')) {
+            $name = "$($query['name'])".Trim()
+            $n = Restore-CleanupBackup $name
+            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = ($n -ge 0); restored = $n })
         }
         elseif ($pathPart -eq '/__customdirs' -and ($method -eq 'GET' -or $method -eq 'HEAD')) {
             $croot = Join-Path (Join-Path $ModRoot 'Textures') 'Custom'
@@ -665,7 +956,7 @@ while ($true) {
                 $syncText = ''
                 if ($query['sync'] -eq '1') {
                     try {
-                        $rc = & robocopy $ModRoot $dir /E /XD .git .vs bin obj Editor\history Editor\assets /XF *.bak *.bak.* /NFL /NDL /NJH /NJS /NP 2>&1
+                        $rc = & robocopy $ModRoot $dir /E /XD .git .vs bin obj Editor /XF *.bak *.bak.* /NFL /NDL /NJH /NJS /NP 2>&1
                         $syncText = "已同步模组文件到仓库目录（robocopy 退出码 " + $LASTEXITCODE + "）`n"
                     } catch { $syncText = "同步模组文件失败：" + $_.Exception.Message + "`n" }
                 }

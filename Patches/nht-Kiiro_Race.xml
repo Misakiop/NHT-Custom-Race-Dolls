@@ -1,7 +1,7 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   NHT_CustomDolls
-  由 NHT Anatomy Editor 生成 · 2026-11-05 15:05
+  由 NHT Anatomy Editor 生成 · 2026-11-05 20:25
   基准模组：Nice Health Tab (Andromeda.NiceHealthTab) v1.6 · 创意工坊 3328729902
   RJW 层：Nice Health Tab - RJW Genitalia (zoc2k.nicehealthtab.rjwgenitalia) · 相关操作带 MayRequire rim.job.world
   画布：1 个 · 部位：30 个 · 补丁操作：11 段
@@ -19,7 +19,7 @@
         <race>Kiiro_Race</race>
         <scale>0.377</scale>
         <offsetX>-0.003</offsetX>
-        <offsetY>-0.353</offsetY>
+        <offsetY>-0.372</offsetY>
         <front>true</front>
         <layer>14</layer>
         <showInXray>false</showInXray>
@@ -43,7 +43,7 @@
         <race>kiiro race</race>
         <scale>0.377</scale>
         <offsetX>-0.003</offsetX>
-        <offsetY>-0.353</offsetY>
+        <offsetY>-0.372</offsetY>
         <front>true</front>
         <layer>14</layer>
         <showInXray>false</showInXray>
@@ -199,13 +199,13 @@
         <defName>Kiiro_Race_u5c3eu5df4</defName>
         <imagePath>Custom/Ratkin/Tail_east</imagePath>
         <position>
-          <x>-132.8</x>
-          <y>69.5</y>
+          <x>-103.9</x>
+          <y>27.2</y>
         </position>
         <layer>0</layer>
         <dollName>Kiiro_Race</dollName>
         <bodyPartId>64</bodyPartId>
-        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <notifyPosition><x>-52</x><y>60</y></notifyPosition>
         <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
@@ -219,13 +219,13 @@
         <defName>Kiiro_Race_u5c3eu5df4_NHTCD_Gray</defName>
         <imagePath>Custom/NHTCD_Gray/kiiro/Kiiro_Race_Kiiro_Race_u5c3eu5df4</imagePath>
         <position>
-          <x>-132.8</x>
-          <y>69.5</y>
+          <x>-103.9</x>
+          <y>27.2</y>
         </position>
         <layer>0</layer>
         <dollName>Kiiro_Race</dollName>
         <bodyPartId>64</bodyPartId>
-        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <notifyPosition><x>-52</x><y>60</y></notifyPosition>
         <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
@@ -239,7 +239,7 @@
         <imagePath>HediffTab/Baseliner/Female/Torso</imagePath>
         <position>
           <x>2</x>
-          <y>-140.5</y>
+          <y>-160.5</y>
         </position>
         <layer>1</layer>
         <dollName>Kiiro_Race</dollName>
@@ -258,7 +258,7 @@
         <imagePath>HediffTab/Baseliner/Female/Leg</imagePath>
         <position>
           <x>-45</x>
-          <y>179.5</y>
+          <y>159.5</y>
         </position>
         <layer>2</layer>
         <dollName>Kiiro_Race</dollName>
@@ -277,7 +277,7 @@
         <imagePath>HediffTab/Baseliner/Female/Leg</imagePath>
         <position>
           <x>45</x>
-          <y>179.5</y>
+          <y>159.5</y>
         </position>
         <layer>2</layer>
         <dollName>Kiiro_Race</dollName>
@@ -296,7 +296,7 @@
         <imagePath>HediffTab/Baseliner/Female/Neck</imagePath>
         <position>
           <x>1</x>
-          <y>-303.5</y>
+          <y>-323.5</y>
         </position>
         <layer>2</layer>
         <dollName>Kiiro_Race</dollName>
@@ -315,7 +315,7 @@
         <imagePath>HediffTab/Baseliner/Female/Shoulder</imagePath>
         <position>
           <x>-81.5</x>
-          <y>-198</y>
+          <y>-218</y>
         </position>
         <layer>2</layer>
         <dollName>Kiiro_Race</dollName>
@@ -334,7 +334,7 @@
         <imagePath>HediffTab/Baseliner/Female/Shoulder</imagePath>
         <position>
           <x>81.5</x>
-          <y>-198</y>
+          <y>-218</y>
         </position>
         <layer>2</layer>
         <dollName>Kiiro_Race</dollName>
@@ -353,7 +353,7 @@
         <imagePath>HediffTab/Baseliner/Female/Arm</imagePath>
         <position>
           <x>-107</x>
-          <y>-82</y>
+          <y>-102</y>
         </position>
         <layer>3</layer>
         <dollName>Kiiro_Race</dollName>
@@ -372,7 +372,7 @@
         <imagePath>HediffTab/Baseliner/Female/Arm</imagePath>
         <position>
           <x>107</x>
-          <y>-82</y>
+          <y>-102</y>
         </position>
         <layer>3</layer>
         <dollName>Kiiro_Race</dollName>
@@ -391,7 +391,7 @@
         <imagePath>HediffTab/Baseliner/Female/Feet</imagePath>
         <position>
           <x>-47.5</x>
-          <y>411.5</y>
+          <y>391.5</y>
         </position>
         <layer>3</layer>
         <dollName>Kiiro_Race</dollName>
@@ -410,7 +410,7 @@
         <imagePath>HediffTab/Baseliner/Female/Feet</imagePath>
         <position>
           <x>47.5</x>
-          <y>411.5</y>
+          <y>391.5</y>
         </position>
         <layer>3</layer>
         <dollName>Kiiro_Race</dollName>
@@ -429,7 +429,7 @@
         <imagePath>HediffTab/Baseliner/Female/NiceHead</imagePath>
         <position>
           <x>0</x>
-          <y>-352</y>
+          <y>-372</y>
         </position>
         <layer>3</layer>
         <dollName>Kiiro_Race</dollName>
@@ -448,7 +448,7 @@
         <imagePath>HediffTab/Baseliner/Female/Hand</imagePath>
         <position>
           <x>-121</x>
-          <y>5.5</y>
+          <y>-14.5</y>
         </position>
         <layer>4</layer>
         <dollName>Kiiro_Race</dollName>
@@ -467,7 +467,7 @@
         <imagePath>HediffTab/Baseliner/Female/Hand</imagePath>
         <position>
           <x>121</x>
-          <y>5.5</y>
+          <y>-14.5</y>
         </position>
         <layer>4</layer>
         <dollName>Kiiro_Race</dollName>
@@ -486,13 +486,13 @@
         <imagePath>HediffTab/Bones/Pelvis</imagePath>
         <position>
           <x>0</x>
-          <y>-42.5</y>
+          <y>-62.5</y>
         </position>
         <layer>9</layer>
         <dollName>Kiiro_Race</dollName>
         <bodyPartId>3</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>1</width>
@@ -506,13 +506,13 @@
         <imagePath>HediffTab/Bones/Spine</imagePath>
         <position>
           <x>0</x>
-          <y>-152.5</y>
+          <y>-172.5</y>
         </position>
         <layer>10</layer>
         <dollName>Kiiro_Race</dollName>
         <bodyPartId>4</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.7</width>
@@ -526,13 +526,13 @@
         <imagePath>HediffTab/Baseliner/Head/Nose</imagePath>
         <position>
           <x>0</x>
-          <y>-329.5</y>
+          <y>-349.5</y>
         </position>
         <layer>14</layer>
         <dollName>Kiiro_Race</dollName>
         <bodyPartId>20</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>1</width>
@@ -546,7 +546,7 @@
         <imagePath>HediffTab/Baseliner/Head/NiceMaleEye</imagePath>
         <position>
           <x>18</x>
-          <y>-341.5</y>
+          <y>-361.5</y>
         </position>
         <layer>15</layer>
         <dollName>Kiiro_Race</dollName>
@@ -565,7 +565,7 @@
         <imagePath>HediffTab/Baseliner/Head/NiceMaleEye</imagePath>
         <position>
           <x>-18</x>
-          <y>-341.5</y>
+          <y>-361.5</y>
         </position>
         <layer>15</layer>
         <dollName>Kiiro_Race</dollName>
@@ -581,10 +581,10 @@
       <!-- 左耳 -->
       <NiceHealthTab.DollBodyPart>
         <defName>Kiiro_Race_u5de6u8033</defName>
-        <imagePath>Custom/Kiiro_Race/LeftEar_south</imagePath>
+        <imagePath>Custom/kiiro/LeftEar_south</imagePath>
         <position>
-          <x>33</x>
-          <y>-401</y>
+          <x>38</x>
+          <y>-430</y>
         </position>
         <layer>15</layer>
         <dollName>Kiiro_Race</dollName>
@@ -593,8 +593,8 @@
         <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
-        <width>0.9</width>
-        <height>0.9</height>
+        <width>0.79</width>
+        <height>0.79</height>
         <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
       </NiceHealthTab.DollBodyPart>
 
@@ -603,8 +603,8 @@
         <defName>Kiiro_Race_u5de6u8033_NHTCD_Gray</defName>
         <imagePath>Custom/NHTCD_Gray/kiiro/Kiiro_Race_Kiiro_Race_u5de6u8033</imagePath>
         <position>
-          <x>33</x>
-          <y>-401</y>
+          <x>38</x>
+          <y>-430</y>
         </position>
         <layer>15</layer>
         <dollName>Kiiro_Race</dollName>
@@ -613,17 +613,17 @@
         <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
-        <width>0.9</width>
-        <height>0.9</height>
+        <width>0.79</width>
+        <height>0.79</height>
         <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
       </NiceHealthTab.DollBodyPart>
       <!-- 右耳 -->
       <NiceHealthTab.DollBodyPart>
         <defName>Kiiro_Race_u53f3u8033</defName>
-        <imagePath>Custom/Kiiro_Race/RightEar_south</imagePath>
+        <imagePath>Custom/kiiro/RightEar_south</imagePath>
         <position>
-          <x>-33</x>
-          <y>-401</y>
+          <x>-38</x>
+          <y>-431</y>
         </position>
         <layer>15</layer>
         <dollName>Kiiro_Race</dollName>
@@ -632,8 +632,8 @@
         <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
-        <width>0.9</width>
-        <height>0.9</height>
+        <width>0.77</width>
+        <height>0.77</height>
         <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
       </NiceHealthTab.DollBodyPart>
 
@@ -642,8 +642,8 @@
         <defName>Kiiro_Race_u53f3u8033_NHTCD_Gray</defName>
         <imagePath>Custom/NHTCD_Gray/kiiro/Kiiro_Race_Kiiro_Race_u53f3u8033</imagePath>
         <position>
-          <x>-33</x>
-          <y>-401</y>
+          <x>-38</x>
+          <y>-431</y>
         </position>
         <layer>15</layer>
         <dollName>Kiiro_Race</dollName>
@@ -652,8 +652,8 @@
         <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
-        <width>0.9</width>
-        <height>0.9</height>
+        <width>0.77</width>
+        <height>0.77</height>
         <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
       </NiceHealthTab.DollBodyPart>
       <!-- 大脑 -->
@@ -662,13 +662,13 @@
         <imagePath>HediffTab/Organs/Brain</imagePath>
         <position>
           <x>1</x>
-          <y>-379</y>
+          <y>-399</y>
         </position>
         <layer>20</layer>
         <dollName>Kiiro_Race</dollName>
         <bodyPartId>15</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>1</width>
@@ -682,13 +682,13 @@
         <imagePath>HediffTab/Organs/Heart</imagePath>
         <position>
           <x>4.5</x>
-          <y>-167.5</y>
+          <y>-187.5</y>
         </position>
         <layer>21</layer>
         <dollName>Kiiro_Race</dollName>
         <bodyPartId>6</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.85</width>
@@ -702,13 +702,13 @@
         <imagePath>HediffTab/Organs/Kidney</imagePath>
         <position>
           <x>-37.5</x>
-          <y>-71</y>
+          <y>-91</y>
         </position>
         <layer>22</layer>
         <dollName>Kiiro_Race</dollName>
         <bodyPartId>10</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>-0.85</width>
@@ -722,13 +722,13 @@
         <imagePath>HediffTab/Organs/Kidney</imagePath>
         <position>
           <x>37.5</x>
-          <y>-71</y>
+          <y>-91</y>
         </position>
         <layer>22</layer>
         <dollName>Kiiro_Race</dollName>
         <bodyPartId>9</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.85</width>
@@ -742,13 +742,13 @@
         <imagePath>HediffTab/Organs/Liver</imagePath>
         <position>
           <x>-25.5</x>
-          <y>-120</y>
+          <y>-140</y>
         </position>
         <layer>23</layer>
         <dollName>Kiiro_Race</dollName>
         <bodyPartId>11</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.85</width>
@@ -762,13 +762,13 @@
         <imagePath>HediffTab/Organs/Lung</imagePath>
         <position>
           <x>-23.5</x>
-          <y>-229.5</y>
+          <y>-249.5</y>
         </position>
         <layer>24</layer>
         <dollName>Kiiro_Race</dollName>
         <bodyPartId>8</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>-0.85</width>
@@ -782,13 +782,13 @@
         <imagePath>HediffTab/Organs/Lung</imagePath>
         <position>
           <x>23.5</x>
-          <y>-229.5</y>
+          <y>-249.5</y>
         </position>
         <layer>24</layer>
         <dollName>Kiiro_Race</dollName>
         <bodyPartId>7</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.85</width>
@@ -802,13 +802,13 @@
         <imagePath>HediffTab/Organs/Stomach</imagePath>
         <position>
           <x>19.5</x>
-          <y>-114</y>
+          <y>-134</y>
         </position>
         <layer>25</layer>
         <dollName>Kiiro_Race</dollName>
         <bodyPartId>5</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.85</width>
@@ -822,13 +822,13 @@
         <imagePath>HediffTab/Bones/Ribcage</imagePath>
         <position>
           <x>0</x>
-          <y>-214.5</y>
+          <y>-234.5</y>
         </position>
         <layer>11</layer>
         <dollName>Kiiro_Race</dollName>
         <bodyPartId>1</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.9</width>

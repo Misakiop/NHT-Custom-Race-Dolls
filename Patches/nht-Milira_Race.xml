@@ -1,7 +1,7 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   NHT_CustomDolls
-  由 NHT Anatomy Editor 生成 · 2026-11-05 15:05
+  由 NHT Anatomy Editor 生成 · 2026-11-05 20:25
   基准模组：Nice Health Tab (Andromeda.NiceHealthTab) v1.6 · 创意工坊 3328729902
   RJW 层：Nice Health Tab - RJW Genitalia (zoc2k.nicehealthtab.rjwgenitalia) · 相关操作带 MayRequire rim.job.world
   画布：1 个 · 部位：32 个 · 补丁操作：8 段
@@ -158,7 +158,7 @@
       <!-- 自定义部位 · 左翼 -->
       <NiceHealthTab.DollBodyPart>
         <defName>Milira_Race_u5de6u7ffc</defName>
-        <imagePath>Custom/Milira_Race/LeftWingFront2_south</imagePath>
+        <imagePath>Custom/Milira/LeftWingFront2_south</imagePath>
         <position>
           <x>147.91</x>
           <y>44.79</y>
@@ -166,7 +166,7 @@
         <layer>0</layer>
         <dollName>Milira_Race</dollName>
         <bodyPartId>73</bodyPartId>
-        <notifyPosition><x>42</x><y>-48</y></notifyPosition>
+        <notifyPosition><x>36</x><y>-38.9</y></notifyPosition>
         <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
@@ -186,7 +186,7 @@
         <layer>0</layer>
         <dollName>Milira_Race</dollName>
         <bodyPartId>73</bodyPartId>
-        <notifyPosition><x>42</x><y>-48</y></notifyPosition>
+        <notifyPosition><x>36</x><y>-38.9</y></notifyPosition>
         <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
@@ -197,7 +197,7 @@
       <!-- 自定义部位 · 右翼 -->
       <NiceHealthTab.DollBodyPart>
         <defName>Milira_Race_u53f3u7ffc</defName>
-        <imagePath>Custom/Milira_Race/RightWingFront2_south</imagePath>
+        <imagePath>Custom/Milira/RightWingFront2_south</imagePath>
         <position>
           <x>-147.91</x>
           <y>44.79</y>
@@ -205,7 +205,7 @@
         <layer>0</layer>
         <dollName>Milira_Race</dollName>
         <bodyPartId>65</bodyPartId>
-        <notifyPosition><x>-42</x><y>-48</y></notifyPosition>
+        <notifyPosition><x>-30</x><y>-38</y></notifyPosition>
         <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
@@ -225,7 +225,7 @@
         <layer>0</layer>
         <dollName>Milira_Race</dollName>
         <bodyPartId>65</bodyPartId>
-        <notifyPosition><x>-42</x><y>-48</y></notifyPosition>
+        <notifyPosition><x>-30</x><y>-38</y></notifyPosition>
         <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
@@ -369,7 +369,7 @@
       <!-- 自定义部位 · 左耳 -->
       <NiceHealthTab.DollBodyPart>
         <defName>Milira_Race_u5de6u8033</defName>
-        <imagePath>Custom/Milira_Race/elf_ear_left3</imagePath>
+        <imagePath>Custom/Milira/elf_ear_left3</imagePath>
         <position>
           <x>65.1</x>
           <y>-325.84</y>
@@ -377,13 +377,13 @@
         <layer>2</layer>
         <dollName>Milira_Race</dollName>
         <bodyPartId>18</bodyPartId>
-        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <notifyPosition><x>0</x><y>3</y></notifyPosition>
         <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>1</width>
         <height>1</height>
-        <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
+        <hitboxScale><x>0.9</x><y>0.88</y></hitboxScale>
       </NiceHealthTab.DollBodyPart>
 
       <!-- 自定义部位 · 左耳（灰） -->
@@ -397,18 +397,18 @@
         <layer>2</layer>
         <dollName>Milira_Race</dollName>
         <bodyPartId>18</bodyPartId>
-        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <notifyPosition><x>0</x><y>3</y></notifyPosition>
         <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>1</width>
         <height>1</height>
-        <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
+        <hitboxScale><x>0.9</x><y>0.88</y></hitboxScale>
       </NiceHealthTab.DollBodyPart>
       <!-- 自定义部位 · 右耳 -->
       <NiceHealthTab.DollBodyPart>
         <defName>Milira_Race_u53f3u8033</defName>
-        <imagePath>Custom/Milira_Race/elf_ear_right2</imagePath>
+        <imagePath>Custom/Milira/elf_ear_right2</imagePath>
         <position>
           <x>-69.08</x>
           <y>-325.34</y>
@@ -416,13 +416,13 @@
         <layer>2</layer>
         <dollName>Milira_Race</dollName>
         <bodyPartId>19</bodyPartId>
-        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <notifyPosition><x>0</x><y>3</y></notifyPosition>
         <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>1</width>
         <height>1</height>
-        <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
+        <hitboxScale><x>0.89</x><y>0.88</y></hitboxScale>
       </NiceHealthTab.DollBodyPart>
 
       <!-- 自定义部位 · 右耳（灰） -->
@@ -436,13 +436,13 @@
         <layer>2</layer>
         <dollName>Milira_Race</dollName>
         <bodyPartId>19</bodyPartId>
-        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <notifyPosition><x>0</x><y>3</y></notifyPosition>
         <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>1</width>
         <height>1</height>
-        <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
+        <hitboxScale><x>0.89</x><y>0.88</y></hitboxScale>
       </NiceHealthTab.DollBodyPart>
       <!-- 右臂 -->
       <NiceHealthTab.DollBodyPart>
@@ -570,7 +570,7 @@
         <dollName>Milira_Race</dollName>
         <bodyPartId>3</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>1</width>
@@ -590,7 +590,7 @@
         <dollName>Milira_Race</dollName>
         <bodyPartId>4</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.7</width>
@@ -610,7 +610,7 @@
         <dollName>Milira_Race</dollName>
         <bodyPartId>20</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>1</width>
@@ -668,7 +668,7 @@
         <dollName>Milira_Race</dollName>
         <bodyPartId>15</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>1</width>
@@ -687,7 +687,7 @@
         <layer>20</layer>
         <dollName>Milira_Race</dollName>
         <bodyPartId>64</bodyPartId>
-        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <notifyPosition><x>4</x><y>-6</y></notifyPosition>
         <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
@@ -707,7 +707,7 @@
         <layer>20</layer>
         <dollName>Milira_Race</dollName>
         <bodyPartId>64</bodyPartId>
-        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <notifyPosition><x>4</x><y>-6</y></notifyPosition>
         <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
@@ -727,7 +727,7 @@
         <dollName>Milira_Race</dollName>
         <bodyPartId>6</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.85</width>
@@ -747,7 +747,7 @@
         <dollName>Milira_Race</dollName>
         <bodyPartId>10</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>-0.85</width>
@@ -767,7 +767,7 @@
         <dollName>Milira_Race</dollName>
         <bodyPartId>9</bodyPartId>
         <notifyPosition><x>2.1</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.85</width>
@@ -787,7 +787,7 @@
         <dollName>Milira_Race</dollName>
         <bodyPartId>11</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.85</width>
@@ -807,7 +807,7 @@
         <dollName>Milira_Race</dollName>
         <bodyPartId>8</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>-0.85</width>
@@ -827,7 +827,7 @@
         <dollName>Milira_Race</dollName>
         <bodyPartId>7</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.85</width>
@@ -847,7 +847,7 @@
         <dollName>Milira_Race</dollName>
         <bodyPartId>5</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.85</width>
@@ -867,7 +867,7 @@
         <dollName>Milira_Race</dollName>
         <bodyPartId>1</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.9</width>
