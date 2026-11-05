@@ -1,0 +1,4 @@
+2026/11/06-02:41:22.401 aa40 Creating DB C:\Misaki\Game\RimCrow\mods\NHT_CustomDollTest\Editor\NHT-Anatomy-Editor.exe.WebView2\EBWebView\Default\Sync Data\LevelDB since it was missing.
+2026/11/06-02:41:22.407 aa40 Reusing MANIFEST C:\Misaki\Game\RimCrow\mods\NHT_CustomDollTest\Editor\NHT-Anatomy-Editor.exe.WebView2\EBWebView\Default\Sync Data\LevelDB/MANIFEST-000001
+2026/11/06-02:41:22.408 aa40 Recovering log #3
+2026/11/06-02:41:22.408 aa40 Reusing old log C:\Misaki\Game\RimCrow\mods\NHT_CustomDollTest\Editor\NHT-Anatomy-Editor.exe.WebView2\EBWebView\Default\Sync Data\LevelDB/000003.log 

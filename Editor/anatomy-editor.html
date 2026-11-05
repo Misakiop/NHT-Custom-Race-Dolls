@@ -1562,7 +1562,7 @@ html,body{overflow-anchor:none}
 /* 收起时只让竖排 GIT 左移 2px（图标不动） */
 .gmk:not(.is-open) .gmk__label{transform:translateX(-2px)}
 /* 有新画布（仓库里有没看过的版本）时的提醒 */
-.gmk.has-new .gmk__tab{animation:gmkAlert 1.5s ease-in-out infinite}
+.gmk.has-new .gmk__tab{animation:gmkNewBreath 2.05s ease-in-out infinite}
 @keyframes gmkAlert{
   0%,100%{filter:drop-shadow(0 4px 10px rgba(0,0,0,.5)) drop-shadow(0 0 2px rgba(76,214,140,.35));
           transform:scale(1);opacity:.92;background:rgba(76,214,140,.85)}
@@ -1581,8 +1581,7 @@ html,body{overflow-anchor:none}
   cursor:pointer;padding:0;border-radius:0 7px 7px 0;
   clip-path:polygon(0 0,calc(100% - 8px) 0,100% 50%,calc(100% - 8px) 100%,0 100%);
   filter:drop-shadow(0 5px 12px rgba(0,0,0,.55));
-  transition:width .34s cubic-bezier(.22,1.4,.36,1), filter .3s, color .2s, padding .3s;
-  animation:gmkBreath 2.6s ease-in-out infinite}
+  transition:width .34s cubic-bezier(.22,1.4,.36,1), filter .3s, color .2s, padding .3s}
 /* 内层：深色填充，inset 1px 之后自然露出 1px 橙色描边（含尖角） */
 .gmk__tab::before{content:'';position:absolute;inset:1px;border-radius:0 6px 6px 0;
   background:linear-gradient(180deg,rgba(18,34,26,.98),rgba(11,22,17,.98));
@@ -1772,6 +1771,245 @@ body.is-host .iconbtn.btn--host:hover{
 body.is-host .iconbtn.btn--host:active{transform:translateY(0)}
 body.is-host .iconbtn.btn--host svg{transition:transform .45s ease}
 body.is-host .iconbtn.btn--host:hover svg{transform:rotate(180deg)}
+
+.hhealth__row{display:flex;align-items:flex-start;gap:6px;padding:3px 0;font-size:11px;color:#b9c1c5}
+.hhealth__row i{width:14px;flex:0 0 14px;color:#7fc98a;font-style:normal;font-weight:700}
+.hhealth__row b{flex:0 0 auto;color:#d7dde0;font-weight:600}
+.hhealth__row span{opacity:.85}
+.hhealth__row.is-bad i{color:#e2483c}
+.hhealth__row.is-bad span{color:#e3b558}
+
+.hhealth__fix{margin-left:auto;flex:0 0 auto;font-size:10px;white-space:nowrap}
+
+.hhealth__sub{display:grid;grid-template-columns:1fr auto auto;gap:6px;align-items:center;font-size:10px;padding:2px 0 2px 20px;color:#9aa4a8}
+.hhealth__sub .hhealth__where{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#c3cbcf}
+.hhealth__sub .hhealth__cur{color:#e3b558}
+.hhealth__sub .hhealth__base{color:#86c98a}
+.hhealth__sub.is-red .hhealth__cur{color:#ff7a6e}
+.hhealth__sub.is-info .hhealth__cur{color:#9aa4a8}
+.hhealth__more{padding-left:20px;font-size:10px;color:#7d878b}
+
+.cv__warn{position:absolute;left:4px;top:4px;width:6px;height:6px;border-radius:50%;z-index:3;box-shadow:0 0 0 1px rgba(0,0,0,.5)}
+.cv__warn--red{background:#e2483c}
+.cv__warn--yellow{background:#e3b558}
+.cv__warn--info{background:#8a9498}
+.cv{position:relative}
+
+/* 未读通知：呼吸光效 */
+.notif__btn.is-alert::before,.notif__btn.is-unread::before{
+  content:'';position:absolute;inset:-5px;border-radius:50%;pointer-events:none;z-index:0;
+  background:radial-gradient(circle,rgba(227,181,88,.55) 0%,rgba(227,181,88,.20) 45%,transparent 70%);
+  animation:notifBreath 2.1s ease-in-out infinite;
+}
+.notif__btn.is-alert .notif__ico,.notif__btn.is-unread .notif__ico{position:relative;z-index:1}
+@keyframes notifBreath{
+  0%,100%{transform:scale(.72);opacity:.25}
+  50%{transform:scale(1.18);opacity:.9}
+}
+
+@keyframes gmkNewBreath{
+  0%,100%{filter:drop-shadow(0 5px 12px rgba(0,0,0,.55)) drop-shadow(0 0 0 rgba(126,240,180,0))}
+  50%{filter:drop-shadow(0 5px 14px rgba(0,0,0,.6)) drop-shadow(0 0 15px rgba(126,240,180,.9))}
+}
+.gmk.has-new .gmk__tab::after{content:'';position:absolute;left:3px;top:3px;width:5px;height:5px;border-radius:50%;
+  background:#b6ffd4;box-shadow:0 0 6px rgba(182,255,212,.9);animation:gmkDot 2.05s ease-in-out infinite;z-index:2}
+@keyframes gmkDot{0%,100%{opacity:.35}50%{opacity:1}}
+
+/* 指南 / 帮助：与通知一致的未读呼吸光 */
+[data-act="guides"].attn::before,[data-act="help"].attn::before{
+  content:'';position:absolute;inset:-5px;border-radius:50%;pointer-events:none;z-index:0;
+  background:radial-gradient(circle,rgba(227,181,88,.55) 0%,rgba(227,181,88,.20) 45%,transparent 70%);
+  animation:notifBreath 2.1s ease-in-out infinite;
+}
+[data-act="guides"].attn,[data-act="help"].attn{position:relative}
+[data-act="guides"].attn svg,[data-act="help"].attn svg{position:relative;z-index:1}
+
+/* 素材预览大小上限 */
+#paneAssets .tile__img{height:52px;max-height:52px;overflow:hidden}
+#paneAssets .tile__img i{max-width:100%;max-height:100%}
+#paneAssets img{max-width:100%;max-height:64px;object-fit:contain}
+
+.cv-wrap{display:block}
+.cv-kids{margin-left:10px;padding-left:6px;border-left:1px dashed rgba(255,255,255,.14)}
+.cv-wrap--child .cv{background:rgba(255,255,255,.02)}
+.cv__linkmark{position:absolute;left:4px;top:14px;width:6px;height:6px;border-radius:50%;background:var(--lk);box-shadow:0 0 7px var(--lk);z-index:3}
+.cv__mapmark{position:absolute;left:13px;top:14px;width:5px;height:5px;background:#7aa7ff;transform:rotate(45deg);box-shadow:0 0 5px rgba(122,167,255,.8);z-index:3}
+.cv__fold{position:absolute;left:3px;bottom:1px;width:15px;height:15px;border:0;background:transparent;color:#7f8b90;cursor:pointer;padding:0;z-index:4;transition:color .15s}
+.cv__fold:hover{color:#ff9541}
+.cv__fold svg{width:11px;height:11px;transition:transform .22s ease}
+.cv__fold.is-open svg{transform:rotate(90deg)}
+.cv__fold.is-open{animation:cvFoldGlow 2.2s ease-in-out infinite}
+@keyframes cvFoldGlow{0%,100%{filter:drop-shadow(0 0 0 rgba(255,149,65,0))}50%{filter:drop-shadow(0 0 5px rgba(255,149,65,.7))}}
+
+/* 关联折叠按钮：左侧彩色竖条（升级版） */
+.cv.cv--parent{grid-template-columns:22px 40px minmax(0,1fr) auto}
+.cv__fold{position:relative;left:auto;bottom:auto;width:22px;height:40px;min-height:40px;padding:2px 0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  border:1px solid var(--lk);border-radius:6px;cursor:pointer;
+  background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(0,0,0,.32));
+  color:var(--lk);box-shadow:inset 0 0 0 1px rgba(0,0,0,.35),0 2px 8px rgba(0,0,0,.45);
+  transition:box-shadow .18s,border-color .18s,background .18s,transform .18s;z-index:5}
+.cv__fold svg{width:12px;height:12px;transition:transform .22s ease}
+.cv__fold b{font:8.5px/1 var(--font-mono);background:var(--lk);color:#0b0f10;border-radius:4px;padding:1px 4px;min-width:12px;text-align:center}
+.cv__fold:hover{background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(0,0,0,.22));box-shadow:inset 0 0 0 1px rgba(0,0,0,.3),0 0 14px var(--lk),0 3px 10px rgba(0,0,0,.5);transform:translateY(-1px)}
+.cv__fold.is-open svg{transform:rotate(90deg)}
+.cv__fold.is-open{box-shadow:inset 0 0 0 1px rgba(0,0,0,.3),0 0 9px color-mix(in srgb,var(--lk) 55%,transparent)}
+/* 标记统一放右下角，避免压住左侧折叠条 */
+.cv__warn{left:auto;right:5px;top:auto;bottom:4px}
+.cv__linkmark{left:auto;right:15px;top:auto;bottom:5px}
+.cv__mapmark{left:auto;right:25px;top:auto;bottom:5px}
+
+/* 关联：悬浮折叠按钮（不占卡片布局） */
+.cv.cv--parent{grid-template-columns:40px minmax(0,1fr) auto}
+.cv__fold{position:absolute;left:4px;bottom:4px;width:24px;height:24px;min-width:0;min-height:0;padding:0;
+  display:flex;align-items:center;justify-content:center;border-radius:7px;border:1px solid var(--lk);
+  background:linear-gradient(145deg,rgba(22,28,31,.94),rgba(9,13,15,.96));color:var(--lk);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 3px 10px rgba(0,0,0,.55),0 0 0 1px rgba(0,0,0,.35);
+  z-index:6;cursor:pointer;animation:none;transition:transform .16s,box-shadow .18s,background .18s}
+.cv__fold svg{width:13px;height:13px;transition:transform .22s ease}
+.cv__fold b{position:absolute;right:-5px;top:-5px;min-width:12px;padding:1px 3px;border-radius:5px;
+  background:var(--lk);color:#0b0f10;font:8px/1 var(--font-mono);font-weight:700;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.5)}
+.cv__fold:hover{transform:translateY(-1px) scale(1.04);background:linear-gradient(145deg,rgba(32,40,44,.98),rgba(14,20,22,.98));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 0 16px var(--lk),0 5px 14px rgba(0,0,0,.6)}
+.cv__fold.is-open svg{transform:rotate(90deg)}
+.cv__fold.is-open{box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 0 10px color-mix(in srgb,var(--lk) 60%,transparent),0 3px 10px rgba(0,0,0,.5)}
+
+/* 关联/映射：超小方框字母标记 */
+.cv__mark{position:absolute;top:3px;width:12px;height:12px;border-radius:3px;display:flex;align-items:center;justify-content:center;
+  font:8px/1 var(--font-mono);font-weight:700;letter-spacing:0;z-index:6;background:rgba(8,11,12,.72);border:1px solid;box-shadow:0 1px 4px rgba(0,0,0,.5)}
+.cv__mark--link{right:4px;color:var(--lk);border-color:var(--lk);text-shadow:0 0 5px var(--lk)}
+.cv__mark--map{right:19px;color:#8fb4ff;border-color:#8fb4ff;text-shadow:0 0 5px rgba(143,180,255,.8)}
+
+/* 折叠按钮恢复：左侧彩色竖条（占一列） */
+.cv.cv--parent{grid-template-columns:22px 40px minmax(0,1fr) auto}
+.cv__fold{position:relative;left:auto;bottom:auto;width:22px;height:40px;min-height:40px;padding:2px 0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:6px;
+  border:1px solid var(--lk);color:var(--lk);background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(0,0,0,.32));
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.35),0 2px 8px rgba(0,0,0,.45);z-index:5;cursor:pointer}
+.cv__fold svg{width:12px;height:12px;transition:transform .22s ease}
+.cv__fold b{font:8.5px/1 var(--font-mono);background:var(--lk);color:#0b0f10;border-radius:4px;padding:1px 4px;min-width:12px;text-align:center}
+.cv__fold.is-open svg{transform:rotate(90deg)}
+.cv__fold:hover{box-shadow:inset 0 0 0 1px rgba(0,0,0,.3),0 0 14px var(--lk),0 3px 10px rgba(0,0,0,.5)}
+/* 右侧标签列 + 字母小方框 */
+.cv__tags{display:flex;flex-direction:column;align-items:flex-end;gap:3px;transition:transform .18s}
+.cv__tags.has-marks{transform:translateY(-2px)}
+.cv__marks{display:flex;gap:2px;justify-content:flex-end;margin-top:1px}
+.cv__mark{position:static;top:auto;right:auto;width:12px;height:12px;border-radius:3px;display:flex;align-items:center;justify-content:center;
+  font:8px/1 var(--font-mono);font-weight:700;background:rgba(8,11,12,.72);border:1px solid;box-shadow:0 1px 4px rgba(0,0,0,.5)}
+.cv__mark--link{color:var(--lk);border-color:var(--lk);text-shadow:0 0 5px var(--lk)}
+.cv__mark--map{color:#8fb4ff;border-color:#8fb4ff;text-shadow:0 0 5px rgba(143,180,255,.8)}
+
+/* 映射标记与关联标记同色 */
+.cv__mark--map{color:var(--lk);border-color:var(--lk);text-shadow:0 0 5px var(--lk)}
+/* 组合选择弹窗 */
+.cvcombo{max-height:46vh;overflow:auto;display:flex;flex-direction:column;gap:4px;padding:2px 0}
+.cvcombo__row{display:grid;grid-template-columns:16px minmax(0,1fr) auto;align-items:center;gap:6px;padding:5px 6px;border:1px solid var(--line);border-radius:4px;cursor:pointer;font-size:11px;color:var(--text)}
+.cvcombo__row input{accent-color:#ff9541}
+.cvcombo__row b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cvcombo__row span{color:var(--muted);font:10px/1.2 var(--font-mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cvcombo__row em{color:#e2483c;font:9px/1 var(--font-ui);grid-column:2/4}
+.cvcombo__row.is-off{opacity:.45;cursor:not-allowed}
+
+/* 健康警告：右上角悬浮 */
+.cv__warn{left:auto;right:2px;top:1px;bottom:auto;width:7px;height:7px;z-index:7;box-shadow:0 0 0 1px rgba(0,0,0,.55),0 0 6px rgba(0,0,0,.5)}
+/* 映射标记固定金色，与关联组颜色区分 */
+.cv__mark--map{color:#ffb454;border-color:#ffb454;text-shadow:0 0 5px rgba(255,180,84,.75)}
+
+/* 颜色变体页 */
+.varlist{display:flex;flex-direction:column;gap:4px;margin-top:6px}
+.varrow{display:grid;grid-template-columns:34px minmax(0,1fr) auto auto;align-items:center;gap:6px;padding:4px;border:1px solid var(--line);border-radius:4px}
+.varrow__img{width:34px;height:34px;border-radius:3px;background:#0a0c0d center/contain no-repeat;border:1px solid rgba(255,255,255,.06)}
+.varrow__t{min-width:0;display:flex;flex-direction:column;gap:2px}
+.varrow__t b{font-size:11px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.varrow__t i{font:9px/1.2 var(--font-mono);color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.varpickgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:5px;max-height:60vh;overflow:auto}
+.varpick{display:flex;flex-direction:column;gap:3px;padding:4px;border:1px solid var(--line);border-radius:4px;background:var(--raise);color:var(--text);cursor:pointer}
+.varpick span{display:block;height:54px;background:#0a0c0d center/contain no-repeat;border-radius:3px}
+.varpick b{font-size:9.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.varpick:hover{border-color:var(--accent)}
+
+/* 侧栏导航：图标 + 小字的紧凑分段控件 */
+.tabs{height:50px;flex:0 0 50px;padding:3px 4px;gap:2px;background:linear-gradient(180deg,rgba(21,26,29,.98),rgba(13,17,19,.98));border-bottom:1px solid var(--line)}
+.tab{flex:1 1 0;min-width:0;height:100%;padding:3px 1px;border:1px solid transparent;border-radius:5px;border-bottom:0;
+  flex-direction:column;gap:2px;font-size:8.5px;line-height:1;letter-spacing:.03em;color:var(--muted);justify-content:center;
+  transition:background .16s,border-color .16s,color .16s,box-shadow .16s}
+.tab__ico{width:15px;height:15px;margin:0;transition:transform .18s,filter .18s}
+.tab__lb{font:8.5px/1 var(--font-ui);letter-spacing:.04em;opacity:.9;white-space:nowrap}
+.tab:hover{color:var(--text);background:rgba(255,255,255,.035)}
+.tab.is-on{color:var(--accent);border-color:rgba(255,149,65,.36);
+  background:linear-gradient(180deg,rgba(255,149,65,.15),rgba(255,149,65,.035));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 2px 10px rgba(0,0,0,.35),0 0 12px rgba(255,149,65,.12)}
+.tab.is-on .tab__ico{filter:drop-shadow(0 0 5px rgba(255,149,65,.7));transform:translateY(-1px)}
+.tab.is-on .tab__lb{color:#ffd9b8}
+.tab--export{color:#c9a06a}
+.tab--export .tab__ico{margin:0}
+.tab--export.is-on{color:#ffd08a;border-color:rgba(255,180,84,.42);
+  background:linear-gradient(180deg,rgba(255,180,84,.16),rgba(255,180,84,.035));
+  text-shadow:0 0 10px rgba(255,180,84,.45)}
+.tab--export.is-on::after{display:none}
+.tab .dot{position:absolute;top:4px;right:6px}
+
+/* 变体选择列表 */
+.varpicklist{display:flex;flex-direction:column;gap:4px}
+.varpickrow{display:grid;grid-template-columns:9px minmax(0,1fr);grid-template-rows:auto auto;column-gap:7px;align-items:center;
+  text-align:left;padding:6px 8px;border:1px solid var(--line);border-radius:4px;background:rgba(255,255,255,.015);color:var(--muted);cursor:pointer}
+.varpickrow i{grid-row:1/3;width:7px;height:7px;border-radius:50%;border:1px solid #58646a;background:transparent;transition:all .16s}
+.varpickrow b{font-size:11px;color:var(--text);font-weight:600}
+.varpickrow span{font:9px/1.25 var(--font-mono);color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.varpickrow:hover{border-color:rgba(255,149,65,.28);background:rgba(255,149,65,.045)}
+.varpickrow.is-on{border-color:rgba(255,149,65,.45);background:linear-gradient(90deg,rgba(255,149,65,.13),rgba(255,149,65,.025));
+  box-shadow:inset 2px 0 0 var(--accent)}
+.varpickrow.is-on i{background:var(--accent);border-color:var(--accent);box-shadow:0 0 7px rgba(255,149,65,.8)}
+.varpickrow.is-on b{color:#ffd9b8}
+
+/* 变体贴图选择器：分类 + 搜索 */
+.vpgroup{margin:0 0 10px}
+.vphead{display:flex;align-items:center;gap:6px;padding:4px 2px;border-bottom:1px solid var(--line);margin-bottom:5px}
+.vphead b{font:10px/1 var(--font-disp);letter-spacing:.08em;color:var(--dim);text-transform:uppercase}
+.vphead i{font:9px/1 var(--font-mono);color:var(--muted);font-style:normal}
+.sec__h--plain::after{display:none}
+
+/* 种族 BodyDef 缺部位：标红 + 关闭 + 还原 */
+.row.is-raceoff{background:linear-gradient(90deg,rgba(226,72,60,.10),rgba(226,72,60,.02));opacity:.72}
+.row.is-raceoff .row__name,.row.is-raceoff .row__id{color:#e2483c}
+.row.is-raceoff .row__dot{background:#e2483c;box-shadow:0 0 6px rgba(226,72,60,.6)}
+.race-off-pill{height:14px;padding:0 4px;border:1px solid rgba(226,72,60,.45);border-radius:2px;color:#ff8b7d;font:9px/12px var(--font-mono);white-space:nowrap}
+.race-restore{color:#e3b558!important;border-color:rgba(227,181,88,.35)!important}
+.race-restore:hover{background:rgba(227,181,88,.12)!important}
+
+/* 变体选择器：紧凑工具栏 + 滚动列表 */
+.vpbar{display:flex;align-items:center;gap:6px;margin:0 0 8px}
+.vpbar .libsearch{flex:1 1 auto;margin:0;min-width:0}
+.vpcat{width:112px;flex:0 0 auto;height:28px;padding:0 6px;font-size:10.5px}
+.vpcrop{display:flex;align-items:center;gap:4px;flex:0 0 auto;font-size:10px;color:var(--dim);white-space:nowrap;cursor:pointer}
+.vpcrop input{accent-color:var(--accent);width:12px;height:12px}
+.vppickbody{max-height:58vh;overflow-y:auto;overflow-x:hidden;padding-right:4px;scrollbar-gutter:stable}
+.vpgroup:last-child{margin-bottom:0}
+
+/* 变体选择器：分组折叠 */
+.vphead--toggle{cursor:pointer;user-select:none;border-radius:3px}
+.vphead--toggle:hover{background:rgba(255,255,255,.035)}
+.vpchev{width:10px;flex:0 0 10px;color:var(--muted);font-size:9px}
+.vphead--sub{padding-left:14px;border-bottom-style:dashed}
+.vpgroup--sub{margin:2px 0 8px}
+.vpmore{margin:4px 0 0;width:100%;font-size:10px}
+
+/* 预览发型选择器：过滤与排序 */
+.hpick-chk{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--dim);white-space:nowrap;cursor:pointer}
+.hpick-chk input[type=checkbox]{width:12px;height:12px;accent-color:var(--accent)}
+.hpick-sort{width:82px;height:24px;padding:0 4px;font-size:10px}
+
+/* 素材页顶部重排：搜索 + 分类下拉 + 操作行 */
+.libtop{display:flex;align-items:center;gap:6px;padding:8px 10px 6px;border-bottom:1px solid var(--line)}
+.libtop .libsearch{flex:1 1 auto;min-width:0;padding:0;border:0}
+.libtop .libsearch .inp{height:30px;font-size:11px}
+.libcat{width:116px;flex:0 0 116px;height:30px;padding:0 5px;font-size:10px;color:var(--text);
+  background:#0d1011;border:1px solid var(--line);border-radius:3px;cursor:pointer}
+.libcat:focus{outline:0;border-color:rgba(255,149,65,.45)}
+.libact{display:flex;gap:4px;padding:6px 10px 8px;border-bottom:1px solid var(--line)}
+.libact .btn{flex:1 1 0;min-width:0;height:26px;padding:0 5px;font-size:10px;justify-content:center;gap:4px}
+.libact .btn svg{width:11px;height:11px}
+.libact .btn--on{color:var(--accent);border-color:rgba(255,149,65,.4)}
 </style>
   <script src="ui/guides.js"></script>
 </head>
@@ -1836,7 +2074,7 @@ body.is-host .iconbtn.btn--host:hover svg{transform:rotate(180deg)}
       <span class="vsep"></span>
       <button class="btn btn--ghost" data-act="history" title="查看最近 5 份本地保存历史，可挑一份载入"><svg><use href="#i-undo"/></svg>历史</button>
       <button class="btn btn--ghost" data-act="save" title="保存**全部画布**与素材清单到项目文件 nht-project.js（html 同目录），不是只存当前画布。Ctrl+S"><svg><use href="#i-save"/></svg>本地保存（全部画布）</button>
-      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-05 21:42</span>
+      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-06 02:40</span>
             <span class="notif" id="notifWrap">
         <button class="iconbtn notif__btn" data-act="notif-toggle" id="notifBtn" title="Git 更新通知：点「收到」后不再弹出，仓库有新的 Push 会再次提醒">
           <svg class="notif__ico"><use href="#i-bell"/></svg>
@@ -1983,14 +2221,16 @@ body.is-host .iconbtn.btn--host:hover svg{transform:rotate(180deg)}
 
     <aside class="col col--r">
       <div class="tabs" id="tabs">
-        <button class="tab is-on" data-tab="global" id="tabGlobal" title="画布与项目（全局）属性">全局</button>
-        <button class="tab" data-tab="inspect" id="tabPart" title="当前选中部位的属性">部位</button>
-        <button class="tab" data-tab="hair" id="tabHair" title="发型：重绘 / 导出发型坐标 / 预览">发型</button>
-        <button class="tab" data-tab="assets">素材</button>
-        <button class="tab tab--export" data-tab="patch" title="项目 / 导出 / 注入 / Git 同步"><svg class="tab__ico"><use href="#i-code"/></svg>项目<span class="dot" id="vdot"></span></button>
+        <button class="tab is-on" data-tab="global" id="tabGlobal" title="画布与项目（全局）属性"><svg class="tab__ico"><use href="#i-gear"/></svg><span class="tab__lb">全局</span></button>
+        <button class="tab" data-tab="inspect" id="tabPart" title="当前选中部位的属性"><svg class="tab__ico"><use href="#i-body"/></svg><span class="tab__lb">部位</span></button>
+        <button class="tab" data-tab="hair" id="tabHair" title="发型：重绘 / 导出发型坐标 / 预览"><svg class="tab__ico"><use href="#i-dna"/></svg><span class="tab__lb">发型</span></button>
+        <button class="tab" data-tab="variant" id="tabVariant" title="颜色变体：同一形态下按 Hediff 换不同贴图"><svg class="tab__ico"><use href="#i-layers"/></svg><span class="tab__lb">变体</span></button>
+        <button class="tab" data-tab="assets" title="素材库"><svg class="tab__ico"><use href="#i-img"/></svg><span class="tab__lb">素材</span></button>
+        <button class="tab tab--export" data-tab="patch" title="项目 / 导出 / 注入 / Git 同步"><svg class="tab__ico"><use href="#i-code"/></svg><span class="tab__lb">项目</span><span class="dot" id="vdot"></span></button>
       </div>
       <div class="pane" id="paneInspect"></div>
       <div class="pane" id="paneHair" hidden></div>
+      <div class="pane" id="paneVariant" hidden></div>
       <div class="pane" id="paneAssets" hidden></div>
       <div class="pane" id="panePatch" hidden></div>
     </aside>
@@ -2395,6 +2635,7 @@ function applyProject(st) {
       }
     }
   });
+  try { normalizeCanvasNames(); } catch (e) { }
   // 记录每张画布的“干净基线”：只有之后改动过才会被判定为「已修改」
   try {
   S.canvases.forEach(c => {
@@ -2416,6 +2657,7 @@ function applyProject(st) {
   if (st.ui && typeof st.ui === 'object') {
     if (Array.isArray(st.ui.cvGroups) && st.ui.cvGroups.length) S.ui.cvGroups = st.ui.cvGroups;
     if (st.ui.cvCollapsed && typeof st.ui.cvCollapsed === 'object') S.ui.cvCollapsed = st.ui.cvCollapsed;
+    if (st.ui.linkOpen && typeof st.ui.linkOpen === 'object') S.ui.linkOpen = st.ui.linkOpen;
     if (st.ui.panels && typeof st.ui.panels === 'object') S.ui.panels = st.ui.panels;
     if (st.ui.cvBaseSeeded) S.ui.cvBaseSeeded = true;
     if (st.ui.cat) S.ui.cat = st.ui.cat;
@@ -2707,7 +2949,7 @@ function partsExtent(c) {
   const ref = c.bounds && c.bounds.w > 1 ? c.bounds : null;
   const quads = [];
   (c.parts || []).forEach(p => {
-    if (p.vis === false) return;
+    if (p.raceOff || p.vis === false) return;
     if (isWindowOnly(p)) return;          // lives in the fixed window, not on the doll
     const q = quadOf(p);
     let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
@@ -2797,23 +3039,111 @@ function ensureCanvasGroups() {
   });
 }
 
-function cvItemHTML(c) {
+function canvasWarnLevel(c) {
+  let lv = '';
+  const bump = (sev) => {
+    if (sev === 'red') lv = 'red';
+    else if (sev === 'yellow' && lv !== 'red') lv = 'yellow';
+    else if (sev === 'info' && !lv) lv = 'info';
+  };
+  try {
+    baselineDiffs(c).forEach(d => bump(d.sev));
+    canvasHealth(c).forEach(it => {
+      if (it.ok) return;
+      if (it.key === 'tex') bump('red');
+      else if (it.key !== 'baseline') bump('yellow');
+    });
+  } catch (e) { }
+  return lv;
+}
+
+function upperFirst(s) {
+  s = String(s == null ? '' : s).trim();
+  return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+}
+
+function formKeyword(c) {
+  const raw = String((c && (c.form || c.bodytype)) || '').trim();
+  if (!raw || raw === '*') return 'Form';
+  const raceWords = (((c && c.race && (c.race.label || c.race.defName)) || '') + ' ' + ((c && c.race && c.race.defName) || ''))
+    .toLowerCase().replace(/[_-]+/g, ' ').split(/\s+/).filter(Boolean);
+  const drop = new Set(['body', 'small', 'medium', 'large', 'huge', 'mintchoco', 'race', 'form', 'naked']);
+  const toks = raw.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/[_-]+/g, ' ')
+    .split(/\s+/).filter(Boolean)
+    .filter(t => {
+      const l = t.toLowerCase();
+      if (drop.has(l)) return false;
+      if (raceWords.includes(l)) return false;
+      return true;
+    });
+  let out = toks.slice(-2).join(' ');
+  if (!out) out = raw.split(/[_-\s]+/).filter(Boolean).slice(-1)[0] || 'Form';
+  out = upperFirst(out);
+  return out.length > 28 ? out.slice(0, 28).trim() : out;
+}
+
+function baseTitleOf(c) {
+  const raw = String((c && (c.race && (c.race.label || c.race.defName))) || (c && c.title) || 'Canvas');
+  return upperFirst(raw.split('·')[0].trim());
+}
+
+function normalizeCanvasNames() {
+  let changed = 0;
+  const byId = new Map((S.canvases || []).map(x => [x.id, x]));
+  (S.canvases || []).forEach(c => {
+    if (!c) return;
+    const up = upperFirst(c.title || c.doll || 'Canvas');
+    let title = up;
+    // 老数据：标题里带「·」的形态画布，自动挂到同种族的原始画布下
+    if (!c.parentId && String(c.title || '').indexOf('·') >= 0) {
+      const raceKey = (c.race && (c.race.defName || c.race.label)) || '';
+      const root = (S.canvases || []).find(x => x !== c && x.kind === 'race' && !x.parentId && !String(x.title || '').includes('·') && ((x.race && (x.race.defName || x.race.label)) || '') === raceKey);
+      if (root) c.parentId = root.id;
+    }
+    // 已经改过名的老形态：用「原始画布名 + 空格」前缀再认一次
+    if (!c.parentId) {
+      const raceKey = (c.race && (c.race.defName || c.race.label)) || '';
+      const root = (S.canvases || []).find(x => x !== c && x.kind === 'race' && !x.parentId && ((x.race && (x.race.defName || x.race.label)) || '') === raceKey && String(c.title || '').toLowerCase().startsWith(String(upperFirst(x.title)).toLowerCase() + ' '));
+      if (root) c.parentId = root.id;
+    }
+    if (c.parentId || String(c.title || '').indexOf('·') >= 0) {
+      let base = 'Canvas';
+      if (c.parentId && byId.get(c.parentId)) base = baseTitleOf(byId.get(c.parentId));
+      else base = baseTitleOf(c);
+      title = upperFirst(base + ' ' + formKeyword(c));
+    }
+    if (title !== c.title) { c.title = title; changed++; }
+  });
+  return changed;
+}
+
+function cvItemHTML(c, childOf) {
   const on = c.id === S.active;
   const kind = c.kind === 'race' ? 'RACE' : c.kind === 'custom' ? 'NEW' : 'MOD';
-  return `<div class="cv${on ? ' is-on' : ''}${c.locked ? ' is-locked' : ''}" data-act="canvas" data-id="${esc(c.id)}" draggable="true" title="${esc(c.title)}（右键更多操作）">
+  const wl = canvasWarnLevel(c);
+  const kids = (S.canvases || []).filter(x => x.parentId === c.id);
+  const open = !S.ui.linkOpen || S.ui.linkOpen[c.id] !== false;
+  const linkRoot = c.parentId || c.id;
+  const linkPalette = ['#49dfbc', '#5cc8ff', '#8f9cff', '#c98bff', '#6fe08a', '#ff7ab8', '#63d6d0', '#9be36f'];
+  const linkColor = linkPalette[Math.abs(linkRoot.split('').reduce((h, ch) => (h * 31 + ch.charCodeAt(0)) | 0, 7)) % linkPalette.length];
+  const linked = !!(c.parentId || kids.length);
+  const hasMap = !!(Array.isArray(c.bodyAliases) && c.bodyAliases.length);
+  return `<div class="cv-wrap${childOf ? ' cv-wrap--child' : ''}">
+    <div class="cv${on ? ' is-on' : ''}${c.locked ? ' is-locked' : ''}${kids.length ? ' cv--parent' : ''}" data-act="canvas" data-id="${esc(c.id)}" draggable="true" title="${esc(c.title)}（右键更多操作）">
+      ${kids.length ? `<button class="cv__fold${open ? ' is-open' : ''}" style="--lk:${linkColor}" data-act="cv-link-toggle" data-id="${esc(c.id)}" aria-expanded="${open ? 'true' : 'false'}" title="${open ? '收起' : '展开'} ${kids.length} 个关联形态">${icon('chev')}<b>${kids.length}</b></button>` : ''}
+      ${wl ? `<span class="cv__warn cv__warn--${wl}" title="有需要检查的项目"></span>` : ''}
       <div class="cv__fig" data-mini="${esc(c.id)}"></div>
       <div class="cv__txt"><b>${c.locked ? '<span class="cv__lock">🔒</span>' : ''}${esc(c.title)}</b><i>${esc(c.doll)} · ${c.parts.length} 部位${c.rjw ? ' · RJW' : ''}</i></div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">
+      <div class="cv__tags${(linked || hasMap) ? ' has-marks' : ''}">
         <span class="cv__tag">${kind}</span>
         ${harHairOf(c) ? '<span class="cv__tag cv__tag--har" title="这个种族用 HAR 附加件头发（bodyAddon）">HAR</span>' : ''}
         ${(!harHairOf(c) && c.race) ? '<span class="cv__tag cv__tag--hairdef" title="这个种族用原版 HairDef 头发">HAIR</span>' : ''}
+        ${(linked || hasMap) ? `<div class="cv__marks">${linked ? `<span class="cv__mark cv__mark--link" style="--lk:${linkColor}" title="关联画布">C</span>` : ''}${hasMap ? `<span class="cv__mark cv__mark--map" style="--lk:${linkColor}" title="有形态映射">M</span>` : ''}</div>` : ''}
       </div>
-    </div>`;
+    </div>
+    ${kids.length && open ? `<div class="cv-kids">${kids.map(k => cvItemHTML(k, true)).join('')}</div>` : ''}
+  </div>`;
 }
-
-
-/* ---------------- 最近改动（被替换 / 删除的画布，最多 5 张） ---------------- */
-const TRASH_MAX = 5;
 
 function trashInit() {
   if (!Array.isArray(S.trash)) S.trash = [];
@@ -2902,7 +3232,7 @@ function renderCanvasList() {
   const ids = new Set(S.ui.cvGroups.map(g => g.id));
   let html = '';
   S.ui.cvGroups.forEach(g => {
-    const items = S.canvases.filter(c => (c.group || '') === g.id);
+    const items = S.canvases.filter(c => (c.group || '') === g.id && !c.parentId);
     const shut = !!coll[g.id];
     html += `<div class="cvg">
       <div class="cvg__h" data-act="cv-group-toggle" data-gid="${esc(g.id)}">
@@ -2913,7 +3243,7 @@ function renderCanvasList() {
       <div class="cvg__items${shut ? ' is-shut' : ''}" data-drop-group="${esc(g.id)}">${items.map(cvItemHTML).join('')}</div>
     </div>`;
   });
-  const loose = S.canvases.filter(c => !c.group);
+  const loose = S.canvases.filter(c => !c.group && !c.parentId);
   if (loose.length) {
     html += `<div class="cvg cvg--loose">
       <div class="cvg__h"><span class="cvg__chev">·</span><b>未分组</b><span class="cvg__n">${loose.length}</span>
@@ -2995,6 +3325,66 @@ function resetCanvasToBase(id) {
   toast('已恢复「' + (cv.title || '') + '」为 NHT 原始坐标（这张画布不会再导出补丁）');
 }
 
+let cvComboLeader = null;
+
+function cvComboModal(leader) {
+  if (!leader) return;
+  cvComboLeader = leader.id;
+  const candidates = (S.canvases || []).filter(x => x !== leader);
+  const isAncestor = (maybeAncestor, node) => {
+    let p = node && node.parentId;
+    while (p) {
+      if (p === maybeAncestor.id) return true;
+      const n = (S.canvases || []).find(y => y.id === p);
+      p = n && n.parentId;
+    }
+    return false;
+  };
+  openModal(`<div style="width:min(560px,94vw)">
+    <div class="modal__head"><span class="idx">GROUP</span><h3>选择卡片成组合</h3>
+      <button class="iconbtn x" data-act="close-modal">${icon('x')}</button></div>
+    <div class="modal__body">
+      <p class="mini-note" style="margin:0 0 8px">组长：<b>${esc(leader.title)}</b>（组长始终显示，不会被折叠）</p>
+      <div class="cvcombo">
+        ${candidates.map(x => {
+          const blocked = isAncestor(x, leader);
+          return `<label class="cvcombo__row${blocked ? ' is-off' : ''}"><input type="checkbox" data-combo="${esc(x.id)}" ${x.parentId === leader.id ? 'checked' : ''} ${blocked ? 'disabled' : ''}><b>${esc(x.title)}</b><span>${esc(x.doll)}</span>${blocked ? '<em>不能选为组员</em>' : ''}</label>`;
+        }).join('') || '<p class="mini-note">没有其它画布</p>'}
+      </div>
+      <p class="mini-note" style="margin:8px 0 0">选中的卡片会成为组长的组员，默认折叠在组长下面。</p>
+    </div>
+    <div class="modal__foot">
+      <button class="btn" data-act="close-modal">取消</button>
+      <button class="btn btn--primary" data-act="cv-combo-do">组合</button>
+    </div></div>`);
+}
+
+function cvComboDo() {
+  const leader = (S.canvases || []).find(x => x.id === cvComboLeader);
+  if (!leader) return;
+  const ids = [...document.querySelectorAll('input[data-combo]:checked')].map(x => x.dataset.combo);
+  leader.parentId = null;
+  // 取消勾选的原组员：从组长下移出
+  (S.canvases || []).forEach(c => {
+    if (c && c.parentId === leader.id && !ids.includes(c.id)) c.parentId = null;
+  });
+  let n = 0;
+  ids.forEach(id => {
+    if (id === leader.id) return;
+    const c = (S.canvases || []).find(x => x.id === id);
+    if (!c) return;
+    c.parentId = leader.id;
+    n++;
+  });
+  if (!S.ui.linkOpen) S.ui.linkOpen = {};
+  S.ui.linkOpen[leader.id] = false;   // 组员默认折叠
+  try { closeModal(); } catch (e) { }
+  renderAll();
+  persist();
+  try { saveAllCanvasFiles(true); } catch (e) { }
+  toast('已组合：' + leader.title + ' + ' + n + ' 个组员');
+}
+
 function openCvMenu(ev, id) {
   const c = S.canvases.find(x => x.id === id);
   if (!c) return;
@@ -3004,6 +3394,7 @@ function openCvMenu(ev, id) {
   menu.className = 'cvmenu';
   menu.innerHTML = `
     <button class="cvmenu__i${c.locked ? ' is-on' : ''}" data-cvm="lock"><span class="cvmenu__ico">${c.locked ? '🔒' : '🔓'}</span>${c.locked ? '解除锁定' : '锁定画布'}</button>
+    <button class="cvmenu__i" data-cvm="combo">▣ 选择卡片成组合…</button>
     <div class="cvmenu__sep"></div>
     <div class="cvmenu__lbl">移动到分组</div>
     ${groups.map(g => `<button class="cvmenu__i${c.group === g.id ? ' is-on' : ''}" data-cvm="move" data-gid="${esc(g.id)}">${c.group === g.id ? '✓ ' : ''}${esc(g.name)}</button>`).join('')}
@@ -3033,6 +3424,9 @@ function openCvMenu(ev, id) {
       if (c.locked) { c.locked = false; toast('已解除锁定'); }
       else { c.locked = true; toast('已锁定画布'); }
       closeCvMenu(); renderAll(); persist(); pushHistory();
+    } else if (act === 'combo') {
+      closeCvMenu();
+      cvComboModal(c);
     } else if (act === 'move') {
       const gid = b.dataset.gid || '';
       if (gid) c.group = gid; else c.group = null;
@@ -3674,10 +4068,41 @@ function movePartTo(dragUid, targetUid, before) {
   return true;
 }
 
+function raceBodyPartSet(c) {
+  const list = c && c.race && Array.isArray(c.race.bodyParts) ? c.race.bodyParts : null;
+  if (!list || !list.length) return null;
+  const set = new Set();
+  list.forEach(x => { const i = Number(x && x.i); if (Number.isFinite(i)) set.add(i); });
+  const hasTorso = list.some(x => /torso/i.test(String((x && x.def) || '')));
+  return { set, hasTorso };
+}
+
+function applyRaceBodyPartValidity(c) {
+  if (!c) return;
+  const info = raceBodyPartSet(c);
+  if (!info) return;
+  (c.parts || []).forEach(p => {
+    if (!p || p.bid == null || p.bid < 0) return;
+    if (p.source === 'rjw') return;
+    if (p.raceForced) return;
+    let ok = info.set.has(Number(p.bid));
+    if (!ok && /Torso$/i.test(String(p.id || '')) && info.hasTorso) ok = true;
+    p.raceMissing = !ok;
+    if (!ok) {
+      p.raceOff = true;
+      p.raceOffAuto = true;
+    } else if (p.raceOffAuto) {
+      p.raceOff = false;
+      p.raceOffAuto = false;
+    }
+  });
+}
+
 function renderTree() {
   const c = activeCanvas();
   const box = $('#tree');
   if (!c) { box.innerHTML = ''; return; }
+  applyRaceBodyPartValidity(c);
   const groups = KGROUPS.map(g => {
     const list = sortTree(c.parts.filter(p => groupOf(p) === g.k && !(c.rjw === false && p.source === 'rjw')));
     const closed = S.ui.allClosed ? !S.ui.closed[g.k] : !!S.ui.closed[g.k];
@@ -3729,10 +4154,12 @@ function rowHTML(p) {
   if (sel) cls.push('is-on');
   if (p.state === 'missing') cls.push('is-missing');
   if (!p.vis) cls.push('is-hidden');
+  if (p.raceOff) cls.push('is-raceoff');
   return `<div class="${cls.join(' ')}" data-act="select" data-uid="${p.uid}" draggable="true" title="拖动可以排序 / 换栏">
     <span class="row__dot s-${p.state}" title="${stateLabel(p.state)}"></span>
-    <span class="row__name">${esc(p.name)}${p.bid < 0 && p.source !== 'rjw' ? ' <span class="pill" style="height:14px;padding:0 4px" title="没有身体部位：只绘制，不参与受伤">装饰</span>' : ''}${p.custom ? ' <span class="pill pill--a" style="height:14px;padding:0 4px">自定</span>' : ''}<em>${esc(p.nameEn && p.nameEn !== p.name ? p.nameEn : '')}</em></span>
+    <span class="row__name">${esc(p.name)}${p.bid < 0 && p.source !== 'rjw' ? ' <span class="pill" style="height:14px;padding:0 4px" title="没有身体部位：只绘制，不参与受伤">装饰</span>' : ''}${p.custom ? ' <span class="pill pill--a" style="height:14px;padding:0 4px">自定</span>' : ''}${p.raceOff ? ' <span class="pill race-off-pill" title="这个种族 BodyDef 里没有这个部位，已关闭">种族无此部位</span>' : ''}<em>${esc(p.nameEn && p.nameEn !== p.name ? p.nameEn : '')}</em></span>
     <span class="row__id">#${p.bid >= 0 ? p.bid : '—'}</span>
+    ${p.raceOff ? `<button class="row__act race-restore" data-act="part-race-restore" data-uid="${p.uid}" title="还原：即使种族没有这个部位，也强制使用">${icon('rot')}</button>` : ''}
     <button class="row__act${p.vis ? '' : ' is-active'}" data-act="toggle-vis" data-uid="${p.uid}" title="显示 / 隐藏">${icon(p.vis ? 'eye' : 'eyeoff')}</button>
     <button class="row__act${p.locked ? ' is-active' : ''}" data-act="toggle-lock" data-uid="${p.uid}" title="锁定位置">${icon(p.locked ? 'lock' : 'unlock')}</button>
   </div>`;
@@ -3942,8 +4369,7 @@ async function loadNotice() {
     }
     // 内容变了 → 重新当作“未读”
     if (NOTICE_HASH && seenGet('notice') !== NOTICE_HASH) {
-      S.flags.notifAck = false;
-      try { showNotif(); } catch (e) { }
+      S.flags.notifAck = false;   // 只亮小红点，不自动展开
     }
     refreshAttention();
   } catch (e) { /* file:// 下读不到就用内置文本 */ }
@@ -3970,7 +4396,10 @@ function refreshAttention() {
     if (el) el.classList.toggle('attn', !!st[k]);
   });
   const dot = document.getElementById('notifDot');
-  if (dot) dot.classList.toggle('is-on', !S.flags.notifAck || st.notice);
+  const unread = !S.flags.notifAck || !!st.notice;
+  if (dot) dot.classList.toggle('is-on', unread);
+  const nb = document.getElementById('notifBtn');
+  if (nb) nb.classList.toggle('is-unread', unread);
   const ack = document.getElementById('notifAck');
   if (ack) ack.classList.toggle('attn', !!st.notice);
 }
@@ -4069,7 +4498,7 @@ function ackNotif() {
 /* 进入页面：只在还没点过「收到」时弹一次；收起后不再打扰 */
 function notifHint() {
   if (S.flags.notifAck) return;
-  showNotif();
+  try { pulseBell(true); } catch (e) { }   // 打开页面不再自动展开通知
 }
 
 
@@ -4334,7 +4763,7 @@ function renderStage() {
 
 
   const rjwOff = c.rjw === false;
-  const list = sortParts(c.parts.filter(p => p.vis !== false && !isWindowOnly(p)
+  const list = sortParts(c.parts.filter(p => !p.raceOff && p.vis !== false && !isWindowOnly(p)
     && !(rjwOff && p.source === 'rjw')
     && (p.kind === 'body' || p.kind === 'eye' || p.kind === 'custom' || S.kinds[p.kind] !== false)));
   list.forEach((p, i) => pl.appendChild(partEl(p, i)));
@@ -5152,22 +5581,65 @@ function pickAt(clientX, clientY) {
   return null;
 }
 
+function variantPartRec(v, uid) {
+  if (!v || !v.parts) return null;
+  const r = v.parts[uid];
+  if (!r) return null;
+  return (typeof r === 'string') ? { img: r } : r;
+}
+
+function variantPreviewImage(p) {
+  try {
+    if (!p || S.tab !== 'variant') return '';
+    const c = activeCanvas();
+    if (!c) return '';
+    const r = variantPartRec(variantState(c), p.uid);
+    return (r && r.img) ? r.img : '';
+  } catch (e) { return ''; }
+}
+
+function stagePartGeom(p) {
+  const base = { x: p.x, y: p.y, sx: p.sx, sy: p.sy };
+  try {
+    if (S.tab !== 'variant') return base;
+    const c = activeCanvas();
+    if (!c) return base;
+    const r = variantPartRec(variantState(c), p.uid);
+    if (!r) return base;
+    return {
+      x: Number.isFinite(r.x) ? r.x : p.x,
+      y: Number.isFinite(r.y) ? r.y : p.y,
+      sx: Number.isFinite(r.sx) ? r.sx : p.sx,
+      sy: Number.isFinite(r.sy) ? r.sy : p.sy,
+    };
+  } catch (e) { return base; }
+}
+
+function stagePartImage(p) {
+  const over = variantPreviewImage(p);
+  if (over) return over;
+  if (p.state === 'prosthetic' && p.prosth) return p.prosth.img;
+  return p.img;
+}
+
 function partEl(p, z) {
   const empty = !p.img;
-  const [w, h] = empty ? [46, 46] : imgDim(p.img);
+  const pimg = stagePartImage(p);
+  const g = stagePartGeom(p);
+  const [w, h] = empty ? [46, 46] : imgDim(pimg || p.img);
   const el = document.createElement('div');
   el.className = 'part' + (p.uid === S.sel ? ' is-selected' : '') + (p.locked ? ' is-locked' : '');
   el.classList.add(isOuterPart(p) ? 'is-outer' : 'is-inner');
   if (empty) el.classList.add('part--empty');
   el.dataset.uid = p.uid;
   el.dataset.kind = p.kind;
-  el.style.width = (w * (empty ? 1 : p.sx)) + 'px';
-  el.style.height = (h * (empty ? 1 : p.sy)) + 'px';
+  el.style.width = (w * (empty ? 1 : g.sx)) + 'px';
+  el.style.height = (h * (empty ? 1 : g.sy)) + 'px';
   const cv0 = activeCanvas();
   // 层级用 layer 换算（和头发预览同一套坐标），同一层里再按排序序号微调，保证前后顺序稳定
   const layerZ = (Number(p.layer) || 0) * 10 + ((z || 0) % 10);
   el.style.zIndex = String((p.overHair && cv0) ? (10000 + (z || 0)) : layerZ);
-  el.style.transform = `translate(-50%,-50%) translate(${p.x}px,${p.y}px) rotate(${p.rot || 0}deg)`;
+  el.style.transform = `translate(-50%,-50%) translate(${g.x}px,${g.y}px) rotate(${p.rot || 0}deg)`;
   if (p.state === 'missing') el.classList.add('is-missing');
   if (p.state === 'hurt') el.classList.add('part--hurt');
 
@@ -5175,7 +5647,7 @@ function partEl(p, z) {
     el.innerHTML = `<span class="part__ph">${icon('plus')}<i>${esc(p.name || '新部位')}</i></span>`;
   } else {
     const im = document.createElement('img');
-    im.src = p.state === 'prosthetic' && p.prosth ? imgURL(p.prosth.img) : imgURL(p.img);
+    im.src = imgURL(pimg || p.img);
     im.alt = p.name;
     im.draggable = false;
     im.style.transform = p.flip ? 'scaleX(-1)' : '';
@@ -5266,10 +5738,12 @@ function paintPart(p) {
     el.style.transform = `translate(-50%,-50%) translate(${p.x}px,${p.y}px) rotate(${p.rot || 0}deg)`;
     return;
   }
-  const [w, h] = imgDim(p.img);
-  el.style.width = (w * p.sx) + 'px';
-  el.style.height = (h * p.sy) + 'px';
-  el.style.transform = `translate(-50%,-50%) translate(${p.x}px,${p.y}px) rotate(${p.rot || 0}deg)`;
+  const pimg = stagePartImage(p);
+  const g = stagePartGeom(p);
+  const [w, h] = imgDim(pimg || p.img);
+  el.style.width = (w * g.sx) + 'px';
+  el.style.height = (h * g.sy) + 'px';
+  el.style.transform = `translate(-50%,-50%) translate(${g.x}px,${g.y}px) rotate(${p.rot || 0}deg)`;
   const im = el.querySelector('img');
   if (im) {
     im.src = p.state === 'prosthetic' && p.prosth ? imgURL(p.prosth.img) : imgURL(p.img);
@@ -5770,6 +6244,148 @@ function rjwCounts(c) {
   return `${list.length} 个标记 · ${shown} 可见 · ${organs} 个器官层`;
 }
 
+function canvasAliasModal() {
+  const c = activeCanvas();
+  if (!c) return;
+  const forms = Array.isArray(c.race && c.race.bodyTypes) ? c.race.bodyTypes : [];
+  const used = new Set([c.bodytype, ...(c.bodyAliases || [])].filter(Boolean));
+  const avail = forms.filter(f => f.defName && !used.has(f.defName));
+  openModal(`<div style="width:min(520px,94vw)">
+    <div class="modal__head"><span class="idx">MAP</span><h3>添加形态映射</h3>
+      <button class="iconbtn x" data-act="close-modal">${icon('x')}</button></div>
+    <div class="modal__body">
+      <p class="mini-note" style="margin:0 0 6px">选择要复用「${esc(c.form || c.bodytype || c.title)}」画布的附加形态。</p>
+      <div class="field"><label>检测到的形态</label><div class="ctl"><select class="inp" id="aliasPick">
+        ${avail.map(f => `<option value="${esc(f.defName)}">${esc(f.label || f.defName)}${f.referenced ? '（引用，未找到定义）' : ''}</option>`).join('') || '<option value="">没有可选项</option>'}
+      </select></div></div>
+      <div class="field"><label>或手动输入</label><div class="ctl"><input class="inp" id="aliasManual" placeholder="BodyTypeDef defName"></div></div>
+      <p class="mini-note" id="aliasErr" style="color:#e2483c;margin:4px 0 0"></p>
+    </div>
+    <div class="modal__foot">
+      <button class="btn" data-act="close-modal">取消</button>
+      <button class="btn btn--primary" data-act="canvas-alias-do">添加</button>
+    </div></div>`);
+}
+
+function canvasAliasDo() {
+  const c = activeCanvas();
+  if (!c) return;
+  const sel = document.getElementById('aliasPick');
+  const man = document.getElementById('aliasManual');
+  const body = (man && man.value.trim()) || (sel && sel.value) || '';
+  const err = document.getElementById('aliasErr');
+  if (!body) { if (err) err.textContent = '没有可添加的形态'; return; }
+  if (body === c.bodytype) { if (err) err.textContent = '不能映射到当前形态本身'; return; }
+  if (!Array.isArray(c.bodyAliases)) c.bodyAliases = [];
+  if (c.bodyAliases.includes(body)) { if (err) err.textContent = '已经添加过'; return; }
+  c.bodyAliases.push(body);
+  try { closeModal(); } catch (e) { }
+  renderAll();
+  persist();
+  try { saveAllCanvasFiles(true); } catch (e) { }
+  toast('已添加映射：' + body + ' → ' + (c.bodytype || '*'));
+}
+
+function canvasFormDupModal() {
+  const c = activeCanvas();
+  if (!c) return;
+  const race = c.race || {};
+  const base = race.defName || race.name || c.doll || '';
+  const sibs = (S.canvases || []).filter(x => x !== c && x.kind === 'race' && x.race && (x.race.defName || x.race.name) === base);
+  const used = new Set([c.bodytype, ...sibs.map(x => x.bodytype)].filter(x => x && x !== '*'));
+  const cached = Array.isArray(race.bodyTypes) ? race.bodyTypes : [];
+  const avail = cached.filter(bt => !used.has(bt.defName));
+  const extra = [...new Set(sibs.map(x => x.bodytype).filter(x => x && x !== '*'))].filter(x => !cached.some(bt => bt.defName === x));
+
+  const picker = avail.length
+    ? `<div class="field"><label>检测到的形态</label><div class="ctl"><select class="inp" id="formPick">${avail.map((bt, i) => `<option value="${i}">${esc(bt.label || bt.defName)}（${esc(bt.defName)}）</option>`).join('')}<option value="manual">手动输入…</option></select></div></div>`
+    : '';
+
+  openModal(`<div style="width:min(540px,94vw)">
+    <div class="modal__head"><span class="idx">FORM</span><h3>复制为另一形态</h3>
+      <button class="iconbtn x" data-act="close-modal">${icon('x')}</button></div>
+    <div class="modal__body">
+      ${picker}
+      <div class="field"><label>形态名</label><div class="ctl"><input class="inp" id="formName" placeholder="如 Slime / Humanlike"></div></div>
+      <div class="field"><label>形态 BodyType</label><div class="ctl"><input class="inp" id="formBody" list="formBodyList" placeholder="BodyTypeDef defName"><datalist id="formBodyList">${[...cached.map(x => x.defName), ...extra].map(x => `<option value="${esc(x)}">`).join('')}</datalist></div></div>
+      <div class="field"><label>新 Doll 名</label><div class="ctl"><input class="inp" id="formDoll"></div></div>
+      <p class="mini-note" style="margin:6px 0 0">${cached.length ? `已从种族数据读取 <b>${cached.length}</b> 个形态。` : '没有检测到形态列表，可手动输入，或参考同种族已用 BodyType。'} NHT 会按小人的 <code>bodyType</code> 自动选择对应 Doll。</p>
+      <p class="mini-note" id="formErr" style="color:#e2483c;margin:4px 0 0"></p>
+    </div>
+    <div class="modal__foot">
+      <button class="btn" data-act="close-modal">取消</button>
+      <button class="btn btn--primary" data-act="canvas-form-do">复制</button>
+    </div></div>`);
+
+  const autoDoll = (formName, body) => {
+    const stem = String(c.doll || race.defName || 'doll');
+    const tag = String(formName || body || 'form').replace(/[^A-Za-z0-9]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 32) || 'form';
+    let id = stem + '_' + tag;
+    let n = 2;
+    while ((S.canvases || []).some(x => x !== c && x.doll === id)) id = stem + '_' + tag + '_' + (n++);
+    return id;
+  };
+  const fill = (bt) => {
+    if (!bt) return;
+    const nm = bt.label || bt.defName;
+    const nameEl = document.getElementById('formName');
+    const bodyEl = document.getElementById('formBody');
+    const dollEl = document.getElementById('formDoll');
+    if (nameEl) nameEl.value = nm;
+    if (bodyEl) bodyEl.value = bt.defName;
+    if (dollEl) dollEl.value = autoDoll(nm, bt.defName);
+  };
+  const sel = document.getElementById('formPick');
+  if (sel) {
+    sel.onchange = () => {
+      if (sel.value === 'manual') return;
+      fill(avail[Number(sel.value)]);
+    };
+    if (avail.length) fill(avail[0]);
+  } else {
+    const dollEl = document.getElementById('formDoll');
+    if (dollEl) dollEl.value = autoDoll('form', '');
+  }
+}
+
+function canvasFormDupDo() {
+  const c = activeCanvas();
+  if (!c) return;
+  const name = ($('#formName') || {}).value ? $('#formName').value.trim() : '';
+  const body = ($('#formBody') || {}).value ? $('#formBody').value.trim() : '';
+  const doll = ($('#formDoll') || {}).value ? $('#formDoll').value.trim() : '';
+  const err = $('#formErr');
+  if (!name) { if (err) err.textContent = '形态名不能为空'; return; }
+  if (!body) { if (err) err.textContent = 'BodyType 不能为空'; return; }
+  if (!doll) { if (err) err.textContent = 'Doll 名不能为空'; return; }
+  if ((S.canvases || []).some(x => x !== c && x.doll === doll)) { if (err) err.textContent = 'Doll 名已存在：' + doll; return; }
+  const nc = JSON.parse(JSON.stringify(c));
+  nc.id = 'c' + Date.now().toString(36);
+  const rootId = c.parentId || c.id;
+  nc.parentId = rootId;
+  const rootC = c.parentId ? ((S.canvases || []).find(x => x.id === c.parentId) || c) : c;
+  nc.title = upperFirst(baseTitleOf(rootC) + ' ' + formKeyword({ form: name, bodytype: body, race: c.race }));
+  nc.doll = doll;
+  nc.form = name;
+  nc.bodytype = body;
+  nc.bodyAliases = [];   // 映射属于原形态，不复制给新形态
+  nc.locked = false;
+  nc.harBubbleOpen = false;
+  nc._patchOn = undefined;
+  nc.savedSig = undefined;
+  nc.sigVer = undefined;
+  S.canvases.push(nc);
+  if (!S.ui.linkOpen) S.ui.linkOpen = {};
+  S.ui.linkOpen[rootId] = true;
+  S.active = nc.id;
+  try { closeModal(); } catch (e) { }
+  renderAll();
+  persist();
+  try { saveAllCanvasFiles(true); } catch (e) { }
+  pushHistory();
+  toast('已创建形态：' + name + '（' + doll + '）');
+}
+
 function canvasInspector(c) {
   if (!c) return `<div class="empty">没有画布</div>`;
   const race = c.race;
@@ -5788,12 +6404,21 @@ function canvasInspector(c) {
   <div class="sec">
     <div class="sec__h"><b>画布 CANVAS</b></div>
     <div class="field"><label>名称</label><div class="ctl"><input class="inp inp--txt" data-f="c.title" value="${esc(c.title)}" spellcheck="false"></div></div>
-    <div class="field"><label>体型</label><div class="ctl"><input class="inp inp--txt" data-f="c.bodytype" value="${esc(c.bodytype)}" spellcheck="false"></div></div>
+    <div class="field"><label>形态</label><div class="ctl"><input class="inp inp--txt" data-f="c.form" value="${esc(c.form || '')}" placeholder="如 Slime / Humanlike" spellcheck="false"></div></div>
+    <div class="field"><label>形态 BodyType</label><div class="ctl"><input class="inp inp--txt" data-f="c.bodytype" value="${esc(c.bodytype)}" placeholder="Mincho_Body_..." spellcheck="false"></div></div>
     <div class="field"><label>Doll</label><div class="ctl"><input class="inp" data-f="c.doll" value="${esc(c.doll)}" spellcheck="false"></div></div>
+    <div class="rowline" style="margin:2px 0 0"><button class="btn btn--sm" data-act="canvas-form-dup">＋ 复制为另一形态</button></div>
     <div class="field"><label>性别</label><div class="ctl"><input class="inp" data-f="c.gender" value="${esc(c.gender)}" spellcheck="false"></div></div>
     <div class="field"><label>异种</label><div class="ctl"><input class="inp" data-f="c.xenotype" value="${esc(c.xenotype)}" spellcheck="false"></div></div>
     ${race ? `<div class="field"><label>种族</label><div class="ctl"><input class="inp" data-f="c.raceDef" value="${esc(race.defName || '')}" spellcheck="false"></div></div>` : ''}
   </div>
+
+  ${c.kind === 'race' ? `<div class="sec">
+    <div class="sec__h"><b>形态映射 BODY MAPPING</b></div>
+    <div class="rowline" style="flex-wrap:wrap;gap:4px">${(c.bodyAliases || []).map(n => `<span class="pill pill--c" style="display:inline-flex;align-items:center;gap:4px">${esc(n)}<button class="iconbtn" data-act="canvas-alias-del" data-name="${esc(n)}" title="移除映射" style="width:16px;height:16px">${icon('x')}</button></span>`).join('') || '<span class="mini-note">还没有映射</span>'}</div>
+    <div class="rowline" style="margin-top:4px"><button class="btn btn--sm" data-act="canvas-alias-add">＋ 添加映射</button></div>
+    <p class="mini-note" style="margin:4px 0 0">让附加形态（如 Slime_YR_Bote）复用本画布的 Doll；导出为 BodyAliasDef。</p>
+  </div>` : ''}
 
   <div class="sec">
     <div class="sec__h"><b>图层顺序 STACK</b><span class="mini-note" style="margin:0">上面的盖住下面的</span></div>
@@ -6285,6 +6910,7 @@ function renderLibrary() {
       let g = a.cat === 'rjw' ? '模组 · RJW 器官'
         : (a.cat === 'race' && a.g && !/^模组/.test(a.g) ? ('模组 · ' + a.g) : a.g);
       if (!g) g = '未分类';
+      g = displayGroupName(g);
       if (!byG.has(g)) byG.set(g, []);
       byG.get(g).push(a);
     });
@@ -6301,8 +6927,8 @@ function renderLibrary() {
   } else if (cat === 'race') {
     const byG = new Map();
     matches.forEach(a => {
-      const raw = a.modKey || a.g || '种族素材';
-      const g = /^模组/.test(raw) ? raw : ('模组 · ' + raw);
+      const raw = a.g || a.modKey || '种族素材';
+      const g = displayGroupName(/^模组/.test(raw) ? raw : ('模组 · ' + raw));
       if (!byG.has(g)) byG.set(g, []);
       byG.get(g).push(a);
     });
@@ -6327,7 +6953,7 @@ function renderLibrary() {
   {
     const byMod = new Map();
     hairHits.forEach(h => {
-      const k = h.modKey || '本地导入';
+      const k = displayGroupName(h.g || h.modKey || '本地导入');
       if (!byMod.has(k)) byMod.set(k, []);
       byMod.get(k).push(h);
     });
@@ -6348,7 +6974,7 @@ function renderLibrary() {
         const list = cat.list;
         const head = `<div class="libgrp sub mine__f libgrp--cat${so ? ' is-open' : ''}" data-act="lib-grp" data-g="${esc(key)}"
             draggable="true" data-minecat="${esc(cat.name)}">
-            <span>${so ? '▾' : '▸'}</span><b>${esc(cat.name)}</b><i>${list.length}</i>
+            <span>${so ? '▾' : '▸'}</span><b>${esc(upperFirst(cat.name))}</b><i>${list.length}</i>
             <button class="row__act" data-act="mine-rename-cat" data-cat="${esc(cat.name)}" title="重命名分类（会改文件夹名）">${icon('tag')}</button>
             <button class="row__act" data-act="mine-del-cat" data-cat="${esc(cat.name)}" title="删除分类（会删除文件夹）">${icon('trash')}</button>
           </div>`;
@@ -6375,7 +7001,7 @@ function renderLibrary() {
           const shown = list.slice(0, 90);
           const more = list.length > shown.length ? `<p class="mini-note" style="padding:4px 2px 0">还有 ${list.length - shown.length} 张，用搜索框找</p>` : '';
           return `<div class="libgrp sub${so ? ' is-open' : ''}" data-act="lib-grp" data-g="${esc(key)}">
-              <span>${so ? '▾' : '▸'}</span><b>${esc(sub)}</b><i>${list.length}</i></div>
+              <span>${so ? '▾' : '▸'}</span><b>${esc(upperFirst(sub))}</b><i>${list.length}</i></div>
             ${so ? `<div class="grid">${shown.map(tile).join('')}</div>${more}` : ''}`;
         }).join('');
       }
@@ -6387,18 +7013,20 @@ function renderLibrary() {
       ${open ? `<div class="grid">${shown.map(tile).join('')}</div>${more}` : ''}`;
   };
   pane.innerHTML = `
-    <div class="libsearch">${icon('search')}<input class="inp inp--txt" data-f="lib.q" value="${esc(S.ui.q)}" placeholder="搜索贴图：翅膀 / tail / organ …" spellcheck="false"></div>
-    <div class="libadd libadd--two" style="align-items:center">
+    <div class="libtop">
+      <div class="libsearch">${icon('search')}<input class="inp inp--txt" data-f="lib.q" value="${esc(S.ui.q)}" placeholder="搜索贴图：翅膀 / tail / organ …" spellcheck="false"></div>
+      <select class="inp libcat" id="libCat" title="素材分类">${CATS.map(([k, l]) => {
+        const n = k === 'all' ? ASSETS.length : ASSETS.filter(a => a.cat === k).length;
+        return `<option value="${k}"${S.ui.cat === k ? ' selected' : ''}>${l} (${n})</option>`;
+      }).join('')}</select>
+    </div>
+    <div class="libact">
       <button class="btn btn--sm${S.settings && S.settings.autoCrop ? ' btn--on' : ' btn--off'}" data-act="crop-toggle"
         title="自动裁剪：点击素材时把透明边缘裁掉并缓存（最多 ${S.settings && S.settings.cropMax ? S.settings.cropMax : 4} 个）。只有真正用到画布上的素材会在本地保存时写进 Custom。">✂ 自动裁剪</button>
-    </div>
-    <div class="libadd libadd--two">
       <button class="btn btn--sm" data-act="import-assets" title="从图片文件或整个模组文件夹把素材收进素材库">${icon('folder')}导入素材</button>
       <button class="btn btn--sm" data-act="import-hair" title="从图片文件或模组文件夹导入发型">${icon('folder')}导入发型</button>
     </div>
-
-    <div class="chips">${CATS.map(([k, l]) => `<button data-act="lib-cat" data-cat="${k}" class="${S.ui.cat === k ? 'on' : ''}">${l}</button>`).join('')}</div>
-    ${hairHits.length ? `<p class="mini-note hairhint">下面是各个模组的发型贴图：<b>点一下就能放到头上当参考</b>（用来对耳朵 / 角的位置），然后按 <b>拖动移动、滚轮缩放</b>，右下角的「参考发型」面板里可以锁定 / 调整层级。</p>
+    ${hairHits.length ? `<p class="mini-note hairhint">点发型贴图放到头上当参考；拖动移动、滚轮缩放。</p>
       <div class="libgrp hair${hairOpen ? ' is-open' : ''}" data-act="lib-grp" data-g="__hair">
         <span>${hairOpen ? '▾' : '▸'}</span><b>发型 HAIR</b><i>${hairHits.length}</i></div>
       ${hairOpen ? hairMods.map(([mod, items]) => {
@@ -6408,7 +7036,7 @@ function renderLibrary() {
             <span>${open ? '▾' : '▸'}</span><b>${esc(mod)}</b><i>${items.length}</i></div>
           ${open ? `<div class="grid">${items.map(h => `<button class="tile tile--hair" data-act="use-hair" data-p="${esc(h.p)}" title="${esc(h.p)}">
               <span class="tile__img"><i style="background-image:url('${imgURL(h.p)}')"></i></span>
-              <b>${esc(h.n)}</b><i class="d">点击套用</i>
+              <b>${esc(upperFirst(h.n))}</b><i class="d">点击套用</i>
             </button>`).join('')}</div>` : ''}`;
       }).join('') : ''}
     ` : ''}
@@ -6437,9 +7065,27 @@ function renderLibrary() {
 }
 
 /* every image the imported race mod ships, one collapsible group per race */
+function modShortName(raw) {
+  let s = String(raw == null ? '' : raw).trim();
+  s = s.replace(/^模组\s*·\s*/, '');
+  s = s.split(/\s*[~,，|]\s*/)[0];                 // "Mincho, The Mint..." → Mincho
+  s = s.replace(/\s*[-–—]\s*(HAR|ver\.?|version).*$/i, '');
+  s = s.replace(/\s*\(.*?\)\s*$/i, '').trim();
+  s = s.replace(/\s+HAR\s*ver\.?$/i, '').replace(/\s+Race$/i, '').trim();
+  return upperFirst(s || '模组');
+}
+
+function displayGroupName(g) {
+  if (!g) return g;
+  const raw = String(g);
+  const prefixed = raw.indexOf('模组') === 0;
+  const short = modShortName(raw);
+  return prefixed ? ('模组 · ' + short) : short;
+}
+
 function addRaceAssets(res, label) {
   const modKey = res.modName || label || '模组';
-  const g = '模组 · ' + (label || res.modName);
+  const g = '模组 · ' + modShortName(label || res.modName);
   const known = new Set(ASSETS.map(a => a.p));
   let n = 0;
   (res.assets || []).forEach(a => {
@@ -6468,13 +7114,14 @@ function setHairs(res, label) {
   let n = 0;
   add.forEach(h => {
     if (have.has(h.key)) return;
-    const name = h.key.split('/').pop().replace(/^Hair_?/i, '');
+    const name = upperFirst(h.key.split('/').pop().replace(/^Hair_?/i, '').replace(/_(north|south|east|west)$/i, ''));
     if (h.back) HAIR_BACK_KEYS.add(h.key);
-    HAIRS.push({ p: h.key, n: name, modKey, a: !!h.ahoge, b: !!h.back });
+    const group = displayGroupName(modKey);
+    HAIRS.push({ p: h.key, n: name, modKey, g: group, a: !!h.ahoge, b: !!h.back });
     have.add(h.key);
     n++;
     const dim = EXT.get(h.key) || {};
-    if (h.file) artPut({ key: h.key, blob: h.file, w: dim.w | 0, h: dim.h | 0, name, cat: 'hair', modKey, ab: (EXT.get(h.key) || {}).ab || null });
+    if (h.file) artPut({ key: h.key, blob: h.file, w: dim.w | 0, h: dim.h | 0, name, cat: 'hair', modKey, group, ab: (EXT.get(h.key) || {}).ab || null });
   });
   return n;
 }
@@ -6482,9 +7129,11 @@ function setHairs(res, label) {
 /* hairstyles picked straight from this computer */
 async function addHairFiles(files) {
   let n = 0;
-  for (const f of files || []) {
-    if (!/^image\//.test(f.type || '')) continue;
-    const name = f.name.replace(/\.[^.]+$/, '').replace(/^Hair_?/i, '');
+  const list = (files || []).filter(f => /^image\//.test(f.type || ''));
+  // 和模组导入保持一致：只保留朝前帧，避免一次导入 north/east/west 四份
+  const south = list.filter(f => /_south\.[^.]+$/i.test(f.name || '') || !/_(north|east|west)\.[^.]+$/i.test(f.name || ''));
+  for (const f of south) {
+    let name = f.name.replace(/\.[^.]+$/, '').replace(/_(north|south|east|west)$/i, '').replace(/^.*?Hair[_-]?/i, '').replace(/^Hair_?/i, '');
     const key = 'Custom/' + customCat() + '/Hair_' + (name || 'hair') + '_' + Date.now().toString(36) + n;
     const url = URL.createObjectURL(f);
     const dim = await new Promise(r => {
@@ -7792,6 +8441,7 @@ async function doExportModFiles() {
       if (!ok) continue;
       try { await pushCustomTextures(c); } catch (e) { }
       c.savedSig = canvasSig(c); c.sigVer = CANVAS_SIG_VER;
+      c._patchOn = true;
       patched++;
     }
 
@@ -8654,6 +9304,479 @@ function refreshHairPaneIfActive() {
   try { if (S.tab === 'hair') renderHairPane(); } catch (e) { }
 }
 
+function variantState(c) {
+  if (!Array.isArray(c.colorVariants)) c.colorVariants = [];
+  if (!S.ui.variantSel) S.ui.variantSel = {};
+  const has = Object.prototype.hasOwnProperty.call(S.ui.variantSel, c.id);
+  let id = has ? S.ui.variantSel[c.id] : (c.colorVariants[0] ? c.colorVariants[0].id : null);
+  if (id && !c.colorVariants.some(v => v.id === id)) id = c.colorVariants[0] ? c.colorVariants[0].id : null;
+  S.ui.variantSel[c.id] = id;
+  return c.colorVariants.find(v => v.id === id) || null;
+}
+
+function renderVariantPane() {
+  const pane = document.getElementById('paneVariant');
+  if (!pane) return;
+  const c = activeCanvas();
+  if (!c) { pane.innerHTML = '<p class="mini-note" style="padding:14px">先在左边选一张画布。</p>'; return; }
+  const vs = Array.isArray(c.colorVariants) ? c.colorVariants : [];
+  const cur = variantState(c);
+  const head = `<div class="selhead"><div class="selhead__badge">${icon('tag')}</div>
+    <div class="selhead__t"><b>${esc(c.title)}</b><span>颜色变体 · ${vs.length} 个</span></div></div>`;
+  const actions = `<div class="rowline" style="margin:6px 0 5px;gap:5px">
+      <button class="btn btn--sm btn--primary" data-act="variant-import">导入变体（模组文件夹）</button>
+    </div>`;
+  const pick = `<div class="sec">
+    <div class="sec__h"><b>变体 VARIANT</b></div>
+    <div class="varpicklist">
+      <button class="varpickrow${!cur ? ' is-on' : ''}" data-act="variant-base">
+        <i></i><b>基础贴图</b><span>所有未覆盖部位使用基础</span>
+      </button>
+      ${vs.map(v => `<button class="varpickrow${cur && cur.id === v.id ? ' is-on' : ''}" data-act="variant-select" data-id="${esc(v.id)}">
+        <i></i><b>${esc(v.label || v.id)}</b><span>${esc(v.hediff || '未设置 Hediff')}</span>
+      </button>`).join('')}
+    </div>
+    ${vs.length ? '' : '<p class="mini-note" style="margin:6px 0 0">还没有颜色变体。点上面的「导入变体」，从模组文件夹读取 Hediff 变体数据。</p>'}
+  </div>`;
+  if (!cur) {
+    pane.innerHTML = head + actions + pick;
+    return;
+  }
+  const rows = (c.parts || []).filter(p => p.img).map(p => {
+    const rec = variantPartRec(cur, p.uid);
+    const over = rec && rec.img ? rec.img : '';
+    const src = over || p.img;
+    const tuned = !!(rec && (Number.isFinite(rec.x) || Number.isFinite(rec.y) || Number.isFinite(rec.sx) || Number.isFinite(rec.sy)));
+    return `<div class="varrow">
+      <span class="varrow__img" style="background-image:url('${imgURL(src)}')"></span>
+      <span class="varrow__t"><b>${esc(p.name || p.id)}</b><i>${over ? ('覆盖' + (tuned ? ' · 已调坐标' : '')) : '继承基础贴图'}</i></span>
+      ${over ? `<button class="btn btn--xs" data-act="variant-geom" data-uid="${esc(p.uid)}">调整</button>` : ''}
+      <button class="btn btn--xs" data-act="variant-pick" data-uid="${esc(p.uid)}">${over ? '更换' : '选择'}</button>
+      ${over ? `<button class="iconbtn" data-act="variant-clear" data-uid="${esc(p.uid)}" title="恢复基础贴图">${icon('x')}</button>` : ''}
+    </div>`;
+  }).join('');
+  pane.innerHTML = head + actions + pick + `<div class="sec">
+    <div class="sec__h sec__h--plain"><b style="flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(cur.label || '变体')}</b><button class="btn btn--xs btn--danger" style="margin-left:auto;flex:0 0 auto" data-act="variant-del" data-id="${esc(cur.id)}" title="删除当前变体">${icon('trash')}删除</button></div>
+    <div class="field"><label>名称</label><div class="ctl"><input class="inp" data-f="vf.label" value="${esc(cur.label || '')}" spellcheck="false"></div></div>
+    <div class="field"><label>Hediff</label><div class="ctl"><input class="inp" data-f="vf.hediff" value="${esc(cur.hediff || '')}" placeholder="Mincho_BluePolarBear_Hediff" spellcheck="false"></div></div>
+    <p class="mini-note">当前小人带有这个 Hediff 时，下面选中的部位改用覆盖贴图；没选的部位继承基础。</p>
+    <p class="mini-note" style="color:#86c98a">画布正在预览当前变体；切回「基础贴图」恢复默认显示。</p>\n    <p class="mini-note">选择贴图后会自动复制到 Textures/Custom/种族/变体名/。</p>
+    <div class="varlist">${rows || '<p class="mini-note">这张画布没有可覆盖的部位</p>'}</div>
+  </div>`;
+}
+
+async function importVariantFolder(files) {
+  const c = activeCanvas();
+  if (!c) { toast('先选一张画布再导入变体', true); return 0; }
+  const xmls = (files || []).filter(f => /\.xml$/i.test(f.name || ''));
+  const labels = new Map();
+  const refs = [];
+  for (const f of xmls) {
+    let text = '';
+    try { text = await f.text(); } catch (e) { continue; }
+    if (!/Hediff|BodyType/i.test(text)) continue;
+    let doc;
+    try { doc = new DOMParser().parseFromString(text, 'text/xml'); } catch (e) { continue; }
+    if (!doc || doc.querySelector('parsererror')) continue;
+    Array.from(doc.querySelectorAll('HediffDef')).forEach(hd => {
+      const dn = (hd.querySelector(':scope > defName') || {}).textContent;
+      if (dn) labels.set(dn.trim(), ((hd.querySelector(':scope > label') || {}).textContent || '').trim());
+    });
+    Array.from(doc.querySelectorAll('body')).forEach(body => {
+      Array.from(body.querySelectorAll('Hediff[For]')).forEach(hd => {
+        const dn = String(hd.getAttribute('For') || '').trim();
+        if (dn) refs.push(dn);
+      });
+    });
+  }
+  const uniq = [...new Set(refs)];
+  if (!uniq.length) {
+    toast('没有识别到颜色变体：这个文件夹里没有 body 的 Hediff 贴图引用', true);
+    return 0;
+  }
+  if (!Array.isArray(c.colorVariants)) c.colorVariants = [];
+  const have = new Set(c.colorVariants.map(v => v.hediff));
+  let n = 0;
+  uniq.forEach(h => {
+    if (!h || have.has(h)) return;
+    let label = labels.get(h) || h.replace(/_Hediff$/i, '').replace(/_/g, ' ');
+    label = upperFirst(String(label).replace(/^mincho\s*/i, '').replace(/\s*Hediff\s*$/i, '').trim() || h);
+    c.colorVariants.push({ id: 'v' + Date.now().toString(36) + n, label, hediff: h, parts: {} });
+    have.add(h);
+    n++;
+  });
+  if (!n) { toast('识别到的变体都已经在画布里了', true); return 0; }
+  if (!S.ui.variantSel) S.ui.variantSel = {};
+  S.ui.variantSel[c.id] = c.colorVariants[c.colorVariants.length - n].id;
+  renderAll();
+  persist();
+  try { saveAllCanvasFiles(true); } catch (e) { }
+  toast(`已识别并导入 ${n} 个颜色变体：${c.colorVariants.slice(-n).map(v => v.label).join(' / ')}`);
+  return n;
+}
+
+function variantAddModal() {
+  const c = activeCanvas(); if (!c) return;
+  openModal(`<div style="width:min(460px,92vw)">
+    <div class="modal__head"><span class="idx">VARIANT</span><h3>新建颜色变体</h3>
+      <button class="iconbtn x" data-act="close-modal">${icon('x')}</button></div>
+    <div class="modal__body">
+      <div class="field"><label>名称</label><div class="ctl"><input class="inp" id="vName" placeholder="BluePolarBear"></div></div>
+      <div class="field"><label>Hediff</label><div class="ctl"><input class="inp" id="vHediff" placeholder="Mincho_BluePolarBear_Hediff"></div></div>
+      <p class="mini-note" id="vErr" style="color:#e2483c;margin:4px 0 0"></p>
+    </div>
+    <div class="modal__foot"><button class="btn" data-act="close-modal">取消</button>
+      <button class="btn btn--primary" data-act="variant-do">创建</button></div></div>`);
+}
+
+function variantAddDo() {
+  const c = activeCanvas(); if (!c) return;
+  const name = (document.getElementById('vName') || {}).value || '';
+  const hediff = (document.getElementById('vHediff') || {}).value || '';
+  if (!name.trim()) { const e = document.getElementById('vErr'); if (e) e.textContent = '名称不能为空'; return; }
+  if (!Array.isArray(c.colorVariants)) c.colorVariants = [];
+  const v = { id: 'v' + Date.now().toString(36), label: name.trim(), hediff: hediff.trim(), parts: {} };
+  c.colorVariants.push(v);
+  S.ui.variantSel[c.id] = v.id;
+  closeModal();
+  renderAll();
+  persist();
+  try { saveAllCanvasFiles(true); } catch (e) { }
+}
+
+let variantPickUid = null;
+let variantPickQ = '';
+let variantPickCat = 'all';
+let variantPickCrop = false;
+const VP_CATS = [
+  ['all', '全部'],
+  ['mine', '我的素材'],
+  ['race', '种族素材'],
+  ['body', '身体部件'],
+  ['organs', '器官 / 骨骼'],
+  ['rjw', 'RJW'],
+  ['other', '其它'],
+];
+function variantCatMatch(a, sel) {
+  const cat = String((a && a.cat) || '');
+  if (sel === 'all') return true;
+  if (sel === 'mine') return cat === 'mine';
+  if (sel === 'race') return cat === 'race';
+  if (sel === 'body') return cat === 'baseliner' || cat === 'prosthesis' || cat === 'xeno' || cat === 'common' || cat === 'armor';
+  if (sel === 'organs') return cat === 'organs' || cat === 'bones';
+  if (sel === 'rjw') return cat === 'rjw';
+  if (sel === 'other') return !(cat === 'mine' || cat === 'race' || cat === 'baseliner' || cat === 'prosthesis' || cat === 'xeno' || cat === 'common' || cat === 'armor' || cat === 'organs' || cat === 'bones' || cat === 'rjw');
+  return true;
+}
+
+function variantPickSource() {
+  const seen = new Set();
+  const out = [];
+  (ASSETS || []).forEach(a => {
+    if (!a || !a.p || seen.has(a.p)) return;
+    if (a.cat === 'hair') return;
+    if (/(^|\/)(hair|hair_?back)(\/|$)/i.test(String(a.p))) return;
+    seen.add(a.p);
+    out.push(a);
+  });
+  return out;
+}
+
+let variantPickOpen = {};
+let variantPickLimit = {};
+
+function variantPickIsOpen(key) {
+  if (variantPickQ) return true;
+  if (Object.prototype.hasOwnProperty.call(variantPickOpen, key)) return !!variantPickOpen[key];
+  return key === 'mine';
+}
+
+function variantPickLimitFor(key) {
+  const n = Number(variantPickLimit[key]);
+  return Number.isFinite(n) && n > 0 ? n : 240;
+}
+
+function variantPickGroups() {
+  const q = norm(variantPickQ);
+  const rows = variantPickSource().filter(a => {
+    if (!variantCatMatch(a, variantPickCat)) return false;
+    if (q && !norm(a.n).includes(q) && !norm(a.p).includes(q)) return false;
+    return true;
+  });
+  const mine = [];
+  const by = new Map();
+  rows.forEach(a => {
+    if (a.cat === 'mine') { mine.push(a); return; }
+    let g = '';
+    if (a.cat === 'rjw') g = '模组 · RJW 器官';
+    else if (a.cat === 'race') g = displayGroupName(a.g || ('模组 · ' + (a.modKey || '种族素材')));
+    else {
+      const hit = CATS.find(x => x[0] === a.cat);
+      g = hit ? hit[1] : (a.g || '其它素材');
+    }
+    if (!by.has(g)) by.set(g, []);
+    by.get(g).push(a);
+  });
+
+  const out = [];
+  if (mine.length) {
+    const subs = new Map();
+    mine.forEach(a => {
+      const parts = String(a.p).split('/');
+      const sub = upperFirst(parts.length > 2 ? parts[1] : '未分类');
+      if (!subs.has(sub)) subs.set(sub, []);
+      subs.get(sub).push(a);
+    });
+    out.push({ key: 'mine', label: '★ 我的素材', items: mine, subs: [...subs.entries()] });
+  }
+  [...by.entries()]
+    .sort((a, b) => String(a[0]).localeCompare(String(b[0])))
+    .forEach(([g, items]) => out.push({ key: 'g:' + g, label: g, items }));
+  return out;
+}
+
+function variantPickCard(a) {
+  return `<button class="varpick" data-act="variant-set" data-p="${esc(a.p)}" title="${esc(a.p)}">
+    <span style="background-image:url('${imgURL(a.p)}')"></span><b>${esc(upperFirst(a.n || a.p.split('/').pop()))}</b></button>`;
+}
+
+function variantPickGrid(items, key) {
+  const limit = variantPickLimitFor(key);
+  const shown = items.slice(0, limit);
+  const more = items.length > shown.length;
+  return `<div class="varpickgrid">${shown.map(variantPickCard).join('')}</div>
+    ${more ? `<button class="btn btn--sm vpmore" data-act="variant-pick-more" data-key="${esc(key)}">还有 ${items.length - shown.length} 张 · 显示更多</button>` : ''}`;
+}
+
+function variantPickBodyHTML() {
+  const groups = variantPickGroups();
+  if (!groups.length) return '<p class="mini-note" style="padding:12px">没有匹配的素材。</p>';
+  return groups.map(g => {
+    if (g.key === 'mine') {
+      const open = variantPickIsOpen('mine');
+      const subHtml = open ? g.subs.map(([sub, items]) => {
+        const sk = 'mine:' + sub;
+        const so = variantPickIsOpen(sk);
+        return `<div class="vpgroup vpgroup--sub">
+          <div class="vphead vphead--toggle vphead--sub" data-act="variant-pick-group" data-key="${esc(sk)}">
+            <span class="vpchev">${so ? '▾' : '▸'}</span><b>${esc(sub)}</b><i>${items.length}</i></div>
+          ${so ? variantPickGrid(items, sk) : ''}
+        </div>`;
+      }).join('') : '';
+      return `<div class="vpgroup">
+        <div class="vphead vphead--toggle" data-act="variant-pick-group" data-key="mine">
+          <span class="vpchev">${open ? '▾' : '▸'}</span><b>★ 我的素材</b><i>${g.items.length}</i></div>
+        ${subHtml}
+      </div>`;
+    }
+    const open = variantPickIsOpen(g.key);
+    return `<div class="vpgroup">
+      <div class="vphead vphead--toggle" data-act="variant-pick-group" data-key="${esc(g.key)}">
+        <span class="vpchev">${open ? '▾' : '▸'}</span><b>${esc(g.label)}</b><i>${g.items.length}</i></div>
+      ${open ? variantPickGrid(g.items, g.key) : ''}
+    </div>`;
+  }).join('');
+}
+
+function renderVariantPickBody() {
+  const body = document.getElementById('varPickBody');
+  if (body) body.innerHTML = variantPickBodyHTML();
+}
+
+function variantTextureFolder(c) {
+  const raw = (c && c.race && (c.race.label || c.race.defName)) || (c && c.title) || '未分类';
+  return String(raw).replace(/^mod\s*·\s*/i, '').replace(/[^\w\u4e00-\u9fa5-]+/g, '_').replace(/^_+|_+$/g, '') || '未分类';
+}
+
+function variantNameFolder(v) {
+  const raw = (v && (v.label || v.hediff)) || 'Variant';
+  return String(raw).replace(/[^\w\u4e00-\u9fa5-]+/g, '_').replace(/^_+|_+$/g, '') || 'Variant';
+}
+
+async function saveVariantTexture(c, v, uid, src, autoCrop) {
+  if (!c || !v || !src) return { img: src, gray: '' };
+  const race = variantTextureFolder(c);
+  const vname = variantNameFolder(v);
+  const prefix = 'Custom/' + race + '/' + vname + '/';
+  if (String(src).indexOf(prefix) === 0) {
+    const old = variantPartRec(v, uid);
+    return { img: src, gray: (old && old.gray) || '' };
+  }
+  let data = '';
+  let cw = 0, chh = 0;
+  if (autoCrop) {
+    try {
+      const cr = await cropAssetKey(src);
+      if (cr && cr.data) { data = cr.data; cw = cr.w | 0; chh = cr.h | 0; }
+    } catch (e) { }
+  }
+  try {
+    const idx = artLoadIndex();
+    if (!data && idx[src] && idx[src].d) data = idx[src].d;
+  } catch (e) { }
+  if (!data) {
+    try {
+      const u = imgURL(src);
+      if (u) {
+        const r = await fetch(u);
+        const b = await r.blob();
+        data = await fileToDataURL(b);
+      }
+    } catch (e) { }
+  }
+  if (!data) return { img: src, gray: '' };
+  const part = (c.parts || []).find(p => p.uid === uid);
+  const pname = String((part && (part.id || part.name)) || 'Part').replace(/[^\w\u4e00-\u9fa5-]+/g, '_');
+  const base = String(src).split('/').pop().replace(/\.[^.]+$/, '');
+  const fname = pname + '_' + base.replace(/[^\w\u4e00-\u9fa5-]+/g, '_');
+  const key = prefix + fname;
+  try {
+    const ok = await apiSave('to=texture&key=' + encodeURIComponent(key), data);
+    if (!ok) { toast('变体贴图保存失败：写入 Textures/Custom 失败', true); return { img: src, gray: '' }; }
+    const dim = imgDim(src);
+    const ow = cw || dim[0] || 64, oh = chh || dim[1] || 64;
+    EXT.set(key, { url: data, w: ow, h: oh });
+    try { const idx2 = artLoadIndex(); idx2[key] = { d: data, w: ow, h: oh, n: fname, cat: 'asset', group: '模组 · ' + race + ' · ' + vname, modKey: (c.race && c.race.defName) || race }; artSaveIndex(); } catch (e) { }
+
+    // 同规则再保存一张灰度：同种族 / 同变体文件夹 / 文件名 + _Gray
+    let grayKey = '';
+    try {
+      const g = await grayPngDataURL(key);
+      if (g && g.data) {
+        grayKey = key + '_Gray';
+        const gok = await apiSave('to=texture&key=' + encodeURIComponent(grayKey), g.data);
+        if (gok) {
+          EXT.set(grayKey, { url: g.data, w: g.w | 0, h: g.h | 0 });
+          try { const idx3 = artLoadIndex(); idx3[grayKey] = { d: g.data, w: g.w | 0, h: g.h | 0, n: fname + '_Gray', cat: 'asset', group: '模组 · ' + race + ' · ' + vname, modKey: (c.race && c.race.defName) || race }; artSaveIndex(); } catch (e) { }
+        } else grayKey = '';
+      }
+    } catch (e) { grayKey = ''; }
+
+    toast('变体贴图已保存：' + key + (grayKey ? '（含灰度）' : ''));
+    return { img: key, gray: grayKey };
+  } catch (e) {
+    toast('变体贴图保存失败：' + e.message, true);
+    return { img: src, gray: '' };
+  }
+}
+
+function variantPickModal(uid) {
+  variantPickUid = uid;
+  variantPickQ = '';
+  variantPickCat = 'all';
+  variantPickCrop = !!(S.settings && S.settings.autoCrop);
+  openModal(`<div style="width:min(760px,94vw)">
+    <div class="modal__head"><span class="idx">PICK</span><h3>选择变体贴图</h3>
+      <button class="iconbtn x" data-act="close-modal">${icon('x')}</button></div>
+    <div class="modal__body">
+      <div class="vpbar">
+        <div class="libsearch">${icon('search')}<input class="inp inp--txt" id="vpQ" data-vp-q="1" placeholder="搜索贴图：耳朵 / tail / wing …" spellcheck="false"></div>
+        <select class="inp vpcat" id="vpCat" title="分类">${VP_CATS.map(([k, l]) => `<option value="${k}"${variantPickCat === k ? ' selected' : ''}>${l}</option>`).join('')}</select>
+        <label class="vpcrop" title="开启后选中的贴图会先裁掉透明边，再保存到这个变体的文件夹"><input type="checkbox" id="vpCrop" ${variantPickCrop ? 'checked' : ''}>自动裁剪</label>
+      </div>
+      <div id="varPickBody" class="vppickbody">${variantPickBodyHTML()}</div>
+    </div></div>`);
+}
+
+let hairPickHideAhoge = true;
+let hairPickHideBack = true;
+let hairPickSort = 'default';
+
+function hairPickNum(x) {
+  const m = String((x && (x.n || x.p)) || '').match(/(\d+)/);
+  return m ? Number(m[1]) : 999999;
+}
+
+function hairPickData() {
+  const list = [];
+  const seen = new Set();
+  (typeof HAIRS !== 'undefined' ? HAIRS : []).forEach(h => {
+    if (!h || !h.p || seen.has(h.p)) return;
+    seen.add(h.p);
+    list.push({
+      p: h.p,
+      n: h.n || h.p.split('/').pop(),
+      m: displayGroupName(h.g || h.modKey || h.mod || ''),
+      a: !!h.a || /ahoge/i.test(h.p),
+      b: !!h.b || /(^|[\/_-])hair[_-]?back([\/_-]|$)/i.test(h.p) || /backhair/i.test(h.p)
+    });
+  });
+  ASSETS.forEach(a => {
+    if (!a || !a.p || seen.has(a.p)) return;
+    if (!/hair/i.test(a.p) && !/hair/i.test(a.n || '')) return;
+    seen.add(a.p);
+    list.push({
+      p: a.p,
+      n: a.n || a.p.split('/').pop(),
+      m: displayGroupName(a.g || a.modKey || a.mod || ''),
+      a: /ahoge/i.test(a.p),
+      b: /(^|[\/_-])hair[_-]?back([\/_-]|$)/i.test(a.p) || /backhair/i.test(a.p)
+    });
+  });
+  return list.filter(x => {
+    if (hairPickHideAhoge && x.a) return false;
+    if (hairPickHideBack && x.b) return false;
+    return true;
+  });
+}
+
+function hairPickBodyHTML() {
+  const items = hairPickData();
+  if (!items.length) return '<p class="mini-note" style="padding:10px">没有符合当前筛选的发型。</p>';
+  const groups = new Map();
+  items.forEach(x => {
+    const key = x.m || '其它';
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(x);
+  });
+  const ordered = [...groups.entries()].sort((a, b) => b[1].length - a[1].length);
+  return ordered.map(([mod, arr]) => {
+    let rows = arr.slice();
+    if (hairPickSort === 'asc') rows.sort((a, b) => hairPickNum(a) - hairPickNum(b) || String(a.n).localeCompare(String(b.n)));
+    if (hairPickSort === 'desc') rows.sort((a, b) => hairPickNum(b) - hairPickNum(a) || String(a.n).localeCompare(String(b.n)));
+    return `<details class="fold">
+      <summary>${esc(mod)} <span style="opacity:.6">（${rows.length}）</span></summary>
+      <div class="grid">${rows.slice(0, 300).map(x => `
+        <button class="tile tile--hair" data-act="hair-prev-set" data-p="${esc(x.p)}" title="${esc(x.p)}">
+          <span class="tile__img"><i style="background-image:url('${imgURL(x.p)}')"></i></span>
+          <b>${esc(upperFirst(x.n))}</b></button>`).join('')}</div>
+    </details>`;
+  }).join('') + '<p class="mini-note" style="margin:6px 0 0">每组最多显示 300 张；可用上方导入更多，或按名称搜索。</p>';
+}
+
+function renderHairPickBody() {
+  const box = document.getElementById('hairPickList');
+  if (box) box.innerHTML = hairPickBodyHTML();
+}
+
+function openHairPickModal() {
+  const c = activeCanvas(); if (!c) return;
+  if (!hairPickData().length && !(typeof HAIRS !== 'undefined' && HAIRS.length)) {
+    toast('素材库/发型里还没有贴图，先「导入发型」或「导入素材」', true);
+    return;
+  }
+  openModal(`
+    <div class="modal__head"><span class="idx">HAIR</span><h3>选择预览头发</h3>
+      <button class="iconbtn x" data-act="close-modal">${icon('x')}</button></div>
+    <div class="modal__body">
+      <p class="mini-note">按模组分组。点一张贴图作为编辑器里的头发预览（只影响编辑器的可视参考）。</p>
+      <p class="mini-note" style="color:#86c98a">「隐藏呆毛 / 隐藏后脑层」只筛选这个选择窗口的列表，不会隐藏画布上已经应用的头发或后脑层。</p>
+      <div class="rowline" style="margin:0 0 7px;gap:7px;align-items:center;flex-wrap:wrap">
+        <button class="btn btn--sm" data-act="hair-import">${icon('plus')}导入模组发型…</button>
+        <label class="hpick-chk"><input type="checkbox" id="hpHideAhoge" ${hairPickHideAhoge ? 'checked' : ''}>隐藏呆毛</label>
+        <label class="hpick-chk"><input type="checkbox" id="hpHideBack" ${hairPickHideBack ? 'checked' : ''}>隐藏后脑层</label>
+        <label class="hpick-chk">排序
+          <select class="inp hpick-sort" id="hpSort">
+            <option value="default"${hairPickSort === 'default' ? ' selected' : ''}>默认</option>
+            <option value="asc"${hairPickSort === 'asc' ? ' selected' : ''}>数值 ↑</option>
+            <option value="desc"${hairPickSort === 'desc' ? ' selected' : ''}>数值 ↓</option>
+          </select>
+        </label>
+      </div>
+      <div id="hairPickList">${hairPickBodyHTML()}</div>
+    </div>`);
+}
+
 function renderHairPane() {
   const pane = document.getElementById('paneHair');
   if (!pane) return;
@@ -8664,7 +9787,7 @@ function renderHairPane() {
   }
   const head = `<div class="selhead"><div class="selhead__badge">${esc(String(c.doll || '').slice(0, 1).toUpperCase())}</div>
     <div class="selhead__t"><b>${esc(c.title || '')}</b><span>${esc(c.doll || '')} · 发型显示设置</span></div></div>`;
-  pane.innerHTML = head + (typeof hairSectionHTML === 'function' ? hairSectionHTML(c) : '');
+  pane.innerHTML = head + (typeof hairSectionHTML === 'function' ? hairSectionHTML(c) : '') + hairStatusHTML(c);
   try { lockVanillaHairControls(c, pane); } catch (e) { }
 }
 
@@ -8678,10 +9801,12 @@ function renderTabs() {
   $('#paneInspect').hidden = !(S.tab === 'inspect' || S.tab === 'global');
   $('#paneHair').hidden = S.tab !== 'hair';
   $('#paneAssets').hidden = S.tab !== 'assets';
+  $('#paneVariant').hidden = S.tab !== 'variant';
   $('#panePatch').hidden = S.tab !== 'patch';
   if (S.tab === 'hair') { try { renderHairPane(); } catch (e) { } }
   try { renderRefDock(); } catch (e) { }
   if (S.tab === 'assets') renderLibrary();
+  if (S.tab === 'variant') renderVariantPane();
   if (S.tab === 'patch') renderPatch();
   if (S.tab === 'inspect' || S.tab === 'global') renderInspector();
 }
@@ -8916,6 +10041,7 @@ function gmkMount() {
   const panel = document.querySelector('.panel--cvs');
   if (!panel || document.getElementById('gitBookmark')) return;
   const wrap = document.createElement('div');
+  GMK.open = false;   // 默认折叠：只有手动点开才展开
   wrap.className = 'gmk';
   wrap.id = 'gitBookmark';
   wrap.innerHTML = gmkHTML();
@@ -9315,6 +10441,7 @@ async function saveCanvasFile(c) {
   if (S.preview) return false;
   try {
     await canvasPut(canvasFileRel(c), JSON.stringify(c));
+    noteCanvasSaved();
     return true;
   } catch (e) { return false; }
 }
@@ -9651,7 +10778,8 @@ async function syncCustomPathsFromDisk(silent) {
           const im = new Image();
           im.onload = () => {
             rec.w = im.naturalWidth; rec.h = im.naturalHeight;
-            try { EXT.set(k, { url: '/__tex?key=' + encodeURIComponent(k), w: rec.w, h: rec.h }); } catch (e) { }
+            try { const a = ASSETS.find(x => x.p === rec.p); if (a) { a.w = rec.w; a.h = rec.h; } } catch (e) { }
+            try { EXT.set(k, { url: imgURL(k), w: rec.w, h: rec.h }); } catch (e) { }
             if (typeof renderLibrary === 'function') renderLibrary();
           };
           im.src = '/__tex?key=' + encodeURIComponent(k);
@@ -9686,7 +10814,29 @@ async function syncCustomPathsFromDisk(silent) {
       const name = v.split('/').pop();
       return (isG ? gray : norm).get(name) || v;
     };
-    let n = diskAdded;
+    try {
+    const byP = new Map();
+    (S.customAssets || []).forEach(a => {
+      if (!a || !a.p) return;
+      const prev = byP.get(a.p);
+      const better = !prev || (a.disk && !prev.disk) || ((a.w || 0) > (prev.w || 0) && (a.disk === prev.disk));
+      if (better) byP.set(a.p, a);
+    });
+    S.customAssets = [...byP.values()];
+  } catch (e) { }
+  // 已有磁盘条目如果尺寸还是 0，补读一次真实尺寸
+  try {
+    (S.customAssets || []).filter(a => a && a.disk && (!a.w || !a.h)).slice(0, 60).forEach(a => {
+      const im = new Image();
+      im.onload = () => {
+        a.w = im.naturalWidth; a.h = im.naturalHeight;
+        try { const e = ASSETS.find(x => x.p === a.p); if (e) { e.w = a.w; e.h = a.h; } } catch (er) { }
+        try { if (typeof renderLibrary === 'function') renderLibrary(); } catch (er) { }
+      };
+      im.src = imgURL(a.p);
+    });
+  } catch (e) { }
+  let n = diskAdded;
     (S.customAssets || []).forEach(a => {
       const nk = rep(a.p); if (nk !== a.p) { a.p = nk; n++; }
       // 磁盘上已有文件的素材：不再在 index.json 里内嵌 base64
@@ -10184,6 +11334,14 @@ function nhtDefNames() {
 
 /* prefix for new defs: the race's own English defName, minus the trailing "_Race"
    (Milira_Race -> Milira), falling back to the doll name */
+function isFormCanvas(c) {
+  return !!(c && c.kind === 'race' && !(D.bodytypes || []).some(b => b.doll === c.doll));
+}
+
+function formPartId(c, p) {
+  return safeDefName(String((c && c.doll) || 'Form') + '_' + String((p && p.id) || 'Part'), 'Part');
+}
+
 function defPrefix(c) {
   const raw = (c && c.race && (c.race.defName || c.race.name)) || (c && c.doll) || 'Part';
   let p = String(raw).replace(/[^A-Za-z0-9_]+/g, '_');
@@ -10569,6 +11727,21 @@ ${rows}
       }
     }
 
+    const aliases = Array.isArray(c.bodyAliases) ? c.bodyAliases.filter(Boolean) : [];
+    if (aliases.length && c.bodytype && c.bodytype !== '*') {
+      aliases.forEach((from, ai) => {
+        const an = safeDefName('NHTCD_Alias_' + (c.doll || 'Doll') + '_' + ai, 'Alias');
+        adds.push(`      <!-- ${c.title} · 形态映射 ${from} → ${c.bodytype} -->
+      <NHT_CustomDolls.BodyAliasDef>
+        <defName>${xesc(an)}</defName>
+        <race>${xesc((c.race && c.race.defName) || '*')}</race>
+        <fromBody>${xesc(from)}</fromBody>
+        <toBody>${xesc(c.bodytype)}</toBody>
+      </NHT_CustomDolls.BodyAliasDef>`);
+      });
+    }
+
+
     const orig = originalDefs(c.doll);
     const rjwOrig = originalRjwDefs(c.doll);
     const present = new Set();
@@ -10576,13 +11749,48 @@ ${rows}
     const nameSeed = nhtDefNames();
     const nameMap = new Map();
     sortParts(c.parts).forEach(p => {
+      if (p.raceOff) return;
       if (!p.img) return;
       if (c.rjw === false && p.source === 'rjw') return;      // RJW 关闭：不导出
       const isRjw = p.source === 'rjw' && rjwOrig.has(p.id);
-      if (orig.has(p.id) || isRjw) nameMap.set(p.uid, p.id);
+      if (isFormCanvas(c)) nameMap.set(p.uid, formPartId(c, p));
+      else if (orig.has(p.id) || isRjw) nameMap.set(p.uid, p.id);
       else nameMap.set(p.uid, uniqueNewId(c, p, nameSeed));
     });
     const nameOf = p => nameMap.get(p.uid);
+
+    const variants = Array.isArray(c.colorVariants) ? c.colorVariants : [];
+    variants.forEach((v, vi) => {
+      if (!v || !v.hediff) return;
+      const rows = Object.keys(v.parts || {}).map(uid => {
+        const p = (c.parts || []).find(x => x.uid === uid);
+        if (!p || !p.img) return '';
+        const dn = nameOf(p);
+        if (!dn) return '';
+        const r = variantPartRec(v, uid);
+        if (!r || !r.img) return '';
+        let out = `        <li><part>${xesc(dn)}</part><imagePath>${xesc(r.img)}</imagePath>`;
+        if (r.gray) out += `<grayPath>${xesc(r.gray)}</grayPath>`;
+        if (Number.isFinite(r.x)) out += `<x>${r.x}</x>`;
+        if (Number.isFinite(r.y)) out += `<y>${r.y}</y>`;
+        if (Number.isFinite(r.sx)) out += `<width>${r.sx}</width>`;
+        if (Number.isFinite(r.sy)) out += `<height>${r.sy}</height>`;
+        return out + '</li>';
+      }).filter(Boolean);
+      if (!rows.length) return;
+      const dn = safeDefName('NHTCD_Color_' + (c.doll || 'Doll') + '_' + (v.label || vi), 'ColorVariant');
+      adds.push(`      <!-- ${c.title} · 颜色变体 ${v.label || v.hediff} -->
+      <NHT_CustomDolls.ColorVariantDef>
+        <defName>${xesc(dn)}</defName>
+        <race>${xesc((c.race && c.race.defName) || '*')}</race>
+        <bodyType>${xesc(c.bodytype || '*')}</bodyType>
+        <hediff>${xesc(v.hediff)}</hediff>
+        <parts>
+${rows.join('\n')}
+        </parts>
+      </NHT_CustomDolls.ColorVariantDef>`);
+    });
+
     {
       // 手动指定：哪些部位画在头发之上（列表为空 = 不重画任何部位）
       const above = sortParts(c.parts).filter(p => p.overHair && p.img).map(p => nameOf(p));
@@ -10628,17 +11836,19 @@ ${dollXML(c, '      ', nameOf)}
       if (c.rjw === false && p.source === 'rjw') return;   // RJW 关闭：数据保留但不导出
       present.add(p.id);
       const isRjw = p.source === 'rjw' && rjwOrig.has(p.id);
-      if (orig.has(p.id) || isRjw) {
+      const form = isFormCanvas(c);
+      const pid = form ? formPartId(c, p) : p.id;
+      if (!form && (orig.has(p.id) || isRjw)) {
         const tag = tagOf(orig.has(p.id) ? orig.get(p.id) : rjwOrig.get(p.id));
         ops.push(`  <!-- ${c.title} · ${p.name}${p.source === 'rjw' ? ' · RJW' : ''} -->`);
         ops.push(`  <Operation Class="PatchOperationReplace">
     <xpath>${xpathDef(tag, p.id)}</xpath>${isRjw ? RJW_MAYREQUIRE : ''}
     <value>
-${partXML(p, c.doll, '      ', exportFit(c))}
+${partXML(p, c.doll, '      ', exportFit(c), pid)}
     </value>
   </Operation>`);
       } else {
-        adds.push(partXML(p, c.doll, '      ', exportFit(c), uniqueNewId(c, p, newIds)));
+        adds.push(partXML(p, c.doll, '      ', exportFit(c), form ? pid : uniqueNewId(c, p, newIds)));
       }
     });
 
@@ -10844,6 +12054,13 @@ function registerCustomAsset(rec) {
     return entry0;
   }
   CUSTOM.set(rec.p, rec);
+  // 待保存的裁剪缓存：只用于画布渲染，不作为素材展示
+  if (!rec.disk && /\/Crop_[^/]+$/.test(String(rec.p))) {
+    const at0 = ASSETS.findIndex(a => a.p === rec.p);
+    if (at0 >= 0) ASSETS.splice(at0, 1);
+    ASSETMAP.delete(rec.p);
+    return null;
+  }
   const entry = {
     p: rec.p, n: rec.n || String(rec.p).split('/').pop(),
     w: rec.w || 64, h: rec.h || 64,
@@ -12025,11 +13242,12 @@ async function parseRaceMod(files) {
   let modHasHairAddon = false;     // 模组里是否有 hair bodyAddon（可能在父级 def 上）
   let bodyDef = null;
   const bodyDefs = new Map();
+  const bodyTypeDefs = new Map();
   for (const [k, f] of xmls) {
     if (f.size > 2.5 * 1024 * 1024) continue;
     let text;
     try { text = await f.text(); } catch (e) { continue; }
-    if (!/ThingDef|BodyDef/.test(text)) continue;
+    if (!/ThingDef|BodyDef|BodyTypeDef/.test(text)) continue;
     if (!modHasHairAddon && /bodyAddons[\s\S]{0,6000}?<path>[^<]*Hair/i.test(text)) modHasHairAddon = true;
     let doc;
     try { doc = new DOMParser().parseFromString(text, 'text/xml'); } catch (e) { continue; }
@@ -12073,11 +13291,35 @@ async function parseRaceMod(files) {
             parentName,
             addonPaths,
             addonList,
-            hairAddon
+            hairAddon,
+            bodyTypes: (() => {
+              try {
+                const bt = raceNode.querySelector('bodyTypes');
+                return bt ? Array.from(bt.querySelectorAll(':scope > li')).map(x => String(x.textContent || '').trim()).filter(Boolean) : [];
+              } catch (e) { return []; }
+            })(),
+            bodyTypeRefs: (() => {
+              try {
+                return Array.from(node.querySelectorAll('BodyType'))
+                  .map(x => String(x.getAttribute('For') || '').trim())
+                  .filter(Boolean);
+              } catch (e) { return []; }
+            })()
           });
         }
       }
       if (/(^|\.)HairDef$/.test(tag)) hairDefXmls.push(node);
+      if (/(^|\.)BodyTypeDef$/.test(tag)) {
+        const dn = node.querySelector(':scope > defName')?.textContent?.trim();
+        if (dn) {
+          bodyTypeDefs.set(dn, {
+            defName: dn,
+            label: node.querySelector(':scope > label')?.textContent?.trim() || '',
+            graphic: node.querySelector(':scope > bodyNakedGraphicPath')?.textContent?.trim() || '',
+            parentName: node.getAttribute('ParentName') || '',
+          });
+        }
+      }
       if (/(^|\.)BodyDef$/.test(tag)) {
         const defName = node.querySelector(':scope > defName')?.textContent?.trim();
         if (defName) bodyDefs.set(defName, node);
@@ -12279,7 +13521,7 @@ async function parseRaceMod(files) {
   tex.forEach(k => {
     const key = textureKey(k);
     const isAhoge = /ahoge/i.test(k);
-    const isHair = /(^|\/)hair/i.test(k) || isAhoge;
+    const isHair = /(^|[\\/_-])hair/i.test(k) || isAhoge;
     const isBack = hairPathIsBackDir(k) || hairIsBackName(k.split('/').pop());
     if (isHair) {
       // dolls face the viewer: keep the south-facing frame, drop north/east duplicates
@@ -12301,8 +13543,34 @@ async function parseRaceMod(files) {
     if (ART_RE.test(k) && assetList.length < 900) assetList.push({ key, path: k, file: map.get(k) });
   });
 
+  const raceBodyTypes = (() => {
+    const base = String((race && (race.defName || race.label)) || modName || '').replace(/_?Race$/i, '');
+    const key = norm(base);
+    let list = [...bodyTypeDefs.values()].filter(bt => {
+      const n = norm(bt.defName);
+      return !key || n.includes(key) || (bt.graphic && norm(bt.graphic).includes(key));
+    });
+    if (!list.length) list = [...bodyTypeDefs.values()];
+    const defaults = (race && Array.isArray(race.bodyTypes)) ? race.bodyTypes : [];
+    const seen = new Set(list.map(x => x.defName));
+    defaults.forEach(dn => {
+      if (!seen.has(dn)) { list.push({ defName: dn, label: '', graphic: '', parentName: '' }); seen.add(dn); }
+    });
+    ((race && race.bodyTypeRefs) || []).forEach(dn => {
+      if (!seen.has(dn)) { list.push({ defName: dn, label: '', graphic: '', parentName: '' }); seen.add(dn); }
+    });
+    return list.map(bt => ({
+      defName: bt.defName,
+      label: bt.label || (() => { const rp = String((race && (race.defName || race.label)) || '').replace(/_?Race$/i, ''); let x = String(bt.defName); if (rp) x = x.replace(new RegExp('^' + rp.replace(/[^A-Za-z0-9]/g, '.?') + '[_]?', 'i'), ''); return x.replace(/^Body_/i, '').replace(/_/g, ' ').trim() || bt.defName; })(),
+      graphic: bt.graphic || '',
+      isDefault: defaults.includes(bt.defName),
+      referenced: !bodyTypeDefs.has(bt.defName),
+    }));
+  })();
+
   return {
     root, modName, packageId, author, race,
+    bodyTypes: raceBodyTypes,
     races: (() => {
       const m = new Map();
       (races || []).forEach(r => { if (!m.has(r.defName)) m.set(r.defName, r); });
@@ -12485,29 +13753,320 @@ function harBubbleHTML(c, st) {
       </div>`;
 }
 
+function patchNameFor(c) {
+  try {
+    if (!c || c.kind !== 'race') return '';
+    return 'nht-' + slug(c.doll || c.title) + '.xml';
+  } catch (e) { return ''; }
+}
+
+async function patchExists(name) {
+  if (!name) return false;
+  try {
+    if (HOST) return !!(await HOST.PatchExists(name));
+    const r = await fetch('/__patch-exists?name=' + encodeURIComponent(name), { cache: 'no-store' });
+    return (await r.text()).trim() === 'yes';
+  } catch (e) { return false; }
+}
+
+function checkCanvasPatch(c) {
+  const name = patchNameFor(c);
+  if (!name) return;
+  if (c._patchOn !== undefined) return;
+  c._patchOn = null;
+  patchExists(name).then(ok => {
+    c._patchOn = !!ok;
+    try { if (activeCanvas() === c) updateHarBadge(c); } catch (e) { }
+  }).catch(() => { c._patchOn = false; });
+}
+
+let BASELINE = null;
+
+const BASE_CANVAS_FIELDS = [
+  { k: 'bounds', sev: 'red' },
+  { k: 'outline', sev: 'red' },
+  { k: 'hairFitEnabled', sev: 'yellow' },
+  { k: 'hairFitUseWhenOff', sev: 'yellow' },
+  { k: 'hairFront', sev: 'yellow' },
+  { k: 'showArmorCover', sev: 'yellow' },
+  { k: 'hairPreviewLayer', sev: 'info' },
+];
+const BASE_PART_FIELDS = [
+  { k: 'layer', sev: 'yellow' },
+  { k: 'scale', sev: 'yellow' },
+  { k: 'desat', sev: 'yellow' },
+  { k: 'armor', sev: 'yellow' },
+  { k: 'hitboxScale', sev: 'yellow' },
+  { k: 'showArmorCover', sev: 'yellow' },
+];
+
+function baselineGroupOf(c) {
+  return (c && (c.harHair || (c.race && c.race.hairAddon))) ? 'HAR' : 'nonHAR';
+}
+
+function baselineValueKey(v) {
+  if (v === undefined) return '<missing>';
+  try { return JSON.stringify(v); } catch (e) { return String(v); }
+}
+
+function majorityValue(list) {
+  const cnt = new Map();
+  list.forEach(v => {
+    const k = baselineValueKey(v);
+    if (!cnt.has(k)) cnt.set(k, { n: 0, v });
+    cnt.get(k).n++;
+  });
+  let best = null;
+  cnt.forEach(e => { if (!best || e.n > best.n) best = e; });
+  if (!best) return null;
+  return { v: best.v, ratio: best.n / list.length, n: best.n, total: list.length };
+}
+
+function computeBaseline() {
+  const groups = { HAR: [], nonHAR: [] };
+  (S.canvases || []).forEach(c => {
+    if (!c || c.kind === 'default') return;   // 基准只统计种族画布，不用默认体型画布
+    groups[baselineGroupOf(c)].push(c);
+  });
+  const out = { v: 3, at: Date.now(), groups: {} };
+  Object.keys(groups).forEach(g => {
+    const cs = groups[g];
+    const canvas = {};
+    if (cs.length >= 2) {
+      BASE_CANVAS_FIELDS.forEach(f => {
+        const m = majorityValue(cs.map(c => c[f.k]));
+        if (m && m.ratio >= 0.8 && m.v !== undefined) canvas[f.k] = { v: m.v, ratio: m.ratio, n: m.n, total: m.total };
+      });
+    }
+    const parts = {};
+    if (cs.length >= 2) {
+      const ids = new Set();
+      cs.forEach(c => (c.parts || []).forEach(p => { if (p && p.id && !p.raceOff) ids.add(p.id); }));
+      ids.forEach(id => {
+        const withPart = cs.filter(c => (c.parts || []).some(p => p && p.id === id && !p.raceOff));
+        if (withPart.length / cs.length < 0.8) return;
+        const fields = {};
+        BASE_PART_FIELDS.forEach(f => {
+          const vals = withPart.map(c => {
+            const p = (c.parts || []).find(x => x && x.id === id);
+            return p ? p[f.k] : undefined;
+          });
+          const m = majorityValue(vals);
+          if (m && m.ratio >= 0.8 && m.v !== undefined) fields[f.k] = { v: m.v, ratio: m.ratio, n: m.n, total: m.total };
+        });
+        if (Object.keys(fields).length) parts[id] = fields;
+      });
+    }
+    out.groups[g] = { canvas, parts, samples: cs.length };
+  });
+  return out;
+}
+
+async function loadBaseline() {
+  if ((S.canvases || []).length < 3) {
+    setTimeout(() => { loadBaseline().then(() => { try { updateHarBadge(activeCanvas()); } catch (e) { } }); }, 900);
+    return;
+  }
+  try {
+    let txt = '';
+    txt = (await canvasGet('_baseline.json')) || '';
+    let b = null;
+    try { b = txt && txt.trim() && txt.trim() !== '{}' ? JSON.parse(txt) : null; } catch (e) { b = null; }
+    if (!b || b.v !== 3 || !b.groups) {
+      b = computeBaseline();
+      if ((S.canvases || []).length >= 3) await saveBaselineFile(b);
+    }
+    BASELINE = b;
+    try { renderCanvasList(); } catch (e) { }
+  } catch (e) { BASELINE = computeBaseline(); }
+}
+
+async function saveBaselineFile(b) {
+  const txt = JSON.stringify(b);
+  try {
+    await canvasPut('_baseline.json', txt);
+    return true;
+  } catch (e) { return false; }
+}
+
+function baselineDiffs(c) {
+  if (!BASELINE || !c) return [];
+  const g = BASELINE.groups[baselineGroupOf(c)];
+  if (!g) return [];
+  const out = [];
+  const fmt = v => {
+    if (v === undefined) return '（无）';
+    const s = typeof v === 'object' ? JSON.stringify(v) : String(v);
+    return s.length > 40 ? s.slice(0, 40) + '…' : s;
+  };
+  BASE_CANVAS_FIELDS.forEach(f => {
+    const b = g.canvas && g.canvas[f.k];
+    if (!b) return;
+    if (baselineValueKey(c[f.k]) !== baselineValueKey(b.v)) {
+      out.push({ scope: '画布', field: f.k, cur: fmt(c[f.k]), base: fmt(b.v), sev: f.sev, ratio: b.ratio });
+    }
+  });
+  (c.parts || []).forEach(p => {
+    if (!p || !p.id || p.raceOff) return;
+    const bf = g.parts && g.parts[p.id];
+    if (!bf) return;
+    BASE_PART_FIELDS.forEach(f => {
+      const b = bf[f.k];
+      if (!b) return;
+      if (baselineValueKey(p[f.k]) !== baselineValueKey(b.v)) {
+        out.push({ scope: p.name || p.id, field: f.k, cur: fmt(p[f.k]), base: fmt(b.v), sev: f.sev, ratio: b.ratio });
+      }
+    });
+  });
+  return out;
+}
+
+async function refreshBaselineNow(silent) {
+  const b = computeBaseline();
+  BASELINE = b;
+  const ok = await saveBaselineFile(b);
+  if (!silent) toast(ok ? '基准参数已重新统计' : '基准参数保存失败', !ok);
+  return ok;
+}
+
+function noteCanvasSaved() {
+  try {
+    S.baselineSaves = (Number(S.baselineSaves) || 0) + 1;
+    if (S.baselineSaves >= 10) {
+      S.baselineSaves = 0;
+      refreshBaselineNow(true).then(() => { try { updateHarBadge(activeCanvas()); } catch (e) { } });
+    }
+  } catch (e) { }
+}
+
+function canvasHealth(c) {
+  const items = [];
+  try {
+    const st = hairWarnInfo(c);
+    if (st) {
+      items.push({
+        key: 'hair', name: '发型参数', ok: !st.warn, fix: st.warn,
+        detail: st.warn ? ('还缺：' + st.missing.join('、')) : '已配好，可导出',
+      });
+    }
+    const grayMiss = (c.parts || []).filter(p => {
+      if (p.raceOff || !p.desat || p.vis === false) return false;
+      if (p.grayImg) return false;
+      if (!DISK_TEX_KEYS) return false;   // 磁盘清单未加载时不误报
+      try { return !DISK_TEX_KEYS.has(grayKeyFor(c.doll, p)); } catch (e) { return false; }
+    });
+    if (grayMiss.length) items.push({ key: 'gray', name: '灰度图', ok: false, fix: true, detail: grayMiss.length + ' 个部位缺灰度图' });
+    if (DISK_TEX_KEYS) {
+      const miss = new Set();
+      const scan = (p) => {
+        if (!p || p.raceOff) return;
+        if (p.img && /^Custom\//.test(p.img) && !DISK_TEX_KEYS.has(p.img)) miss.add(p.img);
+        if (p.grayImg && !DISK_TEX_KEYS.has(p.grayImg)) miss.add(p.grayImg);
+      };
+      (c.parts || []).concat(c.detached || []).forEach(scan);
+      if (miss.size) items.push({ key: 'tex', name: '贴图文件', ok: false, fix: true, detail: miss.size + ' 张引用的贴图不在磁盘' });
+    }
+    const raceOffParts = (c.parts || []).filter(p => p && p.raceOff);
+    if (raceOffParts.length) {
+      items.push({ key: 'raceparts', name: '种族部位', ok: true, fix: false,
+        detail: raceOffParts.length + ' 个部位种族 BodyDef 没有，已自动关闭' });
+    }
+    const bd = baselineDiffs(c);
+    if (bd.length) items.push({ key: 'baseline', name: '基准参数', ok: false, rows: bd, detail: bd.length + ' 个参数与多数画布不同' });
+    if (c.kind === 'race' && c.race) {
+      const rt = c.race.defName || c.race.name || '';
+      const sibs = (S.canvases || []).filter(x => x !== c && x.kind === 'race' && x.race && (x.race.defName || x.race.name) === rt);
+      const dup = (S.canvases || []).find(x => x !== c && x.doll === c.doll);
+      if (dup) {
+        items.push({ key: 'form', name: '形态', ok: false, fix: false, detail: 'Doll 名重复：' + c.doll });
+      } else if ((!c.bodytype || c.bodytype === '*') && sibs.some(x => x.bodytype && x.bodytype !== '*')) {
+        items.push({ key: 'form', name: '形态', ok: false, fix: false, detail: '同种族已有指定形态，本画布仍是 *' });
+      } else if (c.form && (!c.bodytype || c.bodytype === '*')) {
+        items.push({ key: 'form', name: '形态', ok: false, fix: false, detail: '形态缺少 BodyType' });
+      } else if (Array.isArray(c.race.bodyTypes) && c.race.bodyTypes.length && c.bodytype && c.bodytype !== '*' && !c.race.bodyTypes.some(bt => bt.defName === c.bodytype)) {
+        items.push({ key: 'form', name: '形态', ok: false, fix: false, detail: 'BodyType 不在种族列表：' + c.bodytype });
+      }
+    }
+    if (c.kind === 'race') {
+      const pn = patchNameFor(c);
+      const dirty = !!(c.savedSig && canvasSig(c) !== c.savedSig);
+      if (c._patchOn === null || c._patchOn === undefined) {
+        items.push({ key: 'inject', name: '注入状态', ok: true, detail: '检测中…' });
+      } else if (!c._patchOn) {
+        items.push({ key: 'inject', name: '注入状态', ok: false, fix: true, detail: 'Patches 里还没有 ' + pn });
+      } else if (dirty) {
+        items.push({ key: 'inject', name: '注入状态', ok: false, fix: true, detail: '已注入，但画布有改动未再注入' });
+      } else {
+        items.push({ key: 'inject', name: '注入状态', ok: true, detail: '已注入 ' + pn });
+      }
+    }
+  } catch (e) { }
+  return items;
+}
+
+function healthBubbleHTML(c) {
+  checkCanvasPatch(c);
+  const items = canvasHealth(c);
+  const bad = items.filter(x => !x.ok).length;
+  const fixBtn = (x) => {
+    if (x.ok || !x.fix) return '';
+    if (x.key === 'hair') return `<button class="linkbtn hhealth__fix" data-act="health-hair">去发型页</button>`;
+    if (x.key === 'gray') return `<button class="linkbtn hhealth__fix" data-act="health-gray">生成灰图</button>`;
+    if (x.key === 'tex') return `<button class="linkbtn hhealth__fix" data-act="health-sync">同步素材</button>`;
+    if (x.key === 'inject') return `<button class="linkbtn hhealth__fix" data-act="health-inject">立即注入</button>`;
+    return '';
+  };
+  const subRows = (x) => {
+    if (!x.rows || !x.rows.length) return '';
+    const shown = x.rows.slice(0, 6);
+    return shown.map(d => `<div class="hhealth__sub is-${esc(d.sev || 'info')}">
+        <span class="hhealth__where">${esc(d.scope)} · ${esc(d.field)}</span>
+        <span class="hhealth__cur">当前 ${esc(d.cur)}</span>
+        <span class="hhealth__base">基准 ${esc(d.base)}</span>
+      </div>`).join('') + (x.rows.length > shown.length ? `<div class="hhealth__more">…还有 ${x.rows.length - shown.length} 项</div>` : '');
+  };
+  const rows = items.length
+    ? items.map(x => `<div class="hhealth__row${x.ok ? '' : ' is-bad'}"><i>${x.ok ? '✓' : '!'}</i><b>${esc(x.name)}</b><span>${esc(x.detail)}</span>${fixBtn(x)}</div>${subRows(x)}`).join('')
+    : '<div class="hhealth__row"><i>✓</i><b>画布正常</b><span>没有检测到问题</span></div>';
+  return `<div class="harwarn__h${bad ? '' : ' harwarn__h--ok'}">${bad ? ('⚠ 画布检查：' + bad + ' 项待处理') : '✓ 画布正常'}</div>
+    <div class="harwarn__b">${rows}</div>`;
+}
+
+function hairStatusHTML(c) {
+  try {
+    const st = hairWarnInfo(c);
+    if (!st) return '';
+    const rows = [];
+    if (st.hh) {
+      const names = (st.hh.samples && st.hh.samples.length) ? st.hh.samples.join(' / ') : '（未命名）';
+      rows.push(`<p class="mini-note">HAR 附加件发型：<b>${esc(st.hh.mod || '')}</b> 共 ${st.hh.count} 张${st.hh.back ? `（含 ${st.hh.back} 张后层）` : ''}，例如 ${esc(names)}。</p>`);
+    }
+    if (st.redraw) rows.push('<p class="mini-note">当前开启了「发型重绘」，会在 NHT 绘制后再补画一遍。</p>');
+    rows.push(`<p class="mini-note">头发层级 = <b>${st.hl}</b>；图层更大的部位会盖在头发上。</p>`);
+    if (st.missing.length) rows.push(`<p class="mini-note" style="color:#e3b558">还缺：${esc(st.missing.join('、'))}</p>`);
+    else rows.push('<p class="mini-note" style="color:#86c98a">发型参数完整 ✓</p>');
+    return `<div class="sec"><div class="sec__h"><b>发型状态 HAIR STATUS</b></div>${rows.join('')}</div>`;
+  } catch (e) { return ''; }
+}
+
 function updateHarBadge(c) {
   const badge = document.getElementById('harBadge');
   const bubble = document.getElementById('harBubble');
   if (!badge || !bubble) return;
-  // 徽标与气泡必须挂在 stage 上：board 会被缩放/平移，挂里面会跟着变形、定位也不对
   const stageEl = document.getElementById('stage');
   if (stageEl) {
     if (badge.parentElement !== stageEl) stageEl.appendChild(badge);
     if (bubble.parentElement !== stageEl) stageEl.appendChild(bubble);
   }
   if (!c) { badge.hidden = true; bubble.hidden = true; return; }
-  const st = hairWarnInfo(c);
-  if (!st) { badge.hidden = true; bubble.hidden = true; return; }
+  const items = canvasHealth(c);
+  const bad = items.filter(x => !x.ok).length;
   badge.hidden = false;
-  badge.classList.toggle('is-warn', st.warn);
-  badge.classList.toggle('is-ok', !st.warn);
-  badge.title = st.warn ? '发型设置还没配好 —— 点击查看' : '发型设置正常 —— 点击查看';
-  bubble.classList.toggle('is-warn', st.warn);
-  bubble.innerHTML = harBubbleHTML(c, st);
-  if (st.warn && !c.harAutoShown) {
-    c.harAutoShown = true;
-    c.harBubbleOpen = true;
-  }
+  badge.classList.toggle('is-warn', bad > 0);
+  badge.classList.toggle('is-ok', bad === 0);
+  badge.title = bad ? ('画布检查：' + bad + ' 项待处理') : '画布检查：正常';
+  bubble.classList.toggle('is-warn', bad > 0);
+  bubble.innerHTML = healthBubbleHTML(c);
   bubble.hidden = !c.harBubbleOpen;
   badge.classList.toggle('is-open', !!c.harBubbleOpen);
 }
@@ -12603,6 +14162,26 @@ function harHairOf(c) {
 
 function createFromRace(res) {
   const title = cleanTitle((res.race && res.race.label) || res.modName);
+  const raceDef = res.race && res.race.defName;
+  const existing = raceDef ? ((S.canvases || []).find(x => x && x.kind === 'race' && !x.parentId && x.race && x.race.defName === raceDef) || (S.canvases || []).find(x => x && x.kind === 'race' && x.race && x.race.defName === raceDef)) : null;
+  if (existing) {
+    const wasAssets = hasStoredArt(res.modName || title, 'asset');
+    const wasHair = hasStoredArt(res.modName || title, 'hair');
+    const added = wasAssets ? 0 : addRaceAssets(res, title);
+    if (!wasHair) setHairs(res, title);
+    if (Array.isArray(res.bodyTypes) && res.bodyTypes.length) existing.race.bodyTypes = res.bodyTypes;
+    if (Array.isArray(res.bodyTypes) && res.bodyTypes.length) {
+      (S.canvases || []).forEach(x => {
+        if (x && x.kind === 'race' && x.race && x.race.defName === raceDef) x.race.bodyTypes = res.bodyTypes;
+      });
+    }
+    S.active = existing.id;
+    renderAll();
+    persist();
+    try { saveAllCanvasFiles(true); } catch (e) { }
+    toast(`已更新「${title}」：${added ? `补收 ${added} 张素材` : '素材已存在'}，${wasHair ? '发型已存在' : '已收进发型库'}`);
+    return existing;
+  }
   const c = createRaceCanvas(res, 'female', title);
   try {
     if (LOCAL_HTTP) fetch('/__custommkdir?name=' + encodeURIComponent(customCatFor(c)), { cache: 'no-store' });
@@ -12629,6 +14208,7 @@ function createFromRace(res) {
   renderAll();
   fitView();
   pushHistory();
+  try { saveAllCanvasFiles(true); } catch (e) { }
   const skipped = c.race.skipped || 0;
   const noParts = !c.race.partCount;
   toast(`已导入种族「${title}」：${noParts ? '这个种族没有自带身体部位，套用「标准女性」' : '默认体型「标准女性」'}${c.race.added ? `，补了 ${c.race.added} 个新部位` : ''}${added ? `，收进 ${added} 张模组素材` : (stored ? '，素材和发型本地已有，只新建画布' : '')}${skipped ? `（${skipped} 个部位没找到贴图，已跳过）` : ''}`);
@@ -12697,6 +14277,12 @@ function createRaceCanvas(res, baseId, title) {
   c.sub = res.race ? res.race.label : res.modName;
   c.base = bt.id;
   c.doll = res.race ? res.race.defName : bt.doll;
+  const forms = Array.isArray(res.bodyTypes) ? res.bodyTypes : [];
+  if (forms.length) {
+    const def = forms.find(f => f.isDefault) || forms[0];
+    c.bodytype = def.defName;
+    c.form = def.label || def.defName;
+  }
   // NHT keys the doll on the xenotype: the race defName works for every Miho xenotype
   // when the NHTRaceDolls hook is present; without it the gene xenotype name is needed.
   c.xenotype = res.race ? res.race.defName : bt.xenotype;
@@ -12710,6 +14296,7 @@ function createRaceCanvas(res, baseId, title) {
     harHair: res.harHair || null,
     harHairChecked: true,
     hairDefCount: res.hairDefCount || 0,
+    bodyTypes: forms,
     bodyParts: res.parts.map(p => ({ i: p.index, def: p.defName, label: p.label, src: res.modName || '模组' })).slice(0, 200),
     bodyDefs: (res.bodyDefList || []).map(b => ({
       defName: b.defName, label: b.label,
@@ -13649,6 +15236,16 @@ document.addEventListener('click', e => {
     }
     case 'select': select(el.dataset.uid); break;
     case 'select-detached': { const p = byUid(el.dataset.uid); if (p) select(p.uid); break; }
+    case 'part-race-restore': {
+      const c = activeCanvas(); if (!c) break;
+      const p = (c.parts || []).find(x => x.uid === el.dataset.uid); if (!p) break;
+      p.raceOff = false;
+      p.raceForced = true;
+      p.raceMissing = true;
+      renderAll(); persist(); saveAllCanvasFiles(true);
+      toast('已还原部位：种族没有对应身体部位，仍强制绘制');
+      break;
+    }
     case 'toggle-vis': {
       const p = byUid(el.dataset.uid); if (!p) break;
       p.vis = !p.vis; renderStage(); renderTree(); renderLibrary(); pushHistory(); break;
@@ -13873,6 +15470,170 @@ document.addEventListener('click', e => {
         const wv = window.chrome && window.chrome.webview;
         if (wv) wv.postMessage('restart');
       } catch (e) { }
+      break;
+    }
+    case 'health-hair': {
+      S.tab = 'hair';
+      renderTabs();
+      renderHairPane();
+      break;
+    }
+    case 'health-gray': {
+      (async () => {
+        try {
+          const c = activeCanvas();
+          if (c) await ensureGrayArt([c]);
+          renderAll();
+          toast('已生成当前画布的灰度图');
+        } catch (e) { toast('生成灰图失败：' + (e && e.message), true); }
+      })();
+      break;
+    }
+    case 'health-sync': {
+      (async () => {
+        try {
+          await syncCustomPathsFromDisk(false);
+          renderLibrary();
+          toast('已重新同步磁盘素材');
+        } catch (e) { toast('同步失败：' + (e && e.message), true); }
+      })();
+      break;
+    }
+    case 'health-inject': {
+      (async () => {
+        try {
+          await savePatchToMod();
+          const c = activeCanvas(); if (c) c._patchOn = true;
+          updateHarBadge(activeCanvas());
+        } catch (e) { toast('注入失败：' + (e && e.message), true); }
+      })();
+      break;
+    }
+    case 'cv-combo-do': {
+      cvComboDo();
+      break;
+    }
+    case 'cv-link-toggle': {
+      const id = el.dataset.id;
+      if (!id) break;
+      if (!S.ui.linkOpen) S.ui.linkOpen = {};
+      S.ui.linkOpen[id] = S.ui.linkOpen[id] === false;
+      renderCanvasList();
+      persist();
+      break;
+    }
+    case 'variant-import': {
+      dirPurpose = 'variants';
+      pendingRace = null;
+      const di = document.getElementById('dirInput');
+      if (di) di.click();
+      break;
+    }
+    case 'variant-select': {
+      const c = activeCanvas(); if (!c) break;
+      S.ui.variantSel[c.id] = el.dataset.id;
+      renderVariantPane(); renderStage(); break;
+    }
+    case 'variant-base': {
+      const c = activeCanvas(); if (!c) break;
+      S.ui.variantSel[c.id] = null;
+      renderVariantPane(); renderStage(); break;
+    }
+    case 'variant-del': {
+      const c = activeCanvas(); if (!c) break;
+      const v = (c.colorVariants || []).find(x => x.id === el.dataset.id);
+      if (!v) break;
+      openModal(`<div style="width:min(430px,92vw)">
+        <div class="modal__head"><span class="idx">VARIANT</span><h3>删除变体</h3>
+          <button class="iconbtn x" data-act="close-modal">${icon('x')}</button></div>
+        <div class="modal__body"><p class="mini-note">删除「${esc(v.label || v.id)}」以及它的部位覆盖吗？此操作只影响当前画布。</p></div>
+        <div class="modal__foot"><button class="btn" data-act="close-modal">取消</button>
+          <button class="btn btn--danger" data-act="variant-del-do" data-id="${esc(v.id)}">删除</button></div></div>`);
+      break;
+    }
+    case 'variant-del-do': {
+      const c = activeCanvas(); if (!c) break;
+      c.colorVariants = (c.colorVariants || []).filter(v => v.id !== el.dataset.id);
+      S.ui.variantSel[c.id] = null;
+      closeModal(); renderAll(); persist(); saveAllCanvasFiles(true); break;
+    }
+    case 'variant-geom': { variantGeomModal(el.dataset.uid); break; }
+    case 'variant-geom-do': {
+      const c = activeCanvas(); const v = c && variantState(c); if (!v) break;
+      const rec = variantPartRec(v, el.dataset.uid); if (!rec || !rec.img) break;
+      const num = id => { const n = Number((document.getElementById(id) || {}).value); return Number.isFinite(n) ? n : null; };
+      const x = num('vgX'), y = num('vgY'), sx = num('vgSX'), sy = num('vgSY');
+      const next = { img: rec.img };
+      if (x != null) next.x = x;
+      if (y != null) next.y = y;
+      if (sx != null && sx > 0) next.sx = sx;
+      if (sy != null && sy > 0) next.sy = sy;
+      v.parts[el.dataset.uid] = next;
+      closeModal(); renderVariantPane(); renderAll(); persist(); saveAllCanvasFiles(true); break;
+    }
+    case 'variant-geom-reset': {
+      const c = activeCanvas(); const v = c && variantState(c); if (!v) break;
+      const rec = variantPartRec(v, el.dataset.uid); if (!rec || !rec.img) break;
+      v.parts[el.dataset.uid] = { img: rec.img };
+      closeModal(); renderVariantPane(); renderAll(); persist(); saveAllCanvasFiles(true); break;
+    }
+    case 'variant-pick': { variantPickModal(el.dataset.uid); break; }
+    case 'variant-pick-group': {
+      const key = el.dataset.key || '';
+      variantPickOpen[key] = !variantPickIsOpen(key);
+      renderVariantPickBody();
+      break;
+    }
+    case 'variant-pick-more': {
+      const key = el.dataset.key || '';
+      variantPickLimit[key] = variantPickLimitFor(key) + 240;
+      renderVariantPickBody();
+      break;
+    }
+    case 'variant-set': {
+      const c = activeCanvas(); const v = c && variantState(c); if (!v || !variantPickUid) break;
+      const uid = variantPickUid;
+      const src = el.dataset.p;
+      (async () => {
+        const saved = await saveVariantTexture(c, v, uid, src, variantPickCrop);
+        if (!v.parts) v.parts = {};
+        const prev = variantPartRec(v, uid) || {};
+        const next = Object.assign({}, prev, { img: saved.img });
+        if (saved.gray) next.gray = saved.gray; else delete next.gray;
+        v.parts[uid] = next;
+        closeModal();
+        renderVariantPane(); renderAll(); persist(); saveAllCanvasFiles(true);
+      })();
+      break;
+    }
+    case 'variant-clear': {
+      const c = activeCanvas(); const v = c && variantState(c); if (!v) break;
+      if (v.parts) delete v.parts[el.dataset.uid];
+      renderVariantPane(); renderAll(); persist(); saveAllCanvasFiles(true); break;
+    }
+    case 'canvas-alias-add': {
+      canvasAliasModal();
+      break;
+    }
+    case 'canvas-alias-do': {
+      canvasAliasDo();
+      break;
+    }
+    case 'canvas-alias-del': {
+      const c = activeCanvas();
+      if (c && Array.isArray(c.bodyAliases)) {
+        c.bodyAliases = c.bodyAliases.filter(x => x !== el.dataset.name);
+        renderAll(); persist();
+        try { saveAllCanvasFiles(true); } catch (e) { }
+      }
+      break;
+    }
+    case 'canvas-form-dup': {
+      canvasFormDupModal();
+      break;
+    }
+    case 'canvas-form-do': {
+      canvasFormDupDo();
       break;
     }
     case 'clean-scan': {
@@ -14188,45 +15949,7 @@ document.addEventListener('click', e => {
       toast(c0.hairFrameHide ? '已隐藏头发预览边框' : '已显示头发预览边框');
       break;
     }
-    case 'hair-prev-pick': {
-      const c = activeCanvas(); if (!c) break;
-      const list = [];
-      (typeof HAIRS !== 'undefined' ? HAIRS : []).forEach(h => list.push({ p: h.p, n: h.n || h.p.split('/').pop(), m: h.modKey || h.mod || '' }));
-      ASSETS.forEach(a => {
-        if (/hair/i.test(a.p) || /hair/i.test(a.n || '')) list.push({ p: a.p, n: a.n || a.p.split('/').pop(), m: a.modKey || a.mod || '' });
-      });
-      const seen = new Set();
-      const items = list.filter(x => x.p && !seen.has(x.p) && seen.add(x.p));
-      if (!items.length) { toast('素材库/发型里还没有贴图，先「导入发型」或「导入素材」', true); break; }
-      // 按模组分组（默认全部折叠）
-      const groups = new Map();
-      items.forEach(x => {
-        const key = x.m || '其它';
-        if (!groups.has(key)) groups.set(key, []);
-        groups.get(key).push(x);
-      });
-      const ordered = [...groups.entries()].sort((a, b) => b[1].length - a[1].length);
-      const body = ordered.map(([mod, arr]) => `
-        <details class="fold">
-          <summary>${esc(mod)} <span style="opacity:.6">（${arr.length}）</span></summary>
-          <div class="grid">${arr.slice(0, 300).map(x => `
-            <button class="tile tile--hair" data-act="hair-prev-set" data-p="${esc(x.p)}" title="${esc(x.p)}">
-              <span class="tile__img"><i style="background-image:url('${imgURL(x.p)}')"></i></span>
-              <b>${esc(x.n)}</b></button>`).join('')}</div>
-        </details>`).join('');
-      openModal(`
-        <div class="modal__head"><span class="idx">HAIR</span><h3>选择预览头发</h3>
-          <button class="iconbtn x" data-act="close-modal">${icon('x')}</button></div>
-        <div class="modal__body">
-          <p class="mini-note">按模组分组（默认折叠）。点一张贴图作为编辑器里的头发预览（只影响编辑器的可视参考）。</p>
-          <div class="rowline" style="margin:0 0 8px">
-            <button class="btn btn--sm" data-act="hair-import">${icon('plus')}导入模组发型…</button>
-            <span class="mini-note" style="margin:0">选模组文件夹里的 PNG（Hair / HairBack 都行），导入后会出现在列表里</span>
-          </div>
-          ${body}
-        </div>`);
-      break;
-    }
+    case 'hair-prev-pick': { openHairPickModal(); break; }
     case 'hair-back': {
       const c = activeCanvas(); if (!c) break;
       c.hairBackShow = c.hairBackShow === false;
@@ -14458,6 +16181,31 @@ document.addEventListener('click', e => {
     renderTabs(); renderInspector(); renderTree(); renderStage();
   }));
 
+document.addEventListener('change', e => {
+  if (!e.target) return;
+  if (e.target.id === 'hpHideAhoge') {
+    hairPickHideAhoge = !!e.target.checked; renderHairPickBody(); return;
+  }
+  if (e.target.id === 'hpHideBack') {
+    hairPickHideBack = !!e.target.checked; renderHairPickBody(); return;
+  }
+  if (e.target.id === 'hpSort') {
+    hairPickSort = e.target.value || 'default'; renderHairPickBody(); return;
+  }
+  if (e.target.id === 'libCat') {
+    S.ui.cat = e.target.value || 'all';
+    renderLibrary();
+    return;
+  }
+  if (e.target.id === 'vpCat') {
+    variantPickCat = e.target.value || 'all';
+    renderVariantPickBody();
+  } else if (e.target.id === 'vpCrop') {
+    variantPickCrop = !!e.target.checked;
+    try { if (!S.settings) S.settings = {}; S.settings.autoCrop = variantPickCrop; persist(); } catch (err) { }
+  }
+});
+
 document.addEventListener('input', e => {
   if (e.target.id === 'hairZInput') { setHairZFromInput(e.target.value); return; }
   if (e.target.id === 'hairBackZInput') { setHairBackZFromInput(e.target.value); return; }
@@ -14506,6 +16254,14 @@ document.addEventListener('input', e => {
     else if (prop === 'rot') cur.rot = val;
     else if (prop === 'name') cur.name = e.target.value;
     renderWin(win, activeCanvas());
+    return;
+  }
+  if (f && f.startsWith('vf.')) {
+    const c = activeCanvas(); const v = c && variantState(c); if (!v) return;
+    const key = f.slice(3);
+    if (key === 'label') v.label = e.target.value;
+    else if (key === 'hediff') v.hediff = e.target.value;
+    persist();
     return;
   }
   if (f.startsWith('c.')) {
@@ -14569,6 +16325,7 @@ document.addEventListener('input', e => {
       syncDisplayBox(c);
     }
     else if (key === 'raceDef') { if (c.race) c.race.defName = e.target.value; }
+    else if (key === 'title') { c.title = upperFirst(e.target.value); e.target.value = c.title; }
     else c[key] = e.target.value;
     if (['bx', 'by', 'bw', 'bh', 'dw', 'dh', 'dpos', 'gender', 'doll', 'bodytype'].includes(key)) { renderStage(); }
     if (key === 'title') { renderCanvasList(); renderTree(); }
@@ -14897,6 +16654,13 @@ $('#dirInput').addEventListener('change', async e => {
     e.target.value = '';
     return;
   }
+  if (dirPurpose === 'variants') {
+    dirPurpose = 'race';
+    const picked = Array.prototype.slice.call(files);
+    e.target.value = '';
+    await importVariantFolder(picked);
+    return;
+  }
   if (dirPurpose === 'assets' || dirPurpose === 'hair') {
     const mode = dirPurpose;
     dirPurpose = 'race';
@@ -14953,6 +16717,11 @@ $('#hairInput').addEventListener('change', e => {
 
 document.addEventListener('input', e => {
   const t = e.target;
+  if (t && t.id === 'vpQ') {
+    variantPickQ = t.value || '';
+    renderVariantPickBody();
+    return;
+  }
   if (!t || t.id !== 'aboutTa') return;
   S.project.aboutXml = t.value;
   persist();
@@ -14994,16 +16763,16 @@ async function importArtFolder(files, mode) {
     await registerRaceTextures(res);
     const label = res.modName && res.modName !== folder ? res.modName : folder;
     const kind = mode === 'hair' ? 'hair' : 'asset';
-    if (hasStoredArt(res.modName || label, kind)) {
-      toast(`「${label}」的${kind === 'hair' ? '发型' : '素材'}本地已经有了，跳过重复导入`);
-      renderLibrary();
-      return 0;
-    }
     if (mode === 'hair') {
       const n = setHairs(res, label);
       renderLibrary();
-      toast(n ? `已收进 ${n} 个发型：${label}` : '这个模组里没找到发型贴图', !n);
+      toast(n ? `已收进 ${n} 个发型：${label}` : (res.hairs && res.hairs.length ? '发型都已存在，无需重复导入' : '这个模组里没找到发型贴图'), !n && !(res.hairs && res.hairs.length));
       return n;
+    }
+    if (hasStoredArt(res.modName || label, kind)) {
+      toast(`「${label}」的素材本地已经有了，跳过重复导入`);
+      renderLibrary();
+      return 0;
     }
     const n = addRaceAssets(res, label);
     renderLibrary();
@@ -15479,7 +17248,7 @@ function artSubOf(key) {
 function artSelMatch(entry, sel) {
   let eg = entry.group || (entry.cat === 'hair' ? '__hair' : '');
   if (entry.cat === 'rjw') eg = '模组 · RJW 器官';
-  else if (eg && eg !== '__hair' && !/^模组/.test(eg)) eg = '模组 · ' + eg;
+  else if (eg && eg !== '__hair') eg = displayGroupName(/^模组/.test(eg) ? eg : ('模组 · ' + eg));
   const hairSub = sel.length ? null : null;
   for (const s of sel) {
     if (s.indexOf('g:') === 0 && eg === s.slice(2)) return true;
@@ -15489,7 +17258,7 @@ function artSelMatch(entry, sel) {
       const g = bar < 0 ? rest : rest.slice(0, bar);
       const sub = bar < 0 ? '' : rest.slice(bar + 1);
       if (g === '__hair') {
-        if (entry.cat === 'hair' && String(entry.modKey || '') === sub) return true;
+        if (entry.cat === 'hair' && displayGroupName(entry.modKey || '') === sub) return true;
         continue;
       }
       if (eg === g && artSubOf(entry.key) === sub) return true;
@@ -15515,7 +17284,7 @@ function injectArtChecks() {
       const bar = rest.search(/[:|]/);
       const g = bar < 0 ? rest : rest.slice(0, bar);
       const sub = bar < 0 ? '' : rest.slice(bar + 1);
-      if (g === '__hair') return planNow.some(e => e.cat === 'hair' && String(e.modKey || '') === sub);
+      if (g === '__hair') return planNow.some(e => e.cat === 'hair' && displayGroupName(e.modKey || '') === sub);
       return planNow.some(e => artSelMatch(e, ['g:' + g]) && artSubOf(e.key) === sub);
     }
     return planNow.some(e => artSelMatch(e, [k]));
@@ -15905,6 +17674,7 @@ function projectPayload() {
       panels: S.ui.panels || {},
       cvGroups: S.ui.cvGroups || [],
       cvCollapsed: S.ui.cvCollapsed || {},
+      linkOpen: S.ui.linkOpen || {},
       cvBaseSeeded: !!S.ui.cvBaseSeeded,
       trashOpen: S.ui.trashOpen !== false,
       cat: S.ui.cat, q: S.ui.q
@@ -16045,6 +17815,7 @@ function boot() {
 
   // 进入页面时弹一次通知气泡（内容来自 notice.html）
   mountHostBridge();
+  setTimeout(() => { loadBaseline().then(() => { try { updateHarBadge(activeCanvas()); } catch (e) { } }); }, 3000);
   mountHostRestart();
   loadNotice();
   loadTips();
@@ -16096,9 +17867,22 @@ setTimeout(() => { try { notifHint(); } catch (e) { } try { refreshAttention(); 
     loadCanvasFiles().then(res => {
       if (!res) return;
       const keepActive = S.active;                 // 进入页面时用户看到的那张
+      const prevById = new Map((S.canvases || []).map(x => [x.id, x]));
       applyProject(res.payload);
       S.canvases = res.canvases;
+      // 画布文件可能是旧版本：形态映射/形态列表以项目里较新的数据补齐
+      S.canvases.forEach(c => {
+        const p = prevById.get(c.id);
+        if (!p) return;
+        if (!Array.isArray(c.bodyAliases) && Array.isArray(p.bodyAliases)) c.bodyAliases = p.bodyAliases;
+        if (!c.parentId && p.parentId) c.parentId = p.parentId;
+        if (c.form == null && p.form != null) c.form = p.form;
+        if (c.race && p.race && (!Array.isArray(c.race.bodyTypes) || !c.race.bodyTypes.length) && Array.isArray(p.race.bodyTypes) && p.race.bodyTypes.length) {
+          c.race.bodyTypes = p.race.bodyTypes;
+        }
+      });
       migrateCanvasSigs();
+      try { normalizeCanvasNames(); saveAllCanvasFiles(true); } catch (e) { }
       if (keepActive && S.canvases.some(c => c.id === keepActive)) S.active = keepActive;
       else if (!S.canvases.some(c => c.id === S.active)) S.active = S.canvases[0].id;
       renderAll();

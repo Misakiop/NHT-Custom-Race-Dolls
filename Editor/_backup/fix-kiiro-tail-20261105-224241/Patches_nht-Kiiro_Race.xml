@@ -1,0 +1,912 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  NHT_CustomDolls
+  由 NHT Anatomy Editor 生成 · 2026-11-05 20:25
+  基准模组：Nice Health Tab (Andromeda.NiceHealthTab) v1.6 · 创意工坊 3328729902
+  RJW 层：Nice Health Tab - RJW Genitalia (zoc2k.nicehealthtab.rjwgenitalia) · 相关操作带 MayRequire rim.job.world
+  画布：1 个 · 部位：30 个 · 补丁操作：11 段
+  贴图路径指向 Nice Health Tab（以及 RJW 补丁）的 Textures/ 目录。直接点「保存到注入模组」写进 NHT_CustomDollTest/Patches/ 即可，也可以手动放进任意模组的 Patches/。
+  备注：以 Nice Health Tab 模组 1.6 默认体型为基准制作的部位补丁。
+-->
+<Patch>
+  <!-- kiiro · HAR 头发参数（种族 Kiiro_Race） -->
+  <Operation Class="PatchOperationAdd">
+    <success>Always</success>
+    <xpath>Defs</xpath>
+    <value>
+      <NHT_CustomDolls.HairFitDef>
+        <defName>NHTCD_HairFit_Kiiro_Race</defName>
+        <race>Kiiro_Race</race>
+        <scale>0.377</scale>
+        <offsetX>-0.003</offsetX>
+        <offsetY>-0.372</offsetY>
+        <front>true</front>
+        <layer>14</layer>
+        <showInXray>false</showInXray>
+        <vanillaScale>1.000</vanillaScale>
+        <vanillaOffsetX>0.000</vanillaOffsetX>
+        <vanillaOffsetY>0.000</vanillaOffsetY>
+        <aboveParts>
+        </aboveParts>
+        <topParts>
+        </topParts>
+      </NHT_CustomDolls.HairFitDef>
+    </value>
+  </Operation>
+  <!-- kiiro · HAR 头发参数（种族 kiiro race） -->
+  <Operation Class="PatchOperationAdd">
+    <success>Always</success>
+    <xpath>Defs</xpath>
+    <value>
+      <NHT_CustomDolls.HairFitDef>
+        <defName>NHTCD_HairFit_kiiro_race</defName>
+        <race>kiiro race</race>
+        <scale>0.377</scale>
+        <offsetX>-0.003</offsetX>
+        <offsetY>-0.372</offsetY>
+        <front>true</front>
+        <layer>14</layer>
+        <showInXray>false</showInXray>
+        <vanillaScale>1.000</vanillaScale>
+        <vanillaOffsetX>0.000</vanillaOffsetX>
+        <vanillaOffsetY>0.000</vanillaOffsetY>
+        <aboveParts>
+        </aboveParts>
+        <topParts>
+        </topParts>
+      </NHT_CustomDolls.HairFitDef>
+    </value>
+  </Operation>
+  <!-- kiiro · 部位颜色开关：关闭后这些部位显示为黑白 -->
+  <Operation Class="PatchOperationAdd">
+    <success>Always</success>
+    <xpath>Defs</xpath>
+    <value>
+      <NHT_CustomDolls.DesatPartsDef>
+        <defName>NHTCD_Desat_Kiiro_Race</defName>
+        <label>kiiro</label>
+        <race>Kiiro_Race</race>
+        <doll>Kiiro_Race</doll>
+        <parts>
+          <li><part>Kiiro_Race_u5c3eu5df4</part><id>64</id><label>尾巴</label></li>
+          <li><part>Kiiro_Race_u5de6u8033</part><id>18</id><label>左耳</label></li>
+          <li><part>Kiiro_Race_u53f3u8033</part><id>19</id><label>右耳</label></li>
+        </parts>
+      </NHT_CustomDolls.DesatPartsDef>
+    </value>
+  </Operation>
+  <!-- kiiro · 画在头发之上的部位（NHTCD_HairFit_Kiiro_Race） -->
+  <Operation Class="PatchOperationReplace">
+    <success>Always</success>
+    <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_Kiiro_Race"]/aboveParts</xpath>
+    <value>
+      <aboveParts>
+      </aboveParts>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationReplace">
+    <success>Always</success>
+    <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_Kiiro_Race"]/topParts</xpath>
+    <value>
+      <topParts>
+      </topParts>
+    </value>
+  </Operation>
+  <!-- kiiro · 画在头发之上的部位（NHTCD_HairFit_kiiro_race） -->
+  <Operation Class="PatchOperationReplace">
+    <success>Always</success>
+    <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_kiiro_race"]/aboveParts</xpath>
+    <value>
+      <aboveParts>
+      </aboveParts>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationReplace">
+    <success>Always</success>
+    <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_kiiro_race"]/topParts</xpath>
+    <value>
+      <topParts>
+      </topParts>
+    </value>
+  </Operation>
+  <!-- HandDoll · 手掌基底 #39 -->
+  <Operation Class="PatchOperationReplace">
+    <success>Always</success>
+    <xpath>Defs/NiceHealthTab.DollBodyPart[defName="HandBaseRight"]</xpath>
+    <value>
+      <NiceHealthTab.DollBodyPart>
+        <defName>HandBaseRight</defName>
+        <dollName>HandDoll</dollName>
+        <imagePath>HediffTab/Baseliner/Hand/HandBase</imagePath>
+        <bodyPartId>39</bodyPartId>
+        <position><x>113</x><y>40.5</y></position>
+        <width>1</width>
+        <height>1</height>
+        <layer>19</layer>
+        <visibleByDefault>true</visibleByDefault>
+        <showArmorCover>true</showArmorCover>
+        <bondageScale>1.00</bondageScale>
+        <hitboxScale><x>0.87</x><y>0.7</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+    </value>
+  </Operation>
+  <!-- HandDoll · 中指 #31 -->
+  <Operation Class="PatchOperationReplace">
+    <success>Always</success>
+    <xpath>Defs/NiceHealthTab.DollBodyPart[defName="MiddleLeft"]</xpath>
+    <value>
+      <NiceHealthTab.DollBodyPart>
+        <defName>MiddleLeft</defName>
+        <dollName>HandDoll</dollName>
+        <imagePath>HediffTab/Baseliner/Hand/Middle</imagePath>
+        <bodyPartId>31</bodyPartId>
+        <position><x>-97</x><y>-56.3</y></position>
+        <width>-1</width>
+        <height>1</height>
+        <layer>3</layer>
+        <visibleByDefault>true</visibleByDefault>
+        <showArmorCover>false</showArmorCover>
+        <bondageScale>1.00</bondageScale>
+        <hitboxScale><x>0.76</x><y>0.87</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+    </value>
+  </Operation>
+  <!-- FeetDoll · 脚掌基底 #58 -->
+  <Operation Class="PatchOperationReplace">
+    <success>Always</success>
+    <xpath>Defs/NiceHealthTab.DollBodyPart[defName="FeetBaseRight"]</xpath>
+    <value>
+      <NiceHealthTab.DollBodyPart>
+        <defName>FeetBaseRight</defName>
+        <dollName>FeetDoll</dollName>
+        <imagePath>HediffTab/Baseliner/Feet/Feet</imagePath>
+        <bodyPartId>58</bodyPartId>
+        <position><x>97.2</x><y>17.3</y></position>
+        <width>1</width>
+        <height>1</height>
+        <layer>10</layer>
+        <visibleByDefault>true</visibleByDefault>
+        <showArmorCover>true</showArmorCover>
+        <bondageScale>1.00</bondageScale>
+        <hitboxScale><x>0.8</x><y>0.8</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+    </value>
+  </Operation>
+  <!-- 新增定义 -->
+  <Operation Class="PatchOperationAdd">
+    <success>Always</success>
+    <xpath>Defs</xpath>
+    <value>
+      <!-- kiiro · 新建 HumanlikeDoll Kiiro_Race -->
+      <NiceHealthTab.HumanlikeDoll>
+        <defName>Kiiro_Race</defName>
+        <gender>Female</gender>
+        <xenotype>Kiiro_Race</xenotype>
+        <bodytype>*</bodytype>
+        <outlinePath>HediffTab/Baseliner/Female/Outline</outlinePath>
+        <headPart>Kiiro_FemaleHead</headPart>
+        <BoundingBox>
+          <m_XMin>-160</m_XMin>
+          <m_YMin>-455</m_YMin>
+          <m_Width>320</m_Width>
+          <m_Height>890</m_Height>
+        </BoundingBox>
+        <headOverlayOffset><x>-2</x><y>-2</y></headOverlayOffset>
+        <headOverlayScale><x>310</x><y>310</y></headOverlayScale>
+      </NiceHealthTab.HumanlikeDoll>
+      <!-- 尾巴 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Kiiro_Race_u5c3eu5df4</defName>
+        <imagePath>Custom/Ratkin/Tail_east</imagePath>
+        <position>
+          <x>-103.9</x>
+          <y>27.2</y>
+        </position>
+        <layer>0</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>64</bodyPartId>
+        <notifyPosition><x>-52</x><y>60</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1.61</width>
+        <height>1.61</height>
+        <hitboxScale><x>0.82</x><y>1.67</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+
+      <!-- 尾巴（灰） -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Kiiro_Race_u5c3eu5df4_NHTCD_Gray</defName>
+        <imagePath>Custom/NHTCD_Gray/kiiro/Kiiro_Race_Kiiro_Race_u5c3eu5df4</imagePath>
+        <position>
+          <x>-103.9</x>
+          <y>27.2</y>
+        </position>
+        <layer>0</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>64</bodyPartId>
+        <notifyPosition><x>-52</x><y>60</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1.61</width>
+        <height>1.61</height>
+        <hitboxScale><x>0.82</x><y>1.67</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 躯干 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Kiiro_FemaleTorso</defName>
+        <imagePath>HediffTab/Baseliner/Female/Torso</imagePath>
+        <position>
+          <x>2</x>
+          <y>-160.5</y>
+        </position>
+        <layer>1</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>0</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1</width>
+        <height>1</height>
+        <hitboxScale><x>0.74</x><y>0.75</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 右腿 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Kiiro_FemaleLegLeft</defName>
+        <imagePath>HediffTab/Baseliner/Female/Leg</imagePath>
+        <position>
+          <x>-45</x>
+          <y>159.5</y>
+        </position>
+        <layer>2</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>55</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>-1</width>
+        <height>1</height>
+        <hitboxScale><x>0.8</x><y>0.88</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 左腿 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Kiiro_FemaleLegRight</defName>
+        <imagePath>HediffTab/Baseliner/Female/Leg</imagePath>
+        <position>
+          <x>45</x>
+          <y>159.5</y>
+        </position>
+        <layer>2</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>46</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1</width>
+        <height>1</height>
+        <hitboxScale><x>0.8</x><y>0.88</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 颈部 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Kiiro_FemaleNeck</defName>
+        <imagePath>HediffTab/Baseliner/Female/Neck</imagePath>
+        <position>
+          <x>1</x>
+          <y>-323.5</y>
+        </position>
+        <layer>2</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>12</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1</width>
+        <height>1</height>
+        <hitboxScale><x>0.9</x><y>0.74</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 右肩 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Kiiro_FemaleShoulderLeft</defName>
+        <imagePath>HediffTab/Baseliner/Female/Shoulder</imagePath>
+        <position>
+          <x>-81.5</x>
+          <y>-218</y>
+        </position>
+        <layer>2</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>34</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>-1</width>
+        <height>1</height>
+        <hitboxScale><x>0.73</x><y>0.79</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 左肩 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Kiiro_FemaleShoulderRight</defName>
+        <imagePath>HediffTab/Baseliner/Female/Shoulder</imagePath>
+        <position>
+          <x>81.5</x>
+          <y>-218</y>
+        </position>
+        <layer>2</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>23</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1</width>
+        <height>1</height>
+        <hitboxScale><x>0.73</x><y>0.79</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 右臂 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Kiiro_FemaleArmLeft</defName>
+        <imagePath>HediffTab/Baseliner/Female/Arm</imagePath>
+        <position>
+          <x>-107</x>
+          <y>-102</y>
+        </position>
+        <layer>3</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>36</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>-1</width>
+        <height>1</height>
+        <hitboxScale><x>0.74</x><y>0.73</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 左臂 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Kiiro_FemaleArmRight</defName>
+        <imagePath>HediffTab/Baseliner/Female/Arm</imagePath>
+        <position>
+          <x>107</x>
+          <y>-102</y>
+        </position>
+        <layer>3</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>25</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1</width>
+        <height>1</height>
+        <hitboxScale><x>0.74</x><y>0.73</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 右脚 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Kiiro_FemaleFeetLeft</defName>
+        <imagePath>HediffTab/Baseliner/Female/Feet</imagePath>
+        <position>
+          <x>-47.5</x>
+          <y>391.5</y>
+        </position>
+        <layer>3</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>58</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>-1</width>
+        <height>1</height>
+        <hitboxScale><x>0.8</x><y>0.77</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 左脚 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Kiiro_FemaleFeetRight</defName>
+        <imagePath>HediffTab/Baseliner/Female/Feet</imagePath>
+        <position>
+          <x>47.5</x>
+          <y>391.5</y>
+        </position>
+        <layer>3</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>49</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1</width>
+        <height>1</height>
+        <hitboxScale><x>0.8</x><y>0.77</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 头部 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Kiiro_FemaleHead</defName>
+        <imagePath>HediffTab/Baseliner/Female/NiceHead</imagePath>
+        <position>
+          <x>0</x>
+          <y>-372</y>
+        </position>
+        <layer>3</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>13</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1</width>
+        <height>1</height>
+        <hitboxScale><x>0.92</x><y>0.92</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 右手 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Kiiro_FemaleHandLeft</defName>
+        <imagePath>HediffTab/Baseliner/Female/Hand</imagePath>
+        <position>
+          <x>-121</x>
+          <y>-14.5</y>
+        </position>
+        <layer>4</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>39</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>-1</width>
+        <height>1</height>
+        <hitboxScale><x>0.88</x><y>0.75</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 左手 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Kiiro_FemaleHandRight</defName>
+        <imagePath>HediffTab/Baseliner/Female/Hand</imagePath>
+        <position>
+          <x>121</x>
+          <y>-14.5</y>
+        </position>
+        <layer>4</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>28</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1</width>
+        <height>1</height>
+        <hitboxScale><x>0.88</x><y>0.75</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 骨盆 -->
+      <NiceHealthTab.DollBone>
+        <defName>Kiiro_FemalePelvis</defName>
+        <imagePath>HediffTab/Bones/Pelvis</imagePath>
+        <position>
+          <x>0</x>
+          <y>-62.5</y>
+        </position>
+        <layer>9</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>3</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>false</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1</width>
+        <height>1</height>
+        <hitboxScale><x>0.75</x><y>0.8</y></hitboxScale>
+        <extraLayer>0</extraLayer>
+      </NiceHealthTab.DollBone>
+      <!-- 脊柱 -->
+      <NiceHealthTab.DollBone>
+        <defName>Kiiro_FemaleSpine</defName>
+        <imagePath>HediffTab/Bones/Spine</imagePath>
+        <position>
+          <x>0</x>
+          <y>-172.5</y>
+        </position>
+        <layer>10</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>4</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>false</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>0.7</width>
+        <height>0.7</height>
+        <hitboxScale><x>0.99</x><y>0.82</y></hitboxScale>
+        <extraLayer>0</extraLayer>
+      </NiceHealthTab.DollBone>
+      <!-- 鼻子 -->
+      <NiceHealthTab.DollOrgan>
+        <defName>Kiiro_FemaleNose</defName>
+        <imagePath>HediffTab/Baseliner/Head/Nose</imagePath>
+        <position>
+          <x>0</x>
+          <y>-349.5</y>
+        </position>
+        <layer>14</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>20</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>false</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1</width>
+        <height>1</height>
+        <hitboxScale><x>0.88</x><y>0.88</y></hitboxScale>
+        <extraLayer>0</extraLayer>
+      </NiceHealthTab.DollOrgan>
+      <!-- 左眼 -->
+      <NiceHealthTab.DollEye>
+        <defName>Kiiro_FemaleEyeLeft</defName>
+        <imagePath>HediffTab/Baseliner/Head/NiceMaleEye</imagePath>
+        <position>
+          <x>18</x>
+          <y>-361.5</y>
+        </position>
+        <layer>15</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>16</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>false</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>0.6</width>
+        <height>0.6</height>
+        <hitboxScale><x>0.8</x><y>0.75</y></hitboxScale>
+      </NiceHealthTab.DollEye>
+      <!-- 右眼 -->
+      <NiceHealthTab.DollEye>
+        <defName>Kiiro_FemaleEyeRight</defName>
+        <imagePath>HediffTab/Baseliner/Head/NiceMaleEye</imagePath>
+        <position>
+          <x>-18</x>
+          <y>-361.5</y>
+        </position>
+        <layer>15</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>17</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>false</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>-0.6</width>
+        <height>0.6</height>
+        <hitboxScale><x>0.8</x><y>0.75</y></hitboxScale>
+      </NiceHealthTab.DollEye>
+      <!-- 左耳 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Kiiro_Race_u5de6u8033</defName>
+        <imagePath>Custom/kiiro/LeftEar_south</imagePath>
+        <position>
+          <x>38</x>
+          <y>-430</y>
+        </position>
+        <layer>15</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>18</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>0.79</width>
+        <height>0.79</height>
+        <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+
+      <!-- 左耳（灰） -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Kiiro_Race_u5de6u8033_NHTCD_Gray</defName>
+        <imagePath>Custom/NHTCD_Gray/kiiro/Kiiro_Race_Kiiro_Race_u5de6u8033</imagePath>
+        <position>
+          <x>38</x>
+          <y>-430</y>
+        </position>
+        <layer>15</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>18</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>0.79</width>
+        <height>0.79</height>
+        <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 右耳 -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Kiiro_Race_u53f3u8033</defName>
+        <imagePath>Custom/kiiro/RightEar_south</imagePath>
+        <position>
+          <x>-38</x>
+          <y>-431</y>
+        </position>
+        <layer>15</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>19</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>0.77</width>
+        <height>0.77</height>
+        <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+
+      <!-- 右耳（灰） -->
+      <NiceHealthTab.DollBodyPart>
+        <defName>Kiiro_Race_u53f3u8033_NHTCD_Gray</defName>
+        <imagePath>Custom/NHTCD_Gray/kiiro/Kiiro_Race_Kiiro_Race_u53f3u8033</imagePath>
+        <position>
+          <x>-38</x>
+          <y>-431</y>
+        </position>
+        <layer>15</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>19</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>0.77</width>
+        <height>0.77</height>
+        <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
+      </NiceHealthTab.DollBodyPart>
+      <!-- 大脑 -->
+      <NiceHealthTab.DollOrgan>
+        <defName>Kiiro_FemaleBrain</defName>
+        <imagePath>HediffTab/Organs/Brain</imagePath>
+        <position>
+          <x>1</x>
+          <y>-399</y>
+        </position>
+        <layer>20</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>15</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>false</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1</width>
+        <height>1</height>
+        <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
+        <extraLayer>0</extraLayer>
+      </NiceHealthTab.DollOrgan>
+      <!-- 心脏 -->
+      <NiceHealthTab.DollOrgan>
+        <defName>Kiiro_FemaleHeart</defName>
+        <imagePath>HediffTab/Organs/Heart</imagePath>
+        <position>
+          <x>4.5</x>
+          <y>-187.5</y>
+        </position>
+        <layer>21</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>6</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>false</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>0.85</width>
+        <height>0.85</height>
+        <hitboxScale><x>0.75</x><y>0.75</y></hitboxScale>
+        <extraLayer>0</extraLayer>
+      </NiceHealthTab.DollOrgan>
+      <!-- 右肾 -->
+      <NiceHealthTab.DollOrgan>
+        <defName>Kiiro_FemaleKidneyLeft</defName>
+        <imagePath>HediffTab/Organs/Kidney</imagePath>
+        <position>
+          <x>-37.5</x>
+          <y>-91</y>
+        </position>
+        <layer>22</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>10</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>false</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>-0.85</width>
+        <height>0.85</height>
+        <hitboxScale><x>0.8</x><y>0.7</y></hitboxScale>
+        <extraLayer>0</extraLayer>
+      </NiceHealthTab.DollOrgan>
+      <!-- 左肾 -->
+      <NiceHealthTab.DollOrgan>
+        <defName>Kiiro_FemaleKidneyRight</defName>
+        <imagePath>HediffTab/Organs/Kidney</imagePath>
+        <position>
+          <x>37.5</x>
+          <y>-91</y>
+        </position>
+        <layer>22</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>9</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>false</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>0.85</width>
+        <height>0.85</height>
+        <hitboxScale><x>0.8</x><y>0.7</y></hitboxScale>
+        <extraLayer>0</extraLayer>
+      </NiceHealthTab.DollOrgan>
+      <!-- 肝脏 -->
+      <NiceHealthTab.DollOrgan>
+        <defName>Kiiro_FemaleLiver</defName>
+        <imagePath>HediffTab/Organs/Liver</imagePath>
+        <position>
+          <x>-25.5</x>
+          <y>-140</y>
+        </position>
+        <layer>23</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>11</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>false</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>0.85</width>
+        <height>0.85</height>
+        <hitboxScale><x>0.75</x><y>0.87</y></hitboxScale>
+        <extraLayer>0</extraLayer>
+      </NiceHealthTab.DollOrgan>
+      <!-- 右肺 -->
+      <NiceHealthTab.DollOrgan>
+        <defName>Kiiro_FemaleLungLeft</defName>
+        <imagePath>HediffTab/Organs/Lung</imagePath>
+        <position>
+          <x>-23.5</x>
+          <y>-249.5</y>
+        </position>
+        <layer>24</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>8</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>false</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>-0.85</width>
+        <height>0.85</height>
+        <hitboxScale><x>0.77</x><y>0.7</y></hitboxScale>
+        <extraLayer>0</extraLayer>
+      </NiceHealthTab.DollOrgan>
+      <!-- 左肺 -->
+      <NiceHealthTab.DollOrgan>
+        <defName>Kiiro_FemaleLungRight</defName>
+        <imagePath>HediffTab/Organs/Lung</imagePath>
+        <position>
+          <x>23.5</x>
+          <y>-249.5</y>
+        </position>
+        <layer>24</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>7</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>false</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>0.85</width>
+        <height>0.85</height>
+        <hitboxScale><x>0.77</x><y>0.7</y></hitboxScale>
+        <extraLayer>0</extraLayer>
+      </NiceHealthTab.DollOrgan>
+      <!-- 胃 -->
+      <NiceHealthTab.DollOrgan>
+        <defName>Kiiro_FemaleStomach</defName>
+        <imagePath>HediffTab/Organs/Stomach</imagePath>
+        <position>
+          <x>19.5</x>
+          <y>-134</y>
+        </position>
+        <layer>25</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>5</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>false</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>0.85</width>
+        <height>0.85</height>
+        <hitboxScale><x>0.75</x><y>0.75</y></hitboxScale>
+        <extraLayer>0</extraLayer>
+      </NiceHealthTab.DollOrgan>
+      <!-- 胸腔 -->
+      <NiceHealthTab.DollBone>
+        <defName>Kiiro_FemaleRibcage</defName>
+        <imagePath>HediffTab/Bones/Ribcage</imagePath>
+        <position>
+          <x>0</x>
+          <y>-234.5</y>
+        </position>
+        <layer>11</layer>
+        <dollName>Kiiro_Race</dollName>
+        <bodyPartId>1</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>false</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>0.9</width>
+        <height>0.9</height>
+        <hitboxScale><x>0.77</x><y>0.95</y></hitboxScale>
+        <extraLayer>30</extraLayer>
+      </NiceHealthTab.DollBone>
+      <!-- Kiiro_Body · 种族部位对照表（NHT 槽位 → 身体部位下标） -->
+      <NiceHealthTab.BodyPartIndexesRemap>
+        <defName>NHTCD_BodyRemap_Kiiro_Body</defName>
+        <bodyDefName>Kiiro_Body</bodyDefName>
+        <parts>
+            <li>0, 0</li>
+            <li>1, 1</li>
+            <li>2, 2</li>
+            <li>3, 3</li>
+            <li>4, 4</li>
+            <li>5, 7</li>
+            <li>6, 8</li>
+            <li>7, 9</li>
+            <li>8, 10</li>
+            <li>9, 11</li>
+            <li>10, 12</li>
+            <li>11, 13</li>
+            <li>12, 14</li>
+            <li>13, 15</li>
+            <li>14, 16</li>
+            <li>15, 17</li>
+            <li>16, 18</li>
+            <li>17, 19</li>
+            <li>18, 20</li>
+            <li>19, 21</li>
+            <li>20, 22</li>
+            <li>21, 23</li>
+            <li>22, 24</li>
+            <li>23, 25</li>
+            <li>24, 26</li>
+            <li>25, 27</li>
+            <li>26, 28</li>
+            <li>27, 29</li>
+            <li>28, 30</li>
+            <li>29, 31</li>
+            <li>30, 32</li>
+            <li>31, 33</li>
+            <li>32, 34</li>
+            <li>33, 35</li>
+            <li>34, 36</li>
+            <li>35, 37</li>
+            <li>36, 38</li>
+            <li>37, 39</li>
+            <li>38, 40</li>
+            <li>39, 41</li>
+            <li>40, 42</li>
+            <li>41, 43</li>
+            <li>42, 44</li>
+            <li>43, 45</li>
+            <li>44, 46</li>
+            <li>45, 47</li>
+            <li>46, 48</li>
+            <li>47, 49</li>
+            <li>48, 50</li>
+            <li>49, 51</li>
+            <li>50, 52</li>
+            <li>51, 53</li>
+            <li>52, 54</li>
+            <li>53, 55</li>
+            <li>54, 56</li>
+            <li>55, 57</li>
+            <li>56, 58</li>
+            <li>57, 59</li>
+            <li>58, 60</li>
+            <li>59, 61</li>
+            <li>60, 62</li>
+            <li>61, 63</li>
+            <li>62, 64</li>
+            <li>63, 65</li>
+        </parts>
+      </NiceHealthTab.BodyPartIndexesRemap>
+    </value>
+  </Operation>
+</Patch>

@@ -292,6 +292,37 @@ namespace NhtEditorHost
             return CleanupService.Restore(modRoot, name, arr);
         }
 
+        public bool PatchExists(string name)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(name) || name.Contains("..") || !name.EndsWith(".xml")) return false;
+                return File.Exists(Path.Combine(modRoot, "Patches", name));
+            }
+            catch { return false; }
+        }
+
+        public string ReadBaseline()
+        {
+            try
+            {
+                string fp = Path.Combine(modRoot, "Editor", "canvas-baseline.json");
+                return File.Exists(fp) ? File.ReadAllText(fp, Encoding.UTF8) : "";
+            }
+            catch { return ""; }
+        }
+
+        public bool SaveBaseline(string json)
+        {
+            try
+            {
+                string fp = Path.Combine(modRoot, "Editor", "canvas-baseline.json");
+                File.WriteAllText(fp, json ?? "", new UTF8Encoding(false));
+                return true;
+            }
+            catch { return false; }
+        }
+
         public string ModRoot() { return modRoot; }
 
         public void StartWatch()

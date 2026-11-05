@@ -14,6 +14,7 @@ namespace NhtEditorHost
     static class Program
     {
         static Process server;
+        static int port = 8765;
 
         [STAThread]
         static void Main()
@@ -24,30 +25,28 @@ namespace NhtEditorHost
             string exeDir = AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\');
             string editorDir = exeDir;   // exe 与 serve.ps1 同在 Editor/
             string serve = Path.Combine(editorDir, "serve.ps1");
-            string url = "http://127.0.0.1:8765/anatomy-editor.html";
 
-            if (!PortOpen())
+            port = FindFreePort(8765, 8785);
+            if (!File.Exists(serve))
             {
-                if (!File.Exists(serve))
-                {
-                    MessageBox.Show("找不到 serve.ps1：" + serve, "NHT 编辑器", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-                var psi = new ProcessStartInfo("powershell.exe",
-                    "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File \"" + serve + "\" -NoBrowser")
-                {
-                    WorkingDirectory = editorDir,
-                    UseShellExecute = false,
-                    CreateNoWindow = true,
-                    WindowStyle = ProcessWindowStyle.Hidden,
-                };
-                server = Process.Start(psi);
-                for (int i = 0; i < 120 && !PortOpen(); i++) Thread.Sleep(250);
+                MessageBox.Show("找不到 serve.ps1：" + serve, "NHT 编辑器", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
-
-            if (!PortOpen())
+            var psi = new ProcessStartInfo("powershell.exe",
+                "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File \"" + serve + "\" -NoBrowser -Port " + port)
             {
-                MessageBox.Show("本地编辑器服务没有启动成功。\r\n可以手动运行 Editor\\启动编辑器.bat 查看错误。", "NHT 编辑器", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                WorkingDirectory = editorDir,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                WindowStyle = ProcessWindowStyle.Hidden,
+            };
+            server = Process.Start(psi);
+            for (int i = 0; i < 160 && !PortOpen(port); i++) Thread.Sleep(250);
+
+            string url = "http://127.0.0.1:" + port + "/anatomy-editor.html";
+            if (!PortOpen(port))
+            {
+                MessageBox.Show("本地编辑器服务没有启动成功（端口 " + port + "）。\r\n可以手动运行 Editor\\启动编辑器.bat 查看错误。", "NHT 编辑器", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -100,13 +99,29 @@ namespace NhtEditorHost
             Application.Run(form);
         }
 
-        static bool PortOpen()
+        static int FindFreePort(int start, int end)
+        {
+            for (int p = start; p <= end; p++)
+            {
+                try
+                {
+                    var l = new TcpListener(IPAddress.Loopback, p);
+                    l.Start();
+                    l.Stop();
+                    return p;
+                }
+                catch { }
+            }
+            return start;
+        }
+
+        static bool PortOpen(int p)
         {
             try
             {
                 using (var c = new TcpClient())
                 {
-                    var ar = c.BeginConnect("127.0.0.1", 8765, null, null);
+                    var ar = c.BeginConnect("127.0.0.1", p, null, null);
                     if (!ar.AsyncWaitHandle.WaitOne(300)) return false;
                     c.EndConnect(ar);
                     return true;
@@ -120,7 +135,7 @@ namespace NhtEditorHost
             try
             {
                 KillServer();
-                for (int i = 0; i < 40 && PortOpen(); i++) Thread.Sleep(100);
+                for (int i = 0; i < 40 && PortOpen(port); i++) Thread.Sleep(100);
                 Process.Start(new ProcessStartInfo(Application.ExecutablePath) { UseShellExecute = true });
             }
             catch { }

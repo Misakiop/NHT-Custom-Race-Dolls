@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 using System.Collections.Generic;
 using System.Reflection;
@@ -10,6 +10,34 @@ using NiceHealthTab;
 
 namespace NHT_CustomDolls
 {
+    // 编辑器生成的形态映射：fromBody（附加形态）→ toBody（本画布主形态）
+    public class BodyAliasDef : Def
+    {
+        public string race = "*";
+        public string fromBody = "";
+        public string toBody = "";
+    }
+
+    // 编辑器生成的按 Hediff 切换贴图：颜色变体
+    public class ColorVariantDef : Def
+    {
+        public string race = "*";
+        public string bodyType = "*";
+        public string hediff = "";
+        public List<ColorVariantPart> parts = new List<ColorVariantPart>();
+    }
+
+    public class ColorVariantPart
+    {
+        public string part = "";
+        public string imagePath = "";
+        public string grayPath = "";
+        public float x = float.NaN;
+        public float y = float.NaN;
+        public float width = float.NaN;
+        public float height = float.NaN;
+    }
+
     // ------------------------------------------------------------------ settings
     public class CustomDollsSettings : ModSettings
     {
@@ -53,6 +81,8 @@ namespace NHT_CustomDolls
         public List<string> hairOverrides = new List<string>();
         // 单独关掉颜色的部位：key = "doll#bodyPartId"
         public List<string> desatOff = new List<string>();
+        // 形态别名后缀：例如 _YR_Bote → 复用去后缀的形态（Mincho RJW 附加形态共用主形态画布）
+        public List<string> bodyAliasSuffixes = new List<string> { "_YR_Bote" };
 
         public override void ExposeData()
         {
@@ -95,6 +125,11 @@ namespace NHT_CustomDolls
             if (Scribe.mode == LoadSaveMode.PostLoadInit && vanillaHairOff == null) vanillaHairOff = new List<string>();
             if (Scribe.mode == LoadSaveMode.PostLoadInit && hairOverrides == null) hairOverrides = new List<string>();
             Scribe_Collections.Look(ref desatOff, "desatOff", LookMode.Value);
+            Scribe_Collections.Look(ref bodyAliasSuffixes, "bodyAliasSuffixes", LookMode.Value);
+            if (Scribe.mode == LoadSaveMode.PostLoadInit && (bodyAliasSuffixes == null || bodyAliasSuffixes.Count == 0))
+            {
+                bodyAliasSuffixes = new List<string> { "_YR_Bote" };
+            }
             if (Scribe.mode == LoadSaveMode.PostLoadInit && rules == null)
             {
                 rules = new Dictionary<string, string>();
@@ -528,6 +563,84 @@ namespace NHT_CustomDolls
             return "*";
         }
 
+        /* RJW 等附加形态（如 Mincho 的 Slime_YR_Bote）没有独立画布时，
+           去掉配置的后缀后复用主形态（Slime）的 Doll。 */
+        public static BodyAliasDef FindAlias(string race, string body)
+        {
+            try
+            {
+                foreach (BodyAliasDef a in DefDatabase<BodyAliasDef>.AllDefs)
+                {
+                    if (a == null || string.IsNullOrEmpty(a.fromBody) || a.fromBody != body) continue;
+                    if (string.IsNullOrEmpty(a.toBody)) continue;
+                    if (!string.IsNullOrEmpty(race) && !string.IsNullOrEmpty(a.race) && a.race != "*" && a.race != race) continue;
+                    return a;
+                }
+            }
+            catch (Exception) { }
+            return null;
+        }
+
+        public static string NormalizeBodyName(string body)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(body) || body == "*") return body;
+                BodyAliasDef alias = FindAlias(null, body);
+                if (alias != null) return alias.toBody;
+                // 已有精确形态的 Doll 时不走别名（允许以后为附加形态单独建画布）
+                foreach (HumanlikeDoll d0 in DefDatabase<HumanlikeDoll>.AllDefs)
+                {
+                    if (d0 != null && d0.bodytype == body) return body;
+                }
+                List<string> suffixes = (Settings != null && Settings.bodyAliasSuffixes != null)
+                    ? Settings.bodyAliasSuffixes : null;
+                if (suffixes == null || suffixes.Count == 0) return body;
+                for (int i = 0; i < suffixes.Count; i++)
+                {
+                    string suf = suffixes[i];
+                    if (string.IsNullOrEmpty(suf) || !body.EndsWith(suf, StringComparison.OrdinalIgnoreCase)) continue;
+                    string cand = body.Substring(0, body.Length - suf.Length);
+                    if (string.IsNullOrEmpty(cand)) continue;
+                    foreach (HumanlikeDoll d in DefDatabase<HumanlikeDoll>.AllDefs)
+                    {
+                        if (d != null && d.bodytype == cand) return cand;
+                    }
+                }
+            }
+            catch (Exception) { }
+            return body;
+        }
+
+        public static string NormalizeBody(string race, string body)
+        {
+            BodyAliasDef alias = FindAlias(race, body);
+            if (alias != null) return alias.toBody;
+            string norm = NormalizeBodyName(body);
+            if (norm != body) return norm;
+            try
+            {
+                List<HumanlikeDoll> list = ForRace(race);
+                if (list == null || list.Count == 0) return body;
+                List<string> suffixes = (Settings != null && Settings.bodyAliasSuffixes != null) ? Settings.bodyAliasSuffixes : null;
+                if (suffixes == null) return body;
+                for (int i = 0; i < suffixes.Count; i++)
+                {
+                    string suf = suffixes[i];
+                    if (string.IsNullOrEmpty(suf) || !body.EndsWith(suf, StringComparison.OrdinalIgnoreCase)) continue;
+                    string cand = body.Substring(0, body.Length - suf.Length);
+                    for (int k = 0; k < list.Count; k++)
+                    {
+                        HumanlikeDoll d = list[k];
+                        string db = string.IsNullOrEmpty(d.bodytype) ? "*" : d.bodytype;
+                        if (db == cand) return cand;
+                    }
+                }
+            }
+            catch (Exception) { }
+            return body;
+        }
+
         public static string Key(string race, string gender, string body)
         {
             return race + "|" + gender + "|" + body;
@@ -562,7 +675,7 @@ namespace NHT_CustomDolls
             if (list == null || list.Count == 0) return null;
 
             string gender = GenderOf(pawn);
-            string body = BodyOf(pawn);
+            string body = NormalizeBody(race, BodyOf(pawn));
 
             string rule = GetRule(race, gender, body);
             if (!string.IsNullOrEmpty(rule))
@@ -638,6 +751,30 @@ namespace NHT_CustomDolls
                     Log.Warning("[NHT Custom Dolls] DollRenderContext.GetMainDoll not found.");
                 }
 
+                // 附加形态别名：让 *_YR_Bote 之类在 NHT 的 DollManager 里复用主形态
+                try
+                {
+                    Type dmOpen = null;
+                    foreach (Type t in typeof(HumanlikeDoll).Assembly.GetTypes())
+                    {
+                        if (t.Name == "DollManager`1" && t.IsGenericTypeDefinition) { dmOpen = t; break; }
+                    }
+                    Type[] dollTypes = new Type[] { typeof(HumanlikeDoll), typeof(HandDoll), typeof(FeetDoll) };
+                    for (int i = 0; dmOpen != null && i < dollTypes.Length; i++)
+                    {
+                        Type dm = dmOpen.MakeGenericType(dollTypes[i]);
+                        MethodInfo getDoll = dm.GetMethod("GetDoll", new Type[] { typeof(string), typeof(string), typeof(string) });
+                        if (getDoll == null) continue;
+                        harmony.Patch(getDoll,
+                            new HarmonyMethod(typeof(Bootstrap).GetMethod("BodyAliasPrefix", BindingFlags.Static | BindingFlags.NonPublic)), null, null, null);
+                        patched++;
+                    }
+                }
+                catch (Exception e)
+                {
+                    if (CustomDollsMod.Settings != null && CustomDollsMod.Settings.debug) Log.Warning("[NHT Custom Dolls] body alias patch skipped: " + e.Message);
+                }
+
                 MethodInfo getXeno = AccessTools.Method(typeof(DollDrawer), "GetXenotype", new Type[] { typeof(Pawn) });
                 if (getXeno != null)
                 {
@@ -677,7 +814,7 @@ namespace NHT_CustomDolls
                             {
                                 harmony.Patch(mi,
                                     new HarmonyMethod(hairFix.GetMethod("PartPrefix", BindingFlags.Static | BindingFlags.NonPublic)),
-                                    null, null, null);
+                                    new HarmonyMethod(hairFix.GetMethod("PartPostfix", BindingFlags.Static | BindingFlags.NonPublic)), null, null);
                                 partHooks++;
                                 if (partHooks <= 5)
                                 {
@@ -769,9 +906,14 @@ namespace NHT_CustomDolls
             return HairFix.RaceHasHairAddon(raceDef);
         }
 
-        // replace the doll NHT picked for this pawn (race keyed, with gender/bodytype fallback)
-        private static void GetMainDollPostfix(Pawn pawn, ref HumanlikeDoll __result)
+        private static void BodyAliasPrefix(ref string bodytype)
         {
+            try { bodytype = Dolls.NormalizeBodyName(bodytype); }
+            catch (Exception) { }
+        }
+
+        // replace the doll NHT picked for this pawn (race keyed, with gender/bodytype fallback)
+        private static void GetMainDollPostfix(Pawn pawn, ref HumanlikeDoll __result)        {
             try
             {
                 HumanlikeDoll pick = Dolls.Pick(pawn);
@@ -2570,12 +2712,99 @@ if (clicked)
             }
 
             /* NHT 每画一个部位都会经过这里：按层级把头发插进去 */
+            private static readonly Dictionary<object, Tuple<string, Texture2D, Vector2, float, float>> colorVariantSaved = new Dictionary<object, Tuple<string, Texture2D, Vector2, float, float>>();
+
+            private static void ApplyColorVariant(object[] __args)
+            {
+                try
+                {
+                    if (curPawn == null || curPawn.health == null || curPawn.story == null) return;
+                    object part = PartDefOfArgs(__args);
+                    if (part == null) return;
+                    string name = DefNameOf(part);
+                    if (string.IsNullOrEmpty(name)) return;
+                    bool isGray = name.EndsWith(GraySuffix, StringComparison.OrdinalIgnoreCase);
+                    string baseName = isGray ? name.Substring(0, name.Length - GraySuffix.Length) : name;
+                    if (colorVariantSaved.ContainsKey(part)) return;   // 已经换过，等 postfix 恢复
+
+                    string race = curPawn.def != null ? curPawn.def.defName : "";
+                    string body = curPawn.story.bodyType != null ? curPawn.story.bodyType.defName : "";
+                    ColorVariantPart hit = null;
+                    string usePath = null;
+                    foreach (ColorVariantDef v in DefDatabase<ColorVariantDef>.AllDefs)
+                    {
+                        if (v == null || string.IsNullOrEmpty(v.hediff)) continue;
+                        if (!string.IsNullOrEmpty(v.race) && v.race != "*" && v.race != race) continue;
+                        if (!string.IsNullOrEmpty(v.bodyType) && v.bodyType != "*" && v.bodyType != body) continue;
+                        HediffDef hd = DefDatabase<HediffDef>.GetNamedSilentFail(v.hediff);
+                        if (hd == null || !curPawn.health.hediffSet.HasHediff(hd)) continue;
+                        for (int i = 0; i < (v.parts == null ? 0 : v.parts.Count); i++)
+                        {
+                            ColorVariantPart cp = v.parts[i];
+                            if (cp == null || cp.part != baseName) continue;
+                            string pth = isGray ? cp.grayPath : cp.imagePath;
+                            if (!string.IsNullOrEmpty(pth)) { hit = cp; usePath = pth; break; }
+                        }
+                        if (hit != null) break;
+                    }
+                    if (hit == null || string.IsNullOrEmpty(usePath)) return;
+
+                    Texture2D tex = ContentFinder<Texture2D>.Get(usePath, false);
+                    if (tex == null) return;
+                    FieldInfo imgF = typeof(DollBodyPartDef).GetField("imagePath", BindingFlags.Instance | BindingFlags.Public);
+                    FieldInfo texF = typeof(DollBodyPartDef).GetField("tex", BindingFlags.Instance | BindingFlags.Public);
+                    FieldInfo posF = typeof(DollBodyPartDef).GetField("position", BindingFlags.Instance | BindingFlags.Public);
+                    FieldInfo wF = typeof(DollBodyPartDef).GetField("width", BindingFlags.Instance | BindingFlags.Public);
+                    FieldInfo hF = typeof(DollBodyPartDef).GetField("height", BindingFlags.Instance | BindingFlags.Public);
+                    if (imgF == null || texF == null) return;
+                    string oldPath = (string)imgF.GetValue(part);
+                    Texture2D oldTex = (Texture2D)texF.GetValue(part);
+                    Vector2 oldPos = posF != null ? (Vector2)posF.GetValue(part) : Vector2.zero;
+                    float oldW = wF != null ? (float)wF.GetValue(part) : 0f;
+                    float oldH = hF != null ? (float)hF.GetValue(part) : 0f;
+                    colorVariantSaved[part] = Tuple.Create(oldPath, oldTex, oldPos, oldW, oldH);
+                    imgF.SetValue(part, usePath);
+                    texF.SetValue(part, tex);
+                    if (posF != null && (!float.IsNaN(hit.x) || !float.IsNaN(hit.y)))
+                    {
+                        posF.SetValue(part, new Vector2(float.IsNaN(hit.x) ? oldPos.x : hit.x,
+                                                       float.IsNaN(hit.y) ? oldPos.y : hit.y));
+                    }
+                    if (wF != null && !float.IsNaN(hit.width)) wF.SetValue(part, hit.width);
+                    if (hF != null && !float.IsNaN(hit.height)) hF.SetValue(part, hit.height);
+                }
+                catch (Exception) { }
+            }
+
+            private static void RestoreColorVariant(object[] __args)
+            {
+                try
+                {
+                    object part = PartDefOfArgs(__args);
+                    if (part == null || !colorVariantSaved.ContainsKey(part)) return;
+                    Tuple<string, Texture2D, Vector2, float, float> old = colorVariantSaved[part];
+                    colorVariantSaved.Remove(part);
+                    FieldInfo imgF = typeof(DollBodyPartDef).GetField("imagePath", BindingFlags.Instance | BindingFlags.Public);
+                    FieldInfo texF = typeof(DollBodyPartDef).GetField("tex", BindingFlags.Instance | BindingFlags.Public);
+                    FieldInfo posF = typeof(DollBodyPartDef).GetField("position", BindingFlags.Instance | BindingFlags.Public);
+                    FieldInfo wF = typeof(DollBodyPartDef).GetField("width", BindingFlags.Instance | BindingFlags.Public);
+                    FieldInfo hF = typeof(DollBodyPartDef).GetField("height", BindingFlags.Instance | BindingFlags.Public);
+                    if (imgF != null) imgF.SetValue(part, old.Item1);
+                    if (texF != null) texF.SetValue(part, old.Item2);
+                    if (posF != null) posF.SetValue(part, old.Item3);
+                    if (wF != null) wF.SetValue(part, old.Item4);
+                    if (hF != null) hF.SetValue(part, old.Item5);
+                }
+                catch (Exception) { }
+            }
+
             private static bool PartPrefix(object[] __args)
             {
                 if (curPawn == null) return true;
                 try
                 {
                     if (SkipPart(__args)) return false;
+                    ApplyColorVariant(__args);
                     int layer = -1;
                     if (__args != null)
                         for (int i = 0; i < __args.Length && layer < 0; i++) layer = LayerOfArg(__args[i]);
@@ -2602,6 +2831,12 @@ if (clicked)
                 }
                 catch (Exception) { }
                 return true;
+            }
+
+
+            private static void PartPostfix(object[] __args)
+            {
+                RestoreColorVariant(__args);
             }
 
 

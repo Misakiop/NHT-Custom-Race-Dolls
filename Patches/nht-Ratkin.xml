@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   NHT_CustomDolls
-  由 NHT Anatomy Editor 生成 · 2026-11-05 20:25
+  由 NHT Anatomy Editor 生成 · 2026-11-05 23:08
   基准模组：Nice Health Tab (Andromeda.NiceHealthTab) v1.6 · 创意工坊 3328729902
   RJW 层：Nice Health Tab - RJW Genitalia (zoc2k.nicehealthtab.rjwgenitalia) · 相关操作带 MayRequire rim.job.world
   画布：1 个 · 部位：30 个 · 补丁操作：8 段
@@ -160,8 +160,8 @@
         <defName>Ratkin_u5c3eu5df4</defName>
         <imagePath>Custom/Ratkin/RK_Texture_Tail_east</imagePath>
         <position>
-          <x>-125.6</x>
-          <y>6.2</y>
+          <x>-117.1</x>
+          <y>7.8</y>
         </position>
         <layer>0</layer>
         <dollName>Ratkin</dollName>
@@ -170,9 +170,9 @@
         <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
-        <width>2.85</width>
-        <height>2.85</height>
-        <hitboxScale><x>0.93</x><y>1.76</y></hitboxScale>
+        <width>2.61</width>
+        <height>2.61</height>
+        <hitboxScale><x>6</x><y>6</y></hitboxScale>
       </NiceHealthTab.DollBodyPart>
 
       <!-- 自定义部位 · 尾巴（灰） -->
@@ -180,8 +180,8 @@
         <defName>Ratkin_u5c3eu5df4_NHTCD_Gray</defName>
         <imagePath>Custom/NHTCD_Gray/Ratkin/Ratkin_Ratkin_u5c3eu5df4</imagePath>
         <position>
-          <x>-125.6</x>
-          <y>6.2</y>
+          <x>-117.1</x>
+          <y>7.8</y>
         </position>
         <layer>0</layer>
         <dollName>Ratkin</dollName>
@@ -190,9 +190,9 @@
         <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
-        <width>2.85</width>
-        <height>2.85</height>
-        <hitboxScale><x>0.93</x><y>1.76</y></hitboxScale>
+        <width>2.61</width>
+        <height>2.61</height>
+        <hitboxScale><x>6</x><y>6</y></hitboxScale>
       </NiceHealthTab.DollBodyPart>
       <!-- 躯干 -->
       <NiceHealthTab.DollBodyPart>

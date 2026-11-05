@@ -1,0 +1,8 @@
+2026/11/06-02:39:05.595 8804 Creating DB C:\Misaki\Game\RimCrow\mods\NHT_CustomDollTest\Editor\NHT-Anatomy-Editor.exe.WebView2\EBWebView\Default\Local Storage\leveldb since it was missing.
+2026/11/06-02:39:05.608 8804 Reusing MANIFEST C:\Misaki\Game\RimCrow\mods\NHT_CustomDollTest\Editor\NHT-Anatomy-Editor.exe.WebView2\EBWebView\Default\Local Storage\leveldb/MANIFEST-000001
+2026/11/06-02:39:05.609 8804 Recovering log #61
+2026/11/06-02:39:05.611 8804 Reusing old log C:\Misaki\Game\RimCrow\mods\NHT_CustomDollTest\Editor\NHT-Anatomy-Editor.exe.WebView2\EBWebView\Default\Local Storage\leveldb/000061.log 
+2026/11/06-02:39:05.612 8804 Delete type=2 #62
+2026/11/06-02:40:05.631 dd9c Level-0 table #63: started
+2026/11/06-02:40:05.639 dd9c Level-0 table #63: 106006 bytes OK
+2026/11/06-02:40:05.641 dd9c Delete type=0 #61

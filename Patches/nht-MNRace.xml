@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   NHT_CustomDolls
-  由 NHT Anatomy Editor 生成 · 2026-11-05 20:25
+  由 NHT Anatomy Editor 生成 · 2026-11-05 23:08
   基准模组：Nice Health Tab (Andromeda.NiceHealthTab) v1.6 · 创意工坊 3328729902
   RJW 层：Nice Health Tab - RJW Genitalia (zoc2k.nicehealthtab.rjwgenitalia) · 相关操作带 MayRequire rim.job.world
   画布：1 个 · 部位：30 个 · 补丁操作：11 段
@@ -215,7 +215,7 @@
         <bondageScale>1.00</bondageScale>
         <width>0.47</width>
         <height>0.47</height>
-        <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
+        <hitboxScale><x>0.93</x><y>0.93</y></hitboxScale>
       </NiceHealthTab.DollBodyPart>
 
       <!-- 自定义部位 · 提灯（灰） -->
@@ -235,7 +235,7 @@
         <bondageScale>1.00</bondageScale>
         <width>0.47</width>
         <height>0.47</height>
-        <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
+        <hitboxScale><x>0.93</x><y>0.93</y></hitboxScale>
       </NiceHealthTab.DollBodyPart>
       <!-- 躯干 -->
       <NiceHealthTab.DollBodyPart>
@@ -245,7 +245,7 @@
           <x>2</x>
           <y>-140.5</y>
         </position>
-        <layer>0</layer>
+        <layer>1</layer>
         <dollName>MNRace</dollName>
         <bodyPartId>0</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
@@ -759,7 +759,7 @@
         <bondageScale>1.00</bondageScale>
         <width>0.38</width>
         <height>0.38</height>
-        <hitboxScale><x>0.94</x><y>0.9</y></hitboxScale>
+        <hitboxScale><x>1</x><y>1</y></hitboxScale>
       </NiceHealthTab.DollBodyPart>
 
       <!-- 自定义部位 · 左天线（灰） -->
@@ -779,7 +779,7 @@
         <bondageScale>1.00</bondageScale>
         <width>0.38</width>
         <height>0.38</height>
-        <hitboxScale><x>0.94</x><y>0.9</y></hitboxScale>
+        <hitboxScale><x>1</x><y>1</y></hitboxScale>
       </NiceHealthTab.DollBodyPart>
       <!-- 自定义部位 · 右天线 -->
       <NiceHealthTab.DollBodyPart>
@@ -798,7 +798,7 @@
         <bondageScale>1.00</bondageScale>
         <width>0.38</width>
         <height>0.38</height>
-        <hitboxScale><x>0.94</x><y>0.9</y></hitboxScale>
+        <hitboxScale><x>1</x><y>1</y></hitboxScale>
       </NiceHealthTab.DollBodyPart>
 
       <!-- 自定义部位 · 右天线（灰） -->
@@ -818,7 +818,7 @@
         <bondageScale>1.00</bondageScale>
         <width>0.38</width>
         <height>0.38</height>
-        <hitboxScale><x>0.94</x><y>0.9</y></hitboxScale>
+        <hitboxScale><x>1</x><y>1</y></hitboxScale>
       </NiceHealthTab.DollBodyPart>
       <!-- 胸腔 -->
       <NiceHealthTab.DollBone>

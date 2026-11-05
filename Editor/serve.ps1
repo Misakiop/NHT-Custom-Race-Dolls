@@ -2,7 +2,8 @@
 # 自己用 TcpListener 实现最小 HTTP 服务：不需要管理员权限，也不占用 http.sys。
 param(
     [string]$RootPath = '',
-    [switch]$NoBrowser
+    [switch]$NoBrowser,
+    [int]$Port = 0
 )
 $ErrorActionPreference = 'Stop'
 
@@ -11,8 +12,8 @@ if (-not $RootPath -or -not (Test-Path -LiteralPath $RootPath)) {
 }
 $Root    = $RootPath
 $ModRoot = Split-Path -Parent $Root
-$Port    = 8765
-$MaxPort = 8785
+$PortStart = 8765
+$MaxPort   = 8785
 
 function Get-FreePort([int]$start, [int]$end) {
     for ($p = $start; $p -le $end; $p++) {
@@ -361,7 +362,7 @@ function Save-File([string]$path, [byte[]]$bytes) {
     [System.IO.File]::WriteAllBytes($path, $bytes)
 }
 
-$port = Get-FreePort $Port $MaxPort
+if ($Port -gt 0) { $port = $Port } else { $port = Get-FreePort $PortStart $MaxPort }
 $listener = New-Object System.Net.Sockets.TcpListener([System.Net.IPAddress]::Loopback, $port)
 $listener.Start()
 $url = 'http://127.0.0.1:' + $port + '/anatomy-editor.html'
@@ -424,7 +425,16 @@ while ($true) {
             }
             continue
         }
-        elseif ($pathPart -eq '/__tex-exists' -and ($method -eq 'GET' -or $method -eq 'HEAD')) {
+        if ($pathPart -eq '/__patch-exists' -and ($method -eq 'GET' -or $method -eq 'HEAD')) {
+            $name = "$($query['name'])".Trim()
+            $yes = $false
+            if ($name -match '^[A-Za-z0-9_.\-]+\.xml$') {
+                $fp = Join-Path (Join-Path $ModRoot 'Patches') $name
+                $yes = Test-Path -LiteralPath $fp -PathType Leaf
+            }
+            if ($yes) { Send-Text $stream '200 OK' 'yes' } else { Send-Text $stream '200 OK' 'no' }
+        }
+        if ($pathPart -eq '/__tex-exists' -and ($method -eq 'GET' -or $method -eq 'HEAD')) {
             $key = $query['key']
             $yes = $false
             if ($key -and $key -notmatch '\.\.') {
