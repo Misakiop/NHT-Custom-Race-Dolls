@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <!--
   NHT_CustomDolls
   由 NHT Anatomy Editor 生成 · 2026-11-05 15:05
@@ -167,7 +167,7 @@
         <dollName>Ratkin</dollName>
         <bodyPartId>64</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>2.85</width>
@@ -187,7 +187,7 @@
         <dollName>Ratkin</dollName>
         <bodyPartId>64</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>2.85</width>
@@ -453,7 +453,7 @@
         <dollName>Ratkin</dollName>
         <bodyPartId>3</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>1</width>
@@ -473,7 +473,7 @@
         <dollName>Ratkin</dollName>
         <bodyPartId>4</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.7</width>
@@ -493,7 +493,7 @@
         <dollName>Ratkin</dollName>
         <bodyPartId>20</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>1</width>
@@ -513,7 +513,7 @@
         <dollName>Ratkin</dollName>
         <bodyPartId>16</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.6</width>
@@ -532,7 +532,7 @@
         <dollName>Ratkin</dollName>
         <bodyPartId>17</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>-0.6</width>
@@ -551,7 +551,7 @@
         <dollName>Ratkin</dollName>
         <bodyPartId>18</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>1</width>
@@ -571,7 +571,7 @@
         <dollName>Ratkin</dollName>
         <bodyPartId>18</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>1</width>
@@ -590,7 +590,7 @@
         <dollName>Ratkin</dollName>
         <bodyPartId>19</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>1</width>
@@ -610,7 +610,7 @@
         <dollName>Ratkin</dollName>
         <bodyPartId>19</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>1</width>
@@ -629,7 +629,7 @@
         <dollName>Ratkin</dollName>
         <bodyPartId>15</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>1</width>
@@ -649,7 +649,7 @@
         <dollName>Ratkin</dollName>
         <bodyPartId>6</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.85</width>
@@ -669,7 +669,7 @@
         <dollName>Ratkin</dollName>
         <bodyPartId>10</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>-0.85</width>
@@ -689,7 +689,7 @@
         <dollName>Ratkin</dollName>
         <bodyPartId>9</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.85</width>
@@ -709,7 +709,7 @@
         <dollName>Ratkin</dollName>
         <bodyPartId>11</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.85</width>
@@ -729,7 +729,7 @@
         <dollName>Ratkin</dollName>
         <bodyPartId>8</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>-0.85</width>
@@ -749,7 +749,7 @@
         <dollName>Ratkin</dollName>
         <bodyPartId>7</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.85</width>
@@ -769,7 +769,7 @@
         <dollName>Ratkin</dollName>
         <bodyPartId>5</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.85</width>
@@ -789,7 +789,7 @@
         <dollName>Ratkin</dollName>
         <bodyPartId>1</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>false</showArmorCover>
+        <showArmorCover>true</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.9</width>
