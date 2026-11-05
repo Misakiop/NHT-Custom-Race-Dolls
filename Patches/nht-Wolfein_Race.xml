@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   NHT_CustomDolls
-  由 NHT Anatomy Editor 生成 · 2026-11-05 20:25
+  由 NHT Anatomy Editor 生成 · 2026-11-05 23:08
   基准模组：Nice Health Tab (Andromeda.NiceHealthTab) v1.6 · 创意工坊 3328729902
   RJW 层：Nice Health Tab - RJW Genitalia (zoc2k.nicehealthtab.rjwgenitalia) · 相关操作带 MayRequire rim.job.world
   画布：1 个 · 部位：30 个 · 补丁操作：11 段
@@ -19,7 +19,7 @@
         <race>Wolfein_Race</race>
         <scale>0.282</scale>
         <offsetX>0.000</offsetX>
-        <offsetY>-0.344</offsetY>
+        <offsetY>-0.363</offsetY>
         <front>true</front>
         <layer>14</layer>
         <showInXray>false</showInXray>
@@ -43,7 +43,7 @@
         <race>Wolfein race</race>
         <scale>0.282</scale>
         <offsetX>0.000</offsetX>
-        <offsetY>-0.344</offsetY>
+        <offsetY>-0.363</offsetY>
         <front>true</front>
         <layer>14</layer>
         <showInXray>false</showInXray>
@@ -200,7 +200,7 @@
         <imagePath>Custom/Wolfein/Crop_tail_north_mw3ea5y8</imagePath>
         <position>
           <x>85.5</x>
-          <y>89.5</y>
+          <y>69.5</y>
         </position>
         <layer>0</layer>
         <dollName>Wolfein_Race</dollName>
@@ -220,7 +220,7 @@
         <imagePath>Custom/NHTCD_Gray/Wolfein/Wolfein_Race_Wolfein_Race_u5c3eu5df4</imagePath>
         <position>
           <x>85.5</x>
-          <y>89.5</y>
+          <y>69.5</y>
         </position>
         <layer>0</layer>
         <dollName>Wolfein_Race</dollName>
@@ -239,7 +239,7 @@
         <imagePath>HediffTab/Baseliner/Female/Torso</imagePath>
         <position>
           <x>2</x>
-          <y>-140.5</y>
+          <y>-160.5</y>
         </position>
         <layer>1</layer>
         <dollName>Wolfein_Race</dollName>
@@ -258,7 +258,7 @@
         <imagePath>HediffTab/Baseliner/Female/Leg</imagePath>
         <position>
           <x>-45</x>
-          <y>179.5</y>
+          <y>159.5</y>
         </position>
         <layer>2</layer>
         <dollName>Wolfein_Race</dollName>
@@ -277,7 +277,7 @@
         <imagePath>HediffTab/Baseliner/Female/Leg</imagePath>
         <position>
           <x>45</x>
-          <y>179.5</y>
+          <y>159.5</y>
         </position>
         <layer>2</layer>
         <dollName>Wolfein_Race</dollName>
@@ -296,7 +296,7 @@
         <imagePath>HediffTab/Baseliner/Female/Neck</imagePath>
         <position>
           <x>1</x>
-          <y>-303.5</y>
+          <y>-323.5</y>
         </position>
         <layer>2</layer>
         <dollName>Wolfein_Race</dollName>
@@ -315,7 +315,7 @@
         <imagePath>HediffTab/Baseliner/Female/Shoulder</imagePath>
         <position>
           <x>-81.5</x>
-          <y>-198</y>
+          <y>-218</y>
         </position>
         <layer>2</layer>
         <dollName>Wolfein_Race</dollName>
@@ -334,7 +334,7 @@
         <imagePath>HediffTab/Baseliner/Female/Shoulder</imagePath>
         <position>
           <x>81.5</x>
-          <y>-198</y>
+          <y>-218</y>
         </position>
         <layer>2</layer>
         <dollName>Wolfein_Race</dollName>
@@ -353,7 +353,7 @@
         <imagePath>HediffTab/Baseliner/Female/Arm</imagePath>
         <position>
           <x>-107</x>
-          <y>-82</y>
+          <y>-102</y>
         </position>
         <layer>3</layer>
         <dollName>Wolfein_Race</dollName>
@@ -372,7 +372,7 @@
         <imagePath>HediffTab/Baseliner/Female/Arm</imagePath>
         <position>
           <x>107</x>
-          <y>-82</y>
+          <y>-102</y>
         </position>
         <layer>3</layer>
         <dollName>Wolfein_Race</dollName>
@@ -391,7 +391,7 @@
         <imagePath>HediffTab/Baseliner/Female/Feet</imagePath>
         <position>
           <x>-47.5</x>
-          <y>411.5</y>
+          <y>391.5</y>
         </position>
         <layer>3</layer>
         <dollName>Wolfein_Race</dollName>
@@ -410,7 +410,7 @@
         <imagePath>HediffTab/Baseliner/Female/Feet</imagePath>
         <position>
           <x>47.5</x>
-          <y>411.5</y>
+          <y>391.5</y>
         </position>
         <layer>3</layer>
         <dollName>Wolfein_Race</dollName>
@@ -429,7 +429,7 @@
         <imagePath>HediffTab/Baseliner/Female/NiceHead</imagePath>
         <position>
           <x>0</x>
-          <y>-352</y>
+          <y>-372</y>
         </position>
         <layer>3</layer>
         <dollName>Wolfein_Race</dollName>
@@ -448,7 +448,7 @@
         <imagePath>HediffTab/Baseliner/Female/Hand</imagePath>
         <position>
           <x>-121</x>
-          <y>5.5</y>
+          <y>-14.5</y>
         </position>
         <layer>4</layer>
         <dollName>Wolfein_Race</dollName>
@@ -467,7 +467,7 @@
         <imagePath>HediffTab/Baseliner/Female/Hand</imagePath>
         <position>
           <x>121</x>
-          <y>5.5</y>
+          <y>-14.5</y>
         </position>
         <layer>4</layer>
         <dollName>Wolfein_Race</dollName>
@@ -486,7 +486,7 @@
         <imagePath>HediffTab/Bones/Pelvis</imagePath>
         <position>
           <x>0</x>
-          <y>-42.5</y>
+          <y>-62.5</y>
         </position>
         <layer>9</layer>
         <dollName>Wolfein_Race</dollName>
@@ -506,7 +506,7 @@
         <imagePath>HediffTab/Bones/Spine</imagePath>
         <position>
           <x>0</x>
-          <y>-152.5</y>
+          <y>-172.5</y>
         </position>
         <layer>10</layer>
         <dollName>Wolfein_Race</dollName>
@@ -526,7 +526,7 @@
         <imagePath>HediffTab/Baseliner/Head/Nose</imagePath>
         <position>
           <x>0</x>
-          <y>-329.5</y>
+          <y>-349.5</y>
         </position>
         <layer>14</layer>
         <dollName>Wolfein_Race</dollName>
@@ -546,7 +546,7 @@
         <imagePath>HediffTab/Baseliner/Head/NiceMaleEye</imagePath>
         <position>
           <x>18</x>
-          <y>-341.5</y>
+          <y>-361.5</y>
         </position>
         <layer>15</layer>
         <dollName>Wolfein_Race</dollName>
@@ -565,7 +565,7 @@
         <imagePath>HediffTab/Baseliner/Head/NiceMaleEye</imagePath>
         <position>
           <x>-18</x>
-          <y>-341.5</y>
+          <y>-361.5</y>
         </position>
         <layer>15</layer>
         <dollName>Wolfein_Race</dollName>
@@ -584,7 +584,7 @@
         <imagePath>Custom/Wolfein/earL2_south</imagePath>
         <position>
           <x>35</x>
-          <y>-405</y>
+          <y>-425</y>
         </position>
         <layer>15</layer>
         <dollName>Wolfein_Race</dollName>
@@ -604,7 +604,7 @@
         <imagePath>Custom/NHTCD_Gray/Wolfein/Wolfein_Race_Wolfein_Race_u5de6u8033</imagePath>
         <position>
           <x>35</x>
-          <y>-405</y>
+          <y>-425</y>
         </position>
         <layer>15</layer>
         <dollName>Wolfein_Race</dollName>
@@ -623,7 +623,7 @@
         <imagePath>Custom/Wolfein/earR2_south</imagePath>
         <position>
           <x>-35</x>
-          <y>-405</y>
+          <y>-425</y>
         </position>
         <layer>15</layer>
         <dollName>Wolfein_Race</dollName>
@@ -643,7 +643,7 @@
         <imagePath>Custom/NHTCD_Gray/Wolfein/Wolfein_Race_Wolfein_Race_u53f3u8033</imagePath>
         <position>
           <x>-35</x>
-          <y>-405</y>
+          <y>-425</y>
         </position>
         <layer>15</layer>
         <dollName>Wolfein_Race</dollName>
@@ -662,7 +662,7 @@
         <imagePath>HediffTab/Organs/Brain</imagePath>
         <position>
           <x>1</x>
-          <y>-379</y>
+          <y>-399</y>
         </position>
         <layer>20</layer>
         <dollName>Wolfein_Race</dollName>
@@ -682,7 +682,7 @@
         <imagePath>HediffTab/Organs/Heart</imagePath>
         <position>
           <x>4.5</x>
-          <y>-167.5</y>
+          <y>-187.5</y>
         </position>
         <layer>21</layer>
         <dollName>Wolfein_Race</dollName>
@@ -702,7 +702,7 @@
         <imagePath>HediffTab/Organs/Kidney</imagePath>
         <position>
           <x>-37.5</x>
-          <y>-71</y>
+          <y>-91</y>
         </position>
         <layer>22</layer>
         <dollName>Wolfein_Race</dollName>
@@ -722,7 +722,7 @@
         <imagePath>HediffTab/Organs/Kidney</imagePath>
         <position>
           <x>37.5</x>
-          <y>-71</y>
+          <y>-91</y>
         </position>
         <layer>22</layer>
         <dollName>Wolfein_Race</dollName>
@@ -742,7 +742,7 @@
         <imagePath>HediffTab/Organs/Liver</imagePath>
         <position>
           <x>-25.5</x>
-          <y>-120</y>
+          <y>-140</y>
         </position>
         <layer>23</layer>
         <dollName>Wolfein_Race</dollName>
@@ -762,7 +762,7 @@
         <imagePath>HediffTab/Organs/Lung</imagePath>
         <position>
           <x>-23.5</x>
-          <y>-229.5</y>
+          <y>-249.5</y>
         </position>
         <layer>24</layer>
         <dollName>Wolfein_Race</dollName>
@@ -782,7 +782,7 @@
         <imagePath>HediffTab/Organs/Lung</imagePath>
         <position>
           <x>23.5</x>
-          <y>-229.5</y>
+          <y>-249.5</y>
         </position>
         <layer>24</layer>
         <dollName>Wolfein_Race</dollName>
@@ -802,7 +802,7 @@
         <imagePath>HediffTab/Organs/Stomach</imagePath>
         <position>
           <x>19.5</x>
-          <y>-114</y>
+          <y>-134</y>
         </position>
         <layer>25</layer>
         <dollName>Wolfein_Race</dollName>
@@ -822,7 +822,7 @@
         <imagePath>HediffTab/Bones/Ribcage</imagePath>
         <position>
           <x>0</x>
-          <y>-214.5</y>
+          <y>-234.5</y>
         </position>
         <layer>11</layer>
         <dollName>Wolfein_Race</dollName>

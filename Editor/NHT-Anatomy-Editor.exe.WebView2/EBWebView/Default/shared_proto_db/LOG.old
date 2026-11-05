@@ -1,0 +1,4 @@
+2026/11/06-02:39:05.552 cc18 Creating DB C:\Misaki\Game\RimCrow\mods\NHT_CustomDollTest\Editor\NHT-Anatomy-Editor.exe.WebView2\EBWebView\Default\shared_proto_db since it was missing.
+2026/11/06-02:39:05.558 cc18 Reusing MANIFEST C:\Misaki\Game\RimCrow\mods\NHT_CustomDollTest\Editor\NHT-Anatomy-Editor.exe.WebView2\EBWebView\Default\shared_proto_db/MANIFEST-000001
+2026/11/06-02:39:05.559 cc18 Recovering log #3
+2026/11/06-02:39:05.559 cc18 Reusing old log C:\Misaki\Game\RimCrow\mods\NHT_CustomDollTest\Editor\NHT-Anatomy-Editor.exe.WebView2\EBWebView\Default\shared_proto_db/000003.log 

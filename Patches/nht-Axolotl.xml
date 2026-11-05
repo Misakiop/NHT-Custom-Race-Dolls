@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   NHT_CustomDolls
-  由 NHT Anatomy Editor 生成 · 2026-11-05 20:25
+  由 NHT Anatomy Editor 生成 · 2026-11-05 23:08
   基准模组：Nice Health Tab (Andromeda.NiceHealthTab) v1.6 · 创意工坊 3328729902
   RJW 层：Nice Health Tab - RJW Genitalia (zoc2k.nicehealthtab.rjwgenitalia) · 相关操作带 MayRequire rim.job.world
   画布：1 个 · 部位：30 个 · 补丁操作：11 段
@@ -203,18 +203,18 @@
         <defName>Axolotl_u5c3eu5df4</defName>
         <imagePath>Custom/MoeLotl/Crop_Axolotl_TailN_mw3ecg0d</imagePath>
         <position>
-          <x>57.4</x>
-          <y>53.4</y>
+          <x>66.2</x>
+          <y>31.7</y>
         </position>
         <layer>0</layer>
         <dollName>Axolotl</dollName>
         <bodyPartId>65</bodyPartId>
-        <notifyPosition><x>88</x><y>62</y></notifyPosition>
+        <notifyPosition><x>62</x><y>60</y></notifyPosition>
         <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
-        <width>1.9</width>
-        <height>1.91</height>
+        <width>1.63</width>
+        <height>1.63</height>
         <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
       </NiceHealthTab.DollBodyPart>
 
@@ -223,24 +223,24 @@
         <defName>Axolotl_u5c3eu5df4_NHTCD_Gray</defName>
         <imagePath>Custom/NHTCD_Gray/MoeLotl/Axolotl_Axolotl_u5c3eu5df4</imagePath>
         <position>
-          <x>57.4</x>
-          <y>53.4</y>
+          <x>66.2</x>
+          <y>31.7</y>
         </position>
         <layer>0</layer>
         <dollName>Axolotl</dollName>
         <bodyPartId>65</bodyPartId>
-        <notifyPosition><x>88</x><y>62</y></notifyPosition>
+        <notifyPosition><x>62</x><y>60</y></notifyPosition>
         <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
-        <width>1.9</width>
-        <height>1.91</height>
+        <width>1.63</width>
+        <height>1.63</height>
         <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
       </NiceHealthTab.DollBodyPart>
       <!-- 躯干 -->
       <NiceHealthTab.DollBodyPart>
         <defName>Axolotl_FemaleTorso</defName>
-        <imagePath>Custom/MoeLotl/Axolotl_Tail</imagePath>
+        <imagePath>HediffTab/Baseliner/Female/Torso</imagePath>
         <position>
           <x>2</x>
           <y>-160.5</y>
