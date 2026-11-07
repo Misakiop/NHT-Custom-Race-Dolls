@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO.Compression;
 using System.IO;
@@ -149,7 +149,19 @@ namespace NhtEditorHost
                 if (string.IsNullOrEmpty(name) || !name.EndsWith(".xml") || name.Contains("..")) return false;
                 string dir = Path.Combine(modRoot, "Patches");
                 if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
-                File.WriteAllText(Path.Combine(dir, name), xml ?? "", new UTF8Encoding(false));
+                string target = Path.Combine(dir, name);
+                if (File.Exists(target))
+                {
+                    string baseName = Path.GetFileNameWithoutExtension(name);
+                    string hdir = Path.Combine(modRoot, "Editor", "history", "Patches", baseName);
+                    Directory.CreateDirectory(hdir);
+                    string stamp = DateTime.Now.ToString("yyyyMMdd-HHmmssfff");
+                    File.Copy(target, Path.Combine(hdir, name + "." + stamp + ".bak"), true);
+                    var olds = new List<FileInfo>(new DirectoryInfo(hdir).GetFiles());
+                    olds.Sort((a, b) => b.LastWriteTime.CompareTo(a.LastWriteTime));
+                    for (int i = 3; i < olds.Count; i++) { try { olds[i].Delete(); } catch { } }
+                }
+                File.WriteAllText(target, xml ?? "", new UTF8Encoding(false));
                 return true;
             }
             catch { return false; }
@@ -230,20 +242,24 @@ namespace NhtEditorHost
             string tmp = Path.Combine(Path.GetTempPath(), "nhtmod-" + Guid.NewGuid().ToString("N") + ".zip");
             try
             {
-                var skip = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "Editor", ".git", ".vs", "bin", "obj", "build", "node_modules" };
+                string[] official = { "About", "Assemblies", "Defs", "Languages", "Patches", "Textures", "Sounds" };
                 using (var z = ZipFile.Open(tmp, ZipArchiveMode.Create))
                 {
-                    foreach (var f in Directory.GetFiles(modRoot, "*", SearchOption.AllDirectories))
+                    foreach (var dirName in official)
                     {
-                        string rel = f.Substring(modRoot.Length + 1).Replace('\\', '/');
-                        if (!string.IsNullOrEmpty(aboutXml) && rel.Equals("About/About.xml", StringComparison.OrdinalIgnoreCase)) continue;
-                        bool skipIt = false;
-                        foreach (var seg in rel.Split('/')) { if (skip.Contains(seg)) { skipIt = true; break; } }
-                        if (skipIt) continue;
-                        if (rel.StartsWith("Source/bin/") || rel.StartsWith("Source/obj/") || rel.StartsWith("Source/build/")) continue;
-                        if (f.EndsWith(".bak") || f.EndsWith(".tmp") || f.EndsWith(".orig")) continue;
-                        if (Path.GetFileName(f).Contains(".old-")) continue;
-                        z.CreateEntryFromFile(f, rel, CompressionLevel.Optimal);
+                        string od = Path.Combine(modRoot, dirName);
+                        if (!Directory.Exists(od)) continue;
+                        foreach (var f in Directory.GetFiles(od, "*", SearchOption.AllDirectories))
+                        {
+                            string rel = f.Substring(modRoot.Length + 1).Replace('\\', '/');
+                            if (!string.IsNullOrEmpty(aboutXml) && rel.Equals("About/About.xml", StringComparison.OrdinalIgnoreCase)) continue;
+                            string ext = Path.GetExtension(f).ToLowerInvariant();
+                            if (dirName == "Patches" && ext != ".xml") continue;
+                            if (dirName == "Assemblies" && ext != ".dll") continue;
+                            string nm = Path.GetFileName(f).ToLowerInvariant();
+                            if (nm.Contains(".bak") || nm.EndsWith(".tmp") || nm.EndsWith(".orig") || nm.EndsWith(".premap") || nm.EndsWith(".psd") || nm.EndsWith(".xcf") || nm.EndsWith(".kra") || nm.Contains(".old-")) continue;
+                            z.CreateEntryFromFile(f, rel, CompressionLevel.Optimal);
+                        }
                     }
                     if (!string.IsNullOrEmpty(aboutXml))
                     {

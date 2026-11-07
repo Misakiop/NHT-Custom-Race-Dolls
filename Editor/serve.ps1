@@ -363,6 +363,22 @@ function Save-File([string]$path, [byte[]]$bytes) {
     [System.IO.File]::WriteAllBytes($path, $bytes)
 }
 
+# 补丁备份：写入前把旧 XML 复制到 Editor/history/Patches/<种族>/，每个种族只留最新 3 份
+function Backup-Patch([string]$name) {
+    $src = Join-Path (Join-Path $ModRoot 'Patches') $name
+    if (-not (Test-Path -LiteralPath $src -PathType Leaf)) { return }
+    $base = 'other'
+    if ($name -match '^(nht-[^.]+)') { $base = $Matches[1] }
+    $dir = Join-Path (Join-Path $Root 'history\Patches') $base
+    if (-not (Test-Path -LiteralPath $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+    $stamp = Get-Date -Format 'yyyyMMdd-HHmmssfff'
+    try { Copy-Item -LiteralPath $src -Destination (Join-Path $dir ($name + '.' + $stamp + '.bak')) -Force } catch { }
+    $all = @(Get-ChildItem -LiteralPath $dir -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending)
+    if ($all.Count -gt 3) {
+        $all | Select-Object -Skip 3 | ForEach-Object { try { Remove-Item -LiteralPath $_.FullName -Force } catch { } }
+    }
+}
+
 if ($Port -gt 0) { $port = $Port } else { $port = Get-FreePort $PortStart $MaxPort }
 $listener = New-Object System.Net.Sockets.TcpListener([System.Net.IPAddress]::Loopback, $port)
 $listener.Start()
@@ -766,9 +782,8 @@ while ($true) {
             $dir = $query['dir']
             if (-not $git) { Send-Json $stream '200 OK' @{ ok = $false; error = 'git.exe not found' }; continue }
             if (-not $dir -or -not (Test-Path -LiteralPath $dir)) { Send-Json $stream '200 OK' @{ ok = $false; error = ('repo dir not found: ' + $dir) }; continue }
-            if ($query['sync'] -eq '1') {
-                try { $null = & robocopy $ModRoot $dir /E /XD .git .vs bin obj 'Editor\NHT-Anatomy-Editor.exe.WebView2' /XF *.bak *.bak.* /NFL /NDL /NJH /NJS /NP 2>&1 } catch { }
-            }
+            # 推送弹窗只读 git status；模组 -> 仓库的同步放到真正 push 时做，
+            # 否则 robocopy 整个模组会把弹窗卡住（之前表现为“读取本地更改失败/超时”）。
             # 已提交但还没推送的提交：推送窗口里不逐条列，但会随本次推送一起上传
             $curBrR = Invoke-Git $git @('-C', $dir, 'rev-parse', '--abbrev-ref', 'HEAD')
             $curBr = "$($curBrR.text)".Trim()
@@ -1149,26 +1164,35 @@ while ($true) {
                 $stage = Join-Path $tmp ('nhtstage-' + $stamp)
                 $zip = Join-Path $tmp ('nhtmod-' + $stamp + '.zip')
                 New-Item -ItemType Directory -Path $stage -Force | Out-Null
-                $skip = @('Editor', '.git', '.vs', 'bin', 'obj', 'build', 'node_modules')
-                Get-ChildItem -LiteralPath $ModRoot -Force | Where-Object { $skip -notcontains $_.Name } | ForEach-Object {
-                    Copy-Item -LiteralPath $_.FullName -Destination $stage -Recurse -Force
+                # 只导出正式模组内容：About / Assemblies / Defs / Languages / Patches / Textures / Sounds
+                $official = @('About','Assemblies','Defs','Languages','Patches','Textures','Sounds')
+                foreach ($d in $official) {
+                    $src = Join-Path $ModRoot $d
+                    if (-not (Test-Path -LiteralPath $src)) { continue }
+                    $dst = Join-Path $stage $d
+                    if (-not (Test-Path -LiteralPath $dst)) { New-Item -ItemType Directory -Path $dst -Force | Out-Null }
+                    if ($d -eq 'Patches') {
+                        Get-ChildItem -LiteralPath $src -File -Filter '*.xml' -ErrorAction SilentlyContinue | ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $dst -Force }
+                    } elseif ($d -eq 'Assemblies') {
+                        Get-ChildItem -LiteralPath $src -File -Filter '*.dll' -ErrorAction SilentlyContinue | ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $dst -Force }
+                    } else {
+                        Get-ChildItem -LiteralPath $src -Force | ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $dst -Recurse -Force }
+                    }
                 }
-                # 用编辑器里配置的 About.xml 覆盖模组目录里的那份（导出时忽略原文件）
-                if ($query['about']) {
-                    try {
-                        $aboutText = $query['about']
-                        $aboutDir = Join-Path $stage 'About'
-                        if (-not (Test-Path -LiteralPath $aboutDir)) { New-Item -ItemType Directory -Path $aboutDir -Force | Out-Null }
-                        [System.IO.File]::WriteAllText((Join-Path $aboutDir 'About.xml'), $aboutText, (New-Object System.Text.UTF8Encoding($false)))
-                    } catch { }
-                }
-                Get-ChildItem -LiteralPath $stage -Recurse -Force -File -ErrorAction SilentlyContinue | Where-Object { $_.Extension -eq '.bak' -or $_.Extension -eq '.tmp' -or $_.Extension -eq '.orig' -or $_.Name -like '*.old-*' } | Remove-Item -Force -ErrorAction SilentlyContinue
-                foreach ($junk in @('Source\bin', 'Source\obj', 'Source\build')) {
-                    $jp = Join-Path $stage $junk
-                    if (Test-Path -LiteralPath $jp) { Remove-Item -LiteralPath $jp -Recurse -Force -ErrorAction SilentlyContinue }
-                }
+                # 清掉贴图目录里的备份 / 临时 / 工程文件
+                Get-ChildItem -LiteralPath $stage -Recurse -File -Force -ErrorAction SilentlyContinue | Where-Object {
+                    $_.Name -match '\.(bak|bak[0-9]+|premap|tmp|orig|psd|xcf|kra)$' -or $_.Name -like '*.old-*'
+                } | Remove-Item -Force -ErrorAction SilentlyContinue
                 if (Test-Path -LiteralPath $zip) { Remove-Item -LiteralPath $zip -Force }
-                Compress-Archive -Path (Join-Path $stage '*') -DestinationPath $zip -CompressionLevel Optimal -Force
+                Add-Type -AssemblyName System.IO.Compression
+                Add-Type -AssemblyName System.IO.Compression.FileSystem
+                $z = [System.IO.Compression.ZipFile]::Open($zip, [System.IO.Compression.ZipArchiveMode]::Create)
+                try {
+                    Get-ChildItem -LiteralPath $stage -Recurse -File -Force | ForEach-Object {
+                        $rel = $_.FullName.Substring($stage.Length + 1).Replace('\', '/')
+                        [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($z, $_.FullName, $rel, [System.IO.Compression.CompressionLevel]::Optimal) | Out-Null
+                    }
+                } finally { $z.Dispose() }
                 $bytes = [System.IO.File]::ReadAllBytes($zip)
                 Send-Bytes $stream '200 OK' 'application/zip' $bytes
             }
@@ -1227,6 +1251,7 @@ while ($true) {
             elseif ($to -eq 'patch') {
                 $name = $query['name']
                 if ($name -match '^[A-Za-z0-9_.\-]+\.xml$') {
+                    Backup-Patch $name
                     Save-File (Join-Path (Join-Path $ModRoot 'Patches') $name) $req.body
                     $ok = $true
                     $msg = 'Patches\' + $name

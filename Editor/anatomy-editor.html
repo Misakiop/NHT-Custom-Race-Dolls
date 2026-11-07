@@ -64,7 +64,7 @@ input[type=range]::-webkit-slider-runnable-track{height:3px;background:#2d363b;b
 .topbar{
   height:58px;flex:0 0 58px;display:flex;align-items:center;gap:18px;padding:0 14px 0 16px;
   background:linear-gradient(180deg,#14181a,#0f1214);
-  border-bottom:1px solid var(--line);position:relative;z-index:5;
+  border-bottom:1px solid var(--line);position:relative;z-index:120;
 }
 .topbar::after{content:"";position:absolute;left:0;top:0;width:196px;height:2px;background:linear-gradient(90deg,var(--accent),rgba(255,149,65,0))}
 .brand{display:flex;align-items:center;gap:10px;min-width:196px}
@@ -83,6 +83,24 @@ input[type=range]::-webkit-slider-runnable-track{height:3px;background:#2d363b;b
 .projName:focus{outline:none;border-color:var(--line-2);background:#0d1011}
 .topbar__actions{display:flex;align-items:center;gap:6px}
 .vsep{width:1px;height:20px;background:var(--line);margin:0 4px}
+/* 顶栏语言切换：折叠按钮 + 当前语言颜色/文字 */
+.langbox{position:relative;flex:0 0 auto;margin-right:2px}
+.langbtn{display:flex;align-items:center;gap:5px;height:26px;padding:0 7px;border:1px solid var(--line);
+  border-radius:5px;background:rgba(255,255,255,.035);color:var(--text);cursor:pointer;font:10px/1 var(--font-ui)}
+.langbtn:hover{background:rgba(255,255,255,.07);border-color:var(--line-2)}
+.langdot{width:6px;height:6px;border-radius:50%;flex:0 0 auto;background:#ff9a4d;box-shadow:0 0 7px rgba(255,154,77,.7)}
+.langbox[data-lang="en"] .langbtn .langdot{background:#5cc8ff;box-shadow:0 0 7px rgba(92,200,255,.75)}
+.langbtn b{font-weight:500;letter-spacing:.04em;white-space:nowrap}
+.langbtn i{font-style:normal;font-size:9px;opacity:.55;margin-left:1px}
+.langmenu{position:absolute;right:0;top:calc(100% + 5px);z-index:300;min-width:124px;padding:4px;
+  border:1px solid var(--line);border-radius:6px;background:#14181b;box-shadow:0 12px 30px rgba(0,0,0,.5)}
+.langmenu[hidden]{display:none}
+.langopt{display:flex;align-items:center;gap:6px;width:100%;padding:5px 7px;border:0;border-radius:4px;
+  background:transparent;color:var(--text);cursor:pointer;font:11px/1.3 var(--font-ui);text-align:left}
+.langopt:hover{background:rgba(255,255,255,.06)}
+.langopt.is-on{background:rgba(255,255,255,.09)}
+.langopt .langdot.zh{background:#ff9a4d;box-shadow:0 0 7px rgba(255,154,77,.7)}
+.langopt .langdot.en{background:#5cc8ff;box-shadow:0 0 7px rgba(92,200,255,.75)}
 .iconbtn{
   width:28px;height:28px;display:grid;place-items:center;border-radius:2px;border:1px solid transparent;color:var(--muted);
 }
@@ -1012,6 +1030,32 @@ kbd{
 .tiplist__n{flex:0 0 auto;color:#e3b558;font-weight:600}
 .harbadge[hidden]{display:none}
 .harwarn[hidden]{display:none}
+
+/* 画布异种预览：圆形彩色图标，位于缩放浮窗上方 */
+.vdock{position:absolute;right:34px;bottom:64px;z-index:40;display:flex;flex-direction:column;align-items:center;gap:6px;
+  max-height:calc(100% - 120px);overflow:auto;padding:7px 6px;border:1px solid rgba(255,255,255,.13);border-radius:18px;
+  background:linear-gradient(180deg,rgba(24,28,32,.92),rgba(12,15,17,.9));
+  box-shadow:0 12px 32px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.09);
+  backdrop-filter:blur(10px);scrollbar-width:none}
+.vdock::-webkit-scrollbar{display:none}
+.vdock[hidden]{display:none}
+.vdock__fold{flex:0 0 auto;width:18px;height:18px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.14);
+  border-radius:50%;background:rgba(255,255,255,.05);color:#aeb8bd;cursor:pointer;font:9px/1 var(--font-mono);
+  padding:0;transition:background .12s,color .12s}
+.vdock__fold:hover{background:rgba(255,255,255,.12);color:#fff}
+.vdock__dot{position:relative;flex:0 0 auto;width:24px;height:24px;border-radius:50%;border:1px solid rgba(255,255,255,.22);
+  background:var(--dot,#666);cursor:pointer;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14),0 2px 8px rgba(0,0,0,.35);
+  padding:0;transition:transform .12s,box-shadow .12s}
+.vdock__dot:hover{transform:scale(1.1);box-shadow:inset 0 0 0 1px rgba(255,255,255,.28),0 0 14px var(--dot)}
+.vdock__dot.is-on{box-shadow:0 0 0 2px rgba(255,255,255,.92),0 0 14px var(--dot);transform:scale(1.06)}
+.vdock__dot--base{background:conic-gradient(from 45deg,#aab3b7,#3b4348,#8e979c,#3b4348,#aab3b7)}
+.vdock__dot--base::before{content:"";position:absolute;inset:8px;border-radius:50%;border:1px solid rgba(255,255,255,.6)}
+.vdock__dot::after{content:attr(data-lb);position:absolute;right:calc(100% + 9px);top:50%;transform:translateY(-50%);
+  white-space:nowrap;padding:4px 7px;border-radius:5px;background:rgba(6,8,9,.9);border:1px solid rgba(255,255,255,.12);
+  color:#f2f6f7;font:10px/1.2 var(--font-ui);opacity:0;pointer-events:none;transition:opacity .12s;z-index:3}
+.vdock__dot:hover::after{opacity:1}
+.vdock.is-closed .vdock__dot:not(.is-on){display:none}
+.vdock.is-closed{padding:4px 5px;gap:4px}
 
 .bidrow__src{flex:0 0 auto;font-style:normal;font-size:10px;line-height:1;padding:3px 5px;border-radius:4px;
   color:#cfd7da;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.14);margin-right:6px;
@@ -2042,6 +2086,7 @@ body.is-host .iconbtn.btn--host:hover svg{transform:rotate(180deg)}
 
 /* 部位属性：置顶 / 色彩同一行 */
 .part-flags{display:flex;align-items:center;gap:9px;flex-wrap:nowrap;padding:1px 0 8px;min-width:0}
+.part-flags--sub{flex-wrap:wrap;margin-top:1px;padding:6px 0 8px;border-top:1px dashed rgba(255,255,255,.08)}
 .pf{display:flex;align-items:center;gap:4px;min-width:0;white-space:nowrap}
 .pf>b{font:9px/1 var(--font-mono);letter-spacing:.06em;color:var(--dim);font-weight:600}
 .pf .qmark{flex:0 0 auto}
@@ -2317,13 +2362,22 @@ body.is-host .iconbtn.btn--host:hover svg{transform:rotate(180deg)}
       <input id="projName" class="projName" spellcheck="false" aria-label="补丁名称">
     </div>
     <div class="topbar__actions">
+      <span class="langbox" id="langBox" data-lang="zh" data-i18n-skip>
+        <button class="langbtn" data-act="lang-toggle" title="界面语言 / UI language">
+          <span class="langdot"></span><b id="langLabel">中文</b><i>▾</i>
+        </button>
+        <div class="langmenu" id="langMenu" hidden>
+          <button class="langopt is-on" data-act="lang-set" data-lang="zh"><span class="langdot zh"></span>中文</button>
+          <button class="langopt" data-act="lang-set" data-lang="en"><span class="langdot en"></span>English</button>
+        </div>
+      </span>
       <button class="iconbtn" data-act="undo" title="撤销 Ctrl+Z" id="btnUndo"><svg><use href="#i-undo"/></svg></button>
       <button class="iconbtn" data-act="redo" title="重做 Ctrl+Shift+Z" id="btnRedo"><svg><use href="#i-redo"/></svg></button>
       <span class="vsep"></span>
       <button class="btn btn--ghost" data-act="history" title="查看最近 5 份本地保存历史，可挑一份载入"><svg><use href="#i-undo"/></svg>历史</button>
       <button class="btn btn--ghost" data-act="reload-file" title="丢弃浏览器 localStorage 缓存，重新读取 nht-project.js 和画布文件"><svg><use href="#i-save"/></svg>从文件重载</button>
       <button class="btn btn--ghost" data-act="save" title="保存**全部画布**与素材清单到项目文件 nht-project.js（html 同目录），不是只存当前画布。Ctrl+S"><svg><use href="#i-save"/></svg>本地保存（全部画布）</button>
-      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-07 17:43</span>
+      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-07 19:29</span>
             <span class="notif" id="notifWrap">
         <button class="iconbtn notif__btn" data-act="notif-toggle" id="notifBtn" title="Git 更新通知：点「收到」后不再弹出，仓库有新的 Push 会再次提醒">
           <svg class="notif__ico"><use href="#i-bell"/></svg>
@@ -2570,6 +2624,1398 @@ const num = (v, d = 0) => { const n = parseFloat(v); return Number.isFinite(n) ?
 const icon = (id, cls = '') => `<svg${cls ? ` class="${cls}"` : ''}><use href="#i-${id}"/></svg>`;
 const norm = s => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 const now = () => { const d = new Date(); return d.toLocaleTimeString('zh-CN', { hour12: false }); };
+
+/* ==================== 界面语言（中文 / English） ==================== */
+const I18N_EN = {
+  "解剖编辑器": "Anatomy Editor",
+  "全局": "Global",
+  "部位": "Part",
+  "发型": "Hair",
+  "异种": "Xenotypes",
+  "素材": "Assets",
+  "项目": "Project",
+  "体型画布": "Body canvases",
+  "部位结构": "Part tree",
+  "已就绪": "Ready",
+  "参考发型": "Reference hair",
+  "历史": "History",
+  "从文件重载": "Reload from file",
+  "本地保存（全部画布）": "Save all canvases",
+  "帮助 · 快捷键": "Help & shortcuts",
+  "设置": "Settings",
+  "指南": "Guides",
+  "收到": "Got it",
+  "发型提示": "Hair tips",
+  "撤销 Ctrl+Z": "Undo Ctrl+Z",
+  "重做 Ctrl+Shift+Z": "Redo Ctrl+Shift+Z",
+  "画布与项目（全局）属性": "Canvas & project properties",
+  "当前选中部位的属性": "Selected part properties",
+  "发型：重绘 / 导出发型坐标 / 预览": "Hair: redraw / export offsets / preview",
+  "颜色异种：同一形态下按 Hediff 换不同贴图": "Xenotypes: swap textures by Hediff",
+  "素材库": "Asset library",
+  "项目 / 导出 / 注入 / Git 同步": "Project / Export / Inject / Git",
+  "拖动部位移动 · 滚轮缩放 · 空格拖拽平移 · Delete 拆卸部位": "Drag to move · wheel to zoom · space to pan · Delete to detach",
+  "折叠 / 展开这个面板": "Collapse / expand panel",
+  "收起 / 展开": "Collapse / expand",
+  "全部": "All",
+  "全部展开": "Expand all",
+  "全部折叠": "Collapse all",
+  "全部显示": "Show all",
+  "回到顶部": "Back to top",
+  "缩小": "Zoom out",
+  "放大": "Zoom in",
+  "适配视图 F": "Fit view F",
+  "新建画布": "New canvas",
+  "从模组导入画布": "Import canvas from mod",
+  "画布": "Canvas",
+  "新建": "New",
+  "导入": "Import",
+  "导出": "Export",
+  "注入": "Inject",
+  "保存": "Save",
+  "删除": "Delete",
+  "取消": "Cancel",
+  "确定": "OK",
+  "关闭": "Close",
+  "应用": "Apply",
+  "重置": "Reset",
+  "复制": "Copy",
+  "粘贴": "Paste",
+  "搜索": "Search",
+  "名称": "Name",
+  "作者": "Author",
+  "包名": "Package ID",
+  "备注": "Notes",
+  "位置": "Position",
+  "缩放": "Scale",
+  "旋转": "Rotate",
+  "图层": "Layer",
+  "贴图": "Texture",
+  "颜色": "Color",
+  "发色": "Hair color",
+  "灰度": "Grayscale",
+  "基础": "Base",
+  "其他": "Other",
+  "基因": "Gene",
+  "添加": "Add",
+  "移除": "Remove",
+  "预览": "Preview",
+  "编辑": "Edit",
+  "选择": "Select",
+  "锁定": "Lock",
+  "解锁": "Unlock",
+  "显示": "Show",
+  "隐藏": "Hide",
+  "是": "Yes",
+  "否": "No",
+  "路径": "Path",
+  "文件夹": "Folder",
+  "文件": "File",
+  "图片": "Image",
+  "大小": "Size",
+  "宽度": "Width",
+  "高度": "Height",
+  "水平翻转": "Flip horizontally",
+  "重置旋转": "Reset rotation",
+  "参考": "Reference",
+  "参考图": "Reference image",
+  "不透明度": "Opacity",
+  "顺序": "Order",
+  "置顶": "On top",
+  "联动": "Link top",
+  "色彩": "Color",
+  "重画": "Redraw",
+  "自定": "Custom",
+  "装饰": "Decor",
+  "部位颜色": "Part color",
+  "跟随发色": "Follow hair color",
+  "跟随发色部位": "Hair-colored parts",
+  "外观": "Appearance",
+  "外观状态 GENE LOOK": "Appearance GENE LOOK",
+  "条件与名称": "Conditions & name",
+  "导入异种": "Import xenotypes",
+  "其他异种": "Other xenotypes",
+  "删除这个异种": "Delete this xenotype",
+  "当前": "Current",
+  "覆盖": "Override",
+  "基础贴图": "Base texture",
+  "还没有异种": "No xenotypes yet",
+  "导入异种（自动全部生成）": "Import xenotypes (auto)",
+  "从模组导入异种": "Import xenotypes from mod",
+  "选择要推送的文件": "Select files to push",
+  "推送更改": "Push changes",
+  "拉取远端": "Pull remote",
+  "未推送": "Unpushed",
+  "已同步": "Synced",
+  "同步日志": "Sync log",
+  "仓库同步 REPO": "Repo sync",
+  "远程仓库": "Remote",
+  "分支": "Branch",
+  "目录": "Directory",
+  "提交说明": "Commit message",
+  "提交描述": "Commit description",
+  "全选": "Select all",
+  "全不选": "Select none",
+  "推送": "Push",
+  "读取中…": "Loading…",
+  "正在读取本地更改…": "Reading local changes…",
+  "正在读取本地更改…（最多 20 秒）": "Reading local changes… (max 20s)",
+  "界面语言 / UI language": "UI language",
+  "展开": "Expand",
+  "折叠": "Collapse",
+  "基础贴图（所有未覆盖部位使用基础）": "Base texture (uncovered parts use base)",
+  "基因异种": "Gene xenotype",
+  "Hediff 异种": "Hediff xenotype",
+  "无": "None",
+  "导入种族": "Import race",
+  "未分类": "Uncategorized",
+  "分组": "Groups",
+  "种族": "Race",
+  "默认体型": "Default body",
+  "以 Nice Health Tab 模组 1.6 默认体型为基准制作的部位补丁。": "A part patch based on Nice Health Tab 1.6's default body.",
+  "自建": "Custom",
+  "新分组": "New group",
+  "新分组名称：": "New group name:",
+  "删除分组": "Delete group",
+  "删除画布": "Delete canvas",
+  "锁定画布": "Lock canvas",
+  "解除锁定": "Unlock",
+  "替换": "Replace",
+  "点击只读预览；右键可还原": "Click for read-only preview; right-click to restore",
+  "（无标题）": "(untitled)",
+  "关联画布": "Linked canvas",
+  "有需要检查的项目": "Needs attention",
+  "外形": "Shape",
+  "眼睛": "Eyes",
+  "装饰": "Decor",
+  "自定义部位": "Custom part",
+  "未绑定": "Unbound",
+  "器官层": "Organ layer",
+  "割伤": "Cut",
+  "撕裂": "Torn",
+  "烧伤": "Burn",
+  "疤痕": "Scar",
+  "不包扎": "No bandage",
+  "包扎·全": "Bandaged (full)",
+  "包扎·半": "Bandaged (half)",
+  "差包扎·全": "Poor bandage (full)",
+  "差包扎·半": "Poor bandage (half)",
+  "是否显示": "Visible",
+  "已锁定": "Locked",
+  "已固定": "Pinned",
+  "左": "Left",
+  "右": "Right",
+  "上": "Up",
+  "下": "Down",
+  "暂无部位": "No parts",
+  "在这一栏新建部位（再到素材里点贴图）": "Add a part here, then pick its texture in Assets",
+  "显示 / 隐藏整组": "Show / hide group",
+  "拖动可以排序 / 换栏": "Drag to reorder / move",
+  "还原：即使种族没有这个部位，也强制使用": "Restore: force-use even if the race lacks this part",
+  "搜索：耳朵 / ear / 翅膀 / wing / #18": "Search: ear / wing / #18",
+  "形状": "Shape",
+  "贴图 TEXTURE": "TEXTURE",
+  "变换 TRANSFORM": "TRANSFORM",
+  "位置 POSITION": "POSITION",
+  "缩放 SCALE": "SCALE",
+  "旋转 ROTATE": "ROTATE",
+  "图层 LAYER": "LAYER",
+  "命中框": "Hitbox",
+  "护甲": "Armor",
+  "可见框": "Visible box",
+  "真实可见": "Really visible",
+  "判定框": "Hitbox",
+  "从模组素材替换": "Replace from mod assets",
+  "裁剪": "Crop",
+  "横向缩放": "Horizontal scale",
+  "纵向缩放": "Vertical scale",
+  "缩放恢复成 100%（判定框按同比例回退）": "Reset scale to 100% (hitbox scales back)",
+  "命中框宽度": "Hitbox width",
+  "命中框高度": "Hitbox height",
+  "命中框复位（回到居中、按导出比例）": "Reset hitbox (center, export ratio)",
+  "护甲 / 提示图标的 X 偏移": "Armor / icon X offset",
+  "护甲 / 提示图标的 Y 偏移": "Armor / icon Y offset",
+  "图标回到部位中心": "Center icon",
+  "身高": "Height",
+  "形态映射": "Body aliases",
+  "图层顺序": "Layer order",
+  "边界": "Bounds",
+  "导出偏移": "Export offset",
+  "显示框": "Display box",
+  "轮廓": "Outline",
+  "来源": "Source",
+  "说明": "Notes",
+  "全局属性": "Global",
+  "参考线": "Guides",
+  "备注贴纸": "Notes",
+  "备注": "Note",
+  "网格": "Grid",
+  "器官": "Organs",
+  "骨骼": "Bones",
+  "手掌": "Hands",
+  "脚掌": "Feet",
+  "更多": "More",
+  "固定": "Pin",
+  "贴底居中": "Bottom center",
+  "居中": "Center",
+  "贴顶居中": "Top center",
+  "自定义（画布拖动）": "Custom (drag on canvas)",
+  "删除这张画布": "Delete this canvas",
+  "我的素材": "My assets",
+  "种族素材": "Race assets",
+  "体型部件": "Body parts",
+  "假体 / 附肢": "Prosthetics / appendages",
+  "RJW 部位": "RJW parts",
+  "贴花": "Decals",
+  "图标": "Icons",
+  "尾巴": "Tails",
+  "触手": "Tentacles",
+  "长触手": "Long tentacles",
+  "肉鞭": "Flesh whip",
+  "翼（模拟）": "Wings (simulated)",
+  "钩手": "Hook hand",
+  "木腿": "Peg leg",
+  "猪鼻": "Pig nose",
+  "素材分类": "Asset categories",
+  "导入素材": "Import assets",
+  "导入发型": "Import hair",
+  "本地导入": "Local import",
+  "重命名分类（会改文件夹名）": "Rename category (renames folder)",
+  "删除分类（会删除文件夹）": "Delete category (deletes folder)",
+  "搜索贴图：翅膀 / tail / organ …": "Search textures: wing / tail / organ …",
+  "没有可用的图片": "No images available",
+  "补丁信息 PATCH": "PATCH INFO",
+  "仓库同步 REPO": "REPO SYNC",
+  "补丁名称": "Patch name",
+  "参考图": "Reference image",
+  "选择预览头发": "Choose preview hair",
+  "后背层": "Back layer",
+  "呆毛层": "Ahoge layer",
+  "重新贴合": "Refit",
+  "回到自动贴合": "Back to auto fit",
+  "临时隐藏 / 显示参考图，位置不会丢": "Temporarily hide / show reference; position is kept",
+  "已隐藏": "Hidden",
+  "未命名": "Untitled",
+  "发型参考": "Hair reference",
+  "正在同步 RJW 部位…": "Syncing RJW parts…",
+  "RJW 开关已关闭 · 在画布工具栏或画布属性中打开": "RJW is off · enable it in the canvas toolbar or canvas properties",
+  "当前画布没有 RJW 部位": "This canvas has no RJW parts"
+};
+const I18N_EN_MORE = {
+  "身体部件": "Body parts",
+  "器官 / 骨骼": "Organs / Bones",
+  "其它素材": "Other assets",
+  "分类": "Category",
+  "完好": "Healthy",
+  "受伤": "Injured",
+  "缺失": "Missing",
+  "假体": "Prosthetic",
+  "开": "On",
+  "关": "Off",
+  "默认": "Default",
+  "男": "Male",
+  "女": "Female",
+  "导出发型坐标": "Export hair offsets",
+  "补丁写入 NHTCD_HairFit_*，游戏按这里的数值绘制": "Writes NHTCD_HairFit_*; the game draws with these values",
+  "补丁不写参数，游戏用默认值 0.78 / -0.21": "No patch values; the game uses 0.78 / -0.21",
+  "关闭后头发按原图显示（不上色）": "Hair is drawn untinted",
+  "已隐藏发色": "Hair color hidden",
+  "显示发色": "Show hair color",
+  "仅编辑器预览：游戏里用的是小人自己的发色": "Editor preview only; in game the pawn's own hair color is used",
+  "恢复默认发色": "Reset hair color",
+  "显示预览": "Show preview",
+  "隐藏预览": "Hide preview",
+  "锁定头发": "Lock hair",
+  "已隐藏边框": "Frame hidden",
+  "隐藏预览边框": "Hide preview frame",
+  "主层层级 0–29（编辑器显示 + 写入补丁）": "Main layer 0–29 (editor + patch)",
+  "显示头发": "Show hair",
+  "隐藏头发": "Hide hair",
+  "骨骼 / 器官视图里是否显示头发（默认不显示）": "Show hair in skeleton / organ view (off by default)",
+  "让发型跟着「导出偏移」一起移动：导出时自动从发型 Y 偏移里扣掉画布偏移": "Move hair with export offset: subtract canvas offset from hair Y on export",
+  "未锁定": "Unlocked",
+  "头发已锁定，点击解锁": "Hair locked; click to unlock",
+  "锁定头发：对齐好后防止被拖动": "Lock hair after aligning to prevent dragging",
+  "套用这个异种的基因状态": "Apply this xenotype's gene state",
+  "基因 ·": "Gene ·",
+  "异种 ·": "Xenotype ·",
+  "手动": "Manual",
+  "处覆盖": "overrides",
+  "· 已调坐标": "· adjusted",
+  "继承基础贴图": "Inherit base texture",
+  "· 左右自动": "· auto L/R",
+  "更换": "Change",
+  "恢复基础贴图": "Restore base texture",
+  "删除当前基因异种": "Delete current gene xenotype",
+  "多条异种同时命中时，数字大的先生效": "When multiple xenotypes match, higher priority wins",
+  "当前小人带有这个 Hediff 时，选中的部位改用覆盖贴图。": "When the pawn has this Hediff, the selected part uses the override texture.",
+  "自动猜图": "Auto-guess texture",
+  "异种异种：按异种区分同一体型的贴图。": "Xenotypes: different textures for the same body type.",
+  "骨骼 / 器官视图会显示头发": "Hair will show in skeleton / organ view",
+  "骨骼/器官视图隐藏头发": "Hair hidden in skeleton / organ view",
+  "头发已锁定（拖动/滚轮不再移动它）": "Hair locked (drag/wheel no longer moves it)",
+  "头发已解锁": "Hair unlocked",
+  "已隐藏头发预览边框": "Hair preview frame hidden",
+  "已显示头发预览边框": "Hair preview frame shown",
+  "已隐藏后背层预览": "Back layer preview hidden",
+  "已显示后背层预览": "Back layer preview shown",
+  "头发预览已隐藏（仅这张画布）": "Hair preview hidden (this canvas only)",
+  "头发预览已显示": "Hair preview shown",
+  "没有后背层": "No back layer",
+  "这发型没有单独的后背层": "This hair has no separate back layer",
+  "选了预览头发后自动匹配": "Auto-matched after choosing preview hair",
+  "素材载入中…": "Loading assets…",
+  "本地素材": "Local assets",
+  "项目贴图": "Project textures",
+  "模组素材": "Mod assets",
+  "本地还没有素材，先导入一次": "No local assets yet; import once first",
+  "全选 / 全不选这一组": "Select / deselect this group",
+  "操作": "Actions",
+  "折叠": "Collapse",
+  "展开": "Expand",
+  "收起": "Collapse",
+  "展开全部": "Expand all",
+  "状态": "State",
+  "外观状态": "Appearance state",
+  "条件与名称": "Conditions & name",
+  "其它": "Other",
+  "其他": "Other",
+  "删除": "Delete",
+  "复制": "Copy",
+  "镜像": "Mirror",
+  "副本": "Copy",
+  "只读预览": "Read-only preview",
+  "应用": "Apply",
+  "还原": "Restore",
+  "导出": "Export",
+  "导入": "Import",
+  "保存": "Save",
+  "取消": "Cancel",
+  "确定": "OK",
+  "重置": "Reset",
+  "清除": "Clear",
+  "新建": "New",
+  "添加": "Add",
+  "移除": "Remove",
+  "选择": "Select",
+  "搜索": "Search",
+  "上一个": "Previous",
+  "下一个": "Next",
+  "关闭": "Close",
+  "打开": "Open",
+  "路径": "Path",
+  "文件夹": "Folder",
+  "素材分类": "Asset category",
+  "从模组素材替换": "Replace from mod assets",
+  "裁剪": "Crop",
+  "重新贴合": "Refit",
+  "回到自动贴合": "Back to auto fit",
+  "参考图": "Reference image",
+  "参考发型": "Reference hair",
+  "选择预览头发": "Choose preview hair",
+  "后背层": "Back layer",
+  "呆毛层": "Ahoge layer",
+  "头发": "Hair",
+  "发型": "Hair",
+  "胡须": "Beard",
+  "颜色": "Color",
+  "发色": "Hair color",
+  "灰度": "Grayscale",
+  "形状": "Shape",
+  "大小": "Size",
+  "宽度": "Width",
+  "高度": "Height",
+  "旋转": "Rotate",
+  "位置": "Position",
+  "缩放": "Scale",
+  "图层": "Layer",
+  "不透明度": "Opacity",
+  "固定": "Pin",
+  "居中": "Center",
+  "贴底居中": "Bottom center",
+  "贴顶居中": "Top center",
+  "自定义（画布拖动）": "Custom (drag on canvas)",
+  "删除这张画布": "Delete this canvas",
+  "我的素材": "My assets",
+  "种族素材": "Race assets",
+  "体型部件": "Body parts",
+  "假体 / 附肢": "Prosthetics / appendages",
+  "RJW 部位": "RJW parts",
+  "贴花": "Decals",
+  "图标": "Icons",
+  "尾巴": "Tails",
+  "触手": "Tentacles",
+  "长触手": "Long tentacles",
+  "肉鞭": "Flesh whip",
+  "翼（模拟）": "Wings (simulated)",
+  "钩手": "Hook hand",
+  "木腿": "Peg leg",
+  "猪鼻": "Pig nose",
+  "分组": "Groups",
+  "游戏里按小人的基因自动匹配；这里只切换编辑器预览。": "Matched automatically by genes in game; this only changes the editor preview.",
+  "开启后选中的贴图会先裁掉透明边，再保存到这个异种的文件夹": "Selected textures are cropped and saved into this xenotype's folder.",
+  "素材库/发型里还没有贴图，先「导入发型」或「导入素材」": "No textures yet; import hair or assets first.",
+  "导出纯模组文件：About + Patches（重新生成的补丁）+ Textures，不含编辑器页面": "Export mod files: About + Patches + Textures, without the editor page.",
+  "只导出当前画布的补丁文本（.xml）": "Export current canvas patch (.xml).",
+  "把当前画布渲染成 2 倍尺寸的 PNG": "Render current canvas as a 2× PNG.",
+  "把本机仓库的改动提交并推送；第一次推送会自动在远端创建当前分支": "Commit and push local changes; the first push creates the branch on the remote.",
+  "立即同步：重新读取仓库状态": "Sync now: reload repo status.",
+  "Git 设置": "Git settings",
+  "测试连接": "Test connection",
+  "拉取远端": "Pull remote",
+  "推送更改": "Push changes",
+  "未推送": "Unpushed",
+  "已同步": "Synced",
+  "同步日志": "Sync log",
+  "远程仓库": "Remote",
+  "本机仓库": "Local repo",
+  "分支": "Branch",
+  "目录": "Directory",
+  "提交说明": "Commit message",
+  "提交描述": "Commit description",
+  "全选": "Select all",
+  "全不选": "Select none",
+  "推送": "Push",
+  "拉取": "Pull",
+  "导出模组文件": "Export mod files",
+  "导出当前画布补丁": "Export canvas patch",
+  "导出画布 PNG": "Export canvas PNG",
+  "保存项目": "Save project",
+  "注入模组": "Inject mod",
+  "立即注入": "Inject now",
+  "导入项目": "Import project",
+  "导入画布": "Import canvas",
+  "注入 INJECT": "INJECT",
+  "只保存": "Only saves",
+  "当前画布": "current canvas",
+  "其它画布不会写入": "other canvases are not written",
+  "单独注入模组": "Inject into mod",
+  "多选注入模组": "Multi-inject mods",
+  "注入选中画布": "Inject selected canvases",
+  "单独注入只写": "Single inject writes only",
+  "（其它画布不动）；多选注入可以勾选多张画布一起写，": "(other canvases untouched); multi-inject can write several canvases together,",
+  "改过的画布会自动预选。补丁写进模组的 ": "Modified canvases are preselected. Patches are written to the mod's ",
+  "，本机导入的贴图写进 ": ", local imported textures are written to ",
+  "。": ".",
+  "导出 EXPORT": "EXPORT",
+  "导出模组文件": "Export mod files",
+  "导出补丁 XML": "Export patch XML",
+  "导出项目 JSON": "Export project JSON",
+  "导入项目 JSON": "Import project JSON",
+  "导出画布 PNG": "Export canvas PNG",
+  "纯模组": "Mod only",
+  "导出范围 SCOPE": "EXPORT SCOPE",
+  "补丁只导出": "The patch only exports",
+  "已有的体型 / 部位用 ": "Existing bodies / parts are replaced with ",
+  " 覆盖，新部位与拆卸用 Add / Remove。要导别的体型，先切到那张画布再导出。": "; new/detached parts use Add / Remove. To export another body, switch to its canvas first.",
+  "校验 CHECK": "CHECK",
+  "读取中…": "Loading…",
+  "错误": "errors",
+  "警告": "warnings",
+  "正在读取模组 Textures 清单，读完后这里会显示完整检查结果。": "Reading the mod Textures index; the full check will appear when done.",
+  "全部检查通过，可以导出。": "All checks passed; ready to export.",
+  "补丁预览 PREVIEW": "PREVIEW",
+  "复制": "Copy",
+  "收起": "Collapse",
+  "展开全部": "Expand all",
+  "行": "lines",
+  "个操作": "operations",
+  "这里只预览": "This previews only",
+  "的补丁；多个画布请用「多选注入模组」或「导出模组文件」。": "'s patch; use Multi-inject or Export mod files for multiple canvases.",
+  "未连接": "Disconnected",
+  "当前本地分支：": "Current local branch: ",
+  "用当前分支": "Use current branch",
+  "未拉取": "Unpulled",
+  "（暂无记录）": "(no records)",
+  "无前缀": "No prefix",
+  "分支名，例如 feature-milira-hair": "Branch name, e.g. feature-milira-hair",
+  "推送 / 拉取使用的分支（会自动在远端创建）": "Branch used for push / pull (created on the remote automatically)",
+  "从远端拉取更新（fast-forward）；有未拉取的提交时按钮会发光并显示数量": "Pull updates (fast-forward); glows with a count when behind",
+  "把「分支」改成当前本地分支": "Set Branch to the current local branch",
+  "立即同步：重新读取仓库状态": "Sync now: reload repo status",
+  "推送 / 拉取 / 测试连接的完整输出，失败原因都在这里": "Full push / pull / test output and errors",
+  "未推送 = 还没推到 GitHub 任何分支的提交": "Unpushed = commits not pushed to any GitHub branch",
+  "GitHub 上还没拉到本地的提交数（不是文件数）": "Commits on GitHub not pulled locally (not files)",
+  "还有画布没注入": "Some canvases are not injected",
+  "下面 ": "Below, ",
+  " 个画布有改动，但还没注入模组：": " canvases have changes but are not injected yet:",
+  "如果你只是想确认，可以继续。也可以先去「多选注入模组」把它们写进现有模组。": "You can continue to confirm, or use Multi-inject first to write them into the mod.",
+  "未同步": "Not synced",
+  "同步失败": "Sync failed",
+  "正在连接远端检查…": "Checking remote…",
+  "已同步仓库状态": "Repo status synced",
+  "Git 连接正常": "Git connected",
+  "Git 连接失败": "Git connection failed",
+  "无法连接仓库": "Cannot connect to repo",
+  "测试连接成功": "Connection OK",
+  "测试连接失败": "Connection failed",
+  "状态": "Status",
+  "待推送": "To push",
+  "待拉取": "To pull",
+  "本地提交": "Local commits",
+  "远端检测": "Remote check",
+  "新功能": "Feature",
+  "修复": "Fix",
+  "文档": "Docs",
+  "测试": "Test",
+  "新增内容：画布、部位、发型等": "New content: canvases, parts, hair, etc.",
+  "修 BUG / 数值错位": "Fix bugs / offsets",
+  "只改说明、截图、README": "Docs, screenshots, README only",
+  "试验性改动，随时可丢": "Experimental, can be dropped anytime",
+  "自己写完整分支名（不能是 main）": "Write your own full branch name (not main)",
+  "：补丁只导出": ": The patch only exports",
+  "已有的体型 / 部位用": "Existing bodies / parts use",
+  "覆盖，新部位与拆卸用 Add / Remove。要导别的体型，先切到那张画布再导出。": " to override; new/detached parts use Add / Remove. To export another body, switch to its canvas first.",
+  "★ 我的素材": "★ My assets",
+  "保存当前分类": "Save current category",
+  "保存选择的素材": "Save selected assets",
+  "保存到当前分类": "Save to current category",
+  "保存到 assets/": "Save to assets/",
+  "正在保存到 assets/": "Saving to assets/",
+  "勾选这个栏，点上面的「保存选择的素材」落盘": "Check this column, then click Save selected assets above",
+  "勾选这个子栏，点上面的「保存选择的素材」落盘": "Check this sub-column, then click Save selected assets above",
+  "全选 / 全不选这一组": "Select / deselect this group",
+  "当前分类里没有能写入磁盘的素材": "No assets in this category can be written to disk",
+  "先在分组标题右侧勾选要保存的栏，或先选一个分类": "Check a column by the group title, or pick a category first"
+};
+
+const I18N_MODAL = {
+  "选择卡片成组合": "Combine selected cards",
+  "选择部位": "Select part",
+  "移动哪一层头发": "Which hair layer to move",
+  "添加形态映射": "Add body alias",
+  "复制为另一形态": "Duplicate as another form",
+  "指南": "Guides",
+  "选择要推送的文件": "Select files to push",
+  "导出模组文件": "Export mod files",
+  "还有画布没注入": "Some canvases are not injected",
+  "设置": "Settings",
+  "多选注入模组": "Multi-inject mods",
+  "导入异种": "Import xenotypes",
+  "选择要生成基因外观的部位": "Select parts for gene looks",
+  "新建颜色异种": "New xenotype",
+  "选择异种贴图": "Select xenotype texture",
+  "选择要导入的种族": "Select a race to import",
+  "新建部位": "New part",
+  "新建画布": "New canvas",
+  "操作说明 · 快捷键": "Help · shortcuts",
+  "再次确认": "Confirm again",
+  "删除异种": "Delete xenotype",
+  "保存到 assets/": "Save to assets/",
+  "正在保存到 assets/": "Saving to assets/",
+  "导入素材": "Import assets",
+  "导入发型": "Import hair",
+  "本地保存历史": "Local save history",
+  "＋ 新建分组": "+ New group",
+  "取消": "Cancel",
+  "否，保留画布": "No, keep canvas",
+  "是，一起删除": "Yes, delete all",
+  "组合": "Combine",
+  "装回": "Put back",
+  "删除": "Delete",
+  "移动 HAR 头发预览": "Move HAR hair preview",
+  "移动 参考头发": "Move reference hair",
+  "全局属性": "Global properties",
+  "取消选择": "Deselect",
+  "翻转": "Flip",
+  "恢复默认": "Reset to default",
+  "贴合可见像素": "Fit to visible pixels",
+  "可见框→命中框": "Visible box → hitbox",
+  "重置缩放": "Reset scale",
+  "把旋转烘焙进贴图": "Bake rotation into texture",
+  "复制": "Copy",
+  "镜像成对": "Mirror pair",
+  "拆卸": "Detach",
+  "添加": "Add",
+  "已自动": "Auto",
+  "应用": "Apply",
+  "＋ 复制为另一形态": "+ Duplicate as another form",
+  "＋ 添加映射": "+ Add alias",
+  "全部显示": "Show all",
+  "全部隐藏": "Hide all",
+  "重新同步": "Resync",
+  "按官方 def 校正部位编号": "Fix IDs by official defs",
+  "按部位适配边界": "Fit bounds to parts",
+  "按对照表修正编号": "Fix IDs by table",
+  "同步游戏部位表": "Sync game body parts",
+  "删除画布": "Delete canvas",
+  "重置为模组默认": "Reset to mod default",
+  "裁剪": "Crop",
+  "裁剪并保存": "Crop and save",
+  "导出 PNG（选择保存位置）": "Export PNG (choose location)",
+  "打开文件所在文件夹": "Open containing folder",
+  "新建分类并保存…": "New category and save…",
+  "复位": "Reset",
+  "关掉": "Close",
+  "下移": "Move down",
+  "上移": "Move up",
+  "未命名": "Untitled",
+  "自动裁剪": "Auto crop",
+  "点击套用": "Click to apply",
+  "重建模组素材清单（assets/）": "Rebuild mod asset index (assets/)",
+  "推送更改": "Push changes",
+  "用当前分支": "Use current branch",
+  "导出模组文件纯模组": "Export mod files (mod only)",
+  "导出补丁 XML.xml": "Export patch XML (.xml)",
+  "导出项目 JSON.json": "Export project JSON (.json)",
+  "导入项目 JSON.json": "Import project JSON (.json)",
+  "导出画布 PNG2×": "Export canvas PNG (2×)",
+  "还原": "Restore",
+  "全选": "Select all",
+  "全不选": "Select none",
+  "导出": "Export",
+  "继续导出": "Continue export",
+  "保存": "Save",
+  "界面": "Interface",
+  "上传 About.xml": "Upload About.xml",
+  "读取模组目录现有": "Read existing mod folder",
+  "用项目信息生成": "Generate from project info",
+  "清空": "Clear",
+  "测试连接": "Test connection",
+  "刷新状态": "Refresh status",
+  "清理无用贴图": "Clean unused textures",
+  "还原清理备份": "Restore cleanup backup",
+  "放弃": "Discard",
+  "只选已修改": "Select modified only",
+  "注入选中画布": "Inject selected canvases",
+  "重置": "Reset",
+  "选择预览头发": "Choose preview hair",
+  "导入异种（自动全部生成）": "Import xenotypes (auto)",
+  "清除": "Clear",
+  "基础贴图所有未覆盖部位使用基础": "Base texture (uncovered parts use base)",
+  "调整": "Adjust",
+  "更换": "Change",
+  "选择": "Select",
+  "删除这个异种": "Delete this xenotype",
+  "生成": "Generate",
+  "创建": "Create",
+  "旋转归零": "Reset rotation",
+  "复位命中框": "Reset hitbox",
+  "自动裁剪透明区域": "Auto-crop transparent area",
+  "完成": "Done",
+  "导入模组发型…": "Import mod hair…",
+  "GIT 画布书签": "Git canvas bookmarks",
+  "返回": "Back",
+  "关闭": "Close",
+  "撤销": "Undo",
+  "应用这版画布": "Apply this canvas version",
+  "选择 PNG 补齐…": "Choose PNG to fill…",
+  "前往设置HAR发型": "Go to settings (HAR hair)",
+  "去发型页": "Go to Hair tab",
+  "生成并写入灰图": "Generate and write grayscale",
+  "迁移并写入灰度": "Migrate and write grayscale",
+  "同步素材": "Sync assets",
+  "立即注入": "Inject now",
+  "选择文件夹": "Choose folder",
+  "创建画布": "Create canvas",
+  "知道了": "Got it",
+  "确认": "Confirm",
+  "确认删除": "Confirm delete",
+  "按勾选写入": "Write selected",
+  "从模组文件夹导入": "Import from mod folder",
+  "载入这份": "Load this one",
+  "✂裁剪": "✂ Crop",
+  "✂裁剪并保存": "✂ Crop and save",
+  "⤓导出 PNG（选择保存位置）": "⤓ Export PNG (choose location)",
+  "📂打开文件所在文件夹": "📂 Open containing folder",
+  "＋新建分类并保存…": "+ New category and save…",
+  "↩ 还原": "↩ Restore",
+  "Git 画布书签": "Git canvas bookmarks",
+  "最近改动": "Recent changes",
+  "Git 版本": "Git version",
+  "只读": "Read-only",
+  "已替代": "Replaced",
+  "正在读取仓库里的画布版本…": "Reading canvas versions from repo…",
+  "读取失败：": "Read failed: ",
+  "仓库里还没有画布的历史版本。": "No canvas versions in the repo yet.",
+  "先在「仓库同步 REPO」推送一次画布，这里就会出现最近 3 个版本。": "Push a canvas from Repo Sync first; the last 3 versions will appear here.",
+  "这个提交里没有画布文件": "No canvas files in this commit",
+  "点击打开这版画布，像普通画布一样编辑部位": "Open this canvas version to edit parts",
+  "撤销：恢复到应用之前的画布": "Undo: restore the canvas before applying",
+  "应用：有同名画布就替换，没有就作为游离画布加入": "Apply: replace a same-name canvas or add as a loose canvas",
+  "已被更新的版本替代": "Replaced by a newer version",
+  "关闭预览": "Close preview",
+  "退出临时查看，回到原来的画布": "Exit preview and return to the original canvas",
+  "把这版画布写入项目（可编辑）": "Write this version into the project (editable)",
+  "把这个画布放回项目": "Put this canvas back into the project",
+  "Git 画布书签：看看最近推送过的画布版本，可一键应用或撤销": "Git canvas bookmarks: apply or undo recent pushed canvas versions",
+  "Git 画布书签：读取仓库里 Editor/canvases 最近 3 个版本的画布，可预览 / 应用 / 撤销": "Git canvas bookmarks: preview / apply / undo the last 3 canvas versions in the repo",
+  "部位属性": "Part properties",
+  "画布属性": "Canvas properties",
+  "显示设置": "Display settings",
+  "导出设置": "Export settings",
+  "实际显示框": "Display box",
+  "解除固定": "Unpin",
+  "固定显示框": "Pin display box",
+  "解除固定显示框": "Unpin display box",
+  "显示实际显示框": "Show display box",
+  "隐藏实际显示框": "Hide display box",
+  "清除显示框": "Clear display box",
+  "按部位适配边界": "Fit bounds to parts",
+  "按部位适配": "Fit to parts",
+  "边界": "Bounds",
+  "高度": "Height",
+  "宽度": "Width",
+  "偏移": "Offset",
+  "身体部位": "Body part",
+  "绑定": "Binding",
+  "序号": "ID",
+  "护甲图标": "Armor icon",
+  "图标": "Icon",
+  "部位颜色": "Part color",
+  "跟随发色": "Follow hair color",
+  "装饰": "Decor",
+  "自定": "Custom",
+  "种族无此部位": "Race has no such part",
+  "外形部位": "Body part",
+  "器官": "Organ",
+  "骨骼": "Bone",
+  "眼睛": "Eye",
+  "自定义部位": "Custom part",
+  "标识": "Identity",
+  "变换": "Transform",
+  "命中框": "Hitbox",
+  "护甲": "Armor",
+  "可见框": "Visible box",
+  "固定居中 · 只能改大小": "Fixed center · size only",
+  "护甲覆盖图标": "Armor overlay icon",
+  "装饰部位：只画图、不参与受伤。NHT 的部位定义里 bodyPartId 是整数，导出时不写这一项，游戏会按 #0 躯干 处理（不会影响受伤数据）。": "Decor part: drawn only, no injuries. bodyPartId is an integer; omitted on export and treated as #0 Torso.",
+  "当前头发层级 = ": "Current hair layer = ",
+  "：头发会在第一个「图层 ≥ ": ": hair is drawn before the first part with layer ≥ ",
+  "」的部位之前绘制，所以": "; parts with a higher layer will cover the hair, lower ones are covered by hair.",
+  "导出为 ": "Exported as ",
+  "：模组里那张 ": ": the mod's ",
+  " 会被覆盖。": " will be overwritten.",
+  "装饰部位": "Decor part",
+  "没有绑定身体部位：只在这个小窗里显示。": "No body part bound: shown only in this window.",
+  "窗口内的排版坐标（以窗口底图为参照），只影响这个小窗，不会移动人偶上的同名部位。拖动窗口本体可移动窗口，右下角可等比缩放，标题栏右上角可固定窗位。": "Window-local layout coordinates (relative to the window background). Only affects this window, not the doll part. Drag the window to move it, resize from the bottom-right, pin from the title bar.",
+  "固定居中": "Fixed center",
+  "发型显示设置": "Hair display settings",
+  "模组自绘": "Mod-drawn",
+  "发型重绘": "Hair redraw",
+  "缩放 / 偏移X / 偏移Y": "Scale / Offset X / Offset Y",
+  "只影响编辑器预览": "Editor preview only",
+  "发色（预览）": "Hair color (preview)",
+  "按正片叠底上色，接近游戏里的效果": "Multiply blend, close to the in-game look",
+  "主层层级 · 越大越靠上（后背层固定画在所有部位之下）": "Main layer · higher is on top (back layer is always below all parts)",
+  "这张画布是「原版 HairDef」头发：缩放/偏移的用法和 HAR 发型完全一样 —— 滚轮缩放、拖动移位，调完就是游戏里的效果。": "This canvas uses vanilla HairDef hair: scale/offset work the same as HAR — wheel to scale, drag to move; the result is what you see in game.",
+  "显示 / 偏移联动": "Display / offset link",
+  "骨骼 / 器官视图显示": "Show in skeleton / organ view",
+  "发型跟随偏移": "Hair follows offset",
+  "HAR 种族（如米莉拉）的头发是附加件，模组按这些参数自绘：缩放 1 = 铺满整身，偏移以身高为单位（负值向上）。": "HAR races (e.g. Milira) draw hair as an addon with these parameters: scale 1 = full body; offset is in body-height units (negative = up).",
+  "无预览": "No preview",
+  "无附加层": "No extra layers",
+  "显示 / 隐藏后脑层": "Show / hide back layer",
+  "显示 / 隐藏呆毛": "Show / hide ahoge",
+  "当前发型：": "Current hair: ",
+  "未选择": "Not selected",
+  "无后背层": "No back layer",
+  "仅参考-NHT模组自带发型配对": "Reference only — paired with NHT's built-in hair",
+  "后层": "Back",
+  "发型状态 HAIR STATUS": "HAIR STATUS",
+  "HAR 附加件发型：": "HAR addon hair: ",
+  " 共 ": " total ",
+  " 张": " images",
+  "（含 ": " (incl. ",
+  " 张后层）": " back layers)",
+  "，例如 ": ", e.g. ",
+  "当前开启了「发型重绘」，会在 NHT 绘制后再补画一遍。": "Hair redraw is on; it draws once more after NHT.",
+  "头发层级 = ": "Hair layer = ",
+  "；图层更大的部位会盖在头发上。": "; parts with a higher layer cover the hair.",
+  "还缺：": "Missing: ",
+  "发型参数完整 ✓": "Hair parameters complete ✓",
+  "（未命名）": "(untitled)",
+  "点一个发型只是放在头上做视觉参考（用来对耳朵 / 角的位置），不会变成部位、也不会导出；拖动微调、滚轮缩放，拖动时按住 Shift 会自动对齐头部中心 / 边缘，对齐后点「锁定」就不会再被拖走。图层输入框和部位共用一套刻度（数值大＝盖在上面）。": "Picking a hair only places it as a visual reference (for ear/horn alignment); it does not become a part and is not exported. Drag to adjust, wheel to scale, hold Shift while dragging to snap to the head center/edge, then Lock. Layer uses the same scale as parts (higher = on top).",
+  "RJW 器官 RJW": "RJW ORGANS",
+  "RJW 器官": "RJW organs",
+  "RJW 下体": "RJW lower body",
+  "未完成": "WIP",
+  "已启用": "Enabled",
+  "未启用": "Disabled",
+  "打开后按模组 Defs 自动补上 ": "When enabled, adds ",
+  " 个 RJW 标记（借自 ": " RJW markers (borrowing coordinates from ",
+  " 体型的坐标）。默认可见性遵循模组设置：男性不绘胸部、扶她不绘性腺、儿童人偶不绘标记。器官层的标记要另外点工具栏的「器官」才显示，和这个开关互不影响。": " body type). Visibility follows the mod settings: male chest, futa gonads, kid markers are skipped. Organ-layer markers need the toolbar's Organs chip; independent of this switch.",
+  "未载入 RJW Genitalia 数据。": "RJW Genitalia data is not loaded.",
+  "全部显示": "Show all",
+  "全部隐藏": "Hide all",
+  "重新同步": "Resync",
+  "按当前 Doll 名与基础体型重新生成 RJW 部位": "Regenerate RJW parts from the current Doll and body type",
+  "下体窗按": "The lower-body window follows ",
+  "取舍：男 = 性腺 + 生殖器（缺一个会用模组默认补上，总是一起出现），女 = 子宫 + 阴道 + 卵巢，其他/无 = 只显示底图。这里填 ": "sex: male = gonads + genitals (missing one uses the mod default; they always appear together), female = uterus + vagina + ovaries, other/none = background only. Fill ",
+  " 即可控制；填 ": " to control; with ",
+  " 时跟随体型（Male/Fat/Hulk 算男、Female 算女、Kid 不显示）。": " it follows the body type (Male/Fat/Hulk = male, Female = female, Kid = hidden).",
+  "上面的盖住下面的": "Upper layers cover lower ones",
+  "这张画布还没有部位": "This canvas has no parts",
+  "上统一加一个固定量（单位 = 游戏画布 512×1024 的像素）。它只改变部位在框里的位置，": "Adds a fixed amount to every part's export position (units = 512×1024 game canvas). It only changes part positions in the frame; ",
+  "编辑器画面不变": "the editor view is unchanged",
+  "怎么填：": "How to fill: ",
+  "Y 填正数 → 游戏里整体向下移": "positive Y → everything moves down in game",
+  "Y 填负数 → 整体向上移": "negative Y → moves up",
+  "X 正数向右、负数向左": "positive X → right; negative → left",
+  "数值单位是像素，": "Units are pixels; ",
+  "37.5 ≈ 全身高度的 3.7%": "37.5 ≈ 3.7% of body height",
+  "，一般微调在 ±5 ~ ±40 之间。": "; typical fine-tune is ±5 to ±40.",
+  "自动居中": "Auto center",
+  "当前：": "Current: ",
+  "不居中": "not centered",
+  "。导出位置 = 画布位置 + 上面的偏移，": ". Export position = canvas position + the offset above; ",
+  "加/删部件都不会让整体位置变": "adding/removing parts does not shift the whole",
+  "。导出前会把内容整体挪一下，让它的": ". Before export the content is shifted so its ",
+  "上下中心对准原点": "vertical center aligns to the origin",
+  "；挪多少由内容大小自动算，所以": "; the shift is computed from content size, so ",
+  "加头饰、拉翅膀、隐藏部件都会让它变": "adding headwear, wings, or hiding parts will change it",
+  "一句话记：": "Rule of thumb: ",
+  "开启 = 自动对准内容中心（数值会自己变）": "on = auto-align to content center (values change)",
+  "关闭 = 位置定死": "off = fixed position",
+  "，只认上面填的偏移。想要稳定就关闭，再把想下移的量写进偏移。": "; only the offset above is used. For stability, turn it off and put the desired shift in the offset.",
+  "它怎么算的": "How it is computed",
+  "顺序：": "Order: ",
+  "① 部件原坐标 → ② 减去内容中心（自动居中）→ ③ 乘缩放 k → ④ 加上这里的偏移 → 写入 <position>。": "1) part position → 2) subtract content center (auto center) → 3) multiply by scale k → 4) add this offset → write <position>.",
+  "k = min(512 ÷ 内容宽, 1024 ÷ 内容高, 1)；内容中心 = 所有部位外接框的中心。": "k = min(512 ÷ content width, 1024 ÷ content height, 1); content center = center of all part bounds.",
+  "不受它影响：": "Not affected: ",
+  "BoundingBox（边界）": "BoundingBox (bounds)",
+  "实际显示框": "display box",
+  "头发的缩放/偏移": "hair scale/offset",
+  "编辑器里的画面": "the editor view",
+  "Y 偏移（换算）": "Y offset (converted)",
+  "实际显示高度无效": "Display height is invalid",
+  "已自动应用": "Auto-applied",
+  "与当前偏移相同": "Same as current offset",
+  "把换算值写入导出 Y 偏移": "Write converted value into export Y offset",
+  "导出 Y 偏移无效": "Export Y offset is invalid",
+  "高度已钳制到 1px": "Height clamped to 1px",
+  "与当前高度相同": "Same as current height",
+  "把换算值写入实际显示高度": "Write converted value into display height",
+  "功能": "Actions",
+  "写进补丁的": "Written into the patch's ",
+  "：决定游戏里娃娃的大小（框越小娃娃越大）。": ": controls doll size in game (smaller box = bigger doll).",
+  "在所有部位的导出坐标上统一加一个固定量（单位 = 游戏画布 512×1024 的像素）。它只改变部位在框里的位置，编辑器画面不变。": "Adds a fixed amount to every part's export position (units = 512×1024 game canvas). It only changes part positions in the frame; the editor view is unchanged.",
+  "它是\"整体平移\"，不是缩放。": "It is a global translation, not a scale.",
+  "NHT 面板显示区域": "NHT panel area",
+  "实际显示高度": "Display height",
+  "隐藏实际显示框": "Hide display box",
+  "显示实际显示框": "Show display box",
+  "画布上那个蓝色框：游戏里 NHT 面板真正显示的区域。部位超出它会被标红提示（提示只看部位锚点）。": "The blue box on the canvas is the area NHT actually shows in game. Parts outside it are marked red (anchor only).",
+  "投影": "Outline",
+  "宽 / 高": "Width / Height",
+  "缩放到官方包围盒 320×890": "Scale to official bounds 320×890",
+  "写进补丁的 <BoundingBox>：决定游戏里娃娃的大小（框越小娃娃越大）。": "The <BoundingBox> written to the patch controls doll size in game (smaller box = bigger doll).",
+  "实际显示": "Display",
+  "已固定": "Pinned",
+  "不取消选中，直接查看/编辑画布与项目（全局）属性": "View/edit canvas and project properties without deselecting",
+  "按贴图的不透明像素重新计算选框（透明边不算进去）": "Recalculate the visible box from opaque pixels (transparent edges excluded)",
+  "把当前去透明后的可见框尺寸直接写成命中框（判定框）": "Write the current visible box into the hitbox",
+  "自动生成：种族名 + 部位名（只读，改「名称」会跟着变）": "Auto-generated from race + part name (read-only; follows Name)",
+  "装饰部位：只画图、不参与受伤。NHT 的部位定义里 bodyPartId 是整数，导出时不写这一项，游戏会按 ": "Decor part: drawn only, no injuries. bodyPartId is an integer; omitted on export, the game uses ",
+  "#0 躯干": "#0 Torso",
+  " 处理（不会影响受伤数据）。": " (injury data unaffected).",
+  "」的部位之前绘制，所以": "」, so ",
+  "图层大于 ": "Parts with layer > ",
+  " 的部位会盖在头发之上": " cover the hair",
+  "，小于它的会被头发盖住。": "; lower ones are covered by the hair.",
+  "模组的 DollBodyPart 没有旋转字段，角度不会导出；游戏里会按未旋转显示。": "DollBodyPart has no rotation field; the angle is not exported and the part is drawn unrotated in game.",
+  "把旋转烘焙进贴图": "Bake rotation into texture",
+  "置顶重画不支持旋转": "On-top redraw does not support rotation",
+  "置顶重画不支持水平翻转（补画会错位）": "On-top redraw does not support flipping",
+  "从模组素材替换": "Replace from mod assets",
+  "裁剪：去掉透明边缘，保存到「我的素材 - ": "Crop transparent edges and save into My assets - ",
+  "」并换用裁剪后的贴图": " and use the cropped texture",
+  "开启后 hitboxScale = 画布 hbox / 512，画布拖多大游戏里就多大": "When on, hitboxScale = canvas hbox / 512; the in-game hitbox matches the canvas",
+  "是否在游戏里显示这个部位的护甲覆盖图标": "Show this part's armor overlay in game",
+  "护甲 / 提示图标的 X 偏移": "Armor / icon X offset",
+  "护甲 / 提示图标的 Y 偏移": "Armor / icon Y offset",
+  "图标回到部位中心": "Center the icon",
+  "可见框": "Visible box",
+  "真实可见": "Really visible",
+  "判定框": "Hitbox",
+  "导出发型坐标：开": "Export hair offsets: on",
+  "导出发型坐标：关": "Export hair offsets: off",
+  "层级同时用于": "Layer is used for both ",
+  "编辑器显示": "editor display",
+  "和": " and ",
+  "写入补丁": "patch export",
+  "（主层 / 后背层各一个）。": " (one for main, one for back).",
+  "打开工具栏的「命中框」后可拖角改大小；开启「画布像素直出」时游戏判定框 = 画布框 / 512，否则沿用旧的比例导出。游戏 Defs 只有 ": "Turn on the toolbar's Hitbox to drag corners; with Canvas-pixel hitbox, the in-game hitbox = canvas box / 512; otherwise the old ratio is used. Game Defs only have ",
+  "，没有偏移字段，所以固定居中。": ", no offset field, so it is fixed centered.",
+  "图标位置相对于部位中心，用于护甲 / 提示图标。": "Icon position is relative to the part center; used for armor / hint icons.",
+  "护甲 / 提示图标": "Armor / hint icon",
+  "受伤 / 缺失 / 假体": "Injured / Missing / Prosthetic",
+  "还没有映射": "No aliases yet",
+  "移除映射": "Remove alias",
+  "映射": "Aliases",
+  "复制为另一形态会以当前画布为模板新建同种族的另一个 BodyType；映射让附加形态（如 Slime_YR_Bote）复用本画布的 Doll，导出为 BodyAliasDef。": "Duplicate as another form creates a new body type for the same race from this canvas; aliases let add-on forms (e.g. Slime_YR_Bote) reuse this canvas's Doll and export as BodyAliasDef.",
+  "性别": "Sex",
+  "取舍：男 = 性腺 + 生殖器（缺一个会用模组默认补上，总是一起出现），女 = 子宫 + 阴道 + 卵巢，其他/无 = 只显示底图。这里填 ": " rules: male = gonads + genitals (missing one uses the mod default; they always appear together), female = uterus + vagina + ovaries, other/none = background only. Fill ",
+  " 即可控制；填 ": " to control; with ",
+  " 时跟随体型（Male/Fat/Hulk 算男、Female 算女、Kid 不显示）。": " it follows the body type (Male/Fat/Hulk = male, Female = female, Kid = hidden).",
+  "。数值单位是像素，": ". Units are pixels; ",
+  "镜像会生成左右对称的另一半，适合翅膀、尾巴、附肢成对使用。": "Mirror creates the opposite half; useful for paired wings, tails, and appendages.",
+  "基因：": "Genes: ",
+  "优先级": "Priority",
+  "由「生成基因外观」生成；重新生成会替换。下面的部位覆盖可以单独调整。": "Generated by Gene looks; regenerating replaces it. Part overrides below can be adjusted separately.",
+  "部位覆盖": "Part overrides",
+  "当前异种还没有部位覆盖；点「全部」选择要覆盖的部位。": "This xenotype has no part overrides yet; click All to choose parts.",
+  "全部提示": "All tips",
+  "内容来自编辑器目录下的 ui/tips.html，可以自己往里加。": "Content comes from ui/tips.html in the editor folder; you can add your own.",
+  "✂ 自动裁剪": "✂ Auto crop",
+  "点发型贴图放到头上当参考；拖动移动、滚轮缩放。": "Click a hair texture to use it as a head reference; drag to move, wheel to scale.",
+  "① 在左侧「部位结构」点每一栏的 ": "① In the left Part tree, click ",
+  " 新建一个空部位；② 选中它；③ 点这里的贴图，或把贴图": " to create an empty part; ② select it; ③ click a texture here, or drag a texture",
+  "直接拖到那一条部位上": "directly onto that part row",
+  "，以及导入的种族模组素材（": ", plus imported race mod assets (",
+  "）。种族素材和发型存在浏览器本地，刷新不丢；": "). Race assets and hair are stored locally in the browser and survive refresh; ",
+  "选图片可以直接多选（存进「我的素材」）；从模组文件夹导入会自动按模组名 + 部位分子组。": "Pick multiple images (saved into My assets); importing a mod folder groups them by mod and part.",
+  "选择图片（PNG / WebP，可多选）": "Choose images (PNG / WebP, multi-select)",
+  "从模组文件夹导入": "Import from mod folder",
+  "我的素材现有 ": "My assets currently has ",
+  " 个子栏，选的文件会进「": " sub-folders; selected files go into ",
+  "」；可以再拖到别的子栏。": "; you can drag them to another sub-folder.",
+  "选图片可以直接多选；从模组文件夹导入会只挑 ": "Pick multiple images; importing a mod folder only picks ",
+  " 目录下朝前的那些帧。": " front-facing frames under that folder.",
+  "导入后会存在浏览器本地（约 3.6 MB 预算），刷新不丢；同一张图不会重复添加。": "Imports are stored locally in the browser (~3.6 MB budget), survive refresh, and duplicates are skipped.",
+  "还有 ": "… ",
+  " 张，用搜索框找": " more; use the search box",
+  " 张，用上面的搜索框找": " more; use the search box above",
+  "拖动分类可排序 · 点标签改名 / 删除会同步 Custom 文件夹": "Drag to reorder; click the tag to rename / delete (syncs the Custom folder).",
+  "再点一次删除": "Click again to delete",
+  "从素材库删除": "Remove from asset library",
+  "本机素材": "Local asset",
+  "模组": "Mod",
+  "模组 · ": "Mod · "
+,
+  "新建画布": "New canvas",
+  "空白画布": "Blank canvas",
+  "复制当前": "Copy current",
+  "从种族模组": "From race mod",
+  "画布名称": "Canvas name",
+  "几何底稿": "Geometry base",
+  "选择文件夹": "Choose folder",
+  "创建画布": "Create canvas",
+  "从零开始，用素材库里的贴图一块块拼出体型。": "Start from scratch and build the body from textures in Assets.",
+  "读取种族模组文件夹，用种族名称命名画布。": "Read a race mod folder and name the canvas after the race.",
+  "读取种族模组后自动填入": "Auto-filled after reading the race mod",
+  "例如：Kurin · 三尾狐": "e.g. Kurin · Three-tailed fox",
+  "选择种族模组的根文件夹（含 About / Defs / Textures）": "Choose the race mod root (with About / Defs / Textures)",
+  "正在读取 About.xml 与 Defs…": "Reading About.xml and Defs…",
+  "未检测到种族定义": "No race definition detected",
+  "种族": "Race",
+  "包名": "Package ID",
+  "贴图": "Texture",
+  "头发": "Hair",
+  "HAR 附加件": "HAR addon",
+  "原版 HairDef": "Vanilla HairDef",
+  "未检测到头发": "No hair detected",
+  "▣ 选择卡片成组合…": "▣ Combine selected cards…",
+  "移动到分组": "Move to group",
+  "新建分组": "New group",
+  "重命名": "Rename",
+  "恢复 NHT 原始坐标": "Restore NHT original coordinates",
+  "置顶重画：所有部位（以及头发）画完之后再补画一遍，永远在最上面，用「置顶层级」排序；会盖掉该部位的疤痕/伤口，建议只给装饰件用。联动置顶：只在模组设置打开「非 HAR 发型按发色重绘」时生效，在补画的发型之后重画，避免被头发盖住；与置顶重画互斥。": "On-top redraw: draws all parts (and hair) again after everything else, always on top, sorted by Top layer; it covers scars/wounds on that part, so use it for decorations. Linked top: only when \"Non-HAR hair tinted by hair color\" is on in mod settings; drawn after the redrawn hair so it isn't covered; mutually exclusive with On-top redraw.",
+  "置顶重画：所有部位画完后再画一遍，永远在最上面（用「置顶层级」排序）。装饰物用；会盖掉该部位的疤痕/伤口": "On-top redraw: draws the part again after everything else, always on top (sorted by Top layer). For decorations; covers scars/wounds on that part.",
+  "联动置顶：只在模组设置打开「非 HAR 发型按发色重绘」时生效；与置顶重画互斥": "Linked top: only when \"Non-HAR hair tinted by hair color\" is on in mod settings; mutually exclusive with On-top redraw.",
+  "受「部位颜色」开关控制：模组设置里关掉总开关（或单独关掉这一格）后，这个部位会以黑白显示；开启时和现在完全一样。只对种族画布有效。": "Controlled by Part color: turning the master switch off in mod settings (or this cell off) draws this part in grayscale; when on it looks exactly as now. Race canvases only.",
+  "勾上后，模组设置里关闭「部位颜色」时这个部位会变黑白": "When checked, turning off Part color in mod settings draws this part in grayscale.",
+  "跟随小人当前发色（story.hairColor）给这个部位着色。适合 bodyAddon colorChannel=hair 的耳朵/尾巴；关色彩时自动不染色。": "Tints this part with the pawn's current hair color (story.hairColor). Useful for bodyAddon colorChannel=hair ears/tails; skipped when color is off.",
+  "跟随小人当前发色：导出 HairTintDef，游戏里用 pawn.story.hairColor 给这个部位着色": "Follow hair color: exports HairTintDef; in game the part is tinted with pawn.story.hairColor.",
+  "置顶系列专用层级（0–99，默认 1）：只有开启「置顶重画」或「联动置顶」时才生效，但数值一直保存。它独立于原版图层 0–29——哪怕填 0，也在所有原版图层之上。越大越靠上。": "Top-series layer (0–99, default 1): only active with On-top redraw or Linked top, but always saved. Separate from vanilla layers 0–29 — even 0 is above every vanilla layer. Higher is on top.",
+  "导出模组文件时会忽略模组目录里的 About/About.xml，用这里的内容写进 zip。": "Export mod files ignores the mod folder's About/About.xml and uses this content in the zip.",
+  "如果这里没配置，才回退到模组目录里的那份。": "If nothing is configured here, it falls back to the mod folder's copy.",
+  "About.xml 正常": "About.xml OK",
+  "能读，但有警告": "Readable, with warnings",
+  "有问题，导出会被拦下": "Problems found; export will be blocked",
+  "没有发现问题": "No problems detected",
+  "版本": "Version",
+  "依赖": "Dependencies",
+  "说明": "Description",
+  "读取模组目录现有": "Read existing mod folder",
+  "用项目信息生成": "Generate from project info",
+  "在这里粘贴 About.xml 内容，或点上面的「上传 About.xml」": "Paste About.xml here, or click Upload About.xml above",
+  "修改后会随项目一起保存；导出模组文件时用这份。": "Changes are saved with the project and used when exporting mod files.",
+  "鼠标悬停提示（气泡）。关掉之后左下两块面板里就不再弹气泡，界面更干净。": "Hover tooltips (bubbles). Turning these off stops bubbles in the two left panels for a cleaner UI.",
+  "体型画布：显示悬浮提示": "Body canvases: tooltips on",
+  "体型画布：已关闭悬浮提示": "Body canvases: tooltips off",
+  "画布条目、分组、右键菜单的说明": "Hints for canvas rows, groups and the context menu",
+  "部位结构：显示悬浮提示": "Part tree: tooltips on",
+  "部位结构：已关闭悬浮提示": "Part tree: tooltips off",
+  "部位行、分组行的说明": "Hints for part and group rows",
+  "其余区域（标签、按钮、字段）的提示保持开启；这两项只影响左侧两块面板。": "Other tooltips (tabs, buttons, fields) stay on; these two only affect the left panels.",
+  "当前不是本地服务模式：Git 功能不可用，请用「启动编辑器.bat」打开。": "Not in local-server mode: Git is unavailable; open with 启动编辑器.bat.",
+  "正在检测本机 Git…": "Checking local Git…",
+  "本机 Git：": "Local Git: ",
+  "已安装": "installed",
+  "没检测到本机 Git：请先安装 Git for Windows，否则推送/拉取不可用。": "Local Git not found: install Git for Windows, otherwise push/pull is unavailable.",
+  "远程仓库：": "Remote: ",
+  "（未读取）": "(not read)",
+  "仓库改名 / 换地址后在这里改": "Change the remote here after a rename/move",
+  "本机仓库：": "Local repo: ",
+  "（未设置）": "(not set)",
+  "选择本机文件夹": "Choose local folder",
+  "提交者名": "Committer name",
+  "会写进 git 提交记录，GitHub 上显示的就是这个名字": "Written into the git commit; this is the name shown on GitHub",
+  "可空": "optional",
+  "提交者邮箱": "Committer email",
+  "会写进 git 提交记录；留空则用本机 git 全局配置": "Written into the git commit; empty uses the local git config",
+  "推送前同步模组文件": "Sync mod files before pushing",
+  "推送前不同步模组文件": "Do not sync mod files before pushing",
+  "把模组目录（About / Defs / Patches / Textures …）复制到仓库目录再提交": "Copy the mod folder (About / Defs / Patches / Textures …) into the repo before committing",
+  "状态：": "Status: ",
+  "默认值仅作参考：仓库目录 ": "Defaults are for reference: repo folder ",
+  "换成你自己的仓库时，路径要改；分支在「项目 → 仓库同步」里写。": "Change the path for your own repo; set the branch in Project → Repo sync.",
+  "（测试连接 / 推送 / 拉取的结果与失败原因）": "(test / push / pull results and errors)",
+  "保存前校验路径：开": "Validate path before saving: on",
+  "保存前校验路径：关": "Validate path before saving: off",
+  "关掉后保存不再检查目录，失败会直接报错": "When off, saves no longer check the folder and fail with an error",
+  "下面是每个保存按钮对应的路径。用文件夹图标可以手动指定（本地服务模式下路径由服务固定，图标仅作记录）。": "Paths for each save button. Use the folder icon to pick one manually (in local-server mode paths are fixed; the icon is only a note).",
+  "自动裁剪缓存数量": "Auto-crop cache count",
+  "素材页「自动裁剪」最多同时缓存几张（1–12）": "How many auto-cropped textures to cache (1–12)",
+  "同时缓存的自动裁剪素材数量": "Number of auto-cropped textures cached",
+  "导出模组文件带日期后缀": "Export mod files with date suffix",
+  "导出模组文件不带日期后缀": "Export mod files without date suffix",
+  "命名示例：": "Example name: ",
+  "本地保存（每个画布 → canvases/<种族>/）": "Local save (each canvas → canvases/<race>/)",
+  "index.json + 每个画布一个 json，同时生成 nht-project.js": "index.json + one json per canvas, plus nht-project.js",
+  "注入模组（单个/多选 → Patches/*.xml）": "Inject mod (single/multi → Patches/*.xml)",
+  "补丁 XML 写到模组的 Patches/": "Patch XML written to the mod's Patches/",
+  "贴图（Textures/）": "Textures (Textures/)",
+  "部位/发型贴图写到模组 Textures/": "Part/hair textures written to the mod's Textures/",
+  "素材目录（assets/）": "Asset folder (assets/)",
+  "「按勾选写入」使用的目录": "Folder used by Write selected",
+  "查看最近 5 份本地保存历史，可挑一份载入": "View the last 5 local save snapshots and load one",
+  "丢弃浏览器 localStorage 缓存，重新读取 nht-project.js 和画布文件": "Discard the browser localStorage cache and reload nht-project.js and canvas files",
+  "保存**全部画布**与素材清单到项目文件 nht-project.js（html 同目录），不是只存当前画布。Ctrl+S": "Save **all canvases** and the asset index into nht-project.js (next to the HTML), not just the current canvas. Ctrl+S",
+  "有需要检查的项目": "Needs attention",
+  "关联画布": "Linked canvas",
+  "有形态映射": "Has body aliases",
+  "收起 / 展开工具栏": "Collapse / expand toolbar",
+  "锁定画布：锁定后不能删除画布，也不能删除部位": "Lock canvas: cannot delete the canvas or parts while locked",
+  "当前画布的导出偏移（点击跳到全局属性的导出偏移）": "Current canvas export offset (click to jump to Export offset)",
+  "更多工具与全局属性跳转": "More tools and global property jumps",
+  "参考线": "Guides",
+  "备注贴纸": "Note stickers",
+  "在画布上添加备注贴纸": "Add a note sticker on the canvas",
+  "显示 / 隐藏画布上的 RJW 部位": "Show / hide RJW parts on the canvas",
+  "从这里向下拖出水平参考线": "Drag down to create a horizontal guide",
+  "从这里向右拖出垂直参考线": "Drag right to create a vertical guide",
+  "网格": "Grid",
+  "命中框": "Hitbox",
+  "护甲": "Armor",
+  "器官": "Organs",
+  "骨骼": "Bones",
+  "手掌": "Palm",
+  "脚掌": "Sole",
+  "锁定": "Lock",
+  "已锁定": "Locked",
+  "更多": "More",
+  "备注": "Note",
+  "显示": "Display",
+  "全局属性": "Global properties",
+  "画布": "Canvas",
+  "形态映射": "Body mapping",
+  "图层顺序": "Stack",
+  "边界": "Bounds",
+  "实际显示框": "Display box",
+  "轮廓": "Outline",
+  "来源": "Source",
+  "说明": "Notes"};
+
+const I18N_KEYS = new Map();
+[I18N_EN, I18N_EN_MORE, I18N_MODAL].forEach(obj => {
+  Object.keys(obj || {}).forEach(k => {
+    const kk = String(k).trim();
+    if (kk && !I18N_KEYS.has(kk)) I18N_KEYS.set(kk, obj[k]);
+  });
+});
+
+const I18N_PATTERNS = [
+  [/^(\d+)\s*个部位$/, '$1 parts'],
+  [/^(.+?)\s*·\s*(\d+)\s*部位(?:\s*· RJW)?$/, '$1 · $2 parts'],
+  [/^偏移\s*(-?\d+)\s*\/\s*(-?\d+)$/, 'Offset $1 / $2'],
+  [/^待推送：(\d+)（提交 (\d+) \+ 未提交文件 (\d+)）$/, 'Unpushed: $1 ($2 commits + $3 files)'],
+  [/^(\d+) 个画布将写入$/, '$1 canvases will be written'],
+  [/^(\d+) 个组员$/, '$1 members'],
+  [/^(.+?) · 已固定$/, '$1 · pinned'],
+  [/^(.+?) · 已锁定$/, '$1 · locked'],
+  [/^(.+?) · 装饰（不参与受伤）$/, '$1 · Decor (no injuries)'],
+  [/^([\u4e00-\u9fa5]+)\s+([A-Za-z].*)$/, '$2'],
+  [/^已载入 (\d+) 个体型画布 · (\d+) 个部位$/, 'Loaded $1 canvases · $2 parts'],
+  [/^已载入 (\d+) 个画布文件 · (.+)$/, 'Loaded $1 canvas files · $2'],
+  [/^已自动保存 · (.+)$/, 'Autosaved · $1'],
+  [/^已还原画布：(.+)$/, 'Canvas restored: $1'],
+  [/^已组合：(.+)$/, 'Grouped: $1'],
+  [/^已新建分组：(.+)$/, 'Group created: $1'],
+  [/^已删除空分组：(.+)$/, 'Empty group deleted: $1'],
+  [/^已移出分组$/, 'Removed from group'],
+  [/^已锁定画布$/, 'Canvas locked'],
+  [/^已解除锁定$/, 'Unlocked'],
+  [/^已选 (.+)$/, 'Selected $1'],
+  [/^已放 (.+)$/, 'Placed $1'],
+  [/^(\d+) 个 · 新增$/, '$1 · new'],
+  [/^(\d+) 个文件$/, '$1 files'],
+  [/^(.+?) 个部位$/, '$1 parts'],
+  [/^(.+?) 个画布$/, '$1 canvases'],
+  [/^(.+?) 个组员$/, '$1 members'],
+  [/^· 覆盖 (\d+) 处$/, '· $1 overrides'],
+  [/^(\d+) 处覆盖$/, '$1 overrides'],
+  [/^(.+?) · 覆盖 (\d+) 处$/, '$1 · $2 overrides'],
+  [/^(.+?) · 已调坐标$/, '$1 · adjusted'],
+  [/^已自动导入：(.+)$/, 'Auto-imported: $1'],
+  [/^已写入 (\d+) 张导入素材到磁盘$/, 'Wrote $1 imported assets to disk'],
+  [/^已放入分类：(.+)$/, 'Moved to category: $1'],
+  [/^已改名：(.+)$/, 'Renamed: $1'],
+  [/^已删除分类：(.+)$/, 'Category deleted: $1'],
+  [/^(\d+) 个素材路径到磁盘分类$/, '$1 asset paths to disk categories'],
+  [/^同步日志（(\d+)）$/, 'Sync log ($1)'],
+  [/^当前本地分支：(.+)$/, 'Current local branch: $1'],
+  [/^(\d+) 错误 · (\d+) 警告$/, '$1 errors · $2 warnings'],
+  [/^(\d+) 行 · (\d+) KB · (\d+) 个操作$/, '$1 lines · $2 KB · $3 operations'],
+  [/^·? ?还有 (\d+) 行，点「展开全部」查看$/, '… $1 more lines; click Expand all'],
+  [/^·? ?还有 (\d+) 行$/, '… $1 more lines'],
+  [/^下面 (\d+) 个画布有改动，但还没注入模组：$/, 'Below, $1 canvases have changes but are not injected yet:'],
+  [/^(.+) · 有 (\d+) 项待拉取$/, '$1 · $2 to pull'],
+  [/^(\d+) 项待拉取$/, '$1 to pull'],
+  [/^(\d+) 项待推送$/, '$1 to push'],
+  [/^(.*?)：还没有任何部位。$/, '$1: has no parts.'],
+  [/^(.*?) · (.*?)：还没有选贴图（不会导出）。$/, '$1 · $2: no texture selected (not exported).'],
+  [/^(.*?) · (.*?)：使用本机素材（还没在模组 Textures 里），注入时会自动推送；手动导出时需要把 PNG 放到 Textures\/(.*?)\.png$/, '$1 · $2: local texture (not in mod Textures); auto-pushed on inject. For manual export put the PNG at Textures/$3.png'],
+  [/^(.*?) · (.*?)：贴图缺失（(.*?)）。$/, '$1 · $2: missing texture ($3).'],
+  [/^(.*?) · (.*?)：缩放不能为 0。$/, '$1 · $2: scale cannot be 0.'],
+  [/^(.*?) · (.*?)：中心点 \((.*?), (.*?)\) 在画布边界之外。$/, '$1 · $2: center ($3, $4) is outside canvas bounds.'],
+  [/^(.*?) · (.*?)：自定义部位未绑定部位序号，需在 BodyDef 中新增对应部位。$/, '$1 · $2: custom part has no bodyPartId; add it to BodyDef.'],
+  [/^(.*?) · (.*?)：旋转 (.*?)° 不会写进 Defs（模组没有旋转字段），游戏里会按未旋转显示 —— 用属性面板的「把旋转烘焙进贴图」。$/, '$1 · $2: rotation $3° is not written to Defs; bake it into the texture.'],
+  [/^(.*?)：部位序号 #(.*?) 被 (.*?) 个部位共用（(.*?)）——除尾巴等“盖在躯干槽位”的刻意做法外，应该改回各自槽位。$/, '$1: bodyPartId #$2 is shared by $3 parts ($4); use separate slots unless intentional.'],
+  [/^(.*?)：边界与部位外接框不一致（外接框 (.*?)），可在画布属性中一键适配。$/, '$1: bounds differ from the part bounds ($2); use Fit in canvas properties.'],
+  [/^(.*?)：种族画布还没有填写种族 defName。$/, '$1: race canvas has no race defName.'],
+  [/^(.*?)：RJW 开关是打开的，但画布上没有 RJW 部位。$/, '$1: RJW is on but the canvas has no RJW parts.'],
+  [/^(.*?)：有部位开了「置顶重画」，但「导出发型坐标」是关的 → 补丁里不会有 aboveParts，游戏里置顶重画不生效。$/, '$1: a part uses On-top redraw but Export hair offsets is off; aboveParts will be missing.'],
+  [/^(.*?)：开了「导出发型坐标」但还没填缩放 \/ 偏移，会按 0.78 \/ -0.21 的默认值导出（头发会偏大偏下）。$/, '$1: Export hair offsets is on but scale/offset are empty; defaults 0.78 / -0.21 will be used.'],
+  [/^(.*?)：头发层级 (.*?) 超出 0–29，导出时会按 29 处理。$/, '$1: hair layer $2 is outside 0–29; clamped to 29.'],
+  [/^(.*?)：头发预览贴图缺失（(.*?)）。$/, '$1: hair preview texture is missing ($2).'],
+  [/^(.*?)：发色预览已隐藏（只影响编辑器，不影响导出）。$/, '$1: hair color preview hidden (editor only).'],
+  [/^(.*?) · (.*?)：图层 (.*?) 超出 0–29，会被夹到边界值。$/, '$1 · $2: layer $3 is outside 0–29; clamped.'],
+  [/^(.*?) · (.*?)：判定框太小（(.*?)×(.*?)），游戏里几乎点不到。$/, '$1 · $2: hitbox too small ($3×$4); hard to click in game.'],
+  [/^(.*?) · (.*?)：开了置顶重画但没有贴图。$/, '$1 · $2: On-top redraw is on but there is no texture.'],
+  [/^(.*?)：部位编号还没按 NHT 槽位对齐过，建议点「全局 → 按对照表修正编号」再导出。$/, '$1: bodyPartIds are not aligned to NHT slots; use Global → Fix IDs before export.'],
+  [/^有画布还没填名字。$/, 'Some canvases have no name.'],
+  [/^画布「(.*?)」没有 Doll defName，导出会失败。$/, 'Canvas "$1" has no Doll defName; export will fail.'],
+  [/^(.*?)：(.*?) 个部位超出实际显示框 (.*?)×(.*?)（(.*?)边缘），NHT 面板里可能显示不全：(.*?)( 等)?。$/, '$1: $2 parts exceed the display box $3×$4 ($5 edge); may be clipped in NHT: $6$7.'],
+  [/^Doll defName「(.*?)」被 (.*?) 个画布共用，导出补丁时会互相覆盖。$/, 'Doll defName "$1" is shared by $2 canvases; patches will overwrite each other.'],
+  [/^画布名字「(.*?)」用了 (.*?) 次，导出文件名可能重复。$/, 'Canvas name "$1" is used $2 times; export filenames may collide.'],
+  [/^：补丁只导出$/, ': The patch only exports'],
+  [/^（(.+?)）。已有的体型 \/ 部位用$/, '($1). Existing bodies / parts use'],
+  [/^覆盖，新部位与拆卸用 Add \/ Remove。要导别的体型，先切到那张画布再导出。$/, ' to override; new/detached parts use Add / Remove. To export another body, switch to its canvas first.'],
+  [/^保存选择的素材（(\d+) 栏）$/, 'Save selected assets ($1)'],
+  [/^未勾选分组，保存当前分类：(\d+) 张…$/, 'No group selected; saving current category: $1 images…'],
+  [/^删除分组「(.+)」$/, 'Delete group "$1"'],
+  [/^提示（共 (\d+) 条）$/, 'Tips ($1)'],
+  [/^缺少 (\d+) 张贴图$/, '$1 textures missing'],
+  [/^只看覆盖 (\d+)$/, 'Overrides only ($1)'],
+  [/^全部 (\d+)$/, 'All ($1)'],
+  [/^(.+) 点击套用$/, '$1 — click to apply'],
+  [/^最近 (\d+) 个版本$/, 'Latest $1 versions'],
+  [/^(\d+) 个版本$/, '$1 versions'],
+  [/^(\d+) 张$/, '$1 files'],
+  [/^预览（最近改动）：(.+) · (\d+) 部位$/, 'Preview (recent changes): $1 · $2 parts'],
+  [/^预览（Git 版本）：(.+) · (\d+) 部位$/, 'Preview (Git version): $1 · $2 parts'],
+  [/^(\d+) 个标记 · (\d+) 可见 · (\d+) 个器官层$/, '$1 markers · $2 visible · $3 organ layers'],
+  [/^只列出最上面 (\d+) 个（共 (\d+)）$/, 'Only the top $1 of $2 are listed'],
+  [/^· 优先级 (\d+)$/, '· Priority $1'],
+  [/^全部 \((\d+)\)$/, 'All ($1)'],
+  [/^共 (\d+) 张贴图：Nice Health Tab 的 $/, '$1 textures total: Nice Health Tab\'s '],
+  [/^提示（共 (\d+) 条）$/, 'Tips ($1)'],
+  [/^添加顺序 HOW TO ADD$/, 'HOW TO ADD'],
+  [/^我的素材 \((\d+)\)$/, 'My assets ($1)'],
+  [/^种族素材 \((\d+)\)$/, 'Race assets ($1)'],
+  [/^体型部件 \((\d+)\)$/, 'Body parts ($1)'],
+  [/^假体 \/ 附肢 \((\d+)\)$/, 'Prosthetics / appendages ($1)'],
+  [/^器官 \((\d+)\)$/, 'Organs ($1)'],
+  [/^骨骼 \((\d+)\)$/, 'Bones ($1)'],
+  [/^异种 \((\d+)\)$/, 'Xenotypes ($1)'],
+  [/^RJW 部位 \((\d+)\)$/, 'RJW parts ($1)'],
+  [/^贴花 \((\d+)\)$/, 'Decals ($1)'],
+  [/^图标 \((\d+)\)$/, 'Icons ($1)'],
+  [/^护甲 \((\d+)\)$/, 'Armor ($1)'],
+  [/^还有 (\d+) 张，用(上面的)?搜索框找$/, '… $1 more; use the search box'],
+  [/^这个模组里有 (\d+) 个种族，选一个来建画布（默认高亮的是自动判断的那个）。$/, 'This mod contains $1 races; pick one to create a canvas (the highlighted one is auto-detected).'],
+  [/^身体 (.*?) · (\d+) 个部位 · 贴图命中 (\d+)$/, 'Body $1 · $2 parts · $3 texture matches'],
+  [/^以「(.*?)」为底稿新建一个异种。$/, 'Create a xenotype from "$1".'],
+  [/^(\d+) 个文件$/, '$1 files'],
+  [/^(\d+) \/ (\d+) 已匹配$/, '$1 / $2 matched'],
+  [/^ · 共 (\d+) 张$/, ' · $1 total'],
+  [/^（后层 (\d+)）$/, ' ($1 back layers)'],
+  [/^ · (\d+) 个样式$/, ' · $1 styles'],
+  [/^(\d+) 条警告$/, '$1 warnings'],
+  [/^(\d+) 处错误$/, '$1 errors'],
+  [/^(\d+) 字$/, '$1 chars'],
+  [/^本机 Git：(.+)$/, 'Local Git: $1'],
+  [/^已连接 · 分支 (.+?) · 待推送 (\d+) \/ 待拉取 (\d+)$/, 'Connected · branch $1 · to push $2 / to pull $3'],
+  [/^(.+)（右键更多操作）$/, '$1 (right-click for more)'],
+  [/^展开 (\d+) 个关联形态$/, 'Expand $1 linked forms'],
+  [/^收起 (\d+) 个关联形态$/, 'Collapse $1 linked forms'],
+  [/^偏移 (-?\d+(?:\.\d+)?) \/ (-?\d+(?:\.\d+)?)$/, 'Offset $1 / $2']
+];
+
+function i18nText(v) {
+  const key = String(v == null ? '' : v).trim();
+  if (!key) return '';
+  const exact = I18N_KEYS.get(key);
+  if (exact != null) return exact;
+  for (let i = 0; i < I18N_PATTERNS.length; i++) {
+    const re = I18N_PATTERNS[i][0];
+    if (re.test(key)) return key.replace(re, I18N_PATTERNS[i][1]);
+  }
+  return '';
+}
+
+const I18N_ATTRS = ['title', 'placeholder', 'aria-label', 'alt', 'data-lb', 'data-tip'];
+
+/* 部位名：优先用 nameEn；没有英文时用常用部位词典；再退回原名 */
+const PART_I18N = {
+  '躯干': 'Torso', '胸腔': 'Ribcage', '胸骨': 'Sternum', '骨盆': 'Pelvis', '脊柱': 'Spine',
+  '胃': 'Stomach', '心脏': 'Heart', '右肺': 'Right lung', '左肺': 'Left lung', '右肾': 'Right kidney',
+  '左肾': 'Left kidney', '肝': 'Liver', '颈部': 'Neck', '头部': 'Head', '颅骨': 'Skull', '脑': 'Brain',
+  '左眼': 'Left eye', '右眼': 'Right eye', '左耳': 'Left ear', '右耳': 'Right ear', '鼻': 'Nose',
+  '鼻子': 'Nose', '下颌': 'Jaw', '舌': 'Tongue', '右肩': 'Right shoulder', '左肩': 'Left shoulder',
+  '右锁骨': 'Right clavicle', '左锁骨': 'Left clavicle', '右臂': 'Right arm', '左臂': 'Left arm',
+  '右手': 'Right hand', '左手': 'Left hand', '左腿': 'Left leg', '右腿': 'Right leg', '左脚': 'Left foot',
+  '右脚': 'Right foot', '尾巴': 'Tail', '触手': 'Tentacle', '长触手': 'Long tentacle', '肉鞭': 'Flesh whip',
+  '翅膀': 'Wing', '角': 'Horn', '光环': 'Halo', '耳朵': 'Ear', '触角': 'Antenna', '触须': 'Tentacle',
+  '呆毛': 'Ahoge', '刘海': 'Bangs', '头发': 'Hair', '眼睛': 'Eye', '嘴': 'Mouth', '身体': 'Body',
+  '胸部': 'Chest', '腰部': 'Waist', '大腿': 'Thigh', '小腿': 'Calf', '上臂': 'Upper arm',
+  '前臂': 'Forearm', '手指': 'Finger', '脚趾': 'Toe', '机械臂': 'Mechanical arm', '机械腿': 'Mechanical leg'
+};
+
+function partDisplayName(p) {
+  if (!p) return '';
+  if (LANG !== 'en') return p.name || '';
+  const en = (p.nameEn && p.nameEn !== p.name) ? p.nameEn : '';
+  return en || PART_I18N[p.name] || p.name || '';
+}
+
+function partSubName(p) {
+  if (!p) return '';
+  const dn = partDisplayName(p);
+  if (LANG === 'en') return (p.name && p.name !== dn) ? p.name : '';
+  return (p.nameEn && p.nameEn !== p.name) ? p.nameEn : '';
+}
+const I18N_ATTR_ORIG = new WeakMap();
+let LANG = 'zh';
+let I18N_APPLYING = false;
+let I18N_OBSERVER = null;
+
+function i18nSkip(el) {
+  try { return !!(el && el.closest && el.closest('[data-i18n-skip]')); } catch (e) { return false; }
+}
+
+function translateDom(root) {
+  if (LANG !== 'en' || !root) return;
+  I18N_APPLYING = true;
+  try {
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode(n) {
+        const p = n.parentElement;
+        if (!p || i18nSkip(p)) return NodeFilter.FILTER_REJECT;
+        if (/^(SCRIPT|STYLE|TEXTAREA|CODE|PRE)$/.test(p.tagName)) return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    const nodes = [];
+    let n;
+    while ((n = walker.nextNode())) nodes.push(n);
+    nodes.forEach(node => {
+      const raw = String(node.nodeValue == null ? '' : node.nodeValue);
+      const m = /^(\s*)([\s\S]*?)(\s*)$/.exec(raw);
+      const core = m ? m[2] : raw;
+      const en = i18nText(core);
+      if (!en) return;
+      if (node.__i18nZh == null) node.__i18nZh = raw;
+      node.nodeValue = (m ? m[1] : '') + en + (m ? m[3] : '');
+    });
+    root.querySelectorAll('*').forEach(el => {
+      if (i18nSkip(el)) return;
+      I18N_ATTRS.forEach(a => {
+        const v = el.getAttribute(a);
+        if (!v) return;
+        const en = i18nText(v);
+        if (!en) return;
+        let orig = I18N_ATTR_ORIG.get(el);
+        if (!orig) { orig = {}; I18N_ATTR_ORIG.set(el, orig); }
+        if (orig[a] == null) orig[a] = v;
+        el.setAttribute(a, en);
+      });
+    });
+  } catch (e) { }
+  finally { I18N_APPLYING = false; }
+}
+
+function restoreDom(root) {
+  if (!root) return;
+  I18N_APPLYING = true;
+  try {
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+    const nodes = [];
+    let n;
+    while ((n = walker.nextNode())) nodes.push(n);
+    nodes.forEach(node => {
+      if (node.__i18nZh != null) { node.nodeValue = node.__i18nZh; delete node.__i18nZh; }
+    });
+    root.querySelectorAll('*').forEach(el => {
+      const orig = I18N_ATTR_ORIG.get(el);
+      if (!orig) return;
+      Object.keys(orig).forEach(a => el.setAttribute(a, orig[a]));
+      I18N_ATTR_ORIG.delete(el);
+    });
+  } catch (e) { }
+  finally { I18N_APPLYING = false; }
+}
+
+function applyLang(lang) {
+  LANG = (lang === 'en') ? 'en' : 'zh';
+  try { if (!S.settings) S.settings = {}; S.settings.lang = LANG; } catch (e) { }
+  try {
+    document.documentElement.lang = LANG === 'en' ? 'en' : 'zh-CN';
+    if (document.body) document.body.dataset.lang = LANG;
+  } catch (e) { }
+  const box = document.getElementById('langBox');
+  if (box) box.dataset.lang = LANG;
+  const label = document.getElementById('langLabel');
+  if (label) label.textContent = LANG === 'en' ? 'English' : '中文';
+  const menu = document.getElementById('langMenu');
+  if (menu) menu.querySelectorAll('.langopt').forEach(b => b.classList.toggle('is-on', b.dataset.lang === LANG));
+  try { if (LANG === 'en') translateDom(document.body); else restoreDom(document.body); } catch (e) { }
+  try { if (typeof renderTree === 'function') renderTree(); } catch (e) { }
+  try { if (typeof renderInspector === 'function') renderInspector(); } catch (e) { }
+  try { if (typeof renderVariantPane === 'function') renderVariantPane(); } catch (e) { }
+  try { if (typeof renderStage === 'function') renderStage(); } catch (e) { }
+  try { if (typeof renderHairPane === 'function') renderHairPane(); } catch (e) { }
+  try { if (typeof loadTips === 'function') loadTips(); } catch (e) { }
+  // 默认项目备注里的“默认体型”也随语言切换；用户改过的备注不动
+  try {
+    const ZH_NOTE = '以 Nice Health Tab 模组 1.6 默认体型为基准制作的部位补丁。';
+    const EN_NOTE = "A part patch based on Nice Health Tab 1.6's default body.";
+    if (!S.project) S.project = {};
+    if (!S.project.note || S.project.note === ZH_NOTE || S.project.note === EN_NOTE) {
+      S.project.note = LANG === 'en' ? EN_NOTE : ZH_NOTE;
+    }
+  } catch (e) { }
+  try { if (typeof renderPatch === 'function') renderPatch(); } catch (e) { }
+  try { persist(); } catch (e) { }
+  try { startI18nObserver(); } catch (e) { }
+}
+
+function startI18nObserver() {
+  if (typeof MutationObserver === 'undefined' || I18N_OBSERVER) return;
+  I18N_OBSERVER = new MutationObserver(() => {
+    if (LANG !== 'en' || I18N_APPLYING) return;
+    clearTimeout(window.__i18nT);
+    window.__i18nT = setTimeout(() => { if (LANG === 'en') translateDom(document.body); }, 30);
+  });
+  I18N_OBSERVER.observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: I18N_ATTRS });
+}
+
+document.addEventListener('click', e => {
+  const m = document.getElementById('langMenu');
+  if (m && !(e.target && e.target.closest && e.target.closest('.langbox'))) m.hidden = true;
+});
 
 function imgURL(path) {
   if (!path) return MISSING_IMG;
@@ -4456,7 +5902,7 @@ function rowHTML(p) {
   if (p.raceOff) cls.push('is-raceoff', 'has-restore');
   return `<div class="${cls.join(' ')}" data-act="select" data-uid="${p.uid}" draggable="true" title="拖动可以排序 / 换栏">
     <span class="row__dot s-${p.state}" title="${stateLabel(p.state)}"></span>
-    <span class="row__name">${esc(p.name)}${p.bid < 0 && p.source !== 'rjw' ? ' <span class="pill" style="height:14px;padding:0 4px" title="没有身体部位：只绘制，不参与受伤">装饰</span>' : ''}${p.custom ? ' <span class="pill pill--a" style="height:14px;padding:0 4px">自定</span>' : ''}${p.raceOff ? ' <span class="pill race-off-pill" title="这个种族 BodyDef 里没有这个部位，已关闭">种族无此部位</span>' : ''}<em>${esc(p.nameEn && p.nameEn !== p.name ? p.nameEn : '')}</em></span>
+    <span class="row__name">${esc(partDisplayName(p))}${p.bid < 0 && p.source !== 'rjw' ? ' <span class="pill" style="height:14px;padding:0 4px" title="没有身体部位：只绘制，不参与受伤">装饰</span>' : ''}${p.custom ? ' <span class="pill pill--a" style="height:14px;padding:0 4px">自定</span>' : ''}${p.raceOff ? ' <span class="pill race-off-pill" title="这个种族 BodyDef 里没有这个部位，已关闭">种族无此部位</span>' : ''}<em>${esc(partSubName(p))}</em></span>
     <span class="row__id">#${p.bid >= 0 ? p.bid : '—'}</span>
     ${p.raceOff ? `<button class="row__act race-restore" data-act="part-race-restore" data-uid="${p.uid}" title="还原：即使种族没有这个部位，也强制使用">${icon('rot')}</button>` : ''}
     <button class="row__act${p.vis ? '' : ' is-active'}" data-act="toggle-vis" data-uid="${p.uid}" title="显示 / 隐藏">${icon(p.vis ? 'eye' : 'eyeoff')}</button>
@@ -4563,7 +6009,8 @@ let TIP_TIMER = 0;
 
 async function loadTips() {
   try {
-    const r = await fetch('ui/tips.html', { cache: 'no-store' });
+    const tipsFile = LANG === 'en' ? 'ui/tips-en.html' : 'ui/tips.html';
+    const r = await fetch(tipsFile, { cache: 'no-store' });
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const txt = await r.text();
     const doc = new DOMParser().parseFromString(txt, 'text/html');
@@ -4962,7 +6409,7 @@ function renderStage() {
   const c = activeCanvas();
   const pl = $('#partsLayer');
   pl.innerHTML = '';
-  if (!c) return;
+  if (!c) { updateVariantDock(null); return; }
 
   const dr = $('#dispRect');
   if (dr) {
@@ -4977,16 +6424,22 @@ function renderStage() {
       dr.classList.toggle('is-bad', outD > 0);  // 有部位超出就持续标红
       const sidesD = new Set();
       ovD.list.forEach(o => Object.keys(o.over).forEach(k => o.over[k] && sidesD.add(k)));
-      const dirL = { left: '左', right: '右', top: '上', bottom: '下' };
-      dr.querySelector('.dbounds__lab').textContent =
-        `实际显示 ${round(d.w, 0)} × ${round(d.h, 0)}` + (d.locked ? ' · 已固定' : '') +
-        (outD ? `  ·  ⚠ ${outD} 个部位超出${[...sidesD].map(x => dirL[x]).join('/')}边` : '');
+      const dirL = (LANG === 'en')
+        ? { left: 'left', right: 'right', top: 'top', bottom: 'bottom' }
+        : { left: '左', right: '右', top: '上', bottom: '下' };
+      const sidesTxt = [...sidesD].map(x => dirL[x]).join('/');
+      dr.querySelector('.dbounds__lab').textContent = (LANG === 'en')
+        ? `Display ${round(d.w, 0)} × ${round(d.h, 0)}` + (d.locked ? ' · Pinned' : '') +
+          (outD ? ` · ⚠ ${outD} parts outside ${sidesTxt} edge` : '')
+        : `实际显示 ${round(d.w, 0)} × ${round(d.h, 0)}` + (d.locked ? ' · 已固定' : '') +
+          (outD ? `  ·  ⚠ ${outD} 个部位超出${sidesTxt}边` : '');
     } else {
       dr.hidden = true;
     }
   }
 
   updateHarBadge(c);
+  updateVariantDock(c);
 
   renderGuides(c);
   syncRefForCanvas(c);
@@ -5104,10 +6557,15 @@ function renderStage() {
       // outline width is 1:1; a smaller box is magnified
       const outlineW = (D.bodytypes.find(b3 => (b3.outlineW || 0) > 1) || {}).outlineW || 512;
       const zoom = outlineW / Math.max(1, (c.bounds ? c.bounds.w : outlineW));
-      const zoomTxt = zoom > 1.02 ? `  ·  游戏内放大 ×${zoom.toFixed(2)}`
-        : (zoom < 0.98 ? `  ·  游戏内缩小 ×${(1 / zoom).toFixed(2)}` : '  ·  与游戏画布 1:1');
-      gb.querySelector('.gbounds__lab').textContent =
-        `通用显示范围 = 边界 ${round(box.w, 0)} × ${round(box.h, 0)}` + zoomTxt;
+      const en = LANG === 'en';
+      const zoomTxt = en
+        ? (zoom > 1.02 ? ` · In-game zoom ×${zoom.toFixed(2)}`
+          : (zoom < 0.98 ? ` · In-game shrink ×${(1 / zoom).toFixed(2)}` : ' · 1:1 with game canvas'))
+        : (zoom > 1.02 ? `  ·  游戏内放大 ×${zoom.toFixed(2)}`
+          : (zoom < 0.98 ? `  ·  游戏内缩小 ×${(1 / zoom).toFixed(2)}` : '  ·  与游戏画布 1:1'));
+      gb.querySelector('.gbounds__lab').textContent = en
+        ? `Common display range = Bounds ${round(box.w, 0)} × ${round(box.h, 0)}` + zoomTxt
+        : `通用显示范围 = 边界 ${round(box.w, 0)} × ${round(box.h, 0)}` + zoomTxt;
     } else {
       gb.hidden = true;
     }
@@ -6296,7 +7754,7 @@ function renderSelInfo() {
   if (!p) { el.style.display = 'none'; return; }
   el.style.display = 'flex';
   const [w, h] = imgDim(p.img);
-  el.innerHTML = `<b>${esc(p.name)}</b>
+  el.innerHTML = `<b>${esc(partDisplayName(p))}</b>
     <span>#${p.bid >= 0 ? p.bid : '—'}</span>
     <span>L${p.layer}</span>
     <span>${round(p.x, 1)}, ${round(p.y, 1)}</span>
@@ -6504,7 +7962,7 @@ function partInspector(p) {
   return `
   <div class="selhead">
     <div class="selhead__badge">${esc(String(p.bid >= 0 ? p.bid : '＋'))}</div>
-    <div class="selhead__t"><b>${esc(p.name)}</b><span>${esc(p.id)}</span></div>
+    <div class="selhead__t"><b>${esc(partDisplayName(p))}</b><span>${esc(p.id)}</span></div>
     <span class="pill ${p.custom ? 'pill--a' : ''}">${kindName}</span>
   </div>
 
@@ -6547,7 +8005,9 @@ function partInspector(p) {
       if (!har && !c.hairFitEnabled) return '';
       const hl = Number.isFinite(c.hairPreviewLayer) ? c.hairPreviewLayer
         : (Number.isFinite(c.hairLayer) ? c.hairLayer : 15);
-      return `<p class="mini-note" style="color:#e3b558;margin:2px 0 0">当前头发层级 = <b>${hl}</b>：头发会在第一个「图层 ≥ ${hl}」的部位之前绘制，所以<b>图层大于 ${hl} 的部位会盖在头发之上</b>，小于它的会被头发盖住。</p>`;
+      return `<p class="mini-note" style="color:#e3b558;margin:2px 0 0">${LANG === 'en'
+        ? `Current hair layer = <b>${hl}</b>: hair is drawn before the first part with layer ≥ ${hl}, so <b>parts with layer > ${hl} cover the hair</b>; lower ones are covered by the hair.`
+        : `当前头发层级 = <b>${hl}</b>：头发会在第一个「图层 ≥ ${hl}」的部位之前绘制，所以<b>图层大于 ${hl} 的部位会盖在头发之上</b>，小于它的会被头发盖住。`}</p>`;
     })()}
     <div class="field"><label>贴图 TEXTURE</label><div class="ctl">
       <div class="inp" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;color:#8d9499">${esc(p.img.split('/').pop())}</div>
@@ -6564,6 +8024,8 @@ function partInspector(p) {
           aria-checked="${p.linkTop ? 'true' : 'false'}"
           title="联动置顶：只在模组设置打开「非 HAR 发型按发色重绘」时生效；与置顶重画互斥"><i></i></button><span class="pf-lb">联动</span>
       </span>
+    </div>
+    <div class="part-flags part-flags--sub">
       ${(() => {
         const cc = activeCanvas();
         const raceOk = !!(cc && cc.race && cc.race.defName);
@@ -6944,7 +8406,7 @@ function canvasInspector(c) {
   const race = c.race;
   const stack = sortParts(c.parts.filter(p => p.vis !== false && !(c.rjw === false && p.source === 'rjw'))).reverse();
   const stackRows = stack.slice(0, 80).map(p => `<button class="stack__row${p.uid === S.sel ? ' is-on' : ''}" data-act="pick-part" data-uid="${p.uid}" title="选中这个部位">
-      <span class="stack__n">${esc(p.name)}</span>
+      <span class="stack__n">${esc(partDisplayName(p))}</span>
       <b>${p.layer}${p.extra ? ` <em>+${p.extra}</em>` : ''}</b>
     </button>`).join('');
   return `
@@ -7033,7 +8495,7 @@ function canvasInspector(c) {
       <input class="inp" type="number" data-f="c.offy" value="${round((c.exportOffset && c.exportOffset.y) || 0, 1)}" step="0.1">
     </div></div>
     ${exportYConvRow(c)}
-    <p class="mini-note">在<b>所有部位的导出坐标</b>上统一加一个固定量（单位 = 游戏画布 512×1024 的像素）。它只改变部位在框里的位置，<b>编辑器画面不变</b>。</p>
+    <p class="mini-note">在所有部位的导出坐标上统一加一个固定量（单位 = 游戏画布 512×1024 的像素）。它只改变部位在框里的位置，编辑器画面不变。</p>
     <p class="mini-note offnote">怎么填：<b class="hl">Y 填正数 → 游戏里整体向下移</b>；<b class="hl">Y 填负数 → 整体向上移</b>。<b class="hl">X 正数向右、负数向左</b>。数值单位是像素，<b class="hl">37.5 ≈ 全身高度的 3.7%</b>，一般微调在 ±5 ~ ±40 之间。</p>
     <div class="swrow" style="margin-top:8px">
       <button class="switch${c.noExportCenter ? '' : ' is-on'}" data-act="auto-center" role="switch"
@@ -7408,20 +8870,22 @@ function hairRefBarHTML() {
 
 /* ---------------- 指南（内容来自 ui/guides.js，可自行编辑） ---------------- */
 function modalGuides() {
-  const list = Array.isArray(window.NHT_GUIDES) ? window.NHT_GUIDES : [];
+  const en = LANG === 'en';
+  const src = (en && Array.isArray(window.NHT_GUIDES_EN)) ? window.NHT_GUIDES_EN : window.NHT_GUIDES;
+  const list = Array.isArray(src) ? src : [];
   const body = list.length
     ? list.map((g, i) => `<div class="gdi">
         <button class="gdi__h" data-act="guide-toggle" data-gi="${i}">
-          <span class="gdi__chev">▸</span><b>${esc(g.title || '未命名')}</b></button>
+          <span class="gdi__chev">▸</span><b>${esc(g.title || (en ? '(untitled)' : '未命名'))}</b></button>
         <div class="gdi__b" data-gb="${i}" hidden>${g.body || ''}</div>
       </div>`).join('')
-    : '<p class="mini-note">没有找到指南内容。</p>';
+    : `<p class="mini-note">${en ? 'No guide content found.' : '没有找到指南内容。'}</p>`;
   openModal(`<div style="width:min(700px,94vw)">
-    <div class="modal__head"><span class="idx">GUIDE</span><h3>指南</h3>
+    <div class="modal__head"><span class="idx">GUIDE</span><h3>${en ? 'Guides' : '指南'}</h3>
       <button class="iconbtn x" data-act="close-modal">${icon('x')}</button></div>
     <div class="modal__body">
       <div class="gdlist">${body}</div>
-      <p class="mini-note" style="margin-top:8px">内容来自编辑器目录下的 <code>ui/guides.js</code>，可以直接编辑这个文件。</p>
+      <p class="mini-note" style="margin-top:8px">${en ? 'Content comes from <code>ui/guides.js</code> in the editor folder; edit that file directly.' : '内容来自编辑器目录下的 <code>ui/guides.js</code>，可以直接编辑这个文件。'}</p>
     </div></div>`);
 }
 
@@ -8710,10 +10174,11 @@ function pushFindNode(node, path) {
 }
 
 function pushDialogHTML() {
+  const en = LANG === 'en';
   const loading = !!PUSH_STATE.loading;
   const total = loading ? 0 : pushNodeFiles(PUSH_STATE.tree, []).length;
   const sel = loading ? 0 : pushSelectedCount();
-  return `<div class="modal__head"><span class="idx">PUSH</span><h3>选择要推送的文件</h3>
+  return `<div class="modal__head"><span class="idx">PUSH</span><h3>${en ? 'Select files to push' : '选择要推送的文件'}</h3>
       <button class="iconbtn x" data-act="push-cancel">${icon('x')}</button></div>
     <div class="modal__body">
       <p class="mini-note" style="margin:0 0 8px">
@@ -8722,39 +10187,43 @@ function pushDialogHTML() {
           const cur = (gitState.status && gitState.status.branch) || '';
           const target = g0.branch || cur || 'main';
           const warn = cur && target !== cur;
-          return `目标分支：<b>${esc(target)}</b>${warn
-            ? `　<b style="color:#ffb066">⚠ 当前本地分支是 ${esc(cur)}，会以 HEAD:${esc(target)} 推送</b>（如果远端该分支有自己的提交会被拒绝）`
+          return `${en ? 'Target branch: ' : '目标分支：'}<b>${esc(target)}</b>${warn
+            ? (en ? ` <b style="color:#ffb066">⚠ Local branch is ${esc(cur)}; pushing HEAD:${esc(target)}</b> (rejected if the remote branch has its own commits)` : `　<b style="color:#ffb066">⚠ 当前本地分支是 ${esc(cur)}，会以 HEAD:${esc(target)} 推送</b>（如果远端该分支有自己的提交会被拒绝）`)
             : ''}`;
         })()}<br>
-        <b>怎么用：</b>默认全部勾选 → 不想传的取消勾选，或点右侧锁图标把整块锁住（红色、勾选框消失、不参与本次推送）。
+        ${en ? `<b>How to use:</b> everything is checked by default → uncheck files you don't want, or click the lock icon to lock a block (red, checkbox hidden, not pushed).
+        Checking/unchecking a folder includes its children; click <b>▾ / ▸</b> to fold/expand.<br>
+        <b>Why some files are locked by default:</b> <code>Editor/history</code> (local snapshots), <code>Editor/nht-project.js</code> (your canvas data),
+        <code>*.bak</code> backups and <code>Editor/body-map.json</code> are personal data — pushing them would overwrite other people's data, so they are locked.
+        You can unlock them manually if needed.` : `<b>怎么用：</b>默认全部勾选 → 不想传的取消勾选，或点右侧锁图标把整块锁住（红色、勾选框消失、不参与本次推送）。
         勾/取消父文件夹会连带子项；点 <b>▾ / ▸</b> 折叠或展开。<br>
         <b>为什么有些文件默认锁住：</b><code>Editor/history</code>（本地保存快照）、<code>Editor/nht-project.js</code>（你自己的画布数据）、
         <code>*.bak</code> 备份、<code>Editor/body-map.json</code> 都是「个人本地数据」—— 传到仓库会把别人拉下来的数据覆盖掉，所以默认锁住，
-        需要时你可以手动解锁。
+        需要时你可以手动解锁。`}
       </p>
-      ${PUSH_STATE.aheadOnly ? `<p class="mini-note" style="margin:0 0 8px;color:#ffd08a">本次没有新的文件改动，只推送本地已有的 <b>${PUSH_STATE.aheadCount || 0}</b> 个未推送提交。</p>` : ''}
+      ${PUSH_STATE.aheadOnly ? `<p class="mini-note" style="margin:0 0 8px;color:#ffd08a">${en ? `No new file changes; pushing only <b>${PUSH_STATE.aheadCount || 0}</b> local unpushed commits.` : `本次没有新的文件改动，只推送本地已有的 <b>${PUSH_STATE.aheadCount || 0}</b> 个未推送提交。`}</p>` : ''}
       ${(!PUSH_STATE.aheadOnly && PUSH_STATE.ahead) ? `<p class="mini-note" style="margin:0 0 8px">
-        本地已有 <b>${PUSH_STATE.ahead}</b> 个未推送提交（不在下面的文件列表里，点推送会一起上传）：
+        ${en ? `There are <b>${PUSH_STATE.ahead}</b> local unpushed commits (not in the list; pushing uploads them too):` : `本地已有 <b>${PUSH_STATE.ahead}</b> 个未推送提交（不在下面的文件列表里，点推送会一起上传）：`}
         <br><code style="opacity:.8">${(PUSH_STATE.aheadCommits || []).slice(0, 5).map(esc).join('<br>')}</code>
         ${PUSH_STATE.ahead > 5 ? '<br><span style="opacity:.6">…</span>' : ''}
       </p>` : ''}
-      <div class="pushtree" id="pushTree">${loading ? '<p class="mini-note" style="padding:10px 4px">正在读取本地更改…（最多 20 秒）</p>' : PUSH_STATE.tree.children.map(c => pushRow(c, 0, false)).join('')}</div>
+      <div class="pushtree" id="pushTree">${loading ? `<p class="mini-note" style="padding:10px 4px">${en ? 'Reading local changes… (max 20s)' : '正在读取本地更改…（最多 20 秒）'}</p>` : PUSH_STATE.tree.children.map(c => pushRow(c, 0, false)).join('')}</div>
       <div class="pushtools">
-        <button class="btn btn--sm" data-act="push-all"${loading ? ' disabled' : ''}>全选</button>
-        <button class="btn btn--sm" data-act="push-none"${loading ? ' disabled' : ''}>全不选</button>
-        <span class="n" id="pushCount">${loading ? '正在读取本地更改…' : `本次推送 ${sel} / ${total} 个文件${PUSH_STATE.lockedCount ? `　·　已锁定 ${PUSH_STATE.lockedCount} 项不推送（${(PUSH_STATE.lockedNames || []).join('、')}${PUSH_STATE.lockedCount > (PUSH_STATE.lockedNames || []).length ? ' …' : ''}）` : ''}`}</span>
+        <button class="btn btn--sm" data-act="push-all"${loading ? ' disabled' : ''}>${en ? 'Select all' : '全选'}</button>
+        <button class="btn btn--sm" data-act="push-none"${loading ? ' disabled' : ''}>${en ? 'Select none' : '全不选'}</button>
+        <span class="n" id="pushCount">${loading ? (en ? 'Reading local changes…' : '正在读取本地更改…') : (en ? `${sel} / ${total} files to push${PUSH_STATE.lockedCount ? ` · ${PUSH_STATE.lockedCount} locked (${(PUSH_STATE.lockedNames || []).join(', ')}${PUSH_STATE.lockedCount > (PUSH_STATE.lockedNames || []).length ? ' …' : ''})` : ''}` : `本次推送 ${sel} / ${total} 个文件${PUSH_STATE.lockedCount ? `　·　已锁定 ${PUSH_STATE.lockedCount} 项不推送（${(PUSH_STATE.lockedNames || []).join('、')}${PUSH_STATE.lockedCount > (PUSH_STATE.lockedNames || []).length ? ' …' : ''}）` : ''}`)}</span>
       </div>
-      <div class="field"><label>提交说明</label><div class="ctl">
+      <div class="field"><label>${en ? 'Commit message' : '提交说明'}</label><div class="ctl">
         <input class="inp" id="pushMsg" value="${esc(PUSH_STATE.msg)}" spellcheck="false">
       </div></div>
-      <div class="field"><label>提交描述</label><div class="ctl">
+      <div class="field"><label>${en ? 'Commit description' : '提交描述'}</label><div class="ctl">
         <textarea class="inp pushbody" id="pushBody" rows="3" spellcheck="false"
-          placeholder="可选：这次改了什么（会写进 git 提交描述）">${esc(PUSH_STATE.body || '')}</textarea>
+          placeholder="${en ? 'Optional: what changed (written into the git commit description)' : '可选：这次改了什么（会写进 git 提交描述）'}">${esc(PUSH_STATE.body || '')}</textarea>
       </div></div>
     </div>
     <div class="modal__foot">
-      <button class="btn btn--danger" data-act="push-cancel">取消</button>
-      <button class="btn btn--multi" data-act="push-go" id="pushGoBtn" ${(loading || !(sel || PUSH_STATE.aheadOnly)) ? 'disabled' : ''}>${loading ? '读取中…' : (PUSH_STATE.aheadOnly ? '推送本地提交' : ('推送 ' + sel + ' 个文件'))}</button>
+      <button class="btn btn--danger" data-act="push-cancel">${en ? 'Cancel' : '取消'}</button>
+      <button class="btn btn--multi" data-act="push-go" id="pushGoBtn" ${(loading || !(sel || PUSH_STATE.aheadOnly)) ? 'disabled' : ''}>${loading ? (en ? 'Loading…' : '读取中…') : (PUSH_STATE.aheadOnly ? (en ? 'Push local commits' : '推送本地提交') : (en ? ('Push ' + sel + ' files') : ('推送 ' + sel + ' 个文件')))}</button>
     </div>`;
 }
 
@@ -8765,9 +10234,9 @@ function refreshPushDialog() {
   const total = pushNodeFiles(PUSH_STATE.tree, []).length;
   const sel = pushSelectedCount();
   const count = document.getElementById('pushCount');
-  if (count) count.textContent = `已选 ${sel} / ${total} 个文件`;
+  if (count) count.textContent = LANG === 'en' ? `Selected ${sel} / ${total} files` : `已选 ${sel} / ${total} 个文件`;
   const go = document.getElementById('pushGoBtn');
-  if (go) { go.textContent = `推送 ${sel} 个文件`; go.disabled = !sel; }
+  if (go) { go.textContent = LANG === 'en' ? `Push ${sel} files` : `推送 ${sel} 个文件`; go.disabled = !sel; }
 }
 
 function renderPushDialog() {
@@ -9121,7 +10590,7 @@ async function doExportModFiles() {
     // 4) 打包并下载
     progStep(4, '打包模组文件夹…');
     let blob;
-    if (HOST) {
+    if (HOST && !LOCAL_HTTP) {
       const b64 = await HOST.MakeModZip(aboutTxt && aboutTxt.trim() ? aboutTxt : '');
       if (!b64) throw new Error('zip failed');
       const bin = atob(b64);
@@ -9882,12 +11351,13 @@ function hairSectionHTML(c) {
       <button class="btn btn--sm${c.hairLocked ? ' btn--on' : ''}" data-act="hair-lock-fit">${icon(c.hairLocked ? 'lock' : 'unlock')}${c.hairLocked ? '已锁定' : '锁定头发'}</button>
       <button class="btn btn--sm${c.hairFrameHide ? ' btn--on' : ''}" data-act="hair-frame" title="隐藏画布上头发预览的角标文字与缩放手柄">${icon('grid')}${c.hairFrameHide ? '已隐藏边框' : '隐藏预览边框'}</button>
     </div>
-    <div class="field" style="margin-top:6px"><label>层级</label><div class="ctl num2">
+    <div class="field" style="margin-top:6px"><label>层级</label><div class="ctl">
       <input class="inp" type="number" data-f="c.hlp" step="1" min="0" max="29"
+        style="flex:0 0 66px;min-width:66px"
         value="${Number.isFinite(c.hairPreviewLayer) ? c.hairPreviewLayer : (Number.isFinite(c.hairLayer) ? c.hairLayer : 29)}"
         title="主层层级 0–29（编辑器显示 + 写入补丁）">
-      <span class="mini-note" style="margin:0">主层层级 · 越大越靠上（后背层固定画在所有部位之下）</span>
     </div></div>
+    <p class="mini-note" style="margin:2px 0 0">主层层级 · 越大越靠上（后背层固定画在所有部位之下）</p>
     <p class="mini-note offnote">层级同时用于<b class="hl">编辑器显示</b>和<b class="hl">写入补丁</b>（主层 / 后背层各一个）。</p>
     ${c.race && c.race.hairDefCount ? `<p class="mini-note" style="color:#e3b558;margin:4px 0 0">这张画布是「原版 HairDef」头发：缩放/偏移的用法和 HAR 发型完全一样 —— 滚轮缩放、拖动移位，调完就是游戏里的效果。</p>` : ''}
     
@@ -10108,7 +11578,7 @@ function renderVariantPane() {
     const isTail = /tail|尾/i.test(String(p.nameEn || '') + ' ' + String(p.name || '') + ' ' + String(p.id || ''));
     return `<div class="varrow${p.raceOff ? ' is-raceoff' : ''}">
       <span class="varrow__img" style="background-image:url('${imgURL(src)}')"></span>
-      <span class="varrow__t"><b>${esc(p.name || p.id)}</b><i>${p.raceOff ? '<span class="race-off-pill">种族无此部位</span>' : (over ? ('覆盖' + (tuned ? ' · 已调坐标' : '')) : '继承基础贴图')}${isTail && over ? ' · 左右自动' : ''}</i></span>
+      <span class="varrow__t"><b>${esc(partDisplayName(p) || p.id)}</b><i>${p.raceOff ? '<span class="race-off-pill">种族无此部位</span>' : (over ? ('覆盖' + (tuned ? ' · 已调坐标' : '')) : '继承基础贴图')}${isTail && over ? ' · 左右自动' : ''}</i></span>
       ${over ? `<button class="btn btn--xs" data-act="variant-geom" data-uid="${esc(p.uid)}">调整</button>` : ''}
       <button class="btn btn--xs" data-act="variant-pick" data-uid="${esc(p.uid)}">${over ? '更换' : '选择'}</button>
       ${over ? `<button class="iconbtn" data-act="variant-clear" data-uid="${esc(p.uid)}" title="恢复基础贴图">${icon('x')}</button>` : ''}
@@ -13539,15 +15009,20 @@ function hairOffsetShift(c) {
 
 function hairOffsetInfo(c) {
   const sh = hairOffsetShift(c);
-  if (!sh.ox && !sh.oy) return '画布没有设置导出偏移（0 / 0）';
-  const dirX = sh.ox === 0 ? '' : (sh.ox > 0 ? '右' : '左');
-  const dirY = sh.oy === 0 ? '' : (sh.oy > 0 ? '下' : '上');
+  const en = LANG === 'en';
+  if (!sh.ox && !sh.oy) return en ? 'Canvas has no export offset (0 / 0)' : '画布没有设置导出偏移（0 / 0）';
+  const dirX = sh.ox === 0 ? '' : (sh.ox > 0 ? (en ? 'right' : '右') : (en ? 'left' : '左'));
+  const dirY = sh.oy === 0 ? '' : (sh.oy > 0 ? (en ? 'down' : '下') : (en ? 'up' : '上'));
   const sign = v => (v > 0 ? '+' : '') + round(v, 1);
-  const word = v => (v >= 0 ? '加' : '减');
+  const word = v => (v >= 0 ? (en ? '+' : '加') : (en ? '-' : '减'));
   const follow = c && c.hairFollowOffset
-    ? ` → 发型已跟随偏移（导出时 X ${word(sh.dx)} ${Math.abs(sh.dx).toFixed(3)} / Y ${word(sh.dy)} ${Math.abs(sh.dy).toFixed(3)}）`
+    ? (en
+      ? ` → hair follows offset (X ${word(sh.dx)} ${Math.abs(sh.dx).toFixed(3)} / Y ${word(sh.dy)} ${Math.abs(sh.dy).toFixed(3)} on export)`
+      : ` → 发型已跟随偏移（导出时 X ${word(sh.dx)} ${Math.abs(sh.dx).toFixed(3)} / Y ${word(sh.dy)} ${Math.abs(sh.dy).toFixed(3)}）`)
     : '';
-  return `画布偏移 X ${sign(sh.ox)}${dirX ? '（' + dirX + '）' : ''} / Y ${sign(sh.oy)}${dirY ? '（' + dirY + '）' : ''}${follow}`;
+  return en
+    ? `Canvas offset X ${sign(sh.ox)}${dirX ? ' (' + dirX + ')' : ''} / Y ${sign(sh.oy)}${dirY ? ' (' + dirY + ')' : ''}${follow}`
+    : `画布偏移 X ${sign(sh.ox)}${dirX ? '（' + dirX + '）' : ''} / Y ${sign(sh.oy)}${dirY ? '（' + dirY + '）' : ''}${follow}`;
 }
 
 function exportFit(c) {
@@ -16203,42 +17678,49 @@ function hairWarnInfo(c) {
   const hasScale = Number.isFinite(fit.scale) && fit.scale > 0;
   const hasOff = Number.isFinite(fit.offsetX) && Number.isFinite(fit.offsetY);
   const missing = [];
-  if (!useoff) missing.push('「导出发型坐标」没打开');
-  if (!hasScale) missing.push('没设置「缩放」');
-  if (!hasOff) missing.push('没设置「偏移 X / Y」');
+  const en = LANG === 'en';
+  if (!useoff) missing.push(en ? 'Export hair offsets is off' : '「导出发型坐标」没打开');
+  if (!hasScale) missing.push(en ? 'Scale is not set' : '没设置「缩放」');
+  if (!hasOff) missing.push(en ? 'Offset X / Y is not set' : '没设置「偏移 X / Y」');
   const hl = Number.isFinite(c.hairPreviewLayer) ? c.hairPreviewLayer
     : (Number.isFinite(c.hairLayer) ? c.hairLayer : 15);
   return { hh, redraw, useoff, hasScale, hasOff, missing, hl, warn: missing.length > 0 };
 }
 
 function harBubbleHTML(c, st) {
+  const en = LANG === 'en';
   const rows = [];
   if (st.hh) {
-    const names = (st.hh.samples && st.hh.samples.length) ? st.hh.samples.join(' / ') : '（未命名）';
-    rows.push(`<b>${esc(st.hh.mod || '')}</b> 共 ${st.hh.count} 张发型贴图${st.hh.back ? `（含 ${st.hh.back} 张后层）` : ''}<br>例如：<b>${esc(names)}</b>`);
-    rows.push('这个种族用的是 <b>HAR 附加件头发</b>（bodyAddon，不写进 HairDef），模组会按「HAR 头发」栏里的参数绘制它。');
+    const names = (st.hh.samples && st.hh.samples.length) ? st.hh.samples.join(' / ') : (en ? '(unnamed)' : '（未命名）');
+    rows.push(en
+      ? `<b>${esc(st.hh.mod || '')}</b> — ${st.hh.count} hair textures${st.hh.back ? ` (incl. ${st.hh.back} back layers)` : ''}<br>e.g. <b>${esc(names)}</b>`
+      : `<b>${esc(st.hh.mod || '')}</b> 共 ${st.hh.count} 张发型贴图${st.hh.back ? `（含 ${st.hh.back} 张后层）` : ''}<br>例如：<b>${esc(names)}</b>`);
+    rows.push(en
+      ? 'This race uses <b>HAR addon hair</b> (bodyAddon, not in HairDef); the mod draws it from the "HAR hair" settings.'
+      : '这个种族用的是 <b>HAR 附加件头发</b>（bodyAddon，不写进 HairDef），模组会按「HAR 头发」栏里的参数绘制它。');
   }
   if (st.redraw) {
-    rows.push('<b>已开启「发型重绘」</b>：模组会在 NHT 画完头发之后，按该栏参数再补画一遍。'
-      + '它主要用于让<b>非 HAR 发型</b>（原版 HairDef，如 RatKin/Wolfein）也能显示发色；'
-      + 'HAR 种族用它微调位置。注意重画只还原贴图，会盖掉该部位原有的疤痕/伤口表现。');
+    rows.push(en
+      ? '<b>Hair redraw is on</b>: after NHT draws the hair, the mod draws it again with these settings. It mainly lets <b>non-HAR hair</b> (vanilla HairDef, e.g. RatKin/Wolfein) show hair color; HAR races use it for fine-tuning. Redraw only restores the texture and covers scars/wounds on that part.'
+      : '<b>已开启「发型重绘」</b>：模组会在 NHT 画完头发之后，按该栏参数再补画一遍。它主要用于让<b>非 HAR 发型</b>（原版 HairDef，如 RatKin/Wolfein）也能显示发色；HAR 种族用它微调位置。注意重画只还原贴图，会盖掉该部位原有的疤痕/伤口表现。');
   }
-  rows.push(`头发层级 = <b>${st.hl}</b>：头发会在第一个「图层 ≥ ${st.hl}」的部位之前绘制，`
-    + `所以<b>图层大于 ${st.hl} 的部位会盖在头发之上</b>；想让某部位压在头发上，把它的图层调大，或用「置顶重画」。`);
+  rows.push(en
+    ? `Hair layer = <b>${st.hl}</b>: hair is drawn before the first part with layer ≥ ${st.hl}, so <b>parts with layer > ${st.hl} cover the hair</b>; raise a part's layer or use On-top redraw to put it above the hair.`
+    : `头发层级 = <b>${st.hl}</b>：头发会在第一个「图层 ≥ ${st.hl}」的部位之前绘制，所以<b>图层大于 ${st.hl} 的部位会盖在头发之上</b>；想让某部位压在头发上，把它的图层调大，或用「置顶重画」。`);
   if (st.missing.length) {
-    rows.push(`<span class="harwarn__bad">还缺：${st.missing.map(x => esc(x)).join('、')}</span>`);
+    rows.push(`<span class="harwarn__bad">${en ? 'Missing: ' : '还缺：'}${st.missing.map(x => esc(x)).join(en ? ', ' : '、')}</span>`);
   } else {
-    rows.push('<span class="harwarn__ok">导出设置完整 ✓</span>');
+    rows.push(`<span class="harwarn__ok">${en ? 'Export settings complete ✓' : '导出设置完整 ✓'}</span>`);
   }
   const head = st.warn
-    ? (st.hh ? '⚠ 这个画布是 HAR 发型' : '⚠ 这个画布开启了发型重绘')
-    : '✓ 发型设置正常';
+    ? (st.hh ? (en ? '⚠ This canvas uses HAR hair' : '⚠ 这个画布是 HAR 发型') : (en ? '⚠ Hair redraw is on for this canvas' : '⚠ 这个画布开启了发型重绘'))
+    : (en ? '✓ Hair settings OK' : '✓ 发型设置正常');
   return `
       <div class="harwarn__h${st.warn ? '' : ' harwarn__h--ok'}">${head}</div>
       <div class="harwarn__b">${rows.join('<br>')}</div>
       <div class="harwarn__f">
-        <button class="btn btn--sm" data-act="har-warn-fix">前往设置HAR发型</button>
-        <button class="iconbtn" data-act="har-warn-close" title="收起">${icon('x')}</button>
+        <button class="btn btn--sm" data-act="har-warn-fix">${en ? 'Go to HAR hair settings' : '前往设置HAR发型'}</button>
+        <button class="iconbtn" data-act="har-warn-close" title="${en ? 'Collapse' : '收起'}">${icon('x')}</button>
       </div>`;
 }
 
@@ -16535,32 +18017,86 @@ function canvasHealth(c) {
   return items;
 }
 
+const HEALTH_NAMES = {
+  '发型参数': 'Hair params', '灰度图': 'Grayscale', '灰度路径': 'Gray path', '贴图文件': 'Textures',
+  '异种贴图': 'Xenotype textures', '异种灰度': 'Xenotype grayscale', '异种路径': 'Xenotype path',
+  '异种灰度路径': 'Xenotype grayscale path', '部位颜色': 'Part color', '置顶联动': 'On-top link',
+  '种族部位': 'Race parts', '基准参数': 'Baseline', '形态': 'Form', '注入状态': 'Injection'
+};
+
+function healthDetailEn(it) {
+  const d = String((it && it.detail) || '');
+  let m;
+  if ((m = d.match(/^还缺：(.*)$/))) return 'Missing: ' + m[1];
+  const table = {
+    '已配好，可导出': 'Ready to export',
+    '未开启（不检测灰度图）': 'Off (grayscale not checked)',
+    '未开启': 'Off',
+    '检测中…': 'Checking…',
+    '已注入，但画布有改动未再注入': 'Injected, but the canvas changed since'
+  };
+  if (table[d]) return table[d];
+  const pats = [
+    [/^(\d+) 个部位的灰度图不在磁盘$/, '$1 part grayscale images not on disk'],
+    [/^(\d+) 张灰度图不在 NHTCD_Gray$/, '$1 grayscale images not under NHTCD_Gray'],
+    [/^(\d+) 张引用的贴图不在磁盘$/, '$1 referenced textures not on disk'],
+    [/^(\d+) 张不在磁盘$/, '$1 not on disk'],
+    [/^(\d+) 张图片不在对应异种文件夹$/, '$1 images not in the xenotype folder'],
+    [/^(\d+) 张灰度不在 NHTCD_Gray 对应目录$/, '$1 grayscale images not in the matching NHTCD_Gray folder'],
+    [/^已开启 (\d+) 个部位的灰度切换$/, 'Grayscale on for $1 parts'],
+    [/^已开启 (\d+) 个部位的置顶联动$/, 'On-top link on for $1 parts'],
+    [/^(\d+) 个部位种族 BodyDef 没有，已自动关闭$/, '$1 parts missing from the race BodyDef; disabled'],
+    [/^(\d+) 个参数与多数画布不同$/, '$1 parameters differ from most canvases'],
+    [/^Doll 名重复：(.*)$/, 'Duplicate Doll name: $1'],
+    [/^同种族已有指定形态，本画布仍是 \*$/, 'The race already has a form; this canvas is still *'],
+    [/^形态缺少 BodyType$/, 'Form is missing BodyType'],
+    [/^BodyType 不在种族列表：(.*)$/, 'BodyType not in race list: $1'],
+    [/^Patches 里还没有 (.*)$/, 'Not in Patches yet: $1'],
+    [/^已注入 (.*)$/, 'Injected $1']
+  ];
+  for (const [re, rep] of pats) if (re.test(d)) return d.replace(re, rep);
+  return d;
+}
+
 function healthBubbleHTML(c) {
   checkCanvasPatch(c);
   const items = canvasHealth(c);
   const bad = items.filter(x => !x.ok).length;
+  const en = LANG === 'en';
+  const fixLabel = {
+    hair: en ? 'Go to Hair' : '去发型页',
+    gray: en ? 'Generate grayscale' : '生成并写入灰图',
+    'gray-path': en ? 'Generate grayscale' : '生成并写入灰图',
+    'variant-gray': en ? 'Migrate grayscale' : '迁移并写入灰度',
+    'variant-path': en ? 'Migrate grayscale' : '迁移并写入灰度',
+    'variant-path-gray': en ? 'Migrate grayscale' : '迁移并写入灰度',
+    tex: en ? 'Sync assets' : '同步素材',
+    inject: en ? 'Inject now' : '立即注入'
+  };
   const fixBtn = (x) => {
     if (x.ok || !x.fix) return '';
-    if (x.key === 'hair') return `<button class="linkbtn hhealth__fix" data-act="health-hair">去发型页</button>`;
-    if (x.key === 'gray' || x.key === 'gray-path') return `<button class="linkbtn hhealth__fix" data-act="health-gray">生成并写入灰图</button>`;
-    if (x.key === 'variant-gray' || x.key === 'variant-path' || x.key === 'variant-path-gray') return `<button class="linkbtn hhealth__fix" data-act="health-variant-gray">迁移并写入灰度</button>`;
-    if (x.key === 'tex') return `<button class="linkbtn hhealth__fix" data-act="health-sync">同步素材</button>`;
-    if (x.key === 'inject') return `<button class="linkbtn hhealth__fix" data-act="health-inject">立即注入</button>`;
-    return '';
+    let act = '';
+    if (x.key === 'hair') act = 'health-hair';
+    else if (x.key === 'gray' || x.key === 'gray-path') act = 'health-gray';
+    else if (x.key === 'variant-gray' || x.key === 'variant-path' || x.key === 'variant-path-gray') act = 'health-variant-gray';
+    else if (x.key === 'tex') act = 'health-sync';
+    else if (x.key === 'inject') act = 'health-inject';
+    if (!act) return '';
+    return `<button class="linkbtn hhealth__fix" data-act="${act}">${fixLabel[x.key] || (en ? 'Fix' : '处理')}</button>`;
   };
   const subRows = (x) => {
     if (!x.rows || !x.rows.length) return '';
     const shown = x.rows.slice(0, 6);
     return shown.map(d => `<div class="hhealth__sub is-${esc(d.sev || 'info')}">
         <span class="hhealth__where">${esc(d.scope)} · ${esc(d.field)}</span>
-        <span class="hhealth__cur">当前 ${esc(d.cur)}</span>
-        <span class="hhealth__base">基准 ${esc(d.base)}</span>
-      </div>`).join('') + (x.rows.length > shown.length ? `<div class="hhealth__more">…还有 ${x.rows.length - shown.length} 项</div>` : '');
+        <span class="hhealth__cur">${en ? 'Current' : '当前'} ${esc(d.cur)}</span>
+        <span class="hhealth__base">${en ? 'Base' : '基准'} ${esc(d.base)}</span>
+      </div>`).join('') + (x.rows.length > shown.length ? `<div class="hhealth__more">${en ? `…${x.rows.length - shown.length} more` : `…还有 ${x.rows.length - shown.length} 项`}</div>` : '');
   };
   const rows = items.length
-    ? items.map(x => `<div class="hhealth__row${x.ok ? '' : ' is-bad'}"><i>${x.ok ? '✓' : '!'}</i><b>${esc(x.name)}</b><span>${esc(x.detail)}</span>${fixBtn(x)}</div>${subRows(x)}`).join('')
-    : '<div class="hhealth__row"><i>✓</i><b>画布正常</b><span>没有检测到问题</span></div>';
-  return `<div class="harwarn__h${bad ? '' : ' harwarn__h--ok'}">${bad ? ('⚠ 画布检查：' + bad + ' 项待处理') : '✓ 画布正常'}</div>
+    ? items.map(x => `<div class="hhealth__row${x.ok ? '' : ' is-bad'}"><i>${x.ok ? '✓' : '!'}</i><b>${esc(en ? (HEALTH_NAMES[x.name] || x.name) : x.name)}</b><span>${esc(en ? healthDetailEn(x) : x.detail)}</span>${fixBtn(x)}</div>${subRows(x)}`).join('')
+    : `<div class="hhealth__row"><i>✓</i><b>${en ? 'Canvas OK' : '画布正常'}</b><span>${en ? 'No problems detected' : '没有检测到问题'}</span></div>`;
+  return `<div class="harwarn__h${bad ? '' : ' harwarn__h--ok'}">${bad ? (en ? ('⚠ Canvas check: ' + bad + ' pending') : ('⚠ 画布检查：' + bad + ' 项待处理')) : (en ? '✓ Canvas check OK' : '✓ 画布正常')}</div>
     <div class="harwarn__b">${rows}</div>`;
 }
 
@@ -16581,6 +18117,77 @@ function hairStatusHTML(c) {
   } catch (e) { return ''; }
 }
 
+/* 画布异种预览：圆形彩色图标，颜色取该异种第一张部位贴图的平均色 */
+const VSWATCH = new Map();
+const VSWATCH_LOADING = new Set();
+
+function variantFallbackSwatch(seed) {
+  const s = String(seed || 'x');
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+  return `hsl(${Math.abs(h) % 360} 58% 56%)`;
+}
+
+function variantSwatchColor(v) {
+  if (!v) return '#6b7378';
+  const id = v.id || v.label || 'x';
+  if (VSWATCH.has(id)) return VSWATCH.get(id);
+  const rec = Object.keys(v.parts || {}).map(k => v.parts[k]).find(r => r && r.img);
+  const fb = variantFallbackSwatch(id);
+  if (rec && !VSWATCH_LOADING.has(id)) {
+    VSWATCH_LOADING.add(id);
+    try {
+      const im = new Image();
+      im.onload = () => {
+        try {
+          const s = 24, cv = document.createElement('canvas');
+          cv.width = s; cv.height = s;
+          const g = cv.getContext('2d');
+          g.drawImage(im, 0, 0, s, s);
+          const d = g.getImageData(0, 0, s, s).data;
+          let r = 0, gg = 0, b = 0, n = 0;
+          for (let i = 0; i < d.length; i += 4) {
+            if (d[i + 3] < 32) continue;
+            r += d[i]; gg += d[i + 1]; b += d[i + 2]; n++;
+          }
+          if (n) {
+            VSWATCH.set(id, `rgb(${Math.round(r / n)},${Math.round(gg / n)},${Math.round(b / n)})`);
+            updateVariantDock(activeCanvas());
+          }
+        } catch (e) { }
+      };
+      im.src = imgURL(rec.img);
+    } catch (e) { }
+  }
+  return fb;
+}
+
+function updateVariantDock(c) {
+  const stage = document.getElementById('stage');
+  if (!stage) return;
+  let el = document.getElementById('variantDock');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'variantDock';
+    el.className = 'vdock';
+    stage.appendChild(el);
+  }
+  const vs = (c && Array.isArray(c.colorVariants)) ? c.colorVariants.filter(Boolean) : [];
+  if (!c || !vs.length) { el.hidden = true; el.innerHTML = ''; return; }
+  el.hidden = false;
+  const cur = variantState(c);
+  const closed = !!S.ui.variantDockClosed;
+  el.classList.toggle('is-closed', closed);
+  const base = `<button class="vdock__dot vdock__dot--base${!cur ? ' is-on' : ''}" data-act="variant-base" title="基础贴图" data-lb="基础"></button>`;
+  const dots = vs.map(v => {
+    const on = !!(cur && cur.id === v.id);
+    const col = variantSwatchColor(v);
+    return `<button class="vdock__dot${on ? ' is-on' : ''}" data-act="variant-select" data-id="${esc(v.id)}" style="--dot:${col}" data-lb="${esc(v.label || v.id)}" title="${esc(v.label || v.id)}"></button>`;
+  }).join('');
+  const fold = `<button class="vdock__fold" data-act="variant-dock-toggle" title="${closed ? '展开' : '折叠'}">${closed ? '▾' : '▴'}</button>`;
+  el.innerHTML = fold + base + dots;
+}
+
 function updateHarBadge(c) {
   const badge = document.getElementById('harBadge');
   const bubble = document.getElementById('harBubble');
@@ -16596,7 +18203,7 @@ function updateHarBadge(c) {
   badge.hidden = false;
   badge.classList.toggle('is-warn', bad > 0);
   badge.classList.toggle('is-ok', bad === 0);
-  badge.title = bad ? ('画布检查：' + bad + ' 项待处理') : '画布检查：正常';
+  badge.title = bad ? (LANG === 'en' ? ('Canvas check: ' + bad + ' pending') : ('画布检查：' + bad + ' 项待处理')) : (LANG === 'en' ? 'Canvas check: OK' : '画布检查：正常');
   bubble.classList.toggle('is-warn', bad > 0);
   bubble.innerHTML = healthBubbleHTML(c);
   bubble.hidden = !c.harBubbleOpen;
@@ -17075,57 +18682,84 @@ const h = (res.race && res.race.hairAddon) ? res.harHair : null;
 }
 
 function modalHelp() {
-  openModal(`
-    <div class="modal__head"><span class="idx">HELP</span><h3>操作说明 · 快捷键</h3><button class="iconbtn x" data-act="close-modal">${icon('x')}</button></div>
-    <div class="modal__body">
-      <div class="help-grid">
-        <div>
-          <h4 class="help-h">画布与部位</h4>
-          <p class="help-p"><b>每个体型都是一张独立画布</b>，左侧列表切换。模组 1.6 的 5 个体型（Male / Female / Fat / Hulk / Kid）已全部载入，共 135 个基础部位${RJW_PARTS.length ? `；启用 RJW 后每个体型再增加 ${(RJW_BY_DOLL.get('Male') || []).length} 个生殖 / 胸部标记` : ''}。</p>
-          <p class="help-p"><b>拖动</b>部位即可移动；角上的方块缩放、上方圆点旋转。选中后可拆卸到左下「已拆卸」托盘，再装回或拖到新位置。</p>
-          <p class="help-p"><b>自定义部位</b>（翅膀、尾巴、触手）来自「素材」页：点一张贴图即添加，它们在受伤 / 缺失 / 假体上和原生部位完全一致。</p>
-          <p class="help-p"><b>导入种族</b>选种族模组的根文件夹后直接建画布：画布名用种族自己的名字，默认体型是<b>标准女性</b>，这个体型没有的部位会按种族 BodyDef 里的名称自动新建到「外形」栏。</p>
-          <p class="help-p"><b>RJW 开关</b>在画布工具栏右端（也可在画布属性里）。打开后会按 Nice Health Tab - RJW Genitalia 的 Defs 自动补上该体型的 12 个 RJW 标记；关闭则从补丁里移除这些标记。成人向内容，需要 RimJobWorld。</p>
-          <p class="help-p"><b>X 光视图</b>：点工具栏的「器官」或「骨骼」后，皮肤会变成深色剪影，只留白色的器官 / 骨骼浮在上面；再点一次回到正常外观。</p>
-          <p class="help-p"><b>命中框</b>：点工具栏「命中框」把判定框显示出来，选中的部位会出现四个角柄和中间圆点 —— 拖角柄改大小（跟着部位一起旋转），拖圆点整块移动；属性面板里也能精确输 宽 / 高，或一键复位（判定框固定居中，没有偏移字段）。导出的补丁只写 <code>hitboxScale</code>（宽高比例），偏移量写不进 Defs。</p>
-          <p class="help-p"><b>加新部位 / 换贴图</b>：左栏「部位结构」每个分类右边有 <b>＋</b>，点它先给部位起名字，就会建在<b>点的那一栏</b>里（没有单独的「自定义」栏了）；选中这个部位后，在「素材」页点任意贴图，或者把贴图直接拖到部位结构里的那一行，就把贴图装进该部位。拖动画布里的部位行可以排序，拖到别的栏就换栏。素材页顶部的 <b>＋ 添加素材</b> 可以把自己电脑里的 PNG / WebP 加进素材库（存在 <b>我的素材</b> 分类里，卡片右上角的 <b>×</b> 连点两次即可删除）。</p>
-          <p class="help-p"><b>从种族模组收素材</b>：导入种族时会把这个模组里的贴图一起收进来，按模组名单独归一组（素材页里的「模组 · 名字」，也在 <b>种族素材</b> 分类里）；素材页的分组都可以点标题折叠，默认全部收起。模组里的<b>发型</b>不进素材栏，单独出现在「**发型 HAIR**」里：点一个就换上去，同一时刻只留一个，自动贴在头部并锁住，不能拖动 —— 和游戏里发型跟着头走的行为一致。</p>
-          <p class="help-p"><b>固定小窗</b>：右侧一列小窗（肛门 / RJW 下体 / 手掌·手指 / 脚掌·脚趾）默认停靠在画布右侧并已锁定，缩放画布时它们不会跟着变大；手掌窗里是左右两只手，脚掌窗里是左右两只脚，每个指头、脚趾、掌底都是独立部件。点标题栏右侧的锁解锁后，拖标题栏即可移动、拖右下角可等比缩放；窗内部位可以单独拖动，右侧属性面板还能精确调位置 / 宽度 / 旋转。肛门窗和下体窗的底图和摆位来自 RJW 模组自己的面板数据；下体窗按画布「性别」显示：男＝性腺+生殖器、女＝子宫+卵巢+阴道、无性别＝只显示底图。</p>
-        </div>
-        <div>
-          <h4 class="help-h">快捷键</h4>
-          <div class="help-list">
-            <div>移动部位 <span><kbd>方向键</kbd><kbd>Shift</kbd>+10</span></div>
-            <div>缩放画布 <span><kbd>滚轮</kbd></span></div>
-            <div>平移 <span><kbd>空格</kbd>拖动</span></div>
-            <div>适配视图 <span><kbd>F</kbd></span></div>
-            <div>拆卸部位 <span><kbd>Delete</kbd></span></div>
-            <div>复制部位 <span><kbd>Ctrl</kbd><kbd>D</kbd></span></div>
-            <div>镜像成对 <span><kbd>M</kbd></span></div>
-            <div>图层 <span><kbd>[</kbd><kbd>]</kbd></span></div>
-            <div>网格 / 轮廓 <span><kbd>G</kbd><kbd>O</kbd></span></div>
-            <div>撤销 / 重做 <span><kbd>Ctrl</kbd><kbd>Z</kbd></span></div>
-            <div>保存 / 取消 <span><kbd>Ctrl</kbd><kbd>S</kbd><kbd>Esc</kbd></span></div>
-          </div>
-        </div>
-        <div>
-          <h4 class="help-h">GIT 书签 · 最近改动</h4>
-          <p class="help-p"><b>画布现在一张一个文件</b>（<code>Editor/canvases/&lt;种族&gt;/…json</code>），自动保存只写当前这张。</p>
-          <p class="help-p"><b>GIT 书签</b>在「体型画布」面板右边缘：点开能看到仓库里最近 3 个画布版本；
-             <b>点卡片 = 只读预览</b>（不能编辑），要改就点卡片上的「应用」；应用后可「撤销」。</p>
-          <p class="help-p"><b>最近改动</b>固定在画布列表下方：保留最近 5 张被替换 / 删除的画布，
-             点一下只读预览，右键只有「还原」。</p>
-          <p class="help-p"><b>推送弹窗</b>会先列出本地改动：默认全选，但 <code>Editor/history</code>、
-             <code>nht-project.js</code>、<code>*.bak</code>、编译产物等个人数据默认锁定（红色），
-             避免覆盖别人的仓库。</p>
-        </div>
-      </div>
-      <div class="credit">
-        <img src="${imgURL('About/ModIcon')}" alt="">
-        <div><b>Nice Health Tab · Andromeda</b>本页全部手绘解剖贴图、图标与轮廓均来自该模组 Textures/HediffTab（创意工坊 3328729902）。${RJW_PARTS.length ? `RJW 部位贴图来自 ${esc(RJW_MOD.name)}（${esc(RJW_MOD.author)}）的 Textures/HediffTab/RJW*。` : ''}页面只做排版与交互，不重新绘制任何美术资源。</div>
-      </div>
-    </div>
-    <div class="modal__foot"><button class="btn btn--primary" data-act="close-modal">知道了</button></div>`);
+  const en = LANG === 'en';
+  const shortcuts = en
+    ? `<div>Move part <span><kbd>Arrows</kbd><kbd>Shift</kbd>+10</span></div>
+       <div>Zoom canvas <span><kbd>Wheel</kbd></span></div>
+       <div>Pan <span><kbd>Space</kbd>+drag</span></div>
+       <div>Fit view <span><kbd>F</kbd></span></div>
+       <div>Detach part <span><kbd>Delete</kbd></span></div>
+       <div>Duplicate part <span><kbd>Ctrl</kbd><kbd>D</kbd></span></div>
+       <div>Mirror pair <span><kbd>M</kbd></span></div>
+       <div>Layer <span><kbd>[</kbd><kbd>]</kbd></span></div>
+       <div>Grid / outline <span><kbd>G</kbd><kbd>O</kbd></span></div>
+       <div>Undo / redo <span><kbd>Ctrl</kbd><kbd>Z</kbd></span></div>
+       <div>Save / cancel <span><kbd>Ctrl</kbd><kbd>S</kbd><kbd>Esc</kbd></span></div>`
+    : `<div>移动部位 <span><kbd>方向键</kbd><kbd>Shift</kbd>+10</span></div>
+       <div>缩放画布 <span><kbd>滚轮</kbd></span></div>
+       <div>平移 <span><kbd>空格</kbd>拖动</span></div>
+       <div>适配视图 <span><kbd>F</kbd></span></div>
+       <div>拆卸部位 <span><kbd>Delete</kbd></span></div>
+       <div>复制部位 <span><kbd>Ctrl</kbd><kbd>D</kbd></span></div>
+       <div>镜像成对 <span><kbd>M</kbd></span></div>
+       <div>图层 <span><kbd>[</kbd><kbd>]</kbd></span></div>
+       <div>网格 / 轮廓 <span><kbd>G</kbd><kbd>O</kbd></span></div>
+       <div>撤销 / 重做 <span><kbd>Ctrl</kbd><kbd>Z</kbd></span></div>
+       <div>保存 / 取消 <span><kbd>Ctrl</kbd><kbd>S</kbd><kbd>Esc</kbd></span></div>`;
+  const zhFirst = `
+    <h4 class="help-h">画布与部位</h4>
+    <p class="help-p"><b>每个体型都是一张独立画布</b>，左侧列表切换。模组 1.6 的 5 个体型（Male / Female / Fat / Hulk / Kid）已全部载入，共 135 个基础部位${RJW_PARTS.length ? `；启用 RJW 后每个体型再增加 ${(RJW_BY_DOLL.get('Male') || []).length} 个生殖 / 胸部标记` : ''}。</p>
+    <p class="help-p"><b>拖动</b>部位即可移动；角上的方块缩放、上方圆点旋转。选中后可拆卸到左下「已拆卸」托盘，再装回或拖到新位置。</p>
+    <p class="help-p"><b>自定义部位</b>（翅膀、尾巴、触手）来自「素材」页：点一张贴图即添加，它们在受伤 / 缺失 / 假体上和原生部位完全一致。</p>
+    <p class="help-p"><b>导入种族</b>选种族模组的根文件夹后直接建画布：画布名用种族自己的名字，默认体型是<b>标准女性</b>，这个体型没有的部位会按种族 BodyDef 里的名称自动新建到「外形」栏。</p>
+    <p class="help-p"><b>RJW 开关</b>在画布工具栏右端（也可在画布属性里）。打开后会按 Nice Health Tab - RJW Genitalia 的 Defs 自动补上该体型的 12 个 RJW 标记；关闭则从补丁里移除这些标记。成人向内容，需要 RimJobWorld。</p>
+    <p class="help-p"><b>X 光视图</b>：点工具栏的「器官」或「骨骼」后，皮肤会变成深色剪影，只留白色的器官 / 骨骼浮在上面；再点一次回到正常外观。</p>
+    <p class="help-p"><b>命中框</b>：点工具栏「命中框」把判定框显示出来，选中的部位会出现四个角柄和中间圆点 —— 拖角柄改大小（跟着部位一起旋转），拖圆点整块移动；属性面板里也能精确输 宽 / 高，或一键复位（判定框固定居中，没有偏移字段）。导出的补丁只写 <code>hitboxScale</code>（宽高比例），偏移量写不进 Defs。</p>
+    <p class="help-p"><b>加新部位 / 换贴图</b>：左栏「部位结构」每个分类右边有 <b>＋</b>，点它先给部位起名字，就会建在<b>点的那一栏</b>里；选中这个部位后，在「素材」页点任意贴图，或把贴图直接拖到部位结构里的那一行。素材页的「<b>导入素材</b>」可以把自己电脑里的 PNG / WebP 加进素材库（存在 <b>我的素材</b> 分类里，卡片右上角的 <b>×</b> 连点两次即可删除）。</p>
+    <p class="help-p"><b>从种族模组收素材</b>：导入种族时会把这个模组里的贴图一起收进来，按模组名单独归一组（素材页里的「模组 · 名字」，也在 <b>种族素材</b> 分类里）；素材页的分组都可以点标题折叠，默认全部收起。模组里的<b>发型</b>不进素材栏，单独出现在「<b>发型 HAIR</b>」里：点一个就换上去，同一时刻只留一个，自动贴在头部并锁住，不能拖动。</p>
+    <p class="help-p"><b>固定小窗</b>：右侧一列小窗（肛门 / RJW 下体 / 手掌·手指 / 脚掌·脚趾）默认停靠在画布右侧并已锁定，缩放画布时它们不会跟着变大；手掌窗里是左右两只手，脚掌窗里是左右两只脚，每个指头、脚趾、掌底都是独立部件。点标题栏右侧的锁解锁后，拖标题栏即可移动、拖右下角可等比缩放；窗内部位可以单独拖动，右侧属性面板还能精确调位置 / 宽度 / 旋转。肛门窗和下体窗的底图和摆位来自 RJW 模组自己的面板数据；下体窗按画布「性别」显示：男＝性腺+生殖器、女＝子宫+卵巢+阴道、无性别＝只显示底图。</p>
+    <h4 class="help-h">新功能</h4>
+    <p class="help-p"><b>语言切换</b>：顶栏右侧的圆点按钮，橙色 = 中文，蓝色 = English；选择会保存，界面 / 弹窗 / 提示一起切换。</p>
+    <p class="help-p"><b>异种</b>：「导入异种」会自动扫描 XenotypeDef / HAR body Hediff / 隐藏外观 Hediff，并生成基因外观；有异种的画布右下角会出现彩色圆点，点圆点切换预览，点「基础」恢复。</p>
+    <p class="help-p"><b>发色</b>：耳朵 / 尾巴这类 bodyAddon colorChannel=hair 的部位，在部位属性打开「发色」就会跟随小人当前发色；关闭色彩时自动不染色。</p>
+    <p class="help-p"><b>画布检查</b>：画布右上角徽章，红色 = 有缺失或错误；点开可以看贴图 / 灰度 / 异种 / 注入，并直接修复。</p>`;
+  const enFirst = `
+    <h4 class="help-h">Canvas &amp; parts</h4>
+    <p class="help-p"><b>Each body type is a separate canvas</b>; switch in the left list. All 5 body types from mod 1.6 (Male / Female / Fat / Hulk / Kid) are loaded, with 135 base parts${RJW_PARTS.length ? `; with RJW each body type adds ${(RJW_BY_DOLL.get('Male') || []).length} genital / chest markers` : ''}.</p>
+    <p class="help-p"><b>Drag</b> a part to move it; corner handles scale, the top dot rotates. You can detach a selected part to the bottom-left Detached tray and put it back or elsewhere.</p>
+    <p class="help-p"><b>Custom parts</b> (wings, tails, tentacles) come from Assets: click a texture to add it; they behave like native parts for injured / missing / prosthetic.</p>
+    <p class="help-p"><b>Import race</b> picks the race mod root and creates a canvas named after the race; the base is <b>Standard female</b> and parts missing from that body are created under Custom using the race BodyDef names.</p>
+    <p class="help-p"><b>RJW switch</b> is at the right end of the canvas toolbar (also in canvas properties). It adds the 12 RJW markers for that body from Nice Health Tab - RJW Genitalia Defs; turning it off removes them. Adult content; requires RimJobWorld.</p>
+    <p class="help-p"><b>X-ray view</b>: click Organs or Bones in the toolbar to turn the skin into a dark silhouette with white organs / bones on top; click again to return.</p>
+    <p class="help-p"><b>Hitbox</b>: click Hitbox in the toolbar to show it; the selected part gets four corner handles and a center dot — drag handles to resize (rotates with the part), drag the dot to move the whole box. The property panel also takes exact width / height or resets it (fixed centered, no offset field). Exported patches only write <code>hitboxScale</code>; offsets can't be written to Defs.</p>
+    <p class="help-p"><b>Add part / change texture</b>: in Part tree, click <b>＋</b> on a column, name the part, and it is created in <b>that column</b>; then click a texture in Assets or drag it onto the part row. Assets → <b>Import assets</b> adds your own PNG / WebP into <b>My assets</b>; click the card's <b>×</b> twice to delete.</p>
+    <p class="help-p"><b>Race assets</b>: importing a race also collects the mod's textures into a group named after the mod (Mod · name, also under Race assets); groups collapse by title and start collapsed. Mod <b>hair</b> is separate under <b>Hair HAIR</b>: click one to apply; only one at a time, attached to the head and locked.</p>
+    <p class="help-p"><b>Fixed windows</b>: the right-side windows (anus / RJW lower body / palm·fingers / sole·toes) are docked and locked by default and don't scale with the canvas; the palm window has both hands and the sole window both feet, each finger / toe / palm a separate part. Unlock via the title-bar lock to move and resize; parts can be dragged inside and adjusted precisely in the property panel. The anus / lower-body windows use RJW's own panel data; the lower-body window follows the canvas Sex: male = gonads + genitals, female = uterus + ovaries + vagina, none = background only.</p>
+    <h4 class="help-h">New features</h4>
+    <p class="help-p"><b>Language</b>: the dot button at the top-right; orange = 中文, blue = English. The choice is saved and the UI / dialogs / tips switch together.</p>
+    <p class="help-p"><b>Xenotypes</b>: Import xenotypes scans XenotypeDef / HAR body Hediff / hidden appearance Hediff and generates gene looks; canvases with xenotypes show colored dots at the bottom-right — click to preview, click Base to reset.</p>
+    <p class="help-p"><b>Hair color</b>: for bodyAddon colorChannel=hair parts such as ears and tails, turn on Hair color in the part properties to follow the pawn's hair color; it is skipped when color is off.</p>
+    <p class="help-p"><b>Canvas check</b>: the top-right badge turns red for missing files or errors; click to see textures / grayscale / xenotypes / injection and fix them.</p>`;
+  const gitZh = `
+    <h4 class="help-h">GIT 书签 · 最近改动</h4>
+    <p class="help-p"><b>画布现在一张一个文件</b>（<code>Editor/canvases/&lt;种族&gt;/…json</code>），自动保存只写当前这张。</p>
+    <p class="help-p"><b>GIT 书签</b>在「体型画布」面板右边缘：点开能看到仓库里最近 3 个画布版本；<b>点卡片 = 只读预览</b>（不能编辑），要改就点卡片上的「应用」；应用后可「撤销」。</p>
+    <p class="help-p"><b>最近改动</b>固定在画布列表下方：保留最近 5 张被替换 / 删除的画布，点一下只读预览，右键只有「还原」。</p>
+    <p class="help-p"><b>推送弹窗</b>会先列出本地改动：默认全选，但 <code>Editor/history</code>、<code>nht-project.js</code>、<code>*.bak</code>、编译产物等个人数据默认锁定（红色），避免覆盖别人的仓库。</p>`;
+  const gitEn = `
+    <h4 class="help-h">GIT bookmark · Recent changes</h4>
+    <p class="help-p"><b>Each canvas is now one file</b> (<code>Editor/canvases/&lt;race&gt;/…json</code>); autosave writes only the current one.</p>
+    <p class="help-p">The <b>GIT bookmark</b> on the right edge of Body canvases shows the last 3 canvas versions in the repo; <b>clicking a card = read-only preview</b> (not editable); click Apply on the card to edit. Apply can be Undone.</p>
+    <p class="help-p"><b>Recent changes</b> below the canvas list keeps the last 5 replaced / deleted canvases; click for read-only preview, right-click offers only Restore.</p>
+    <p class="help-p">The <b>push dialog</b> lists local changes first: all checked by default, but <code>Editor/history</code>, <code>nht-project.js</code>, <code>*.bak</code> and build outputs are locked (red) by default to avoid overwriting others.</p>`;
+  const body = en
+    ? `<div class="help-grid"><div>${enFirst}</div><div><h4 class="help-h">Shortcuts</h4><div class="help-list">${shortcuts}</div></div><div>${gitEn}</div></div>
+       <div class="credit"><img src="${imgURL('About/ModIcon')}" alt=""><div><b>Nice Health Tab · Andromeda</b>All hand-drawn anatomy art, icons and outlines come from that mod's Textures/HediffTab (Workshop 3328729902). ${RJW_PARTS.length ? `RJW part textures come from ${esc(RJW_MOD.name)} (${esc(RJW_MOD.author)}) Textures/HediffTab/RJW*.` : ''}The page only handles layout and interaction and does not redraw any art.</div></div>`
+    : `<div class="help-grid"><div>${zhFirst}</div><div><h4 class="help-h">快捷键</h4><div class="help-list">${shortcuts}</div></div><div>${gitZh}</div></div>
+       <div class="credit"><img src="${imgURL('About/ModIcon')}" alt=""><div><b>Nice Health Tab · Andromeda</b>本页全部手绘解剖贴图、图标与轮廓均来自该模组 Textures/HediffTab（创意工坊 3328729902）。${RJW_PARTS.length ? `RJW 部位贴图来自 ${esc(RJW_MOD.name)}（${esc(RJW_MOD.author)}）的 Textures/HediffTab/RJW*。` : ''}页面只做排版与交互，不重新绘制任何美术资源。</div></div>`;
+  openModal(`<div class="modal__head"><span class="idx">HELP</span><h3>${en ? 'Help · shortcuts' : '操作说明 · 快捷键'}</h3><button class="iconbtn x" data-act="close-modal">${icon('x')}</button></div>
+    <div class="modal__body">${body}</div>
+    <div class="modal__foot"><button class="btn btn--primary" data-act="close-modal">${en ? 'Got it' : '知道了'}</button></div>`);
 }
 
 function modalConfirm(title, msg, act, data) {
@@ -17665,13 +19299,25 @@ document.addEventListener('click', e => {
       S.tab = 'global'; S.sel = null; S.winSel = null;
       renderTabs(); renderInspector(); renderCanvasList();
       setTimeout(() => {
-        const folds = [...document.querySelectorAll('#paneInspect details.gfold')];
-        const hit = folds.find(d => {
-          const h = d.querySelector('summary b');
+        const pane = document.getElementById('paneInspect') || document;
+        const secs = [...pane.querySelectorAll('.sec')];
+        const hit = secs.find(sec => {
+          const h = sec.querySelector('.sec__h');
           return h && h.textContent.trim().indexOf(want) === 0;
         });
-        if (!hit) { toast('没有找到该分区：' + want, true); return; }
-        hit.open = true;
+        if (!hit) {
+          const folds = [...pane.querySelectorAll('details.gfold')];
+          const fold = folds.find(d => {
+            const h = d.querySelector('summary b');
+            return h && h.textContent.trim().indexOf(want) === 0;
+          });
+          if (!fold) { toast((LANG === 'en' ? 'Section not found: ' : '没有找到该分区：') + want, true); return; }
+          fold.open = true;
+          try { fold.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) { }
+          fold.classList.add('is-flash');
+          setTimeout(() => fold.classList.remove('is-flash'), 1400);
+          return;
+        }
         try { hit.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) { }
         hit.classList.add('is-flash');
         setTimeout(() => hit.classList.remove('is-flash'), 1400);
@@ -18182,6 +19828,12 @@ document.addEventListener('click', e => {
       if (S.ui) S.ui.geneLookResolve = null;
       closeModal();
       if (fn) fn(null);
+      break;
+    }
+    case 'variant-dock-toggle': {
+      S.ui.variantDockClosed = !S.ui.variantDockClosed;
+      updateVariantDock(activeCanvas());
+      persist();
       break;
     }
     case 'variant-select': {
@@ -18974,6 +20626,17 @@ document.addEventListener('click', e => {
     case 'zoom-in': zoomAt(S.view.z * 1.2, $('#stage').getBoundingClientRect().left + $('#stage').clientWidth / 2, $('#stage').getBoundingClientRect().top + $('#stage').clientHeight / 2); break;
     case 'zoom-out': zoomAt(S.view.z / 1.2, $('#stage').getBoundingClientRect().left + $('#stage').clientWidth / 2, $('#stage').getBoundingClientRect().top + $('#stage').clientHeight / 2); break;
     case 'fit': fitView(); break;
+    case 'lang-toggle': {
+      const m = document.getElementById('langMenu');
+      if (m) m.hidden = !m.hidden;
+      break;
+    }
+    case 'lang-set': {
+      applyLang(el.dataset.lang === 'en' ? 'en' : 'zh');
+      const m = document.getElementById('langMenu');
+      if (m) m.hidden = true;
+      break;
+    }
     case 'undo': undo(); break;
     case 'redo': redo(); break;
     case 'save': saveProjectFile(); break;
@@ -20643,7 +22306,7 @@ async function apiSave(query, body) {
       let ok = false;
       // HOST.SaveProject 只写 nht-project.js，不会生成 Editor/history 快照；
       // 项目保存必须走本地服务的 /__save，才能在服务端轮换历史文件。
-      if (!(to === 'project' && LOCAL_HTTP)) {
+      if (!(to === 'project' && LOCAL_HTTP) && !(to === 'patch' && LOCAL_HTTP)) {
         if (to === 'texture' && key) ok = await HOST.WriteTexture(key, b64);
         else if (to === 'asset' && key) ok = await HOST.SaveAsset(key, b64);
         else if (to === 'patch' && name) ok = await HOST.SavePatch(name, txt);
@@ -20955,6 +22618,8 @@ setTimeout(() => { try { notifHint(); } catch (e) { } try { refreshAttention(); 
 
   pushHistory();
   renderAll();
+  try { applyLang((S.settings && S.settings.lang) || 'zh'); } catch (e) { }
+try { startI18nObserver(); } catch (e) { }
   requestAnimationFrame(() => fitView());
   setTimeout(() => { if (!S.userZoomed) fitView(); }, 260);
 

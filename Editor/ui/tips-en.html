@@ -1,0 +1,137 @@
+<!--
+  NHT Anatomy Editor — rotating tips (English)
+  Add a tip with <div data-tip> ... </div>; the editor rotates them in order.
+-->
+
+<div data-tip>
+  If you <b>can't move the hair or a part</b>, try hiding the part that covers it first (click the eye icon in the left Part tree).
+</div>
+
+<div data-tip>
+  If part positions are off, click <b>Visible box → hitbox</b> first so the hitbox matches the visible pixels; selecting and dragging become much more accurate.
+</div>
+
+<div data-tip>
+  Each body canvas is now a <b>separate file</b>: <code>Editor/canvases/&lt;race&gt;/&lt;title&gt;__&lt;id&gt;.json</code>. Autosave only writes the current one, which is faster and easier to compare.
+</div>
+
+<div data-tip>
+  There is a <b>green GIT bookmark</b> on the right edge of the left Body canvases panel: open it to see the last 3 canvas versions in the repo; cards have thumbnails and can be <b>applied</b> to the project.
+</div>
+
+<div data-tip>
+  Clicking a card in the GIT bookmark is only <b>read-only preview</b>; to edit, click Apply on the card. The preview bar also has Apply / Back.
+</div>
+
+<div data-tip>
+  <b>Recent changes</b> under Body canvases remembers the last 5 replaced/deleted canvases; right-click the row to Restore.
+</div>
+
+<div data-tip>
+  In the push dialog, <code>Editor/history</code>, <code>nht-project.js</code>, <code>*.bak</code> and build outputs are <b>locked by default</b> (red) — they are personal data and would overwrite others.
+</div>
+
+<div data-tip>
+  While pushing, the button becomes <b>Pushing…</b> and shows a toast; the status bar, sync log and GIT bookmark refresh automatically.
+</div>
+
+<div data-tip>
+  <b>Push changes</b> = commit + push; the first push creates the branch on the remote. <b>Pull remote</b> = fetch others' new commits.
+  "Unpushed" in REPO = commits + unpushed files (default-locked files excluded).
+  The pull button <b>glows with a red count</b> when there are commits to pull.
+</div>
+
+<div data-tip>
+  You can use Git on another computer, but that computer needs <b>Git installed</b> and repo access; Settings → Git shows whether Git is available.
+</div>
+
+<div data-tip>
+  Save failures are usually <b>wrong paths</b>: open Settings → Save and run "Validate path before saving".
+</div>
+
+<div data-tip>
+  <b>Export mod files</b> creates the whole mod folder (without the editor): About / Patches / Textures; drop it into Mods and it works.
+</div>
+
+<div data-tip>
+  Hover anything with a hint to see a <b>bubble tooltip</b> (not the system yellow bar); long text wraps.
+</div>
+
+<div data-tip>
+  After editing, use <b>Save all canvases</b>, then <b>single / multi inject</b>; both steps are needed for the game to show the latest doll.
+</div>
+
+<div data-tip>
+  If GitHub is unreachable: the page still opens (REPO reads local cache); only <b>Sync / Pull / Push</b> go online;
+  background checks give up after 8 seconds and never block the local server.
+</div>
+
+<div data-tip>
+  If <b>several hair layers stack on the doll's head</b>, the race mod registered multiple HAR addons.
+  "Draw all hair layers" is off by default (main + back + one ahoge); turning it on restores drawing all layers.
+</div>
+
+<div data-tip>
+  Settings → <b>About</b> lets you upload/edit About.xml; it flags <b>syntax errors, missing packageId, missing 1.6</b>, etc.
+  Export mod files <b>ignores the mod's About.xml</b> and uses the one saved here.
+</div>
+
+<div data-tip>
+  <b>Default body canvases</b> (Male / Female / Fat / Hulk / Kid) are not exported if their coordinates are unchanged; the game keeps NHT's original positions.
+  To restore one: right-click the canvas → <b>Restore NHT original coordinates</b>.
+</div>
+
+<div data-tip>
+  Race patches include a <b>BodyPartIndexesRemap</b>: gills / tail / wings get slots after 64.
+  The map prefers the game-written <code>body-map-&lt;body&gt;.json</code>; import a new race, enter the game once, and the editor gets the exact indices.
+</div>
+
+<div data-tip> ... </div>
+
+<div data-tip>
+  The dot button at the right of the top bar is the <b>language switch</b>: orange = 中文, blue = English. Switching updates the UI, tips and dialogs.
+</div>
+
+<div data-tip>
+  Canvases with xenotypes show <b>a column of colored dots at the bottom-right</b>: click a dot to preview that xenotype, click Base to reset; the small top dot collapses the rail.
+</div>
+
+<div data-tip>
+  <b>Import xenotypes</b> scans the mod for XenotypeDefs, HAR body Hediffs and hidden appearance Hediffs, then generates gene looks automatically. Appearance textures are auto-guessed first; replace them manually if wrong.
+</div>
+
+<div data-tip>
+  For <code>bodyAddon colorChannel=hair</code> parts such as ears and tails, turn on <b>Hair color</b> in the part properties to follow the pawn's current hair color; it is skipped when color is off.
+</div>
+
+<div data-tip>
+  The badge at the top-right is the <b>canvas check</b>: red = missing files or errors. Click it to see textures, grayscale, xenotypes and injection checks, and fix them from there.
+</div>
+
+<div data-tip>
+  With <b>Canvas-pixel hitbox</b> on, the in-game hitbox = canvas box / 512. Game Defs only have <code>hitboxScale</code>, so the hitbox is fixed centered.
+</div>
+
+<div data-tip>
+  <b>Export offset</b> only shifts export coordinates; the editor view stays the same. For stable positions, turn off Auto center and set the offset explicitly.
+</div>
+
+<div data-tip>
+  Turning on <b>Export hair offsets</b> in the Hair tab writes scale / offset / layer into the patch. Higher layers are on top; the back layer is always below all parts.
+</div>
+
+<div data-tip>
+  After editing, use <b>Save all canvases</b>, then <b>single / multi inject</b>. Both steps are needed for the game to show the latest doll.
+</div>
+
+<div data-tip>
+  The push dialog lists local changes first. <b>Personal data</b> (<code>Editor/history</code>, <code>nht-project.js</code>, <code>*.bak</code>, build outputs) is locked by default so it won't overwrite others.
+</div>
+
+<div data-tip>
+  Right-click a canvas card to <b>combine selected cards</b> or <b>move to group</b>. Groups keep related forms together.
+</div>
+
+<div data-tip>
+  The Assets category dropdown shows counts; the categories and groups next to the search box can be collapsed (collapsed by default).
+</div>
