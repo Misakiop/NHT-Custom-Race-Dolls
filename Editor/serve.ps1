@@ -128,6 +128,7 @@ function Send-Bytes($stream, [string]$status, [string]$ctype, [byte[]]$body) {
             'Content-Type: ' + $ctype + $crlf +
             'Content-Length: ' + $body.Length + $crlf +
             'Cache-Control: no-store' + $crlf +
+            'Clear-Site-Data: "cache"' + $crlf +
             'Connection: close' + $crlf + $crlf
     $hb = [System.Text.Encoding]::ASCII.GetBytes($head)
     $stream.Write($hb, 0, $hb.Length)
@@ -678,6 +679,16 @@ while ($true) {
             Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $true; keys = $list })
             continue
         }
+        elseif ($pathPart -eq '/__assetindex' -and ($method -eq 'GET' -or $method -eq 'HEAD')) {
+            $list = @()
+            $assetRoot = Join-Path $Root 'assets'
+            if (Test-Path -LiteralPath $assetRoot) {
+                $list = @(Get-ChildItem -LiteralPath $assetRoot -Recurse -File -Filter '*.png' -ErrorAction SilentlyContinue |
+                    ForEach-Object { $_.FullName.Substring($assetRoot.Length + 1) -replace '\\', '/' })
+            }
+            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $true; files = $list })
+            continue
+        }
         elseif ($pathPart -eq '/__canvas-list' -and $method -eq 'GET') {
             $cvRoot = Join-Path $ModRoot 'Editor\canvases'
             $list = @()
@@ -756,7 +767,7 @@ while ($true) {
             if (-not $git) { Send-Json $stream '200 OK' @{ ok = $false; error = 'git.exe not found' }; continue }
             if (-not $dir -or -not (Test-Path -LiteralPath $dir)) { Send-Json $stream '200 OK' @{ ok = $false; error = ('repo dir not found: ' + $dir) }; continue }
             if ($query['sync'] -eq '1') {
-                try { $null = & robocopy $ModRoot $dir /E /XD .git .vs bin obj /XF *.bak *.bak.* /NFL /NDL /NJH /NJS /NP 2>&1 } catch { }
+                try { $null = & robocopy $ModRoot $dir /E /XD .git .vs bin obj 'Editor\NHT-Anatomy-Editor.exe.WebView2' /XF *.bak *.bak.* /NFL /NDL /NJH /NJS /NP 2>&1 } catch { }
             }
             # 已提交但还没推送的提交：推送窗口里不逐条列，但会随本次推送一起上传
             $curBrR = Invoke-Git $git @('-C', $dir, 'rev-parse', '--abbrev-ref', 'HEAD')
