@@ -2377,7 +2377,7 @@ body.is-host .iconbtn.btn--host:hover svg{transform:rotate(180deg)}
       <button class="btn btn--ghost" data-act="history" title="查看最近 5 份本地保存历史，可挑一份载入"><svg><use href="#i-undo"/></svg>历史</button>
       <button class="btn btn--ghost" data-act="reload-file" title="丢弃浏览器 localStorage 缓存，重新读取 nht-project.js 和画布文件"><svg><use href="#i-save"/></svg>从文件重载</button>
       <button class="btn btn--ghost" data-act="save" title="保存**全部画布**与素材清单到项目文件 nht-project.js（html 同目录），不是只存当前画布。Ctrl+S"><svg><use href="#i-save"/></svg>本地保存（全部画布）</button>
-      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-07 19:29</span>
+      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-08 02:43</span>
             <span class="notif" id="notifWrap">
         <button class="iconbtn notif__btn" data-act="notif-toggle" id="notifBtn" title="Git 更新通知：点「收到」后不再弹出，仓库有新的 Push 会再次提醒">
           <svg class="notif__ico"><use href="#i-bell"/></svg>
@@ -3716,7 +3716,22 @@ const I18N_MODAL = {
   "实际显示框": "Display box",
   "轮廓": "Outline",
   "来源": "Source",
-  "说明": "Notes"};
+  "说明": "Notes",
+  "自动变换": "Auto transform",
+  "扫描现有画布": "Scan current canvas",
+  "读取小人身上对应 HAR bodyAddon 的实际贴图 / 颜色 / 旋转，并替换这个部位的贴图；导出 AddonFollowDef。默认关闭。": "Read the actual HAR bodyAddon texture / color / rotation from the pawn and replace this part's texture; exports AddonFollowDef. Off by default.",
+  "开启后按小人实际 bodyAddon 自动变换（级别 / 颜色）": "Follow the pawn's actual bodyAddon (level / color) when on.",
+  "扫描当前画布：把有自定义 colorChannel 的 bodyAddon 部位标记出来；开关默认关闭，之后在部位属性里单独打开。": "Scan this canvas: mark parts backed by bodyAddons with a custom colorChannel. The switch stays off; enable it per part.",
+  "可自动变换：读取小人实际 HAR bodyAddon 的贴图 / 颜色 / 旋转": "Auto transform available: reads the pawn's actual HAR bodyAddon texture / color / rotation",
+  "已开启自动变换（导出 AddonFollowDef）": "Auto transform on (exports AddonFollowDef)",
+  "已关闭自动变换": "Auto transform off",
+  "这张画布不是从种族模组导入的，没有 bodyAddons 可扫描": "This canvas was not imported from a race mod; no bodyAddons to scan",
+  "没有找到自定义 colorChannel 的 bodyAddon 部位": "No bodyAddon parts with a custom colorChannel found.",
+  "自动": "Auto",
+  "HAR bodyAddon：": "HAR bodyAddon: ",
+  "自动旋转 ": "auto rotation ",
+  "自动变换已开": "auto transform on",
+  "默认关闭": "off by default"};
 
 const I18N_KEYS = new Map();
 [I18N_EN, I18N_EN_MORE, I18N_MODAL].forEach(obj => {
@@ -3851,7 +3866,8 @@ const I18N_PATTERNS = [
   [/^(.+)（右键更多操作）$/, '$1 (right-click for more)'],
   [/^展开 (\d+) 个关联形态$/, 'Expand $1 linked forms'],
   [/^收起 (\d+) 个关联形态$/, 'Collapse $1 linked forms'],
-  [/^偏移 (-?\d+(?:\.\d+)?) \/ (-?\d+(?:\.\d+)?)$/, 'Offset $1 / $2']
+  [/^偏移 (-?\d+(?:\.\d+)?) \/ (-?\d+(?:\.\d+)?)$/, 'Offset $1 / $2'],
+  [/^已标记 (\d+) 个可自动变换部位（开关默认关闭）$/, 'Marked $1 auto-transform parts (switches off by default)']
 ];
 
 function i18nText(v) {
@@ -5287,6 +5303,7 @@ function paintMini(box, c) {
    ========================================================================== */
 const KGROUPS = [
   { k: 'body', label: '外形', icon: 'body' },
+  { k: 'deco', label: '装饰', icon: 'dna' },
   { k: 'bone', label: '骨骼', mask: 'HediffTab/Common/BoneIcon' },
   { k: 'organ', label: '器官', mask: 'HediffTab/Common/OrganIcon' },
   { k: 'eye', label: '眼睛', mask: 'HediffTab/Common/EyeIcon' },
@@ -5474,7 +5491,7 @@ async function syncBodyPartsFromGame() {
     return;
   }
   const src = map.pairs
-    .map(pr => ({ i: Number(pr.nht), def: String(pr.def || '?'), label: String(pr.def || '?') }))
+    .map(pr => ({ i: Number(pr.body), nht: Number(pr.nht), def: String(pr.def || '?'), label: String(pr.def || '?') }))
     .filter(x => Number.isFinite(x.i))
     .sort((a, b) => a.i - b.i);
   if (!src.length) { toast('对照表是空的', true); return; }
@@ -5527,7 +5544,22 @@ function bodyPartList(c) {
   const race = (c && c.race) || {};
   const tag = race.modName || '模组';
   const rp = Array.isArray(race.bodyParts) ? race.bodyParts : null;
-  if (rp && rp.length) return rp.map(x => [x.i, `${x.label || x.def} ${x.def}`, x.src || tag]);
+  if (rp && rp.length) {
+    // bodyParts 的 i 是种族 BodyDef 下标；下拉框/部位标签要的是 NHT 槽位。
+    // 有 nht 就直接用，没有就按 raceBodyRemap 反查（NHT 槽位 ← 种族下标）。
+    const inv = new Map();
+    try {
+      (raceBodyRemap(c) || []).forEach(([nht, body]) => {
+        const b = Number(body), n = Number(nht);
+        if (!inv.has(b)) inv.set(b, n);
+      });
+    } catch (e) { }
+    return rp.map(x => {
+      const body = Number(x.i);
+      const nht = (x.nht != null) ? Number(x.nht) : (inv.has(body) ? inv.get(body) : body);
+      return [nht, `${x.label || x.def} ${x.def}`, x.src || tag];
+    }).sort((a, b) => a[0] - b[0]);
+  }
   // 没有存过部位表：用导入时记下的 BodyDef（优先当前身体）
   const defs = Array.isArray(race.bodyDefs) ? race.bodyDefs : null;
   const bdName = String(race.bodyDef || '');
@@ -5768,7 +5800,7 @@ const KGROUP_LABEL = Object.fromEntries(KGROUPS.map(g => [g.k, g.label]));
 function groupOf(p) {
   if (p.source === 'rjw') return 'rjw';
   if (p.group && KGROUP_KEYS.has(p.group)) return p.group;
-  if (p.custom) return 'body';           // parts added to a group keep that group
+  if (p.custom) return 'deco';           // race extras / user-added decorations
   return KGROUP_KEYS.has(p.kind) ? p.kind : 'body';
 }
 
@@ -5902,7 +5934,7 @@ function rowHTML(p) {
   if (p.raceOff) cls.push('is-raceoff', 'has-restore');
   return `<div class="${cls.join(' ')}" data-act="select" data-uid="${p.uid}" draggable="true" title="拖动可以排序 / 换栏">
     <span class="row__dot s-${p.state}" title="${stateLabel(p.state)}"></span>
-    <span class="row__name">${esc(partDisplayName(p))}${p.bid < 0 && p.source !== 'rjw' ? ' <span class="pill" style="height:14px;padding:0 4px" title="没有身体部位：只绘制，不参与受伤">装饰</span>' : ''}${p.custom ? ' <span class="pill pill--a" style="height:14px;padding:0 4px">自定</span>' : ''}${p.raceOff ? ' <span class="pill race-off-pill" title="这个种族 BodyDef 里没有这个部位，已关闭">种族无此部位</span>' : ''}<em>${esc(partSubName(p))}</em></span>
+    <span class="row__name">${esc(partDisplayName(p))}${p.followDetected ? ' <span class="pill pill--a" style="height:14px;padding:0 4px" title="可自动变换：读取小人实际 HAR bodyAddon 的贴图 / 颜色 / 旋转">自动</span>' : ''}${p.bid < 0 && p.source !== 'rjw' ? ' <span class="pill" style="height:14px;padding:0 4px" title="没有身体部位：只绘制，不参与受伤">装饰</span>' : ''}${p.custom ? ' <span class="pill pill--a" style="height:14px;padding:0 4px">自定</span>' : ''}${p.raceOff ? ' <span class="pill race-off-pill" title="这个种族 BodyDef 里没有这个部位，已关闭">种族无此部位</span>' : ''}<em>${esc(partSubName(p))}</em></span>
     <span class="row__id">#${p.bid >= 0 ? p.bid : '—'}</span>
     ${p.raceOff ? `<button class="row__act race-restore" data-act="part-race-restore" data-uid="${p.uid}" title="还原：即使种族没有这个部位，也强制使用">${icon('rot')}</button>` : ''}
     <button class="row__act${p.vis ? '' : ' is-active'}" data-act="toggle-vis" data-uid="${p.uid}" title="显示 / 隐藏">${icon(p.vis ? 'eye' : 'eyeoff')}</button>
@@ -8035,7 +8067,9 @@ function partInspector(p) {
         <button class="switch${p.hairTint ? ' is-on' : ''}" data-act="part-hair-tint" role="switch"
           aria-checked="${p.hairTint ? 'true' : 'false'}"
           title="跟随小人当前发色：导出 HairTintDef，游戏里用 pawn.story.hairColor 给这个部位着色"><i></i></button></span>
+      ${p.followDetected ? `<span class="pf"><b>自动变换</b><span class="qmark" title="读取小人身上对应 HAR bodyAddon 的实际贴图 / 颜色 / 旋转，并替换这个部位的贴图；导出 AddonFollowDef。默认关闭。">?</span><button class="switch${p.autoFollow ? ' is-on' : ''}" data-act="part-auto-follow" role="switch" aria-checked="${p.autoFollow ? 'true' : 'false'}" title="开启后按小人实际 bodyAddon 自动变换（级别 / 颜色）"><i></i></button></span>` : ''}
     </div>
+    ${p.followDetected ? `<p class="mini-note" style="margin:-2px 0 6px">HAR bodyAddon：<b>${esc(p.followAddon || p.followPath || '—')}</b> · 自动旋转 ${round(Number(p.followRot) || 0, 1)}°${p.autoFollow ? ' · <b style="color:#86c98a">自动变换已开</b>' : ' · 默认关闭'}</p>` : ''}
   </div>
 
   <div class="sec">
@@ -8061,17 +8095,21 @@ function partInspector(p) {
   </div>
 
   <div class="sec">
-      <div class="sec__h"><b>命中框 HITBOX</b><span class="tagx">固定居中 · 只能改大小</span></div>
+      <div class="sec__h"><b>命中框 HITBOX</b><span class="tagx">可偏移 · 测试模组</span></div>
       <div class="field"><label>判定框大小 HITBOX SIZE</label><div class="ctl num2">
         <input class="inp" type="number" data-f="hw" value="${round(hb.w, 1)}" step="1" title="命中框宽度">
         <input class="inp" type="number" data-f="hh" value="${round(hb.h, 1)}" step="1" title="命中框高度">
         <button class="iconbtn iconbtn--xs" data-act="hit-reset" title="命中框复位（回到居中、按导出比例）">${icon('rot')}</button>
       </div></div>
+      <div class="field"><label>判定框偏移 HITBOX OFFSET</label><div class="ctl num2">
+        <input class="inp" type="number" data-f="hx" value="${round(hb.dx, 1)}" step="1" title="判定框 X 偏移（画布单位）">
+        <input class="inp" type="number" data-f="hy" value="${round(hb.dy, 1)}" step="1" title="判定框 Y 偏移（画布单位）">
+      </div></div>
       <div class="field"><label>画布像素直出 HITBOX PIXEL</label><div class="ctl">
         <button class="switch${p.hbPx ? ' is-on' : ''}" data-act="part-hbpx" role="switch"
           aria-checked="${p.hbPx ? 'true' : 'false'}" title="开启后 hitboxScale = 画布 hbox / 512，画布拖多大游戏里就多大"><i></i></button>
       </div></div>
-      <p class="mini-note" style="margin:2px 0 0">打开工具栏的「命中框」后可拖角改大小；开启「画布像素直出」时游戏判定框 = 画布框 / 512，否则沿用旧的比例导出。游戏 Defs 只有 <code>hitboxScale</code>，没有偏移字段，所以固定居中。</p>
+      <p class="mini-note" style="margin:2px 0 0">打开工具栏的「命中框」后可拖角改大小、拖中间圆点改偏移；偏移会按可见宽高比例导出成 <code>HitboxOffsetExtension</code>，由测试模组的 Harmony 补丁生效。</p>
     </div>
     <div class="sec">
       <div class="sec__h"><b>护甲图标 ARMOR ICON</b><span class="tagx">护甲 / 提示图标</span></div>
@@ -8540,6 +8578,12 @@ function canvasInspector(c) {
       </select>
     </div></div>
     <p class="mini-note">画布上那个蓝色框：游戏里 NHT 面板真正显示的区域。部位超出它会被标红提示（提示只看部位锚点）。</p>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><b>自动变换 AUTO FOLLOW</b><span class="tagx">HAR bodyAddon</span></div>
+    <p class="mini-note" style="margin:2px 0 6px">扫描当前画布：把有自定义 colorChannel 的 bodyAddon 部位标记出来；开关默认关闭，之后在部位属性里单独打开。</p>
+    <button class="btn btn--sm" data-act="scan-follow">${icon('dna')}扫描现有画布</button>
   </div>
 
 
@@ -10926,6 +10970,8 @@ function settingsBodyHTML(tab) {
       <div class="rowline" style="margin:6px 0 8px;display:flex;gap:6px">
         <button class="btn btn--sm" data-act="clean-scan" title="扫描 Textures/Custom，删除没有被任何画布/补丁引用的贴图；删除前自动备份到 Editor/history">清理无用贴图</button>
         <button class="btn btn--sm" data-act="clean-restore" title="从 Editor/history 的清理备份还原贴图">还原清理备份</button>
+        <button class="btn btn--sm" data-act="gray-regen" title="备份当前种族的灰度目录，递归删除后按画布重新生成">重新生成灰度图</button>
+        <button class="btn btn--sm" data-act="gray-restore" title="还原最近一次灰度备份（每个种族最多 2 份）">还原灰度备份</button>
       </div>
       <div id="setPaths"></div>
       <hr class="sec__rule">
@@ -11050,17 +11096,24 @@ async function gitPickDir() {
 }
 
 
-const CANVAS_SIG_VER = 2;
+const CANVAS_SIG_VER = 4;
 function canvasSig(c) {
   if (!c) return '';
   return hashStr(JSON.stringify({
     // 部位：位置/缩放/旋转/图层/置顶/联动置顶/部位颜色/可见/镜像/名字/编号
+    // 以及命中框、偏移、装甲图标、提示图标偏移、跟随发色、自动变换、bodyType
     p: (c.parts || []).map(p => [p.img, p.id, p.name, p.bid, p.kind,
       Math.round(p.x || 0), Math.round(p.y || 0),
       +(+p.sx || 1).toFixed(3), +(+p.sy || 1).toFixed(3), Math.round(p.rot || 0),
       p.layer, p.overHair ? 1 : 0, p.linkTop ? 1 : 0, Math.round(overLevelOf(p)),
       p.desat ? 1 : 0, p.grayImg || '', p.vis === false ? 0 : 1, p.flip ? 1 : 0,
-      p.state || 'ok', p.extra || 0]),
+      p.state || 'ok', p.extra || 0,
+      p.armor === false ? 0 : 1, p.onlyBad ? 1 : 0, p.nx || 0, p.ny || 0,
+      p.hb ? [p.hb[0], p.hb[1]] : null,
+      p.hbox ? [Math.round(p.hbox.dx || 0), Math.round(p.hbox.dy || 0), Math.round(p.hbox.w || 0), Math.round(p.hbox.h || 0)] : null,
+      p.hbPx ? 1 : 0,
+      p.autoFollow ? 1 : 0, p.followAddon || '', p.followPath || '', p.followRot || 0,
+      p.bodyType || '', p.hairTint ? 1 : 0]),
     h: c.hairFit || null, en: !!c.hairFitEnabled, uo: !!c.hairFitUseWhenOff,
     fol: !!c.hairFollowOffset,
     hp: c.hairPreviewImg || '', hs: c.hairPreviewShow !== false ? 1 : 0,
@@ -11070,7 +11123,14 @@ function canvasSig(c) {
     hx: c.hairShowInXray ? 1 : 0,
     hd: c.hairDisabled ? 1 : 0,
     eo: c.exportOffset ? [Math.round(c.exportOffset.x || 0), Math.round(c.exportOffset.y || 0)] : null,
-    d: c.displayBox ? [Math.round(c.displayBox.w), Math.round(c.displayBox.h), c.displayBox.pos] : null
+    d: c.displayBox ? [Math.round(c.displayBox.w), Math.round(c.displayBox.h), c.displayBox.pos] : null,
+    meta: [c.doll || '', c.xenotype || '', c.bodytype || '', c.base || '', c.kind || '', c.rjw ? 1 : 0],
+    cv: (c.colorVariants || []).map(v => [v.id, v.label, v.hediff, v.xenotype, v.genes || null,
+      Object.entries(v.parts || {}).map(([uid, r]) => [uid, r && r.img, r && r.gray])]),
+    ba: c.bodyAliases || [],
+    rc: c.race ? [c.race.defName, c.race.bodyDef, c.race.nhtIndexed ? 1 : 0,
+      (c.race.bodyParts || []).map(x => [x.i, x.def, x.label]),
+      (c.race.remap || []).map(x => [x && x[0], x && x[1]])] : null
   }));
 }
 
@@ -12139,8 +12199,21 @@ function addonPartKeys(p) {
 
 function addonsForPart(c, p, addons) {
   const keys = addonPartKeys(p);
-  const bp = ((c.race && c.race.bodyParts) || [])
-    .filter(x => Number(x.i) === Number(p.bid)).map(x => norm(x.label)).filter(Boolean);
+  const bp = [];
+  const addBP = x => {
+    if (!x) return;
+    const a = norm(x.label), b = norm(x.def);
+    if (a) bp.push(a);
+    if (b) bp.push(b);
+  };
+  const raceParts = (c.race && c.race.bodyParts) || [];
+  let nameHit = null;
+  for (const x of raceParts) {
+    const a = norm(x.label), b = norm(x.def);
+    if ((a && keys.indexOf(a) >= 0) || (b && keys.indexOf(b) >= 0)) { nameHit = x; break; }
+  }
+  if (nameHit) addBP(nameHit);
+  else raceParts.filter(x => Number(x.i) === Number(p.bid)).forEach(addBP);
   const out = [];
   (addons || []).forEach(a => {
     const al = norm(a.bodyPartLabel);
@@ -12225,6 +12298,98 @@ async function updatePartBaseImage(p, newKey, baked) {
 }
 
 /* 主入口：读模组文件夹 → 解析被选中种族的 bodyAddons → 给匹配到的部位烘焙组合图并生成基因异种 */
+function followRotFromImage(p) {
+  const m = String((p && (p.img || p.name || '')) || '').match(/_r(-?\d+(?:\.\d+)?)/);
+  if (m) return Number(m[1]);
+  return Number.isFinite(Number(p && p.rot)) ? Number(p.rot) : 0;
+}
+const FOLLOW_STANDARD_CHANNELS = new Set(['', 'none', 'hair', 'skin', 'clothes', 'faction', 'eye', 'eyes', 'beard', 'tattoo', 'body', 'bodyaddon', 'apparel']);
+function markFollowParts(c, race, addonList) {
+  let n = 0;
+  (c.parts || []).forEach(p => {
+    if (p) {
+      p.followDetected = false;
+      p.followAddon = '';
+      p.followPath = '';
+      p.followChannel = '';
+      p.followRot = 0;
+      p.followScore = 0;
+    }
+  });
+  (c.parts || []).forEach(p => {
+    if (!p) return;
+    let aa = [];
+    try { aa = addonsForPart(c, p, addonList || []); } catch (e) { aa = []; }
+    const custom = aa.filter(a => {
+      const ch = String((a && a.colorChannel) || '').toLowerCase().trim();
+      return ch && !FOLLOW_STANDARD_CHANNELS.has(ch);
+    });
+    if (!custom.length) return;
+    const pn = String((p.name || p.nameEn || '') + ' ' + (p.img || '') + ' ' + (p.id || '')).toLowerCase();
+    const score = a => {
+      const an = String((a && (a.name || a.path)) || '').toLowerCase();
+      let n = 0;
+      if (/halo|光环|aureole/.test(an)) n += 10;
+      if (/halo|光环|aureole/.test(pn) && /halo|光环|aureole/.test(an)) n += 6;
+      if (/highlight|battle/.test(an) && !/highlight|battle/.test(pn)) n -= 8;
+      if (String(a.bodyPartLabel || '').trim()) n += 1;
+      return n;
+    };
+    const a = custom.slice().sort((x, y) => score(y) - score(x))[0];
+    p.followDetected = true;
+    p.followAddon = String(a.name || a.path || '');
+    p.followPath = String(a.path || '');
+    p.followChannel = String(a.colorChannel || '');
+    p.followRot = followRotFromImage(p);
+    p.followScore = score(a);
+    n++;
+  });
+  return n;
+}
+async function scanFollowParts(inputFiles) {
+  const c = activeCanvas();
+  if (!c) { toast('先在左边选一张画布', true); return; }
+  if (!c.race) { toast('这张画布不是从种族模组导入的，没有 bodyAddons 可扫描', true); return; }
+  const raw = Array.from(inputFiles || []);
+  if (!raw.length) { toast('没有选择文件', true); return; }
+  const files = raw.map(x => {
+    if (x && x.file) {
+      try { Object.defineProperty(x.file, '__relPath', { value: String(x.path || x.file.name || ''), configurable: true }); } catch (e) { }
+      return x.file;
+    }
+    return x;
+  });
+  let res;
+  try { res = await parseRaceMod(files); } catch (e) { toast('解析失败：' + e.message, true); return; }
+  const races = res.races || [];
+  const want = String((c.race && c.race.defName) || '');
+  const race = races.find(r => r.defName === want)
+    || races.find(r => r.label === (c.race && c.race.label))
+    || (res.race ? races.find(r => r.defName === res.race.defName) : null)
+    || races[0];
+  if (!race || !race.addons || !race.addons.length) { toast('选中的模组里没有解析到 bodyAddons', true); return; }
+  const addonList = (race.addons || []).filter(a => !/hair/i.test(String(a.path || '') + ' ' + String(a.name || '')));
+  const n = markFollowParts(c, race, addonList);
+  persist();
+  if (n) {
+    const marked = (c.parts || []).filter(p => p && p.followDetected);
+    const first = marked.slice().sort((a, b) => (Number(b.followScore) || 0) - (Number(a.followScore) || 0))[0];
+    if (first) {
+      S.sel = first.uid;
+      try {
+        const g = groupOf(first);
+        if (!S.ui.closed) S.ui.closed = {};
+        S.ui.closed[g] = false;
+        S.ui.allClosed = false;
+      } catch (e) { }
+    }
+    renderAll();
+  } else {
+    renderTree(); renderInspector();
+  }
+  toast(n ? `已标记 ${n} 个可自动变换部位（已选中第一个，开关默认关闭）` : '没有找到自定义 colorChannel 的 bodyAddon 部位');
+}
+
 async function buildGeneLooks(inputFiles, opts) {
   const c = activeCanvas();
   if (!c) { toast('先在左边选一张画布', true); return null; }
@@ -12256,6 +12421,7 @@ async function buildGeneLooks(inputFiles, opts) {
   }
   // 头发走发型系统，不参与基因外观烘焙
   const addonList = race.addons.filter(a => !/hair/i.test(String(a.path || '') + ' ' + String(a.name || '')));
+  try { markFollowParts(c, race, addonList); } catch (e) { }
   const labels = new Map(((res.geneLabels || [])).map(x => [x.defName, x.label]));
 
   // 模组贴图索引：Textures/xxx.png -> File
@@ -12965,12 +13131,27 @@ function variantTextureFolder(c) {
 }
 
 function variantNameFolder(v) {
-  const raw = (v && (v.label || v.hediff)) || 'Variant';
+  if (!v) return 'Variant';
+  // 1) 优先用实际图片所在文件夹（磁盘上已经是英文，和补丁路径一致）
+  try {
+    const parts = v.parts || {};
+    for (const uid of Object.keys(parts)) {
+      const img = parts[uid] && parts[uid].img;
+      if (!img || !/^Custom\//.test(String(img))) continue;
+      const m = /^Custom\/[^/]+\/([^/]+)\//.exec(String(img));
+      if (m && m[1]) return m[1];
+    }
+  } catch (e) { }
+  // 2) Hediff 后缀（..._Thunder）
+  const hm = /_([A-Za-z0-9]+)$/.exec(String(v.hediff || ''));
+  if (hm && hm[1]) return hm[1];
+  // 3) label / defName
+  const raw = (v.defName || v.label || v.hediff) || 'Variant';
   return String(raw).replace(/[^\w\u4e00-\u9fa5-]+/g, '_').replace(/^_+|_+$/g, '') || 'Variant';
 }
 
 async function migrateVariantGrays(c) {
-  if (!c || !Array.isArray(c.colorVariants) || !LOCAL_HTTP) return 0;
+  if (!c || !Array.isArray(c.colorVariants) || (!LOCAL_HTTP && !HOST)) return 0;
   const raceDir = variantTextureFolder(c);
   let n = 0;
   for (const v of c.colorVariants) {
@@ -13003,6 +13184,10 @@ async function migrateVariantGrays(c) {
     if (!valid) continue;
     for (const uid of uids) {
       const r = v.parts[uid];
+      if (r && r.gray && /^Custom\//.test(r.gray) && await textureLooksValid(r.gray)) {
+        if (DISK_TEX_KEYS) DISK_TEX_KEYS.add(r.gray);
+        try { TEX_ON_DISK.add(r.gray); } catch (e) { }
+      }
       const p = byUid.get(uid);
       const src = p && p.grayImg;
       if (src && /^Custom\//.test(src)) {
@@ -13051,7 +13236,7 @@ function migrateGlowVariantPathsSync(c) {
 }
 
 async function migrateVariantPaths(c) {
-  if (!c || !Array.isArray(c.colorVariants) || !LOCAL_HTTP) return 0;
+  if (!c || !Array.isArray(c.colorVariants) || (!LOCAL_HTTP && !HOST)) return 0;
   const raceDir = variantTextureFolder(c);
   let n = 0;
   for (const v of c.colorVariants) {
@@ -13063,7 +13248,13 @@ async function migrateVariantPaths(c) {
       const r = v.parts[uid];
       if (!r || !r.img) continue;
       const src = String(r.img);
-      if (!/^Custom\//.test(src) || src.indexOf(prefix) === 0) continue;
+      if (!/^Custom\//.test(src)) continue;
+      // 图片已经在磁盘上时先把索引补上，否则检查会一直报“不在磁盘”
+      if (await textureLooksValid(src)) {
+        if (DISK_TEX_KEYS) DISK_TEX_KEYS.add(src);
+        try { TEX_ON_DISK.add(src); } catch (e) { }
+      }
+      if (src.indexOf(prefix) === 0) continue;
       const p = byUid.get(uid);
       const pname = String((p && (p.id || p.name)) || 'Part').replace(/[^\w\u4e00-\u9fa5-]+/g, '_');
       const bname = String(src.split('/').pop() || 'tex').replace(/[^\w\u4e00-\u9fa5-]+/g, '_');
@@ -14123,6 +14314,8 @@ function detailPartXML(now, base, doll, indent) {
   if (!hbD) hbD = originalHitbox(base.id) || HB_FALLBACK[base.id] || null;
   if (!hbD && now && Array.isArray(now.hb)) hbD = now.hb;
   lines.push(`${i2}  <hitboxScale><x>${nf(hbD ? hbD[0] : 1)}</x><y>${nf(hbD ? hbD[1] : 1)}</y></hitboxScale>`);
+  const hbOff = hitboxOffsetXML(now, i2 + '  ');
+  if (hbOff) lines.push(hbOff);
   if (now.rot) lines.push(`${i2}  <!-- 编辑器里额外旋转 ${round(now.rot, 1)}°，Defs 没有对应字段 -->`);
   lines.push(`${i2}</NiceHealthTab.DollBodyPart>`);
   return lines.join('\n');
@@ -14150,19 +14343,26 @@ const HB_FALLBACK = {
 };
 
 function exportHitbox(p) {
-  // 只有勾了 hbPx 的部位才按“画布像素 / 512”直出；其他种族/部位仍走原来的 hb 比例+兜底，
-  // 避免重新注入时改掉已经测试正常的命中框。
+  // 只有勾了 hbPx 的部位才按“画布像素 / 512”直出；其他部位仍走 hb 比例。
   if (p.hbPx && p.hbox && p.hbox.w > 0 && p.hbox.h > 0) {
     return [p.hbox.w / 512, p.hbox.h / 512];
   }
-  // 游戏的判定框只能居中：Defs 里只有 hitboxScale（宽高比），没有偏移字段。
-  // 编辑器里拖过偏移的框，导出时扩成能覆盖它的居中框，避免游戏里整体跑位。
-  let w = p.hb[0], h = p.hb[1];
-  const untouched = Math.abs((p.hb[0] || 0) - 1) < 0.001 && Math.abs((p.hb[1] || 0) - 1) < 0.001;
-  if (!untouched) return [w, h];
-  const orig = originalHitbox(p.id) || HB_FALLBACK[p.id] || null;
-  if (orig) return [orig[0], orig[1]];
-  return [w, h];
+  return [p.hb[0], p.hb[1]];
+}
+
+/* 命中框偏移：写成“可见宽/高的比例”，测试模组的 HitboxOffsetExtension 直接按这个比例挪判定框 */
+function hitboxOffsetXML(p, indent) {
+  if (!p || !p.hbox) return '';
+  const dx = Number(p.hbox.dx) || 0, dy = Number(p.hbox.dy) || 0;
+  const w = Math.max(1, Number(p.hbox.w) || 1), h = Math.max(1, Number(p.hbox.h) || 1);
+  const fx = dx / w, fy = dy / h;
+  if (Math.abs(fx) < 0.0005 && Math.abs(fy) < 0.0005) return '';
+  return `${indent}<modExtensions>\n`
+    + `${indent}  <li Class="NHT_CustomDolls.HitboxOffsetExtension">\n`
+    + `${indent}    <x>${nf(fx)}</x>\n`
+    + `${indent}    <y>${nf(fy)}</y>\n`
+    + `${indent}  </li>\n`
+    + `${indent}</modExtensions>`;
 }
 
 /* 部位颜色：把贴图转成灰度（保留 alpha 与明暗），返回 dataURL */
@@ -14237,10 +14437,26 @@ function grayCatFor(c) {
   return customCatFor(c);
 }
 function grayKeyFor(doll, p, cat) {
-  return 'Custom/NHTCD_Gray/' + (cat || customCat()) + '/' + slug(String(doll || 'doll')) + '_' + slug(String((p && (p.id || p.name)) || 'part'));
+  const bt = String((p && (p.bodyType || p.bodytype)) || '').trim();
+  const sub = bt ? slug(bt) + '/' : '';
+  return 'Custom/NHTCD_Gray/' + (cat || customCat()) + '/' + sub + slug(String(doll || 'doll')) + '_' + slug(String((p && (p.id || p.name)) || 'part'));
 }
 function grayArtKey(c, p) {
   return grayKeyFor((c && (c.doll || c.title)) || 'doll', p, grayCatFor(c));
+}
+
+/* 重新生成灰度图前清掉这个种族在浏览器里的灰度缓存 */
+function clearGrayCache(race) {
+  const prefix = 'Custom/NHTCD_Gray/' + race + '/';
+  try { for (const k of [...EXT.keys()]) if (String(k).startsWith(prefix)) EXT.delete(k); } catch (e) { }
+  try {
+    const idx = artLoadIndex();
+    let changed = false;
+    for (const k of Object.keys(idx)) if (String(k).startsWith(prefix)) { delete idx[k]; changed = true; }
+    if (changed) artSaveIndex();
+  } catch (e) { }
+  try { for (const k of [...DISK_TEX_KEYS]) if (String(k).startsWith(prefix)) DISK_TEX_KEYS.delete(k); } catch (e) { }
+  try { for (const k of [...TEX_ON_DISK]) if (String(k).startsWith(prefix)) TEX_ON_DISK.delete(k); } catch (e) { }
 }
 
 /* 导出前确保所有标记过的部位都有灰度贴图（没有就现生成） */
@@ -14273,7 +14489,7 @@ async function flushAllGrayArt() {
 }
 
 async function flushGrayForCanvas(c) {
-  if (!c || !LOCAL_HTTP) return 0;
+  if (!c || (!LOCAL_HTTP && !HOST)) return 0;
   let n = 0;
   for (const p of (c.parts || [])) {
     if (!p || !p.desat || !p.img || p.raceOff) continue;
@@ -14338,6 +14554,8 @@ function partXML(p, doll, indent, fit, idOverride) {  const tag = tagOf(p.kind);
   lines.push(`${i2}  <height>${nf(Math.abs(p.sy) * f.k)}</height>`);   // 镜像只写 width，height 永远为正
   const hbOut = exportHitbox(p);
   lines.push(`${i2}  <hitboxScale><x>${nf(hbOut[0])}</x><y>${nf(hbOut[1])}</y></hitboxScale>`);
+  const hbOff = hitboxOffsetXML(p, i2 + '  ');
+  if (hbOff) lines.push(hbOff);
   if (p.kind === 'organ' || p.kind === 'bone') lines.push(`${i2}  <extraLayer>${p.extra || 0}</extraLayer>`);
   lines.push(`${i2}</${tag}>`);
   if (p.desat && p.img) {
@@ -15327,6 +15545,7 @@ function renderGuides(c) {
 const HAIRFIT_DEF = new Map();
   const DESAT_DEFS = new Set();   // 每个种族只导一条 DesatPartsDef
   const HAIR_TINT_DEFS = new Set(); // 每个种族只导一条 HairTintDef
+  const ADDON_FOLLOW_DEFS = new Set(); // 每个种族只导一条 AddonFollowDef
 
 /* ---------------- NHT 种族部位对照表 ---------------- */
 /* NHT 的 64 个标准槽位（顺序 = bodyPartId），和 DLL 里的 NHT_SLOT_DEFS 一致 */
@@ -15433,6 +15652,8 @@ function buildPatchXML(scope) {
   // 每次生成补丁前清掉上一轮记录的 HairFitDef，否则会留下指向不存在的 Def 的 aboveParts
   list.forEach(cv => { try { HAIRFIT_DEF.delete(cv.id); } catch (e) { } });
   try { DESAT_DEFS.clear(); } catch (e) { }   // 每次生成都重算，别被上一次预览占掉
+  try { HAIR_TINT_DEFS.clear(); } catch (e) { }   // 同上：HairTintDef 不能跨次累积，否则注入时会被跳过
+  try { ADDON_FOLLOW_DEFS.clear(); } catch (e) { }
   // 导出前重新校验种族 BodyDef：种族没有的部位不写进补丁
   list.forEach(cv => { try { applyRaceBodyPartValidity(cv); } catch (e) { } });
 
@@ -15578,6 +15799,34 @@ ${rows}
 ${rows}
         </parts>
       </NHT_CustomDolls.HairTintDef>
+    </value>
+  </Operation>`);
+      }
+    }
+
+    {
+      // 自动变换：编辑器标记的自定义 colorChannel bodyAddon 部位
+      const followParts = (c.parts || []).filter(p => p && p.autoFollow && p.followAddon && (p.id || p.name));
+      const raceKey2 = (c.race && c.race.defName) ? String(c.race.defName) : '';
+      const dollKey2 = String(c.doll || '');
+      const key2 = raceKey2 || dollKey2;
+      if (followParts.length && key2 && !ADDON_FOLLOW_DEFS.has(key2)) {
+        ADDON_FOLLOW_DEFS.add(key2);
+        const defName = 'NHTCD_AddonFollow_' + safeDefName(key2, 'Parts');
+        const rows = followParts.map(p => `          <li><part>${xesc(nameOf(p))}</part><addon>${xesc(p.followAddon || '')}</addon><path>${xesc(p.followPath || '')}</path><rot>${round(Number(p.followRot) || 0, 1)}</rot></li>`).join('\n');
+        ops.push(`  <!-- ${c.title} · 自动变换 bodyAddon 部位 -->`);
+        ops.push(`  <Operation Class="PatchOperationAdd">
+    <xpath>Defs</xpath>
+    <value>
+      <NHT_CustomDolls.AddonFollowDef>
+        <defName>${defName}</defName>
+        <label>${xesc(c.title || key2)} AddonFollow</label>
+        <race>${xesc(raceKey2 || '*')}</race>
+        <doll>${xesc(dollKey2 || '*')}</doll>
+        <parts>
+${rows}
+        </parts>
+      </NHT_CustomDolls.AddonFollowDef>
     </value>
   </Operation>`);
       }
@@ -17963,7 +18212,7 @@ function canvasHealth(c) {
           }
         });
       });
-      if (missImg.size) items.push({ key: 'variant-tex', name: '异种贴图', ok: false, fix: false, detail: missImg.size + ' 张不在磁盘' });
+      if (missImg.size) items.push({ key: 'variant-tex', name: '异种贴图', ok: false, fix: true, detail: missImg.size + ' 张不在磁盘' });
       if (missGray.size) items.push({ key: 'variant-gray', name: '异种灰度', ok: false, fix: true, detail: missGray.size + ' 张不在磁盘' });
       if (wrongImg.size) items.push({ key: 'variant-path', name: '异种路径', ok: false, fix: true, detail: wrongImg.size + ' 张图片不在对应异种文件夹' });
       if (wrongGray.size) items.push({ key: 'variant-path-gray', name: '异种灰度路径', ok: false, fix: true, detail: wrongGray.size + ' 张灰度不在 NHTCD_Gray 对应目录' });
@@ -18337,6 +18586,10 @@ function createFromRace(res) {
         if (x && x.kind === 'race' && x.race && x.race.defName === raceDef) x.race.bodyTypes = res.bodyTypes;
       });
     }
+    try {
+      const addonList = ((res.race && res.race.addons) || []).filter(a => !/hair/i.test(String(a.path || '') + ' ' + String(a.name || '')));
+      markFollowParts(existing, res.race, addonList);
+    } catch (e) { }
     S.active = existing.id;
     renderAll();
     persist();
@@ -18345,6 +18598,10 @@ function createFromRace(res) {
     return existing;
   }
   const c = createRaceCanvas(res, 'female', title);
+  try {
+    const addonList = ((res.race && res.race.addons) || []).filter(a => !/hair/i.test(String(a.path || '') + ' ' + String(a.name || '')));
+    markFollowParts(c, res.race, addonList);
+  } catch (e) { }
   try {
     if (LOCAL_HTTP) fetch('/__custommkdir?name=' + encodeURIComponent(customCatFor(c)), { cache: 'no-store' });
   } catch (e) { }
@@ -19597,6 +19854,13 @@ document.addEventListener('click', e => {
       toast(p.hairTint ? '已设为跟随小人当前发色（导出 HairTintDef）' : '已取消跟随发色');
       break;
     }
+    case 'part-auto-follow': {
+      const p = selPart(); if (!p) break;
+      p.autoFollow = !p.autoFollow;
+      renderInspector(); renderTree(); pushHistory(); persist();
+      toast(p.autoFollow ? '已开启自动变换（导出 AddonFollowDef）' : '已关闭自动变换');
+      break;
+    }
     case 'over-hair': {
       const p = selPart(); if (!p) break;
       p.overHair = !p.overHair;
@@ -19739,6 +20003,7 @@ document.addEventListener('click', e => {
         try {
           const c = activeCanvas();
           if (c) {
+            try { await syncCustomPathsFromDisk(true); } catch (e) { }
             await migrateVariantPaths(c);
             await migrateVariantGrays(c);
             await ensureGrayArt([c]);
@@ -19805,6 +20070,13 @@ document.addEventListener('click', e => {
       closeModal();
       const xi = document.getElementById('variantXmlInput');
       if (xi) xi.click();
+      break;
+    }
+    case 'scan-follow': {
+      const c0 = activeCanvas();
+      if (!c0 || !c0.race) { toast('这张画布不是从种族模组导入的', true); break; }
+      dirPurpose = 'scan-follow';
+      $('#dirInput').click();
       break;
     }
     case 'gene-looks': {
@@ -20072,6 +20344,42 @@ document.addEventListener('click', e => {
     }
     case 'clean-restore': {
       openCleanupRestore();
+      break;
+    }
+    case 'gray-regen': {
+      (async () => {
+        const c = activeCanvas();
+        if (!c) { toast('先切到一张画布', true); return; }
+        const race = grayCatFor(c);
+        const b = await apiGray('backup', race);
+        if (!b || !b.ok) { toast('灰度备份失败：' + ((b && b.error) || ''), true); return; }
+        const d = await apiGray('delete', race);
+        if (!d || !d.ok) { toast('灰度删除失败：' + ((d && d.error) || ''), true); return; }
+        clearGrayCache(race);
+        try { await ensureGrayArt([c]); await flushGrayForCanvas(c); } catch (e) { }
+        if (typeof syncCustomPathsFromDisk === 'function') await syncCustomPathsFromDisk(true);
+        renderInspector(); renderStage();
+        toast('灰度图已重新生成（备份：' + (b.name || '') + '）');
+      })();
+      break;
+    }
+    case 'gray-restore': {
+      (async () => {
+        const c = activeCanvas();
+        if (!c) { toast('先切到一张画布', true); return; }
+        const race = grayCatFor(c);
+        const l = await apiGray('list', race);
+        const name = (l && l.backups && l.backups[0]) || '';
+        if (!name) { toast('没有灰度备份', true); return; }
+        if (!window.confirm('还原灰度备份 ' + name + '？当前灰度目录会被替换。')) return;
+        const r = await apiGray('restore', race, name);
+        if (!r || !r.ok) { toast('灰度还原失败：' + ((r && r.error) || ''), true); return; }
+        clearGrayCache(race);
+        try { await ensureGrayArt([c]); await flushGrayForCanvas(c); } catch (e) { }
+        if (typeof syncCustomPathsFromDisk === 'function') await syncCustomPathsFromDisk(true);
+        renderInspector(); renderStage();
+        toast('已还原灰度备份：' + name);
+      })();
       break;
     }
     case 'crop-toggle': {
@@ -21167,6 +21475,13 @@ $('#dirInput').addEventListener('change', async e => {
       modalNewCanvasRender();
     }
     e.target.value = '';
+    return;
+  }
+  if (dirPurpose === 'scan-follow') {
+    dirPurpose = 'race';
+    const picked = Array.prototype.slice.call(files);
+    e.target.value = '';
+    await scanFollowParts(picked);
     return;
   }
   if (dirPurpose === 'gene-looks') {
@@ -22293,7 +22608,6 @@ function modalHairImport() {
 const LOCAL_API = /^https?:$/.test(location.protocol) ? '' : '';
 const LOCAL_HTTP = /^https?:$/.test(location.protocol);
 async function apiSave(query, body) {
-  if (!LOCAL_HTTP) return false;
   // 程序模式：保存直接走 WebView2 宿主对象
   try {
     if (HOST && query) {
@@ -22315,10 +22629,26 @@ async function apiSave(query, body) {
       }
     }
   } catch (e) { }
+  if (!LOCAL_HTTP) return false;
   try {
     const r = await fetch('/__save?' + query, { method: 'POST', body: String(body) });
     return r.ok;
   } catch (e) { return false; }
+}
+
+
+async function apiGray(action, race, name) {
+  const q = new URLSearchParams({ action: action || '', race: race || '', name: name || '' }).toString();
+  try {
+    if (HOST && HOST.GrayAction) {
+      const j = await HOST.GrayAction(action || '', race || '', name || '');
+      if (j) return JSON.parse(j);
+    }
+  } catch (e) { }
+  try {
+    const r = await fetch('/__gray?' + q, { method: 'POST' });
+    return await r.json();
+  } catch (e) { return { ok: false, error: String(e) }; }
 }
 
 
