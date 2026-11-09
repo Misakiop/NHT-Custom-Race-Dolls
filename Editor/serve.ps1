@@ -14,6 +14,19 @@ $Root    = $RootPath
 $ModRoot = Split-Path -Parent $Root
 $PortStart = 8765
 $MaxPort   = 8785
+
+# 由 NHT-Anatomy-Editor.exe 启动时，父进程退出后自动结束本服务
+# （Windows 不会因为父进程退出就杀子进程，这里用后台 job 监控父 PID）
+try {
+    $parentPid = (Get-CimInstance Win32_Process -Filter ("ProcessId=" + $PID) -ErrorAction SilentlyContinue).ParentProcessId
+    if ($parentPid -and $parentPid -ne $PID) {
+        Start-Job -ScriptBlock {
+            param($serverPid, $parentPid)
+            while (Get-Process -Id $parentPid -ErrorAction SilentlyContinue) { Start-Sleep -Seconds 2 }
+            Stop-Process -Id $serverPid -Force -ErrorAction SilentlyContinue
+        } -ArgumentList $PID, $parentPid | Out-Null
+    }
+} catch { }
 
 function Get-FreePort([int]$start, [int]$end) {
     for ($p = $start; $p -le $end; $p++) {
@@ -681,6 +694,63 @@ while ($true) {
             }
             Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $ok; key = $newKey; error = $msg })
         }
+        elseif ($pathPart -eq '/__gray' -and ($method -eq 'GET' -or $method -eq 'POST')) {
+            $action = "$($query['action'])".Trim().ToLower()
+            $race = "$($query['race'])".Trim()
+            $name = "$($query['name'])".Trim()
+            $ok = $false; $msg = ''; $saved = ''; $backups = @()
+            if (-not $race -or $race -notmatch '^[A-Za-z0-9_.-]+$') { $msg = 'bad race' }
+            else {
+                try {
+                    $gray = Join-Path (Join-Path (Join-Path $ModRoot 'Textures') 'Custom\NHTCD_Gray') $race
+                    $hist = Join-Path (Join-Path (Join-Path $Root 'history') 'Gray') $race
+                    if ($action -eq 'backup') {
+                        if (-not (Test-Path -LiteralPath $gray)) { $msg = 'gray folder missing' }
+                        else {
+                            if (-not (Test-Path -LiteralPath $hist)) { New-Item -ItemType Directory -Path $hist -Force | Out-Null }
+                            $saved = Get-Date -Format 'yyyyMMdd-HHmmssfff'
+                            Copy-Item -LiteralPath $gray -Destination (Join-Path $hist $saved) -Recurse -Force
+                            $all = @(Get-ChildItem -LiteralPath $hist -Directory -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending)
+                            if ($all.Count -gt 2) { $all | Select-Object -Skip 2 | ForEach-Object { try { Remove-Item -LiteralPath $_.FullName -Recurse -Force } catch { } } }
+                            $ok = $true
+                        }
+                    }
+                    elseif ($action -eq 'list') {
+                        if (Test-Path -LiteralPath $hist) {
+                            $backups = @(Get-ChildItem -LiteralPath $hist -Directory -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -ExpandProperty Name)
+                        }
+                        $ok = $true
+                    }
+                    elseif ($action -eq 'restore') {
+                        if (-not $name -or $name -match '\.\.' -or $name -match '[\\/]') { $msg = 'bad name' }
+                        else {
+                            $src = Join-Path $hist $name
+                            if (-not (Test-Path -LiteralPath $src)) { $msg = 'backup missing' }
+                            else {
+                                if (Test-Path -LiteralPath $gray) { Remove-Item -LiteralPath $gray -Recurse -Force }
+                                New-Item -ItemType Directory -Path (Split-Path -Parent $gray) -Force | Out-Null
+                                Copy-Item -LiteralPath $src -Destination $gray -Recurse -Force
+                                $ok = $true
+                            }
+                        }
+                    }
+                    elseif ($action -eq 'delete') {
+                        if (Test-Path -LiteralPath $gray) { Remove-Item -LiteralPath $gray -Recurse -Force }
+                        # 递归清掉 Textures/Custom/NHTCD_Gray 下因此变空的目录
+                        $rootGray = Join-Path (Join-Path $ModRoot 'Textures') 'Custom\NHTCD_Gray'
+                        if (Test-Path -LiteralPath $rootGray) {
+                            $dirs = @(Get-ChildItem -LiteralPath $rootGray -Directory -Recurse -ErrorAction SilentlyContinue | Sort-Object FullName -Descending)
+                            foreach ($d in $dirs) {
+                                if (-not (Get-ChildItem -LiteralPath $d.FullName -Force -ErrorAction SilentlyContinue)) { Remove-Item -LiteralPath $d.FullName -Force -ErrorAction SilentlyContinue }
+                            }
+                        }
+                        $ok = $true
+                    }
+                    else { $msg = 'bad action' }
+                } catch { $msg = $_.Exception.Message }
+            }
+            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $ok; error = $msg; name = $saved; backups = $backups })
+        }
         elseif ($pathPart -eq '/__texindex' -and ($method -eq 'GET' -or $method -eq 'HEAD')) {
             $list = @()
             $texRoot = Join-Path $ModRoot 'Textures'
@@ -992,7 +1062,7 @@ while ($true) {
                 $syncText = ''
                 if ($query['sync'] -eq '1') {
                     try {
-                        $rc = & robocopy $ModRoot $dir /E /XD .git .vs bin obj Editor /XF *.bak *.bak.* /NFL /NDL /NJH /NJS /NP 2>&1
+                        $rc = & robocopy $ModRoot $dir /E /XD .git .vs bin obj "Editor\NHT-Anatomy-Editor.exe.WebView2" "Editor\history" "Editor\_backup" /XF *.bak *.bak.* /NFL /NDL /NJH /NJS /NP 2>&1
                         $syncText = "已同步模组文件到仓库目录（robocopy 退出码 " + $LASTEXITCODE + "）`n"
                     } catch { $syncText = "同步模组文件失败：" + $_.Exception.Message + "`n" }
                 }
