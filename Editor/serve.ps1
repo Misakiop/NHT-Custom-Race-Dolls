@@ -1267,6 +1267,7 @@ while ($true) {
                 if (-not (Test-Path -LiteralPath (Join-Path $ModRoot 'About'))) { throw ('不像是模组根目录：' + $ModRoot) }
 
                 function Copy-ModFile([string]$full, [string]$rel) {
+                    if ($rel -match '^\.git(ignore|attributes|modules|keep)$') { return }
                     if ($rel -match '\.(bak|bak[0-9]+|premap|tmp|orig|psd|xcf|kra|log)$' -or $rel -like '*.old-*') { return }
                     if ($rel -match '(^|\\)nht-project[^\\]*\.js$' -or $rel -match '(^|\\)_probe') { return }
                     $segs = $rel -split '\\'
