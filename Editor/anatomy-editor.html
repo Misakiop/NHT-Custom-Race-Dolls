@@ -2377,7 +2377,7 @@ body.is-host .iconbtn.btn--host:hover svg{transform:rotate(180deg)}
       <button class="btn btn--ghost" data-act="history" title="查看最近 5 份本地保存历史，可挑一份载入"><svg><use href="#i-undo"/></svg>历史</button>
       <button class="btn btn--ghost" data-act="reload-file" title="丢弃浏览器 localStorage 缓存，重新读取 nht-project.js 和画布文件"><svg><use href="#i-save"/></svg>从文件重载</button>
       <button class="btn btn--ghost" data-act="save" title="保存**全部画布**与素材清单到项目文件 nht-project.js（html 同目录），不是只存当前画布。Ctrl+S"><svg><use href="#i-save"/></svg>本地保存（全部画布）</button>
-      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-13 15:39</span>
+      <span id="buildTag" class="mini-note" style="margin:0 8px 0 0;align-self:center">build 11-13 15:45</span>
             <span class="notif" id="notifWrap">
         <button class="iconbtn notif__btn" data-act="notif-toggle" id="notifBtn" title="Git 更新通知：点「收到」后不再弹出，仓库有新的 Push 会再次提醒">
           <svg class="notif__ico"><use href="#i-bell"/></svg>
@@ -10482,7 +10482,7 @@ let MOD_EXPORT_VERSION = '';
 const GIT_LOG_MAX = 20;
 
 function gitDefaults() {
-  return { dir: 'C:\\Misaki\\Work\\github\\NHT_CustomDolls', branch: 'main', name: '', email: '', prefix: 'feature-', syncMod: true };
+  return { dir: 'C:\\Misaki\\Game\\RimCrow\\mods\\NHT_CustomDollTest', branch: 'main', name: '', email: '', prefix: 'feature-', syncMod: false };
 }
 function ensureGitSettings() {
   saveSettings();

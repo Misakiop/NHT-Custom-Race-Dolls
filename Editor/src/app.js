@@ -7898,7 +7898,7 @@ let MOD_EXPORT_VERSION = '';
 const GIT_LOG_MAX = 20;
 
 function gitDefaults() {
-  return { dir: 'C:\\Misaki\\Work\\github\\NHT_CustomDolls', branch: 'main', name: '', email: '', prefix: 'feature-', syncMod: true };
+  return { dir: 'C:\\Misaki\\Game\\RimCrow\\mods\\NHT_CustomDollTest', branch: 'main', name: '', email: '', prefix: 'feature-', syncMod: false };
 }
 function ensureGitSettings() {
   saveSettings();

@@ -872,10 +872,12 @@ while ($true) {
             # 否则弹窗会因为复制几百 MB 素材而超时。
             $syncText = ''
             if ($query['sync'] -eq '1') {
-                try {
+                $sameDir = ([IO.Path]::GetFullPath($dir).TrimEnd('\') -ieq [IO.Path]::GetFullPath($ModRoot).TrimEnd('\'))
+                if ($sameDir) { $syncText = '仓库就是模组目录，无需同步' }
+                else { try {
                     $rd = & robocopy $ModRoot $dir /E /MT:8 /R:1 /W:1 /XD .git .vs bin obj "Editor\NHT-Anatomy-Editor.exe.WebView2" "Editor\history" "Editor\_backup" "Editor\assets" "Editor\canvases\.backup" "_backup" "_analysis" ".dsh-images" /XF nht-project.js hair-map.js *.bak *.bak.* /NFL /NDL /NJH /NJS /NP 2>&1
                     $syncText = "已同步模组文件（robocopy 退出码 " + $LASTEXITCODE + "）"
-                } catch { $syncText = "同步失败：" + $_.Exception.Message }
+                } catch { $syncText = "同步失败：" + $_.Exception.Message } }
             }
             # 已提交但还没推送的提交：推送窗口里不逐条列，但会随本次推送一起上传
             $curBrR = Invoke-Git $git @('-C', $dir, 'rev-parse', '--abbrev-ref', 'HEAD')
@@ -1084,10 +1086,12 @@ while ($true) {
                 # sync=1：先把当前模组目录的内容镜像到仓库目录（不删除仓库独有文件）
                 $syncText = ''
                 if ($query['sync'] -eq '1') {
-                    try {
+                    $sameDir2 = ([IO.Path]::GetFullPath($dir).TrimEnd('\') -ieq [IO.Path]::GetFullPath($ModRoot).TrimEnd('\'))
+                    if ($sameDir2) { $syncText = '仓库就是模组目录，无需同步' }
+                    else { try {
                         $rc = & robocopy $ModRoot $dir /E /MT:8 /R:1 /W:1 /XD .git .vs bin obj "Editor\NHT-Anatomy-Editor.exe.WebView2" "Editor\history" "Editor\_backup" "Editor\assets" "Editor\canvases\.backup" "_backup" "_analysis" ".dsh-images" /XF nht-project.js hair-map.js *.bak *.bak.* /NFL /NDL /NJH /NJS /NP 2>&1
                         $syncText = "已同步模组文件到仓库目录（robocopy 退出码 " + $LASTEXITCODE + "）`n"
-                    } catch { $syncText = "同步模组文件失败：" + $_.Exception.Message + "`n" }
+                    } catch { $syncText = "同步模组文件失败：" + $_.Exception.Message + "`n" } }
                 }
 
                 # 支持只暂存选中的文件（files = 换行分隔的相对路径）
@@ -1408,7 +1412,7 @@ while ($true) {
             $rel = $pathPart.TrimStart('/') -replace '/', '\'
             $full = [System.IO.Path]::GetFullPath((Join-Path $Root $rel))
             $rootFull = [System.IO.Path]::GetFullPath($Root)
-            if (-not $full.StartsWith($rootFull, 'OrdinalIgnoreCase')) {
+            if ($rel -match '(^|\\)\.git(\\|$)' -or -not $full.StartsWith($rootFull, 'OrdinalIgnoreCase')) {
                 Send-Text $stream '403 Forbidden' 'forbidden'
             }
             elseif (Test-Path -LiteralPath $full -PathType Leaf) {
