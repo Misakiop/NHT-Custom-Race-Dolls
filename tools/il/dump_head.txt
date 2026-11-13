@@ -1,0 +1,118 @@
+
+=== NiceHealthTab.DollPartRenderer.DrawHeadOverlay(DollRenderContext ctx, Pawn pawn, Rect overlayRect, DollBodyPartDef part, DollPartStatus status)
+0000: ldarg.1
+0001: ldfld fld:Pawn.style
+0006: dup
+0007: brtrue.s IL_000D
+0009: pop
+000A: ldnull
+000B: br.s IL_0012
+000D: ldfld fld:Pawn_StyleTracker.beardDef
+0012: stloc.0
+0013: ldloc.0
+0014: brtrue.s IL_0019
+0016: ldnull
+0017: br.s IL_001F
+0019: ldloc.0
+001A: callvirt StyleItemDef.get_Icon
+001F: ldnull
+0020: call Texture.op_Inequality
+0025: brfalse.s IL_006D
+0027: ldsfld fld:NiceHediffTabSettings.ShowHair
+002C: brfalse.s IL_006D
+002E: ldarg.s 4
+0030: ldc.i4.1
+0031: beq.s IL_004D
+0033: ldarg.0
+0034: ldarg.2
+0035: ldloc.0
+0036: callvirt StyleItemDef.get_Icon
+003B: ldsfld fld:Assets.HairMaterial
+0040: ldarg.3
+0041: ldfld fld:DollBodyPartDef.PartColor
+0046: call DollPartRenderer.DrawHairClipped
+004B: br.s IL_006D
+004D: ldsfld fld:Assets.OutlineMaterial
+0052: call Color.get_white
+0057: callvirt Material.set_color
+005C: ldarg.2
+005D: ldloc.0
+005E: callvirt StyleItemDef.get_Icon
+0063: ldsfld fld:Assets.OutlineMaterial
+0068: call Graphics.DrawTexture
+006D: ldarg.1
+006E: ldfld fld:Pawn.story
+0073: dup
+0074: brtrue.s IL_007A
+0076: pop
+0077: ldnull
+0078: br.s IL_007F
+007A: ldfld fld:Pawn_StoryTracker.hairDef
+007F: stloc.1
+0080: ldloc.1
+0081: brtrue.s IL_0086
+0083: ldnull
+0084: br.s IL_008C
+0086: ldloc.1
+0087: callvirt StyleItemDef.get_Icon
+008C: ldnull
+008D: call Texture.op_Inequality
+0092: brfalse.s IL_00DA
+0094: ldsfld fld:NiceHediffTabSettings.ShowHair
+0099: brfalse.s IL_00DA
+009B: ldarg.s 4
+009D: ldc.i4.1
+009E: beq.s IL_00BA
+00A0: ldarg.0
+00A1: ldarg.2
+00A2: ldloc.1
+00A3: callvirt StyleItemDef.get_Icon
+00A8: ldsfld fld:Assets.HairMaterial
+00AD: ldarg.3
+00AE: ldfld fld:DollBodyPartDef.PartColor
+00B3: call DollPartRenderer.DrawHairClipped
+00B8: br.s IL_00DA
+00BA: ldsfld fld:Assets.OutlineMaterial
+00BF: call Color.get_white
+00C4: callvirt Material.set_color
+00C9: ldarg.2
+00CA: ldloc.1
+00CB: callvirt StyleItemDef.get_Icon
+00D0: ldsfld fld:Assets.OutlineMaterial
+00D5: call Graphics.DrawTexture
+00DA: ldsfld fld:NiceHediffTabSettings.ShowDNA
+00DF: brfalse.s IL_0144
+00E1: ldsfld fld:OverlayGeneCache.Overlays
+00E6: callvirt List`1.GetEnumerator
+00EB: stloc.2
+00EC: br.s IL_012B
+00EE: ldloca.s 2
+00F0: call Enumerator.get_Current
+00F5: stloc.3
+00F6: ldarg.s 4
+00F8: ldc.i4.1
+00F9: beq.s IL_0110
+00FB: ldarg.0
+00FC: ldarg.2
+00FD: ldloc.3
+00FE: ldsfld fld:Assets.HairMaterial
+0103: ldarg.3
+0104: ldfld fld:DollBodyPartDef.PartColor
+0109: call DollPartRenderer.DrawHairClipped
+010E: br.s IL_012B
+0110: ldsfld fld:Assets.OutlineMaterial
+0115: call Color.get_white
+011A: callvirt Material.set_color
+011F: ldarg.2
+0120: ldloc.3
+0121: ldsfld fld:Assets.OutlineMaterial
+0126: call Graphics.DrawTexture
+012B: ldloca.s 2
+012D: call Enumerator.MoveNext
+0132: brtrue.s IL_00EE
+0134: leave.s IL_0144
+0136: ldloca.s 2
+0138: constrained. Enumerator
+013E: callvirt IDisposable.Dispose
+0143: endfinally
+0144: ret

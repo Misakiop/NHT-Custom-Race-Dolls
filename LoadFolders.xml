@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  NHT Custom Dolls (atian.nht.customdollstest)
+
+  Shared content (Defs / Patches / Textures / Languages / About) lives at the mod root.
+  Assemblies are per game version:
+
+    1.6/Assemblies  -> built against RimWorld 1.6 Managed (Mono / .NET Framework 4.x)
+                       Source/build-1.6.ps1
+    1.7/Assemblies  -> built against the 1.7 Waylith runtime
+                       Source/build.ps1
+
+  Why: RimWorld 1.6 runs on Mono and cannot load an assembly whose metadata points at
+  System.Private.CoreLib (that produces "ReflectionTypeLoadException ... expected class
+  'System.Object' in assembly 'System.Private.CoreLib, Version=10.0.0.0'"), which silently
+  disabled every custom Def type and Harmony patch of this mod. Keeping two builds and
+  letting LoadFolders pick one keeps a single mod folder usable by both game versions.
+-->
+<loadFolders>
+  <v1.6>
+    <li>/</li>
+    <li>1.6</li>
+  </v1.6>
+  <v1.7>
+    <li>/</li>
+    <li>1.7</li>
+  </v1.7>
+</loadFolders>

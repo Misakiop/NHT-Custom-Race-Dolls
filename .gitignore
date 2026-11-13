@@ -1,4 +1,36 @@
-# 系统垃圾文件
+# 系统垃圾
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# 编辑器运行时缓存（每次运行都会变）
+Editor/NHT-Anatomy-Editor.exe.WebView2/
+
+# 本机素材库 / 历史快照 / 备份（个人数据，不随仓库分发）
+Editor/assets/
+Editor/history/
+Editor/_backup/
+Editor/canvases/.backup/
+Textures/Custom/.cache/
+
+# 个人项目数据（每个人的画布都不同）
+Editor/nht-project.js
+Editor/nht-project*.js
+Editor/body-map*.json
+Editor/hair-map.js
+
+# 编译与开发产物
+Source/build/
+Source/bin/
+Source/obj/
+_analysis/
+_backup/
+.dsh-images/
+.agent-teams/
+.dsh-project-memory/
+*.bak
+*.bak.*
+*.orig
+*.rej
+*.tmp
+*.log

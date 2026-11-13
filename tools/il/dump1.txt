@@ -1,0 +1,1284 @@
+
+=== NiceHealthTab.DollWidget.DrawMainDoll(Rect dollRect)
+0000: ldarg.0
+0001: ldfld fld:DollWidget.ctx
+0006: ldfld fld:DollRenderContext.MainDoll
+000B: brtrue.s IL_000E
+000D: ret
+000E: ldarg.0
+000F: ldfld fld:DollWidget.ctx
+0014: ldc.i4.1
+0015: stfld fld:DollRenderContext.OperationPreviewEnabled
+001A: ldarg.0
+001B: ldfld fld:DollWidget.ctx
+0020: ldfld fld:DollRenderContext.FilterMode
+0025: ldc.i4.1
+0026: beq.s IL_0038
+0028: ldarg.0
+0029: ldfld fld:DollWidget.ctx
+002E: ldfld fld:DollRenderContext.FilterMode
+0033: ldc.i4.2
+0034: ceq
+0036: br.s IL_0039
+0038: ldc.i4.1
+0039: stloc.0
+003A: ldarg.0
+003B: ldfld fld:DollWidget.ctx
+0040: ldarg.0
+0041: ldfld fld:DollWidget.ctx
+0046: ldfld fld:DollRenderContext.MainDoll
+004B: ldarg.1
+004C: ldc.i4.1
+004D: ldloc.0
+004E: call DollRenderer.DrawDoll
+0053: pop
+0054: ldarg.0
+0055: ldfld fld:DollWidget.ctx
+005A: ldc.i4.0
+005B: stfld fld:DollRenderContext.OperationPreviewEnabled
+0060: ret
+
+=== NiceHealthTab.DollRenderer.DrawDoll(DollRenderContext ctx, Doll doll, Rect rect, Boolean selectable, Boolean drawOutline)
+0000: ldarg.1
+0001: ldarg.2
+0002: ldloca.s 1
+0004: callvirt Doll.Fit
+0009: stloc.0
+000A: ldarg.s 4
+000C: brfalse IL_009D
+0011: call GUI.get_color
+0016: call Color.get_black
+001B: call GUI.set_color
+0020: ldarg.1
+0021: ldfld fld:Doll.doubleOutline
+0026: brtrue.s IL_003C
+0028: ldarg.1
+0029: ldloc.0
+002A: callvirt Doll.GetOutlineRect
+002F: ldarg.1
+0030: ldfld fld:Doll.outlineTex
+0035: call GUI.DrawTexture
+003A: br.s IL_0098
+003C: ldarg.1
+003D: ldloc.0
+003E: callvirt Doll.GetOutlineRect
+0043: stloc.3
+0044: ldloc.3
+0045: stloc.s 4
+0047: ldloca.s 3
+0049: dup
+004A: call Rect.get_x
+004F: ldarg.1
+0050: ldfld fld:Doll.offsetGapLeftRight
+0055: ldloc.1
+0056: mul
+0057: add
+0058: call Rect.set_x
+005D: ldloc.3
+005E: ldarg.1
+005F: ldfld fld:Doll.outlineTex
+0064: call GUI.DrawTexture
+0069: ldloca.s 4
+006B: ldc.r4 -1
+0070: call DollRenderer.ScaleRect
+0075: ldloca.s 4
+0077: dup
+0078: call Rect.get_x
+007D: ldarg.1
+007E: ldfld fld:Doll.offsetGapLeftRight
+0083: ldloc.1
+0084: mul
+0085: sub
+0086: call Rect.set_x
+008B: ldloc.s 4
+008D: ldarg.1
+008E: ldfld fld:Doll.outlineTex
+0093: call GUI.DrawTexture
+0098: call GUI.set_color
+009D: ldnull
+009E: stloc.2
+009F: ldsfld fld:NiceHediffTabSettings.ShowDNA
+00A4: brfalse.s IL_00EC
+00A6: ldloc.2
+00A7: brfalse.s IL_00EC
+00A9: ldloc.2
+00AA: ldfld fld:LayerContainer.BehindLayer
+00AF: callvirt List`1.GetEnumerator
+00B4: stloc.s 5
+00B6: br.s IL_00D3
+00B8: ldloca.s 5
+00BA: call Enumerator.get_Current
+00BF: stloc.s 6
+00C1: ldarg.0
+00C2: ldloc.s 6
+00C4: ldarg.1
+00C5: ldloc.0
+00C6: ldloc.1
+00C7: ldarg.3
+00C8: call Vector2.get_zero
+00CD: call DollPartRenderer.DrawPart
+00D2: pop
+00D3: ldloca.s 5
+00D5: call Enumerator.MoveNext
+00DA: brtrue.s IL_00B8
+00DC: leave.s IL_00EC
+00DE: ldloca.s 5
+00E0: constrained. Enumerator
+00E6: callvirt IDisposable.Dispose
+00EB: endfinally
+00EC: ldarg.1
+00ED: ldfld fld:Doll.Parts
+00F2: callvirt List`1.GetEnumerator
+00F7: stloc.s 7
+00F9: br.s IL_012B
+00FB: ldloca.s 7
+00FD: call Enumerator.get_Current
+0102: stloc.s 8
+0104: ldarg.0
+0105: ldfld fld:DollRenderContext.Remap
+010A: ldloc.s 8
+010C: ldfld fld:DollBodyPartDef.bodyPartId
+0111: callvirt BodyPartIndexesRemap.Get
+0116: ldc.i4.0
+0117: blt.s IL_012B
+0119: ldarg.0
+011A: ldloc.s 8
+011C: ldarg.1
+011D: ldloc.0
+011E: ldloc.1
+011F: ldarg.3
+0120: call Vector2.get_zero
+0125: call DollPartRenderer.DrawPart
+012A: pop
+012B: ldloca.s 7
+012D: call Enumerator.MoveNext
+0132: brtrue.s IL_00FB
+0134: leave.s IL_0144
+0136: ldloca.s 7
+0138: constrained. Enumerator
+013E: callvirt IDisposable.Dispose
+0143: endfinally
+0144: ldsfld fld:NiceHediffTabSettings.ShowDNA
+0149: brfalse.s IL_0191
+014B: ldloc.2
+014C: brfalse.s IL_0191
+014E: ldloc.2
+014F: ldfld fld:LayerContainer.FrontLayer
+0154: callvirt List`1.GetEnumerator
+0159: stloc.s 5
+015B: br.s IL_0178
+015D: ldloca.s 5
+015F: call Enumerator.get_Current
+0164: stloc.s 9
+0166: ldarg.0
+0167: ldloc.s 9
+0169: ldarg.1
+016A: ldloc.0
+016B: ldloc.1
+016C: ldarg.3
+016D: call Vector2.get_zero
+0172: call DollPartRenderer.DrawPart
+0177: pop
+0178: ldloca.s 5
+017A: call Enumerator.MoveNext
+017F: brtrue.s IL_015D
+0181: leave.s IL_0191
+0183: ldloca.s 5
+0185: constrained. Enumerator
+018B: callvirt IDisposable.Dispose
+0190: endfinally
+0191: ldloc.0
+0192: ret
+
+=== NiceHealthTab.DollPartRenderer.DrawHairClipped(DollRenderContext ctx, Rect overlayRect, Texture2D tex, Material material, Color color)
+0000: ldarg.0
+0001: ldfld fld:DollRenderContext.HairClipRect
+0006: call Rect.get_zero
+000B: call Rect.op_Equality
+0010: brfalse.s IL_002C
+0012: ldarg.s 4
+0014: call GUI.set_color
+0019: ldarg.1
+001A: ldarg.2
+001B: ldarg.3
+001C: call Graphics.DrawTexture
+0021: call Color.get_white
+0026: call GUI.set_color
+002B: ret
+002C: ldarg.1
+002D: ldarg.0
+002E: ldfld fld:DollRenderContext.HairClipRect
+0033: call Utils.ClipRectWithUV
+0038: dup
+0039: ldfld fld:ValueTuple`2.Item1
+003E: stloc.0
+003F: ldfld fld:ValueTuple`2.Item2
+0044: stloc.1
+0045: ldloca.s 0
+0047: call Rect.get_width
+004C: ldc.r4 0
+0051: ble.s IL_0061
+0053: ldloca.s 0
+0055: call Rect.get_height
+005A: ldc.r4 0
+005F: bgt.un.s IL_0062
+0061: ret
+0062: ldarg.3
+0063: ldstr "_Color"
+0068: ldarg.s 4
+006A: callvirt Material.SetColor
+006F: call Color.get_white
+0074: call GUI.set_color
+0079: ldloc.0
+007A: ldarg.2
+007B: ldarg.3
+007C: ldloc.1
+007D: call GenUI.DrawTextureWithMaterial
+0082: ret
+
+=== NiceHealthTab.DollPartRenderer.DrawPart(DollRenderContext ctx, DollBodyPartDef _part, Doll doll, Rect rectDoll, Single dollScale, Boolean selectable, Vector2 extraOffset)
+0000: ldarg.1
+0001: stloc.0
+0002: ldarg.0
+0003: ldfld fld:DollRenderContext.Remap
+0008: ldloc.0
+0009: ldfld fld:DollBodyPartDef.bodyPartId
+000E: callvirt BodyPartIndexesRemap.Get
+0013: stloc.1
+0014: ldloc.1
+0015: ldc.i4.0
+0016: bge.s IL_001A
+0018: ldc.i4.0
+0019: ret
+001A: ldarg.0
+001B: ldfld fld:DollRenderContext.Pawn
+0020: stloc.2
+0021: ldloc.2
+0022: callvirt Pawn.get_RaceProps
+0027: dup
+0028: brtrue.s IL_002E
+002A: pop
+002B: ldnull
+002C: br.s IL_0040
+002E: ldfld fld:RaceProperties.body
+0033: dup
+0034: brtrue.s IL_003A
+0036: pop
+0037: ldnull
+0038: br.s IL_0040
+003A: ldloc.1
+003B: call BodyDef.GetPartAtIndex
+0040: stloc.3
+0041: ldloc.3
+0042: brtrue.s IL_0046
+0044: ldc.i4.0
+0045: ret
+0046: ldloc.3
+0047: stloc.s 4
+0049: ldarg.0
+004A: ldfld fld:DollRenderContext.Hediffs
+004F: ldloc.3
+0050: ldc.i4.0
+0051: callvirt HediffCache.GetHediffs
+0056: stloc.s 5
+0058: ldarg.0
+0059: ldfld fld:DollRenderContext.Hediffs
+005E: ldloc.3
+005F: callvirt HediffCache.HasScars
+0064: stloc.s 6
+0066: ldarg.0
+0067: ldloc.3
+0068: callvirt DollRenderContext.GetPartFrameInfo
+006D: stloc.s 7
+006F: ldarg.0
+0070: ldarg.1
+0071: ldloc.3
+0072: callvirt DollRenderContext.GetImplantInfo
+0077: stloc.s 8
+0079: ldloc.s 8
+007B: ldnull
+007C: cgt.un
+007E: stloc.s 9
+0080: ldloc.s 9
+0082: brfalse.s IL_008D
+0084: ldloc.s 8
+0086: ldfld fld:PartImplantInfo.HasAlternative
+008B: br.s IL_008E
+008D: ldc.i4.0
+008E: stloc.s 10
+0090: ldloc.s 10
+0092: brfalse.s IL_009C
+0094: ldloc.s 8
+0096: ldfld fld:PartImplantInfo.Part
+009B: stloc.0
+009C: ldloc.s 9
+009E: brtrue.s IL_00A7
+00A0: call Color.get_white
+00A5: br.s IL_00AE
+00A7: ldloc.s 8
+00A9: ldfld fld:PartImplantInfo.Color
+00AE: stloc.s 11
+00B0: ldloc.0
+00B1: ldfld fld:DollBodyPartDef.onlyBadHediffs
+00B6: brfalse.s IL_00E5
+00B8: ldloc.s 5
+00BA: ldsfld fld:<>c.<>9__0_0
+00BF: dup
+00C0: brtrue.s IL_00D9
+00C2: pop
+00C3: ldsfld fld:<>c.<>9
+00C8: ldftn <>c.<DrawPart>b__0_0
+00CE: newobj Func`2..ctor
+00D3: dup
+00D4: stsfld fld:<>c.<>9__0_0
+00D9: call Enumerable.Where
+00DE: call Enumerable.ToList
+00E3: stloc.s 5
+00E5: ldarg.0
+00E6: ldloc.3
+00E7: ldloc.s 5
+00E9: ldloc.s 7
+00EB: ldfld fld:PartFrameInfo.Health
+00F0: ldloc.s 7
+00F2: ldfld fld:PartFrameInfo.MaxHealth
+00F7: callvirt DollRenderContext.GetPartVisual
+00FC: dup
+00FD: ldfld fld:PartVisual.Status
+0102: stloc.s 12
+0104: dup
+0105: ldfld fld:PartVisual.Text
+010A: stloc.s 13
+010C: ldfld fld:PartVisual.Color
+0111: call GUI.set_color
+0116: ldarg.0
+0117: ldfld fld:DollRenderContext.OperationPreviewEnabled
+011C: brfalse.s IL_0126
+011E: ldarg.0
+011F: ldfld fld:DollRenderContext.OperationHighlightActive
+0124: br.s IL_0127
+0126: ldc.i4.0
+0127: stloc.s 14
+0129: ldloc.s 14
+012B: brfalse.s IL_0136
+012D: ldarg.0
+012E: ldloc.3
+012F: call DollPartRenderer.IsInOperationSubtree
+0134: br.s IL_0137
+0136: ldc.i4.0
+0137: stloc.s 15
+0139: ldloc.s 14
+013B: brfalse.s IL_0148
+013D: ldloc.3
+013E: ldarg.0
+013F: ldfld fld:DollRenderContext.OperationPart
+0144: ceq
+0146: br.s IL_0149
+0148: ldc.i4.0
+0149: stloc.s 16
+014B: ldarg.0
+014C: ldfld fld:DollRenderContext.OperationSpecialPart
+0151: ldnull
+0152: cgt.un
+0154: stloc.s 17
+0156: ldc.i4.0
+0157: stloc.s 18
+0159: ldc.i4.0
+015A: stloc.s 19
+015C: ldloc.s 14
+015E: brfalse.s IL_0199
+0160: ldarg.0
+0161: ldfld fld:DollRenderContext.OperationIsExtraction
+0166: brfalse.s IL_016E
+0168: ldloc.s 15
+016A: stloc.s 18
+016C: br.s IL_0199
+016E: ldloc.s 15
+0170: brfalse.s IL_0192
+0172: ldloc.s 16
+0174: brtrue.s IL_0192
+0176: ldloc.s 17
+0178: brfalse.s IL_017F
+017A: ldc.i4.1
+017B: stloc.s 18
+017D: br.s IL_0199
+017F: ldsfld fld:NiceHediffTabSettings.ProstheticNoMissingBodyParts
+0184: stloc.s 19
+0186: ldsfld fld:NiceHediffTabSettings.ProstheticNoMissingBodyParts
+018B: ldc.i4.0
+018C: ceq
+018E: stloc.s 18
+0190: br.s IL_0199
+0192: ldloc.s 16
+0194: brfalse.s IL_0199
+0196: ldc.i4.1
+0197: stloc.s 19
+0199: ldloc.s 16
+019B: brfalse.s IL_01FB
+019D: ldarg.0
+019E: ldfld fld:DollRenderContext.OperationIsExtraction
+01A3: brtrue.s IL_01FB
+01A5: newobj PartImplantInfo..ctor
+01AA: dup
+01AB: ldarg.0
+01AC: ldfld fld:DollRenderContext.OperationSpecialPart
+01B1: stfld fld:PartImplantInfo.Part
+01B6: dup
+01B7: ldarg.0
+01B8: ldfld fld:DollRenderContext.OperationHighlightColor
+01BD: stfld fld:PartImplantInfo.Color
+01C2: dup
+01C3: ldarg.0
+01C4: ldfld fld:DollRenderContext.OperationSpecialPart
+01C9: ldnull
+01CA: cgt.un
+01CC: stfld fld:PartImplantInfo.HasAlternative
+01D1: stloc.s 31
+01D3: ldloc.s 31
+01D5: stloc.s 8
+01D7: ldc.i4.1
+01D8: stloc.s 9
+01DA: ldloc.s 31
+01DC: ldfld fld:PartImplantInfo.HasAlternative
+01E1: stloc.s 10
+01E3: ldloc.s 10
+01E5: brtrue.s IL_01EA
+01E7: ldarg.1
+01E8: br.s IL_01F1
+01EA: ldloc.s 31
+01EC: ldfld fld:PartImplantInfo.Part
+01F1: stloc.0
+01F2: ldloc.s 31
+01F4: ldfld fld:PartImplantInfo.Color
+01F9: stloc.s 11
+01FB: ldloc.s 18
+01FD: brfalse.s IL_0204
+01FF: ldc.i4.1
+0200: stloc.s 12
+0202: br.s IL_0214
+0204: ldloc.s 19
+0206: brtrue.s IL_0211
+0208: ldloc.s 14
+020A: brfalse.s IL_0214
+020C: ldloc.s 12
+020E: ldc.i4.1
+020F: beq.s IL_0214
+0211: ldc.i4.0
+0212: stloc.s 12
+0214: ldloc.0
+0215: ldfld fld:DollBodyPartDef.visibleByDefault
+021A: brtrue.s IL_0232
+021C: ldloc.s 12
+021E: brtrue.s IL_0232
+0220: ldloc.s 9
+0222: brtrue.s IL_0232
+0224: ldarg.0
+0225: ldfld fld:DollRenderContext.FilterMode
+022A: brtrue.s IL_0232
+022C: ldloc.s 19
+022E: brtrue.s IL_0232
+0230: ldc.i4.0
+0231: ret
+0232: ldloc.s 12
+0234: brfalse.s IL_023D
+0236: ldloc.s 12
+0238: ldc.i4.5
+0239: ceq
+023B: br.s IL_023E
+023D: ldc.i4.1
+023E: ldloc.s 9
+0240: and
+0241: brfalse.s IL_024A
+0243: ldloc.s 11
+0245: call GUI.set_color
+024A: ldloc.0
+024B: ldarg.2
+024C: ldfld fld:Doll.BoundingBox
+0251: ldarg.3
+0252: ldarg.s 6
+0254: callvirt DollBodyPartDef.GetRect
+0259: stloc.s 20
+025B: ldloc.s 20
+025D: stloc.s 21
+025F: ldloc.0
+0260: ldfld fld:DollBodyPartDef.width
+0265: ldc.r4 0
+026A: bge.un.s IL_0278
+026C: ldloca.s 20
+026E: ldc.r4 -1
+0273: call DollRenderer.ScaleRect
+0278: ldloca.s 21
+027A: call Rect.get_center
+027F: stloc.s 22
+0281: ldloc.s 21
+0283: ldloca.s 21
+0285: call Rect.get_width
+028A: call Math.Abs
+028F: ldc.r4 1
+0294: ldloc.0
+0295: ldflda fld:DollBodyPartDef.hitboxScale
+029A: ldfld fld:Vector2.x
+029F: sub
+02A0: mul
+02A1: ldloca.s 21
+02A3: call Rect.get_height
+02A8: call Math.Abs
+02AD: ldc.r4 1
+02B2: ldloc.0
+02B3: ldflda fld:DollBodyPartDef.hitboxScale
+02B8: ldfld fld:Vector2.y
+02BD: sub
+02BE: mul
+02BF: call GenUI.ContractedBy
+02C4: stloc.s 23
+02C6: ldarg.s 5
+02C8: brfalse.s IL_02D3
+02CA: ldloc.s 23
+02CC: call Mouse.IsOver
+02D1: br.s IL_02D4
+02D3: ldc.i4.0
+02D4: stloc.s 24
+02D6: ldloc.s 24
+02D8: brfalse.s IL_0304
+02DA: ldarg.0
+02DB: ldfld fld:DollRenderContext.BlockOverlay
+02E0: brfalse.s IL_0304
+02E2: ldarg.0
+02E3: ldfld fld:DollRenderContext.OverlayBlockRect
+02E8: call Rect.get_zero
+02ED: call Rect.op_Inequality
+02F2: brfalse.s IL_0304
+02F4: ldarg.0
+02F5: ldfld fld:DollRenderContext.OverlayBlockRect
+02FA: call Mouse.IsOver
+02FF: brfalse.s IL_0304
+0301: ldc.i4.0
+0302: stloc.s 24
+0304: ldloc.0
+0305: isinst DollOrgan
+030A: ldnull
+030B: cgt.un
+030D: stloc.s 25
+030F: ldloc.0
+0310: isinst DollBone
+0315: ldnull
+0316: cgt.un
+0318: stloc.s 26
+031A: ldloc.0
+031B: isinst DollEye
+0320: ldnull
+0321: cgt.un
+0323: stloc.s 27
+0325: ldarg.0
+0326: ldfld fld:DollRenderContext.FilterMode
+032B: ldc.i4.1
+032C: ceq
+032E: stloc.s 28
+0330: ldarg.0
+0331: ldfld fld:DollRenderContext.FilterMode
+0336: ldc.i4.2
+0337: ceq
+0339: stloc.s 29
+033B: ldloc.s 28
+033D: brfalse.s IL_0349
+033F: ldloc.s 26
+0341: brtrue.s IL_0349
+0343: ldloc.s 19
+0345: brtrue.s IL_0349
+0347: ldc.i4.0
+0348: ret
+0349: ldloc.s 29
+034B: brfalse.s IL_0357
+034D: ldloc.s 25
+034F: brtrue.s IL_0357
+0351: ldloc.s 19
+0353: brtrue.s IL_0357
+0355: ldc.i4.0
+0356: ret
+0357: ldloc.s 28
+0359: brtrue.s IL_03C2
+035B: ldloc.s 29
+035D: brtrue.s IL_03C2
+035F: ldloc.s 19
+0361: ldc.i4.0
+0362: ceq
+0364: ldloc.s 25
+0366: and
+0367: brfalse.s IL_037A
+0369: ldsfld fld:NiceHediffTabSettings.ShowOrgan
+036E: brfalse.s IL_0378
+0370: ldarg.0
+0371: ldfld fld:DollRenderContext.ArmorMode
+0376: brfalse.s IL_037A
+0378: ldc.i4.0
+0379: ret
+037A: ldloc.s 19
+037C: ldc.i4.0
+037D: ceq
+037F: ldloc.s 26
+0381: and
+0382: brfalse.s IL_0395
+0384: ldsfld fld:NiceHediffTabSettings.ShowBones
+0389: brfalse.s IL_0393
+038B: ldarg.0
+038C: ldfld fld:DollRenderContext.ArmorMode
+0391: brfalse.s IL_0395
+0393: ldc.i4.0
+0394: ret
+0395: ldloc.s 19
+0397: brtrue.s IL_03A0
+0399: ldloc.s 26
+039B: ldloc.s 25
+039D: or
+039E: br.s IL_03A1
+03A0: ldc.i4.0
+03A1: ldloc.s 9
+03A3: and
+03A4: brfalse.s IL_03AF
+03A6: ldsfld fld:NiceHediffTabSettings.ShowImplantedOrgans
+03AB: brtrue.s IL_03AF
+03AD: ldc.i4.0
+03AE: ret
+03AF: ldloc.s 19
+03B1: ldc.i4.0
+03B2: ceq
+03B4: ldloc.s 27
+03B6: and
+03B7: brfalse.s IL_03C2
+03B9: ldsfld fld:NiceHediffTabSettings.ShowEyes
+03BE: brtrue.s IL_03C2
+03C0: ldc.i4.0
+03C1: ret
+03C2: ldloc.s 12
+03C4: brfalse.s IL_0407
+03C6: ldloc.s 12
+03C8: ldc.i4.5
+03C9: beq.s IL_0407
+03CB: ldloc.s 25
+03CD: brfalse.s IL_03EA
+03CF: call GUI.get_color
+03D4: call Color.get_black
+03D9: ldc.r4 0.1
+03DE: call Color.Lerp
+03E3: call GUI.set_color
+03E8: br.s IL_0407
+03EA: ldloc.s 27
+03EC: brfalse.s IL_0407
+03EE: call GUI.get_color
+03F3: call Color.get_black
+03F8: ldc.r4 0.5
+03FD: call Color.Lerp
+0402: call GUI.set_color
+0407: ldloc.s 12
+0409: ldc.i4.1
+040A: beq IL_060B
+040F: ldloc.s 24
+0411: brfalse.s IL_042C
+0413: call GUI.get_color
+0418: call Color.get_white
+041D: ldc.r4 0.2
+0422: call Color.Lerp
+0427: call GUI.set_color
+042C: ldloc.s 7
+042E: ldfld fld:PartFrameInfo.Tend
+0433: stloc.s 32
+0435: ldloc.s 6
+0437: brfalse.s IL_0456
+0439: ldloc.s 12
+043B: brtrue.s IL_0456
+043D: call GUI.get_color
+0442: call Color.get_black
+0447: ldc.r4 0.1
+044C: call Color.Lerp
+0451: call GUI.set_color
+0456: ldloc.s 27
+0458: brfalse.s IL_047C
+045A: ldloc.s 12
+045C: brtrue.s IL_047C
+045E: ldc.r4 0
+0463: ldc.r4 0
+0468: ldc.r4 0
+046D: ldc.r4 0.3
+0472: newobj Color..ctor
+0477: call GUI.set_color
+047C: ldloc.s 10
+047E: brfalse.s IL_04C9
+0480: ldloc.s 27
+0482: brtrue.s IL_04C9
+0484: ldloc.s 25
+0486: brtrue.s IL_04C9
+0488: ldloc.s 26
+048A: brtrue.s IL_04C9
+048C: ldloc.0
+048D: isinst DollPartProsthesis
+0492: ldfld fld:DollPartProsthesis.drawBackground
+0497: brfalse.s IL_04C9
+0499: call GUI.get_color
+049E: stloc.s 35
+04A0: ldloc.0
+04A1: isinst DollPartProsthesis
+04A6: ldfld fld:DollPartProsthesis.overrideColor
+04AB: brfalse.s IL_04C2
+04AD: ldloc.s 12
+04AF: brfalse.s IL_04B6
+04B1: ldloc.s 12
+04B3: ldc.i4.5
+04B4: bne.un.s IL_04C2
+04B6: call Color.get_white
+04BB: call GUI.set_color
+04C0: br.s IL_04C9
+04C2: ldloc.s 35
+04C4: call GUI.set_color
+04C9: ldarg.0
+04CA: ldfld fld:DollRenderContext.ArmorMode
+04CF: brfalse.s IL_04F0
+04D1: ldloc.2
+04D2: ldloc.3
+04D3: call DollPartRenderer.IsApparelCoversPart
+04D8: brfalse.s IL_04E6
+04DA: ldsfld fld:Assets.ArmorCoveredColor
+04DF: call GUI.set_color
+04E4: br.s IL_04F0
+04E6: ldsfld fld:Assets.ArmorUncoveredColor
+04EB: call GUI.set_color
+04F0: ldloc.s 14
+04F2: brfalse.s IL_0543
+04F4: ldloc.s 18
+04F6: brtrue.s IL_0543
+04F8: ldloc.s 19
+04FA: brfalse.s IL_0539
+04FC: ldloc.s 16
+04FE: ldloc.s 17
+0500: and
+0501: brfalse.s IL_052C
+0503: ldloc.0
+0504: isinst DollPartProsthesis
+0509: stloc.s 36
+050B: ldloc.s 36
+050D: brfalse.s IL_052C
+050F: ldloc.s 36
+0511: ldfld fld:DollPartProsthesis.overrideColor
+0516: brtrue.s IL_0520
+0518: ldarg.0
+0519: ldfld fld:DollRenderContext.OperationHighlightColor
+051E: br.s IL_0525
+0520: call Color.get_white
+0525: call GUI.set_color
+052A: br.s IL_0543
+052C: ldarg.0
+052D: ldfld fld:DollRenderContext.OperationHighlightColor
+0532: call GUI.set_color
+0537: br.s IL_0543
+0539: call Color.get_white
+053E: call GUI.set_color
+0543: ldloc.0
+0544: call GUI.get_color
+0549: stfld fld:DollBodyPartDef.PartColor
+054E: ldloc.s 27
+0550: brfalse.s IL_056E
+0552: ldloc.0
+0553: isinst DollEye
+0558: ldloc.2
+0559: ldfld fld:Pawn.gender
+055E: callvirt DollEye.GetTex
+0563: stloc.s 33
+0565: ldsfld fld:DollBodyPartDef.FullUv
+056A: stloc.s 34
+056C: br.s IL_0578
+056E: ldloc.0
+056F: ldloca.s 33
+0571: ldloca.s 34
+0573: callvirt DollBodyPartDef.GetSource
+0578: ldloc.s 20
+057A: ldloc.s 33
+057C: ldloc.s 34
+057E: call GUI.DrawTextureWithTexCoords
+0583: ldloc.s 6
+0585: brfalse.s IL_05B5
+0587: ldloc.s 19
+0589: brtrue.s IL_05B5
+058B: ldloc.0
+058C: ldloc.s 20
+058E: ldsfld fld:Assets.ScarsTex
+0593: ldloc.s 33
+0595: ldloc.s 34
+0597: ldc.r4 1
+059C: ldc.r4 1
+05A1: ldc.r4 1
+05A6: ldc.r4 0.5
+05AB: newobj Color..ctor
+05B0: call DollPartRenderer.DrawPartBandageOverlay
+05B5: ldloc.s 12
+05B7: brfalse IL_06C7
+05BC: ldloc.s 32
+05BE: ldc.i4.0
+05BF: ble IL_06C7
+05C4: ldarg.0
+05C5: ldfld fld:DollRenderContext.ArmorMode
+05CA: brtrue.s IL_05D3
+05CC: call Color.get_white
+05D1: br.s IL_05D8
+05D3: call Color.get_gray
+05D8: stloc.s 37
+05DA: ldloc.s 7
+05DC: ldfld fld:PartFrameInfo.TendQuality
+05E1: ldc.r4 0.5
+05E6: bgt.s IL_05EF
+05E8: ldsfld fld:Assets.BandageBadHalfTex
+05ED: br.s IL_05F4
+05EF: ldsfld fld:Assets.BandageHalfTex
+05F4: stloc.s 38
+05F6: ldloc.0
+05F7: ldloc.s 20
+05F9: ldloc.s 38
+05FB: ldloc.s 33
+05FD: ldloc.s 34
+05FF: ldloc.s 37
+0601: call DollPartRenderer.DrawPartBandageOverlay
+0606: br IL_06C7
+060B: ldloc.s 25
+060D: ldloc.s 26
+060F: or
+0610: brfalse.s IL_0642
+0612: ldarg.0
+0613: ldloc.3
+0614: call DollPartRenderer.IsParentPartMissing
+0619: brtrue IL_06C7
+061E: ldsfld fld:Assets.ColorBGLD
+0623: call GUI.set_color
+0628: ldloc.0
+0629: ldloca.s 39
+062B: ldloca.s 40
+062D: callvirt DollBodyPartDef.GetSource
+0632: ldloc.s 20
+0634: ldloc.s 39
+0636: ldloc.s 40
+0638: call GUI.DrawTextureWithTexCoords
+063D: br IL_06C7
+0642: ldsfld fld:NiceHediffTabSettings.ProstheticNoMissingBodyParts
+0647: brfalse.s IL_06C7
+0649: ldloc.3
+064A: ldfld fld:BodyPartRecord.parent
+064F: brfalse.s IL_06C7
+0651: ldarg.0
+0652: ldloc.3
+0653: ldfld fld:BodyPartRecord.parent
+0658: call DollPartRenderer.IsTorso
+065D: brtrue.s IL_06C7
+065F: ldarg.0
+0660: ldloc.3
+0661: ldfld fld:BodyPartRecord.parent
+0666: callvirt DollRenderContext.GetImplantInfo
+066B: stloc.s 41
+066D: ldloc.s 41
+066F: brfalse.s IL_06C7
+0671: ldloc.s 41
+0673: ldfld fld:PartImplantInfo.Part
+0678: isinst DollPartProsthesis
+067D: dup
+067E: brtrue.s IL_0684
+0680: pop
+0681: ldc.i4.0
+0682: br.s IL_0689
+0684: ldfld fld:DollPartProsthesis.hideChilds
+0689: brtrue.s IL_06B1
+068B: ldloc.s 41
+068D: ldfld fld:PartImplantInfo.Part
+0692: ldfld fld:DollBodyPartDef.PartColor
+0697: call GUI.set_color
+069C: ldloc.0
+069D: ldloca.s 42
+069F: ldloca.s 43
+06A1: callvirt DollBodyPartDef.GetSource
+06A6: ldloc.s 20
+06A8: ldloc.s 42
+06AA: ldloc.s 43
+06AC: call GUI.DrawTextureWithTexCoords
+06B1: ldarg.0
+06B2: ldfld fld:DollRenderContext.Implants
+06B7: ldloc.3
+06B8: ldloc.s 41
+06BA: callvirt Dictionary`2.set_Item
+06BF: ldloc.3
+06C0: ldfld fld:BodyPartRecord.parent
+06C5: stloc.s 4
+06C7: ldarg.2
+06C8: isinst HumanlikeDoll
+06CD: stloc.s 30
+06CF: ldloc.s 30
+06D1: brfalse.s IL_06F3
+06D3: ldloc.0
+06D4: ldloc.s 30
+06D6: ldfld fld:HumanlikeDoll.headPart
+06DB: bne.un.s IL_06F3
+06DD: ldloc.s 30
+06DF: ldarg.3
+06E0: callvirt HumanlikeDoll.GetHeadOverlayRect
+06E5: stloc.s 44
+06E7: ldarg.0
+06E8: ldloc.2
+06E9: ldloc.s 44
+06EB: ldloc.0
+06EC: ldloc.s 12
+06EE: call DollPartRenderer.DrawHeadOverlay
+06F3: ldloc.s 12
+06F5: ldc.i4.1
+06F6: beq.s IL_0740
+06F8: ldarg.0
+06F9: ldfld fld:DollRenderContext.ArmorMode
+06FE: brfalse.s IL_0740
+0700: ldloc.0
+0701: ldfld fld:DollBodyPartDef.showArmorCover
+0706: brfalse.s IL_0740
+0708: ldarg.0
+0709: ldloc.3
+070A: ldarg.0
+070B: ldfld fld:DollRenderContext.ArmorDamageType
+0710: call DollPartRenderer.ArmorDamageStat
+0715: ldloca.s 46
+0717: call DollPartRenderer.CalcArmorCover
+071C: stloc.s 45
+071E: ldarg.0
+071F: ldfld fld:DollRenderContext.ArmorCoverToDraw
+0724: ldloc.s 22
+0726: ldloc.s 45
+0728: ldloc.s 46
+072A: ldloc.3
+072B: newobj ValueTuple`4..ctor
+0730: callvirt List`1.Add
+0735: ldloc.s 24
+0737: brfalse.s IL_0740
+0739: ldarg.0
+073A: ldloc.3
+073B: stfld fld:DollRenderContext.HoverFilterCandidate
+0740: ldloc.s 24
+0742: brfalse.s IL_07AC
+0744: ldarg.0
+0745: ldfld fld:DollRenderContext.ArmorMode
+074A: brtrue.s IL_07AC
+074C: ldarg.0
+074D: ldloc.s 4
+074F: stfld fld:DollRenderContext.HoveredPart
+0754: ldarg.0
+0755: ldloc.s 21
+0757: stfld fld:DollRenderContext.HoverRect
+075C: ldarg.0
+075D: ldloc.s 12
+075F: brtrue.s IL_0776
+0761: ldloc.s 4
+0763: callvirt BodyPartRecord.get_LabelCap
+0768: ldstr "
+"
+076D: ldloc.s 13
+076F: call String.Concat
+0774: br.s IL_077E
+0776: ldloc.2
+0777: ldloc.s 4
+0779: call DollPartRenderer.GetCommonTooltip
+077E: stfld fld:DollRenderContext.HoverTooltip
+0783: ldarg.0
+0784: ldfld fld:DollRenderContext.HitPercentMode
+0789: brfalse.s IL_0792
+078B: ldarg.0
+078C: ldloc.3
+078D: stfld fld:DollRenderContext.HoverFilterCandidate
+0792: call Event.get_current
+0797: callvirt Event.get_type
+079C: brtrue.s IL_07AC
+079E: ldloc.2
+079F: ldloc.s 4
+07A1: ldarg.0
+07A2: ldfld fld:DollRenderContext.ThingForMedBills
+07A7: call DollOperations.OpenFloatMenuForPart
+07AC: call Color.get_white
+07B1: call GUI.set_color
+07B6: ldc.i4.1
+07B7: ret
+
+=== NiceHealthTab.DollWidget.Draw()
+0000: ldarg.0
+0001: ldfld fld:Widget.Visible
+0006: brfalse.s IL_0010
+0008: ldarg.0
+0009: ldfld fld:DollWidget.Pawn
+000E: brtrue.s IL_0011
+0010: ret
+0011: ldarg.0
+0012: ldflda fld:Widget.Geometry
+0017: call Rect.get_width
+001C: ldc.r4 0
+0021: ble.s IL_0035
+0023: ldarg.0
+0024: ldflda fld:Widget.Geometry
+0029: call Rect.get_height
+002E: ldc.r4 0
+0033: bgt.un.s IL_0036
+0035: ret
+0036: ldarg.0
+0037: call Widget.get_InnerRect
+003C: stloc.0
+003D: ldloca.s 0
+003F: call Rect.get_width
+0044: ldc.r4 0
+0049: ble.s IL_0059
+004B: ldloca.s 0
+004D: call Rect.get_height
+0052: ldc.r4 0
+0057: bgt.un.s IL_005A
+0059: ret
+005A: ldarg.0
+005B: ldfld fld:DollWidget.ctx
+0060: ldarg.0
+0061: ldfld fld:DollWidget.Pawn
+0066: ldarg.0
+0067: ldfld fld:DollWidget.ShowBloodLoss
+006C: ldarg.0
+006D: ldfld fld:DollWidget.ThingForMedBills
+0072: callvirt DollRenderContext.Prepare
+0077: ldarg.0
+0078: ldfld fld:DollWidget.ctx
+007D: ldarg.0
+007E: call DollWidget.ComputeDollFilter
+0083: stfld fld:DollRenderContext.FilterMode
+0088: ldarg.0
+0089: ldarg.0
+008A: ldfld fld:DollWidget.ctx
+008F: call DollWidget.ApplyOperationHighlight
+0094: ldarg.0
+0095: ldarg.0
+0096: ldfld fld:DollWidget.Pawn
+009B: call DollWidget.UpdateIndexValidation
+00A0: ldarg.0
+00A1: ldfld fld:DollWidget.Pawn
+00A6: callvirt Pawn.get_Dead
+00AB: ldarg.0
+00AC: ldfld fld:DollWidget.rightCorner
+00B1: ldfld fld:CornerIconButtons.Hidden
+00B6: callvirt HashSet`1.Clear
+00BB: ldarg.0
+00BC: ldfld fld:DollWidget.leftCorner
+00C1: ldfld fld:CornerIconButtons.Hidden
+00C6: callvirt HashSet`1.Clear
+00CB: brfalse.s IL_0110
+00CD: ldarg.0
+00CE: ldfld fld:DollWidget.rightCorner
+00D3: ldfld fld:CornerIconButtons.Hidden
+00D8: ldc.i4.1
+00D9: callvirt HashSet`1.Add
+00DE: pop
+00DF: ldarg.0
+00E0: ldfld fld:DollWidget.rightCorner
+00E5: ldfld fld:CornerIconButtons.SelectedIndex
+00EA: ldc.i4.1
+00EB: bne.un.s IL_0110
+00ED: ldarg.0
+00EE: ldfld fld:DollWidget.rightCorner
+00F3: ldc.i4.m1
+00F4: stfld fld:CornerIconButtons.SelectedIndex
+00F9: ldarg.0
+00FA: ldfld fld:DollWidget.rightCorner
+00FF: ldfld fld:CornerIconButtons.OnSelect
+0104: dup
+0105: brtrue.s IL_010A
+0107: pop
+0108: br.s IL_0110
+010A: ldc.i4.m1
+010B: callvirt Action`1.Invoke
+0110: ldarg.0
+0111: ldfld fld:DollWidget.Operations
+0116: brfalse IL_01A3
+011B: ldarg.0
+011C: ldfld fld:DollWidget.leftCorner
+0121: ldfld fld:CornerIconButtons.Hidden
+0126: ldc.i4.0
+0127: callvirt HashSet`1.Add
+012C: pop
+012D: ldarg.0
+012E: ldfld fld:DollWidget.leftCorner
+0133: ldfld fld:CornerIconButtons.Hidden
+0138: ldc.i4.1
+0139: callvirt HashSet`1.Add
+013E: pop
+013F: ldarg.0
+0140: ldfld fld:DollWidget.leftCorner
+0145: ldfld fld:CornerIconButtons.Hidden
+014A: ldc.i4.2
+014B: callvirt HashSet`1.Add
+0150: pop
+0151: ldarg.0
+0152: ldfld fld:DollWidget.rightCorner
+0157: ldfld fld:CornerIconButtons.Hidden
+015C: ldc.i4.1
+015D: callvirt HashSet`1.Add
+0162: pop
+0163: ldarg.0
+0164: ldfld fld:DollWidget.leftCorner
+0169: ldfld fld:CornerIconButtons.SelectedIndex
+016E: ldc.i4.0
+016F: bge.s IL_017F
+0171: ldarg.0
+0172: ldfld fld:DollWidget.rightCorner
+0177: ldfld fld:CornerIconButtons.SelectedIndex
+017C: ldc.i4.1
+017D: bne.un.s IL_01A3
+017F: ldarg.0
+0180: ldfld fld:DollWidget.leftCorner
+0185: ldc.i4.m1
+0186: stfld fld:CornerIconButtons.SelectedIndex
+018B: ldarg.0
+018C: ldfld fld:DollWidget.rightCorner
+0191: ldc.i4.m1
+0192: stfld fld:CornerIconButtons.SelectedIndex
+0197: ldarg.0
+0198: ldfld fld:DollWidget.damageButtons
+019D: ldc.i4.0
+019E: stfld fld:SlideInIconButtons.SelectedIndex
+01A3: ldarg.0
+01A4: ldfld fld:DollWidget.ctx
+01A9: ldarg.0
+01AA: call DollWidget.get_CurrentArmorMode
+01AF: brtrue.s IL_01B8
+01B1: ldsfld fld:NiceHediffTabSettings.ShowArmorCover
+01B6: br.s IL_01B9
+01B8: ldc.i4.1
+01B9: stfld fld:DollRenderContext.ArmorMode
+01BE: ldarg.0
+01BF: ldfld fld:DollWidget.ctx
+01C4: ldarg.0
+01C5: call DollWidget.get_CurrentHitPercentMode
+01CA: stfld fld:DollRenderContext.HitPercentMode
+01CF: ldarg.0
+01D0: ldfld fld:DollWidget.ctx
+01D5: ldarg.0
+01D6: ldfld fld:DollWidget.damageButtons
+01DB: ldfld fld:SlideInIconButtons.SelectedIndex
+01E0: stfld fld:DollRenderContext.ArmorDamageType
+01E5: ldarg.0
+01E6: ldfld fld:DollWidget.ctx
+01EB: ldarg.0
+01EC: ldfld fld:Widget.Geometry
+01F1: stfld fld:DollRenderContext.HairClipRect
+01F6: ldarg.0
+01F7: call DollWidget.DrawDollShadow
+01FC: ldloca.s 0
+01FE: call Rect.get_height
+0203: ldc.r4 0.9
+0208: mul
+0209: stloc.1
+020A: ldloca.s 2
+020C: ldloca.s 0
+020E: call Rect.get_x
+0213: ldloca.s 0
+0215: call Rect.get_y
+021A: ldloca.s 0
+021C: call Rect.get_width
+0221: ldloc.1
+0222: call Rect..ctor
+0227: ldloca.s 3
+0229: ldloca.s 0
+022B: call Rect.get_x
+0230: ldloca.s 0
+0232: call Rect.get_y
+0237: ldloc.1
+0238: add
+0239: ldloca.s 0
+023B: call Rect.get_width
+0240: ldloca.s 0
+0242: call Rect.get_height
+0247: ldloc.1
+0248: sub
+0249: call Rect..ctor
+024E: ldarg.0
+024F: ldloc.3
+0250: call DollWidget.UpdateButtonHover
+0255: ldarg.0
+0256: ldfld fld:DollWidget.dollIndexBroken
+025B: dup
+025C: brtrue.s IL_0265
+025E: call Rect.get_zero
+0263: br.s IL_026B
+0265: ldloc.2
+0266: call DollIndexWarningOverlay.RectFor
+026B: stloc.s 4
+026D: dup
+026E: brfalse.s IL_027F
+0270: ldarg.0
+0271: ldfld fld:DollWidget.ctx
+0276: ldloc.s 4
+0278: stfld fld:DollRenderContext.OverlayBlockRect
+027D: br.s IL_02DA
+027F: ldarg.0
+0280: ldfld fld:DollWidget.overlayMode
+0285: brfalse.s IL_02CA
+0287: ldloca.s 2
+0289: call Rect.get_height
+028E: ldc.r4 0.25
+0293: mul
+0294: stloc.s 5
+0296: ldarg.0
+0297: ldfld fld:DollWidget.ctx
+029C: ldarg.0
+029D: ldflda fld:Widget.Geometry
+02A2: call Rect.get_xMin
+02A7: ldloca.s 2
+02A9: call Rect.get_yMax
+02AE: ldloc.s 5
+02B0: sub
+02B1: ldarg.0
+02B2: ldflda fld:Widget.Geometry
+02B7: call Rect.get_width
+02BC: ldloc.s 5
+02BE: newobj Rect..ctor
+02C3: stfld fld:DollRenderContext.OverlayBlockRect
+02C8: br.s IL_02DA
+02CA: ldarg.0
+02CB: ldfld fld:DollWidget.ctx
+02D0: call Rect.get_zero
+02D5: stfld fld:DollRenderContext.OverlayBlockRect
+02DA: ldarg.0
+02DB: ldloc.2
+02DC: call DollWidget.DrawMainDoll
+02E1: ldarg.0
+02E2: call DollWidget.DrawArmorCovers
+02E7: ldarg.0
+02E8: ldloc.3
+02E9: call DollWidget.DrawButtons
+02EE: ldarg.0
+02EF: call DollWidget.DrawArmorCovers
+02F4: ldarg.0
+02F5: ldloc.2
+02F6: ldloc.3
+02F7: call DollWidget.DrawOverlay
+02FC: ldarg.0
+02FD: call DollWidget.DrawArmorCovers
+0302: ldarg.0
+0303: call DollWidget.DrawFinishedBackgrounds
+0308: brfalse.s IL_0333
+030A: ldarg.0
+030B: ldfld fld:DollWidget.ctx
+0310: ldloc.s 4
+0312: call DollIndexWarningOverlay.Draw
+0317: brfalse.s IL_0333
+0319: ldarg.0
+031A: ldnull
+031B: stfld fld:DollWidget.validatedBody
+0320: ldarg.0
+0321: ldnull
+0322: stfld fld:DollWidget.validatedRemap
+0327: ldarg.0
+0328: ldarg.0
+0329: ldfld fld:DollWidget.Pawn
+032E: call DollWidget.UpdateIndexValidation
+0333: ldarg.0
+0334: ldloc.0
+0335: call DollWidget.DrawDamageButtons
+033A: ldarg.0
+033B: ldloc.0
+033C: call DollWidget.DrawCornerButtons
+0341: ldloc.0
+0342: call DollWidget.VanillaButtonRect
+0347: call DollWidget.DrawVanillaToggleButton
+034C: ldarg.0
+034D: call DollWidget.DrawTooltips
+0352: ldarg.0
+0353: call DollWidget.ResolveHoverFilter
+0358: ret

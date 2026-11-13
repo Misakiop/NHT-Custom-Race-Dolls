@@ -1,27 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  NHT_CustomDolls
-  由 NHT Anatomy Editor 生成 · 2026-11-05 23:08
+  NHT_CustomDolls0.3.1
+  由 NHT Anatomy Editor 生成 · 2026-11-12 23:11
   基准模组：Nice Health Tab (Andromeda.NiceHealthTab) v1.6 · 创意工坊 3328729902
   RJW 层：Nice Health Tab - RJW Genitalia (zoc2k.nicehealthtab.rjwgenitalia) · 相关操作带 MayRequire rim.job.world
-  画布：1 个 · 部位：30 个 · 补丁操作：11 段
+  画布：1 个 · 部位：30 个 · 补丁操作：8 段
   贴图路径指向 Nice Health Tab（以及 RJW 补丁）的 Textures/ 目录。直接点「保存到注入模组」写进 NHT_CustomDollTest/Patches/ 即可，也可以手动放进任意模组的 Patches/。
   备注：以 Nice Health Tab 模组 1.6 默认体型为基准制作的部位补丁。
 -->
 <Patch>
-  <!-- Monolyn · HAR 头发参数（种族 MNRace） -->
+  <!-- race marker: MNRace -->
   <Operation Class="PatchOperationAdd">
-    <success>Always</success>
     <xpath>Defs</xpath>
     <value>
-      <NHT_CustomDolls.HairFitDef>
+      <NHT_CustomDolls.RaceMarkerDef>
+        <defName>NHTCD_RaceMarker_MNRace</defName>
+        <race>MNRace</race>
+      </NHT_CustomDolls.RaceMarkerDef>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/*[defName='MNRace']</xpath>
+    <match Class="PatchOperationSequence">
+      <operations>
+        <!-- Monolyn · HAR 头发参数（种族 MNRace） -->
+        <li Class="PatchOperationAdd">
+        <success>Always</success>
+        <xpath>Defs</xpath>
+        <value>
+        <NHT_CustomDolls.HairFitDef>
         <defName>NHTCD_HairFit_MNRace</defName>
         <race>MNRace</race>
         <scale>0.400</scale>
         <offsetX>0.000</offsetX>
         <offsetY>-0.344</offsetY>
         <front>true</front>
-        <layer>15</layer>
+        <layer>14</layer>
         <showInXray>false</showInXray>
         <vanillaScale>1.000</vanillaScale>
         <vanillaOffsetX>0.000</vanillaOffsetX>
@@ -30,22 +44,22 @@
         </aboveParts>
         <topParts>
         </topParts>
-      </NHT_CustomDolls.HairFitDef>
-    </value>
-  </Operation>
-  <!-- Monolyn · HAR 头发参数（种族 Monolyn） -->
-  <Operation Class="PatchOperationAdd">
-    <success>Always</success>
-    <xpath>Defs</xpath>
-    <value>
-      <NHT_CustomDolls.HairFitDef>
+        </NHT_CustomDolls.HairFitDef>
+        </value>
+        </li>
+        <!-- Monolyn · HAR 头发参数（种族 Monolyn） -->
+        <li Class="PatchOperationAdd">
+        <success>Always</success>
+        <xpath>Defs</xpath>
+        <value>
+        <NHT_CustomDolls.HairFitDef>
         <defName>NHTCD_HairFit_Monolyn</defName>
         <race>Monolyn</race>
         <scale>0.400</scale>
         <offsetX>0.000</offsetX>
         <offsetY>-0.344</offsetY>
         <front>true</front>
-        <layer>15</layer>
+        <layer>14</layer>
         <showInXray>false</showInXray>
         <vanillaScale>1.000</vanillaScale>
         <vanillaOffsetX>0.000</vanillaOffsetX>
@@ -54,157 +68,94 @@
         </aboveParts>
         <topParts>
         </topParts>
-      </NHT_CustomDolls.HairFitDef>
-    </value>
-  </Operation>
-  <!-- Monolyn · 部位颜色开关：关闭后这些部位显示为黑白 -->
-  <Operation Class="PatchOperationAdd">
-    <success>Always</success>
-    <xpath>Defs</xpath>
-    <value>
-      <NHT_CustomDolls.DesatPartsDef>
+        </NHT_CustomDolls.HairFitDef>
+        </value>
+        </li>
+        <!-- Monolyn · 部位颜色开关：关闭后这些部位显示为黑白 -->
+        <li Class="PatchOperationAdd">
+        <success>Always</success>
+        <xpath>Defs</xpath>
+        <value>
+        <NHT_CustomDolls.DesatPartsDef>
         <defName>NHTCD_Desat_MNRace</defName>
         <label>Monolyn</label>
         <race>MNRace</race>
         <doll>MNRace</doll>
         <parts>
-          <li><part>MNRace_u63d0u706f</part><id>0</id><label>提灯</label></li>
-          <li><part>MNRace_u5de6u5929u7ebf</part><id>13</id><label>左天线</label></li>
-          <li><part>MNRace_u53f3u5929u7ebf</part><id>13</id><label>右天线</label></li>
+        <li><part>MNRace_MNRace_u63d0u706f</part><id>0</id><label>提灯</label></li>
+        <li><part>MNRace_MNRace_u5de6u5929u7ebf</part><id>13</id><label>左天线</label></li>
+        <li><part>MNRace_MNRace_u53f3u5929u7ebf</part><id>13</id><label>右天线</label></li>
         </parts>
-      </NHT_CustomDolls.DesatPartsDef>
-    </value>
-  </Operation>
-  <!-- Monolyn · 画在头发之上的部位（NHTCD_HairFit_MNRace） -->
-  <Operation Class="PatchOperationReplace">
-    <success>Always</success>
-    <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_MNRace"]/aboveParts</xpath>
-    <value>
-      <aboveParts>
-        <li>MNRace_u63d0u706f</li>
-      </aboveParts>
-    </value>
-  </Operation>
-  <Operation Class="PatchOperationReplace">
-    <success>Always</success>
-    <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_MNRace"]/topParts</xpath>
-    <value>
-      <topParts>
-        <li><part>MNRace_u63d0u706f</part><level>2</level><vanilla>false</vanilla></li>
-      </topParts>
-    </value>
-  </Operation>
-  <!-- Monolyn · 画在头发之上的部位（NHTCD_HairFit_Monolyn） -->
-  <Operation Class="PatchOperationReplace">
-    <success>Always</success>
-    <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_Monolyn"]/aboveParts</xpath>
-    <value>
-      <aboveParts>
-        <li>MNRace_u63d0u706f</li>
-      </aboveParts>
-    </value>
-  </Operation>
-  <Operation Class="PatchOperationReplace">
-    <success>Always</success>
-    <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_Monolyn"]/topParts</xpath>
-    <value>
-      <topParts>
-        <li><part>MNRace_u63d0u706f</part><level>2</level><vanilla>false</vanilla></li>
-      </topParts>
-    </value>
-  </Operation>
-  <!-- HandDoll · 手掌基底 #39 -->
-  <Operation Class="PatchOperationReplace">
-    <success>Always</success>
-    <xpath>Defs/NiceHealthTab.DollBodyPart[defName="HandBaseRight"]</xpath>
-    <value>
-      <NiceHealthTab.DollBodyPart>
-        <defName>HandBaseRight</defName>
-        <dollName>HandDoll</dollName>
-        <imagePath>HediffTab/Baseliner/Hand/HandBase</imagePath>
-        <bodyPartId>39</bodyPartId>
-        <position><x>113</x><y>40.5</y></position>
-        <width>1</width>
-        <height>1</height>
-        <layer>19</layer>
-        <visibleByDefault>true</visibleByDefault>
-        <showArmorCover>true</showArmorCover>
-        <bondageScale>1.00</bondageScale>
-        <hitboxScale><x>0.87</x><y>0.7</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-    </value>
-  </Operation>
-  <!-- HandDoll · 中指 #31 -->
-  <Operation Class="PatchOperationReplace">
-    <success>Always</success>
-    <xpath>Defs/NiceHealthTab.DollBodyPart[defName="MiddleLeft"]</xpath>
-    <value>
-      <NiceHealthTab.DollBodyPart>
-        <defName>MiddleLeft</defName>
-        <dollName>HandDoll</dollName>
-        <imagePath>HediffTab/Baseliner/Hand/Middle</imagePath>
-        <bodyPartId>31</bodyPartId>
-        <position><x>-97</x><y>-56.3</y></position>
-        <width>-1</width>
-        <height>1</height>
-        <layer>3</layer>
-        <visibleByDefault>true</visibleByDefault>
-        <showArmorCover>false</showArmorCover>
-        <bondageScale>1.00</bondageScale>
-        <hitboxScale><x>0.76</x><y>0.87</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-    </value>
-  </Operation>
-  <!-- FeetDoll · 脚掌基底 #58 -->
-  <Operation Class="PatchOperationReplace">
-    <success>Always</success>
-    <xpath>Defs/NiceHealthTab.DollBodyPart[defName="FeetBaseRight"]</xpath>
-    <value>
-      <NiceHealthTab.DollBodyPart>
-        <defName>FeetBaseRight</defName>
-        <dollName>FeetDoll</dollName>
-        <imagePath>HediffTab/Baseliner/Feet/Feet</imagePath>
-        <bodyPartId>58</bodyPartId>
-        <position><x>97.2</x><y>17.3</y></position>
-        <width>1</width>
-        <height>1</height>
-        <layer>10</layer>
-        <visibleByDefault>true</visibleByDefault>
-        <showArmorCover>true</showArmorCover>
-        <bondageScale>1.00</bondageScale>
-        <hitboxScale><x>0.8</x><y>0.8</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-    </value>
-  </Operation>
-  <!-- 新增定义 -->
-  <Operation Class="PatchOperationAdd">
-    <success>Always</success>
-    <xpath>Defs</xpath>
-    <value>
-      <!-- Monolyn · 新建 HumanlikeDoll MNRace -->
-      <NiceHealthTab.HumanlikeDoll>
+        </NHT_CustomDolls.DesatPartsDef>
+        </value>
+        </li>
+        <!-- Monolyn · 画在头发之上的部位（NHTCD_HairFit_MNRace） -->
+        <li Class="PatchOperationReplace">
+        <success>Always</success>
+        <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_MNRace"]/aboveParts</xpath>
+        <value>
+        <aboveParts>
+        <li>MNRace_MNRace_u63d0u706f</li>
+        </aboveParts>
+        </value>
+        </li>
+        <li Class="PatchOperationReplace">
+        <success>Always</success>
+        <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_MNRace"]/topParts</xpath>
+        <value>
+        <topParts>
+        <li><part>MNRace_MNRace_u63d0u706f</part><level>2</level><vanilla>false</vanilla></li>
+        </topParts>
+        </value>
+        </li>
+        <!-- Monolyn · 画在头发之上的部位（NHTCD_HairFit_Monolyn） -->
+        <li Class="PatchOperationReplace">
+        <success>Always</success>
+        <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_Monolyn"]/aboveParts</xpath>
+        <value>
+        <aboveParts>
+        <li>MNRace_MNRace_u63d0u706f</li>
+        </aboveParts>
+        </value>
+        </li>
+        <li Class="PatchOperationReplace">
+        <success>Always</success>
+        <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_Monolyn"]/topParts</xpath>
+        <value>
+        <topParts>
+        <li><part>MNRace_MNRace_u63d0u706f</part><level>2</level><vanilla>false</vanilla></li>
+        </topParts>
+        </value>
+        </li>
+        <!-- 新增定义 -->
+        <li Class="PatchOperationAdd">
+        <success>Always</success>
+        <xpath>Defs</xpath>
+        <value>
+        <!-- Monolyn · 新建 HumanlikeDoll MNRace -->
+        <NiceHealthTab.HumanlikeDoll>
         <defName>MNRace</defName>
         <gender>Female</gender>
         <xenotype>MNRace</xenotype>
         <bodytype>*</bodytype>
         <outlinePath>HediffTab/Baseliner/Female/Outline</outlinePath>
-        <headPart>MN_FemaleHead</headPart>
+        <headPart>MNRace_FemaleHead</headPart>
         <BoundingBox>
-          <m_XMin>-160</m_XMin>
-          <m_YMin>-455</m_YMin>
-          <m_Width>320</m_Width>
-          <m_Height>890</m_Height>
+        <m_XMin>-160</m_XMin>
+        <m_YMin>-455</m_YMin>
+        <m_Width>320</m_Width>
+        <m_Height>890</m_Height>
         </BoundingBox>
         <headOverlayOffset><x>-2</x><y>-2</y></headOverlayOffset>
         <headOverlayScale><x>310</x><y>310</y></headOverlayScale>
-      </NiceHealthTab.HumanlikeDoll>
-      <!-- 自定义部位 · 提灯 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>MNRace_u63d0u706f</defName>
+        </NiceHealthTab.HumanlikeDoll>
+        <!-- 自定义部位 · 提灯 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>MNRace_MNRace_u63d0u706f</defName>
         <imagePath>Custom/Monolyn/MNLantern1</imagePath>
         <position>
-          <x>68.4</x>
-          <y>13.3</y>
+        <x>68.4</x>
+        <y>13.3</y>
         </position>
         <layer>29</layer>
         <dollName>MNRace</dollName>
@@ -216,15 +167,15 @@
         <width>0.47</width>
         <height>0.47</height>
         <hitboxScale><x>0.93</x><y>0.93</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
+        </NiceHealthTab.DollBodyPart>
 
-      <!-- 自定义部位 · 提灯（灰） -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>MNRace_u63d0u706f_NHTCD_Gray</defName>
+        <!-- 自定义部位 · 提灯（灰） -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>MNRace_MNRace_u63d0u706f_NHTCD_Gray</defName>
         <imagePath>Custom/NHTCD_Gray/Monolyn/MNRace_MNRace_u63d0u706f</imagePath>
         <position>
-          <x>68.4</x>
-          <y>13.3</y>
+        <x>68.4</x>
+        <y>13.3</y>
         </position>
         <layer>29</layer>
         <dollName>MNRace</dollName>
@@ -236,14 +187,14 @@
         <width>0.47</width>
         <height>0.47</height>
         <hitboxScale><x>0.93</x><y>0.93</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 躯干 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>MN_FemaleTorso</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 躯干 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>MNRace_FemaleTorso</defName>
         <imagePath>HediffTab/Baseliner/Female/Torso</imagePath>
         <position>
-          <x>2</x>
-          <y>-140.5</y>
+        <x>2</x>
+        <y>-140.5</y>
         </position>
         <layer>1</layer>
         <dollName>MNRace</dollName>
@@ -255,14 +206,14 @@
         <width>1</width>
         <height>1</height>
         <hitboxScale><x>0.74</x><y>0.75</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 右腿 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>MN_FemaleLegLeft</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 右腿 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>MNRace_FemaleLegLeft</defName>
         <imagePath>HediffTab/Baseliner/Female/Leg</imagePath>
         <position>
-          <x>-45</x>
-          <y>179.5</y>
+        <x>-45</x>
+        <y>179.5</y>
         </position>
         <layer>2</layer>
         <dollName>MNRace</dollName>
@@ -274,14 +225,14 @@
         <width>-1</width>
         <height>1</height>
         <hitboxScale><x>0.8</x><y>0.88</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 左腿 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>MN_FemaleLegRight</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 左腿 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>MNRace_FemaleLegRight</defName>
         <imagePath>HediffTab/Baseliner/Female/Leg</imagePath>
         <position>
-          <x>45</x>
-          <y>179.5</y>
+        <x>45</x>
+        <y>179.5</y>
         </position>
         <layer>2</layer>
         <dollName>MNRace</dollName>
@@ -293,14 +244,14 @@
         <width>1</width>
         <height>1</height>
         <hitboxScale><x>0.8</x><y>0.88</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 颈部 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>MN_FemaleNeck</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 颈部 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>MNRace_FemaleNeck</defName>
         <imagePath>HediffTab/Baseliner/Female/Neck</imagePath>
         <position>
-          <x>1</x>
-          <y>-303.5</y>
+        <x>1</x>
+        <y>-303.5</y>
         </position>
         <layer>2</layer>
         <dollName>MNRace</dollName>
@@ -312,14 +263,14 @@
         <width>1</width>
         <height>1</height>
         <hitboxScale><x>0.9</x><y>0.74</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 右肩 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>MN_FemaleShoulderLeft</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 右肩 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>MNRace_FemaleShoulderLeft</defName>
         <imagePath>HediffTab/Baseliner/Female/Shoulder</imagePath>
         <position>
-          <x>-81.5</x>
-          <y>-198</y>
+        <x>-81.5</x>
+        <y>-198</y>
         </position>
         <layer>2</layer>
         <dollName>MNRace</dollName>
@@ -331,14 +282,14 @@
         <width>-1</width>
         <height>1</height>
         <hitboxScale><x>0.73</x><y>0.79</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 左肩 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>MN_FemaleShoulderRight</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 左肩 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>MNRace_FemaleShoulderRight</defName>
         <imagePath>HediffTab/Baseliner/Female/Shoulder</imagePath>
         <position>
-          <x>81.5</x>
-          <y>-198</y>
+        <x>81.5</x>
+        <y>-198</y>
         </position>
         <layer>2</layer>
         <dollName>MNRace</dollName>
@@ -350,14 +301,14 @@
         <width>1</width>
         <height>1</height>
         <hitboxScale><x>0.73</x><y>0.79</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 右臂 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>MN_FemaleArmLeft</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 右臂 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>MNRace_FemaleArmLeft</defName>
         <imagePath>HediffTab/Baseliner/Female/Arm</imagePath>
         <position>
-          <x>-107</x>
-          <y>-82</y>
+        <x>-107</x>
+        <y>-82</y>
         </position>
         <layer>3</layer>
         <dollName>MNRace</dollName>
@@ -369,14 +320,14 @@
         <width>-1</width>
         <height>1</height>
         <hitboxScale><x>0.74</x><y>0.73</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 左臂 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>MN_FemaleArmRight</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 左臂 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>MNRace_FemaleArmRight</defName>
         <imagePath>HediffTab/Baseliner/Female/Arm</imagePath>
         <position>
-          <x>107</x>
-          <y>-82</y>
+        <x>107</x>
+        <y>-82</y>
         </position>
         <layer>3</layer>
         <dollName>MNRace</dollName>
@@ -388,14 +339,14 @@
         <width>1</width>
         <height>1</height>
         <hitboxScale><x>0.74</x><y>0.73</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 右脚 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>MN_FemaleFeetLeft</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 右脚 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>MNRace_FemaleFeetLeft</defName>
         <imagePath>HediffTab/Baseliner/Female/Feet</imagePath>
         <position>
-          <x>-47.5</x>
-          <y>411.5</y>
+        <x>-47.5</x>
+        <y>411.5</y>
         </position>
         <layer>3</layer>
         <dollName>MNRace</dollName>
@@ -407,14 +358,14 @@
         <width>-1</width>
         <height>1</height>
         <hitboxScale><x>0.8</x><y>0.77</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 左脚 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>MN_FemaleFeetRight</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 左脚 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>MNRace_FemaleFeetRight</defName>
         <imagePath>HediffTab/Baseliner/Female/Feet</imagePath>
         <position>
-          <x>47.5</x>
-          <y>411.5</y>
+        <x>47.5</x>
+        <y>411.5</y>
         </position>
         <layer>3</layer>
         <dollName>MNRace</dollName>
@@ -426,14 +377,14 @@
         <width>1</width>
         <height>1</height>
         <hitboxScale><x>0.8</x><y>0.77</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 头部 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>MN_FemaleHead</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 头部 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>MNRace_FemaleHead</defName>
         <imagePath>HediffTab/Baseliner/Female/NiceHead</imagePath>
         <position>
-          <x>0</x>
-          <y>-352</y>
+        <x>0</x>
+        <y>-352</y>
         </position>
         <layer>3</layer>
         <dollName>MNRace</dollName>
@@ -445,14 +396,14 @@
         <width>1</width>
         <height>1</height>
         <hitboxScale><x>0.92</x><y>0.92</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 右手 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>MN_FemaleHandLeft</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 右手 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>MNRace_FemaleHandLeft</defName>
         <imagePath>HediffTab/Baseliner/Female/Hand</imagePath>
         <position>
-          <x>-121</x>
-          <y>5.5</y>
+        <x>-121</x>
+        <y>5.5</y>
         </position>
         <layer>4</layer>
         <dollName>MNRace</dollName>
@@ -464,14 +415,14 @@
         <width>-1</width>
         <height>1</height>
         <hitboxScale><x>0.88</x><y>0.75</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 左手 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>MN_FemaleHandRight</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 左手 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>MNRace_FemaleHandRight</defName>
         <imagePath>HediffTab/Baseliner/Female/Hand</imagePath>
         <position>
-          <x>121</x>
-          <y>5.5</y>
+        <x>121</x>
+        <y>5.5</y>
         </position>
         <layer>4</layer>
         <dollName>MNRace</dollName>
@@ -483,14 +434,14 @@
         <width>1</width>
         <height>1</height>
         <hitboxScale><x>0.88</x><y>0.75</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 骨盆 -->
-      <NiceHealthTab.DollBone>
-        <defName>MN_FemalePelvis</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 骨盆 -->
+        <NiceHealthTab.DollBone>
+        <defName>MNRace_FemalePelvis</defName>
         <imagePath>HediffTab/Bones/Pelvis</imagePath>
         <position>
-          <x>0</x>
-          <y>-42.5</y>
+        <x>0</x>
+        <y>-42.5</y>
         </position>
         <layer>9</layer>
         <dollName>MNRace</dollName>
@@ -503,14 +454,14 @@
         <height>1</height>
         <hitboxScale><x>0.75</x><y>0.8</y></hitboxScale>
         <extraLayer>0</extraLayer>
-      </NiceHealthTab.DollBone>
-      <!-- 脊柱 -->
-      <NiceHealthTab.DollBone>
-        <defName>MN_FemaleSpine</defName>
+        </NiceHealthTab.DollBone>
+        <!-- 脊柱 -->
+        <NiceHealthTab.DollBone>
+        <defName>MNRace_FemaleSpine</defName>
         <imagePath>HediffTab/Bones/Spine</imagePath>
         <position>
-          <x>0</x>
-          <y>-152.5</y>
+        <x>0</x>
+        <y>-152.5</y>
         </position>
         <layer>10</layer>
         <dollName>MNRace</dollName>
@@ -523,14 +474,14 @@
         <height>0.7</height>
         <hitboxScale><x>0.99</x><y>0.82</y></hitboxScale>
         <extraLayer>0</extraLayer>
-      </NiceHealthTab.DollBone>
-      <!-- 鼻子 -->
-      <NiceHealthTab.DollOrgan>
-        <defName>MN_FemaleNose</defName>
+        </NiceHealthTab.DollBone>
+        <!-- 鼻子 -->
+        <NiceHealthTab.DollOrgan>
+        <defName>MNRace_FemaleNose</defName>
         <imagePath>HediffTab/Baseliner/Head/Nose</imagePath>
         <position>
-          <x>0</x>
-          <y>-329.5</y>
+        <x>0</x>
+        <y>-329.5</y>
         </position>
         <layer>14</layer>
         <dollName>MNRace</dollName>
@@ -543,52 +494,52 @@
         <height>1</height>
         <hitboxScale><x>0.88</x><y>0.88</y></hitboxScale>
         <extraLayer>0</extraLayer>
-      </NiceHealthTab.DollOrgan>
-      <!-- 左眼 -->
-      <NiceHealthTab.DollEye>
-        <defName>MN_FemaleEyeLeft</defName>
+        </NiceHealthTab.DollOrgan>
+        <!-- 左眼 -->
+        <NiceHealthTab.DollEye>
+        <defName>MNRace_FemaleEyeLeft</defName>
         <imagePath>HediffTab/Baseliner/Head/NiceMaleEye</imagePath>
         <position>
-          <x>18</x>
-          <y>-341.5</y>
+        <x>18</x>
+        <y>-341.5</y>
         </position>
         <layer>15</layer>
         <dollName>MNRace</dollName>
         <bodyPartId>16</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.6</width>
         <height>0.6</height>
-        <hitboxScale><x>0.8</x><y>0.75</y></hitboxScale>
-      </NiceHealthTab.DollEye>
-      <!-- 右眼 -->
-      <NiceHealthTab.DollEye>
-        <defName>MN_FemaleEyeRight</defName>
+        <hitboxScale><x>0.73</x><y>0.73</y></hitboxScale>
+        </NiceHealthTab.DollEye>
+        <!-- 右眼 -->
+        <NiceHealthTab.DollEye>
+        <defName>MNRace_FemaleEyeRight</defName>
         <imagePath>HediffTab/Baseliner/Head/NiceMaleEye</imagePath>
         <position>
-          <x>-18</x>
-          <y>-341.5</y>
+        <x>-18</x>
+        <y>-341.5</y>
         </position>
         <layer>15</layer>
         <dollName>MNRace</dollName>
         <bodyPartId>17</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>-0.6</width>
         <height>0.6</height>
-        <hitboxScale><x>0.8</x><y>0.75</y></hitboxScale>
-      </NiceHealthTab.DollEye>
-      <!-- 大脑 -->
-      <NiceHealthTab.DollOrgan>
-        <defName>MN_FemaleBrain</defName>
+        <hitboxScale><x>0.73</x><y>0.73</y></hitboxScale>
+        </NiceHealthTab.DollEye>
+        <!-- 大脑 -->
+        <NiceHealthTab.DollOrgan>
+        <defName>MNRace_FemaleBrain</defName>
         <imagePath>HediffTab/Organs/Brain</imagePath>
         <position>
-          <x>1</x>
-          <y>-379</y>
+        <x>1</x>
+        <y>-379</y>
         </position>
         <layer>20</layer>
         <dollName>MNRace</dollName>
@@ -601,14 +552,14 @@
         <height>1</height>
         <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
         <extraLayer>0</extraLayer>
-      </NiceHealthTab.DollOrgan>
-      <!-- 心脏 -->
-      <NiceHealthTab.DollOrgan>
-        <defName>MN_FemaleHeart</defName>
+        </NiceHealthTab.DollOrgan>
+        <!-- 心脏 -->
+        <NiceHealthTab.DollOrgan>
+        <defName>MNRace_FemaleHeart</defName>
         <imagePath>HediffTab/Organs/Heart</imagePath>
         <position>
-          <x>4.5</x>
-          <y>-167.5</y>
+        <x>4.5</x>
+        <y>-167.5</y>
         </position>
         <layer>21</layer>
         <dollName>MNRace</dollName>
@@ -621,14 +572,14 @@
         <height>0.85</height>
         <hitboxScale><x>0.75</x><y>0.75</y></hitboxScale>
         <extraLayer>0</extraLayer>
-      </NiceHealthTab.DollOrgan>
-      <!-- 右肾 -->
-      <NiceHealthTab.DollOrgan>
-        <defName>MN_FemaleKidneyLeft</defName>
+        </NiceHealthTab.DollOrgan>
+        <!-- 右肾 -->
+        <NiceHealthTab.DollOrgan>
+        <defName>MNRace_FemaleKidneyLeft</defName>
         <imagePath>HediffTab/Organs/Kidney</imagePath>
         <position>
-          <x>-37.5</x>
-          <y>-71</y>
+        <x>-37.5</x>
+        <y>-71</y>
         </position>
         <layer>22</layer>
         <dollName>MNRace</dollName>
@@ -641,14 +592,14 @@
         <height>0.85</height>
         <hitboxScale><x>0.8</x><y>0.7</y></hitboxScale>
         <extraLayer>0</extraLayer>
-      </NiceHealthTab.DollOrgan>
-      <!-- 左肾 -->
-      <NiceHealthTab.DollOrgan>
-        <defName>MN_FemaleKidneyRight</defName>
+        </NiceHealthTab.DollOrgan>
+        <!-- 左肾 -->
+        <NiceHealthTab.DollOrgan>
+        <defName>MNRace_FemaleKidneyRight</defName>
         <imagePath>HediffTab/Organs/Kidney</imagePath>
         <position>
-          <x>37.5</x>
-          <y>-71</y>
+        <x>37.5</x>
+        <y>-71</y>
         </position>
         <layer>22</layer>
         <dollName>MNRace</dollName>
@@ -661,14 +612,14 @@
         <height>0.85</height>
         <hitboxScale><x>0.8</x><y>0.7</y></hitboxScale>
         <extraLayer>0</extraLayer>
-      </NiceHealthTab.DollOrgan>
-      <!-- 肝脏 -->
-      <NiceHealthTab.DollOrgan>
-        <defName>MN_FemaleLiver</defName>
+        </NiceHealthTab.DollOrgan>
+        <!-- 肝脏 -->
+        <NiceHealthTab.DollOrgan>
+        <defName>MNRace_FemaleLiver</defName>
         <imagePath>HediffTab/Organs/Liver</imagePath>
         <position>
-          <x>-25.5</x>
-          <y>-120</y>
+        <x>-25.5</x>
+        <y>-120</y>
         </position>
         <layer>23</layer>
         <dollName>MNRace</dollName>
@@ -681,14 +632,14 @@
         <height>0.85</height>
         <hitboxScale><x>0.75</x><y>0.87</y></hitboxScale>
         <extraLayer>0</extraLayer>
-      </NiceHealthTab.DollOrgan>
-      <!-- 右肺 -->
-      <NiceHealthTab.DollOrgan>
-        <defName>MN_FemaleLungLeft</defName>
+        </NiceHealthTab.DollOrgan>
+        <!-- 右肺 -->
+        <NiceHealthTab.DollOrgan>
+        <defName>MNRace_FemaleLungLeft</defName>
         <imagePath>HediffTab/Organs/Lung</imagePath>
         <position>
-          <x>-23.5</x>
-          <y>-229.5</y>
+        <x>-23.5</x>
+        <y>-229.5</y>
         </position>
         <layer>24</layer>
         <dollName>MNRace</dollName>
@@ -701,14 +652,14 @@
         <height>0.85</height>
         <hitboxScale><x>0.77</x><y>0.7</y></hitboxScale>
         <extraLayer>0</extraLayer>
-      </NiceHealthTab.DollOrgan>
-      <!-- 左肺 -->
-      <NiceHealthTab.DollOrgan>
-        <defName>MN_FemaleLungRight</defName>
+        </NiceHealthTab.DollOrgan>
+        <!-- 左肺 -->
+        <NiceHealthTab.DollOrgan>
+        <defName>MNRace_FemaleLungRight</defName>
         <imagePath>HediffTab/Organs/Lung</imagePath>
         <position>
-          <x>23.5</x>
-          <y>-229.5</y>
+        <x>23.5</x>
+        <y>-229.5</y>
         </position>
         <layer>24</layer>
         <dollName>MNRace</dollName>
@@ -721,14 +672,14 @@
         <height>0.85</height>
         <hitboxScale><x>0.77</x><y>0.7</y></hitboxScale>
         <extraLayer>0</extraLayer>
-      </NiceHealthTab.DollOrgan>
-      <!-- 胃 -->
-      <NiceHealthTab.DollOrgan>
-        <defName>MN_FemaleStomach</defName>
+        </NiceHealthTab.DollOrgan>
+        <!-- 胃 -->
+        <NiceHealthTab.DollOrgan>
+        <defName>MNRace_FemaleStomach</defName>
         <imagePath>HediffTab/Organs/Stomach</imagePath>
         <position>
-          <x>19.5</x>
-          <y>-114</y>
+        <x>19.5</x>
+        <y>-114</y>
         </position>
         <layer>25</layer>
         <dollName>MNRace</dollName>
@@ -741,14 +692,14 @@
         <height>0.85</height>
         <hitboxScale><x>0.75</x><y>0.75</y></hitboxScale>
         <extraLayer>0</extraLayer>
-      </NiceHealthTab.DollOrgan>
-      <!-- 自定义部位 · 左天线 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>MNRace_u5de6u5929u7ebf</defName>
+        </NiceHealthTab.DollOrgan>
+        <!-- 自定义部位 · 左天线 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>MNRace_MNRace_u5de6u5929u7ebf</defName>
         <imagePath>Custom/Monolyn/MHeadAddo</imagePath>
         <position>
-          <x>45</x>
-          <y>-410</y>
+        <x>45</x>
+        <y>-410</y>
         </position>
         <layer>25</layer>
         <dollName>MNRace</dollName>
@@ -760,15 +711,15 @@
         <width>0.38</width>
         <height>0.38</height>
         <hitboxScale><x>1</x><y>1</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
+        </NiceHealthTab.DollBodyPart>
 
-      <!-- 自定义部位 · 左天线（灰） -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>MNRace_u5de6u5929u7ebf_NHTCD_Gray</defName>
+        <!-- 自定义部位 · 左天线（灰） -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>MNRace_MNRace_u5de6u5929u7ebf_NHTCD_Gray</defName>
         <imagePath>Custom/NHTCD_Gray/Monolyn/MNRace_MNRace_u5de6u5929u7ebf</imagePath>
         <position>
-          <x>45</x>
-          <y>-410</y>
+        <x>45</x>
+        <y>-410</y>
         </position>
         <layer>25</layer>
         <dollName>MNRace</dollName>
@@ -780,14 +731,14 @@
         <width>0.38</width>
         <height>0.38</height>
         <hitboxScale><x>1</x><y>1</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 自定义部位 · 右天线 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>MNRace_u53f3u5929u7ebf</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 自定义部位 · 右天线 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>MNRace_MNRace_u53f3u5929u7ebf</defName>
         <imagePath>Custom/Monolyn/WHeadAddo</imagePath>
         <position>
-          <x>-45</x>
-          <y>-410</y>
+        <x>-45</x>
+        <y>-410</y>
         </position>
         <layer>25</layer>
         <dollName>MNRace</dollName>
@@ -799,15 +750,15 @@
         <width>0.38</width>
         <height>0.38</height>
         <hitboxScale><x>1</x><y>1</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
+        </NiceHealthTab.DollBodyPart>
 
-      <!-- 自定义部位 · 右天线（灰） -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>MNRace_u53f3u5929u7ebf_NHTCD_Gray</defName>
+        <!-- 自定义部位 · 右天线（灰） -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>MNRace_MNRace_u53f3u5929u7ebf_NHTCD_Gray</defName>
         <imagePath>Custom/NHTCD_Gray/Monolyn/MNRace_MNRace_u53f3u5929u7ebf</imagePath>
         <position>
-          <x>-45</x>
-          <y>-410</y>
+        <x>-45</x>
+        <y>-410</y>
         </position>
         <layer>25</layer>
         <dollName>MNRace</dollName>
@@ -819,14 +770,14 @@
         <width>0.38</width>
         <height>0.38</height>
         <hitboxScale><x>1</x><y>1</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 胸腔 -->
-      <NiceHealthTab.DollBone>
-        <defName>MN_FemaleRibcage</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 胸腔 -->
+        <NiceHealthTab.DollBone>
+        <defName>MNRace_FemaleRibcage</defName>
         <imagePath>HediffTab/Bones/Ribcage</imagePath>
         <position>
-          <x>0</x>
-          <y>-214.5</y>
+        <x>0</x>
+        <y>-214.5</y>
         </position>
         <layer>11</layer>
         <dollName>MNRace</dollName>
@@ -839,7 +790,10 @@
         <height>0.9</height>
         <hitboxScale><x>0.77</x><y>0.95</y></hitboxScale>
         <extraLayer>30</extraLayer>
-      </NiceHealthTab.DollBone>
-    </value>
+        </NiceHealthTab.DollBone>
+        </value>
+        </li>
+      </operations>
+    </match>
   </Operation>
 </Patch>

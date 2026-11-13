@@ -1,0 +1,112 @@
+
+=== NiceHealthTab.NiceHediffTabSettings.ExposeData()
+0000: ldarg.0
+0001: call ModSettings.ExposeData
+0006: ldsflda fld:NiceHediffTabSettings.ExtraOverlayEnabled
+000B: ldstr "ExtraOverlayEnabled"
+0010: ldc.i4.1
+0011: ldc.i4.0
+0012: call Scribe_Values.Look
+0017: ldsflda fld:NiceHediffTabSettings.AlwaysVanillaEyes
+001C: ldstr "AlwaysVanillaEyes"
+0021: ldc.i4.0
+0022: ldc.i4.0
+0023: call Scribe_Values.Look
+0028: ldsflda fld:NiceHediffTabSettings.AllowKidDollVariant
+002D: ldstr "AllowKidDollVariant"
+0032: ldc.i4.1
+0033: ldc.i4.0
+0034: call Scribe_Values.Look
+0039: ldsflda fld:NiceHediffTabSettings.UsingVanillaListRowColors
+003E: ldstr "UsingVanillaListRowColors"
+0043: ldc.i4.1
+0044: ldc.i4.0
+0045: call Scribe_Values.Look
+004A: ldsflda fld:NiceHediffTabSettings.UsePawnBloodColors
+004F: ldstr "UsePawnBloodColors"
+0054: ldc.i4.1
+0055: ldc.i4.0
+0056: call Scribe_Values.Look
+005B: ldsflda fld:NiceHediffTabSettings.MedicineStyle
+0060: ldstr "MedicineStyle"
+0065: ldc.i4.1
+0066: ldc.i4.0
+0067: call Scribe_Values.Look
+006C: ldsflda fld:NiceHediffTabSettings.ProstheticNoMissingBodyParts
+0071: ldstr "ProstheticNoMissingBodyParts"
+0076: ldc.i4.1
+0077: ldc.i4.0
+0078: call Scribe_Values.Look
+007D: ldsflda fld:NiceHediffTabSettings.ShowImplantedOrgans
+0082: ldstr "ShowImplantedOrgans"
+0087: ldc.i4.1
+0088: ldc.i4.0
+0089: call Scribe_Values.Look
+008E: ldsflda fld:NiceHediffTabSettings.BabyAgeRange
+0093: ldstr "BabyAgeRange"
+0098: ldc.r4 2
+009D: ldc.r4 15
+00A2: newobj FloatRange..ctor
+00A7: ldc.i4.0
+00A8: call Scribe_Values.Look
+00AD: ldsflda fld:NiceHediffTabSettings.ShowAllMissingParts
+00B2: ldstr "ShowAllMissingParts"
+00B7: ldc.i4.0
+00B8: ldc.i4.0
+00B9: call Scribe_Values.Look
+00BE: ldsflda fld:NiceHediffTabSettings.ShowUnavailableOperations
+00C3: ldstr "ShowUnavailableOperations"
+00C8: ldc.i4.0
+00C9: ldc.i4.0
+00CA: call Scribe_Values.Look
+00CF: ldsflda fld:NiceHediffTabSettings.UseOperationsDropdown
+00D4: ldstr "UseOperationsDropdown"
+00D9: ldc.i4.0
+00DA: ldc.i4.0
+00DB: call Scribe_Values.Look
+00E0: ldsflda fld:NiceHediffTabSettings.TabView
+00E5: ldstr "UIVariant"
+00EA: ldc.i4.1
+00EB: ldc.i4.0
+00EC: call Scribe_Values.Look
+00F1: ldsflda fld:NiceHediffTabSettings.ShowVanilla
+00F6: ldstr "ShowVanilla"
+00FB: ldc.i4.0
+00FC: ldc.i4.0
+00FD: call Scribe_Values.Look
+0102: ldsflda fld:NiceHediffTabSettings.ShowHair
+0107: ldstr "ShowHair"
+010C: ldc.i4.1
+010D: ldc.i4.0
+010E: call Scribe_Values.Look
+0113: ldsflda fld:NiceHediffTabSettings.ShowOrgan
+0118: ldstr "ShowOrgan"
+011D: ldc.i4.1
+011E: ldc.i4.0
+011F: call Scribe_Values.Look
+0124: ldsflda fld:NiceHediffTabSettings.ShowBones
+0129: ldstr "ShowBones"
+012E: ldc.i4.1
+012F: ldc.i4.0
+0130: call Scribe_Values.Look
+0135: ldsflda fld:NiceHediffTabSettings.ShowDNA
+013A: ldstr "ShowDNA"
+013F: ldc.i4.1
+0140: ldc.i4.0
+0141: call Scribe_Values.Look
+0146: ldsflda fld:NiceHediffTabSettings.ShowEyes
+014B: ldstr "ShowEyes"
+0150: ldc.i4.0
+0151: ldc.i4.0
+0152: call Scribe_Values.Look
+0157: ldsflda fld:NiceHediffTabSettings.ShowArmorCover
+015C: ldstr "ShowArmorCover"
+0161: ldc.i4.0
+0162: ldc.i4.0
+0163: call Scribe_Values.Look
+0168: ldsflda fld:BodyPartIndexesRemap.BodyPartsOverride
+016D: ldstr "BodyPartsOverride"
+0172: ldc.i4.0
+0173: ldc.i4.2
+0174: call Scribe_Collections.Look
+0179: ret

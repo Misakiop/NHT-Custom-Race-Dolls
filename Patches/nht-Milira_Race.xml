@@ -1,27 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  NHT_CustomDolls
-  由 NHT Anatomy Editor 生成 · 2026-11-05 23:08
+  NHT_CustomDolls0.3.1
+  由 NHT Anatomy Editor 生成 · 2026-11-12 23:11
   基准模组：Nice Health Tab (Andromeda.NiceHealthTab) v1.6 · 创意工坊 3328729902
   RJW 层：Nice Health Tab - RJW Genitalia (zoc2k.nicehealthtab.rjwgenitalia) · 相关操作带 MayRequire rim.job.world
-  画布：1 个 · 部位：32 个 · 补丁操作：8 段
+  画布：1 个 · 部位：32 个 · 补丁操作：6 段
   贴图路径指向 Nice Health Tab（以及 RJW 补丁）的 Textures/ 目录。直接点「保存到注入模组」写进 NHT_CustomDollTest/Patches/ 即可，也可以手动放进任意模组的 Patches/。
   备注：以 Nice Health Tab 模组 1.6 默认体型为基准制作的部位补丁。
 -->
 <Patch>
-  <!-- Milira · HAR 头发参数（种族 Milira_Race） -->
+  <!-- race marker: Milira_Race -->
   <Operation Class="PatchOperationAdd">
-    <success>Always</success>
     <xpath>Defs</xpath>
     <value>
-      <NHT_CustomDolls.HairFitDef>
+      <NHT_CustomDolls.RaceMarkerDef>
+        <defName>NHTCD_RaceMarker_Milira_Race</defName>
+        <race>Milira_Race</race>
+      </NHT_CustomDolls.RaceMarkerDef>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/*[defName='Milira_Race']</xpath>
+    <match Class="PatchOperationSequence">
+      <operations>
+        <!-- Milira · HAR 头发参数（种族 Milira_Race） -->
+        <li Class="PatchOperationAdd">
+        <success>Always</success>
+        <xpath>Defs</xpath>
+        <value>
+        <NHT_CustomDolls.HairFitDef>
         <defName>NHTCD_HairFit_Milira_Race</defName>
         <race>Milira_Race</race>
         <scale>0.360</scale>
         <offsetX>0.002</offsetX>
-        <offsetY>-0.335</offsetY>
+        <offsetY>-0.343</offsetY>
         <front>true</front>
-        <layer>15</layer>
+        <layer>14</layer>
         <showInXray>false</showInXray>
         <vanillaScale>1.000</vanillaScale>
         <vanillaOffsetX>0.000</vanillaOffsetX>
@@ -30,216 +44,169 @@
         </aboveParts>
         <topParts>
         </topParts>
-      </NHT_CustomDolls.HairFitDef>
-    </value>
-  </Operation>
-  <!-- Milira · 部位颜色开关：关闭后这些部位显示为黑白 -->
-  <Operation Class="PatchOperationAdd">
-    <success>Always</success>
-    <xpath>Defs</xpath>
-    <value>
-      <NHT_CustomDolls.DesatPartsDef>
+        </NHT_CustomDolls.HairFitDef>
+        </value>
+        </li>
+        <!-- Milira · 部位颜色开关：关闭后这些部位显示为黑白 -->
+        <li Class="PatchOperationAdd">
+        <success>Always</success>
+        <xpath>Defs</xpath>
+        <value>
+        <NHT_CustomDolls.DesatPartsDef>
         <defName>NHTCD_Desat_Milira_Race</defName>
         <label>Milira</label>
         <race>Milira_Race</race>
         <doll>Milira_Race</doll>
         <parts>
-          <li><part>Milira_Race_u5de6u7ffc</part><id>73</id><label>左翼</label></li>
-          <li><part>Milira_Race_u53f3u7ffc</part><id>65</id><label>右翼</label></li>
-          <li><part>Milira_Race_u5de6u8033</part><id>18</id><label>左耳</label></li>
-          <li><part>Milira_Race_u53f3u8033</part><id>19</id><label>右耳</label></li>
-          <li><part>Milira_Race_u5149u73af</part><id>64</id><label>光环</label></li>
+        <li><part>Milira_Race_Milira_Race_u5de6u7ffc</part><id>73</id><label>左翼</label></li>
+        <li><part>Milira_Race_Milira_Race_u53f3u7ffc</part><id>65</id><label>右翼</label></li>
+        <li><part>Milira_Race_Milira_Race_u5de6u8033</part><id>18</id><label>左耳</label></li>
+        <li><part>Milira_Race_Milira_Race_u53f3u8033</part><id>19</id><label>右耳</label></li>
+        <li><part>Milira_Race_Milira_Race_u5149u73af</part><id>64</id><label>光环</label></li>
         </parts>
-      </NHT_CustomDolls.DesatPartsDef>
-    </value>
-  </Operation>
-  <!-- Milira · 画在头发之上的部位（NHTCD_HairFit_Milira_Race） -->
-  <Operation Class="PatchOperationReplace">
-    <success>Always</success>
-    <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_Milira_Race"]/aboveParts</xpath>
-    <value>
-      <aboveParts>
-      </aboveParts>
-    </value>
-  </Operation>
-  <Operation Class="PatchOperationReplace">
-    <success>Always</success>
-    <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_Milira_Race"]/topParts</xpath>
-    <value>
-      <topParts>
-      </topParts>
-    </value>
-  </Operation>
-  <!-- HandDoll · 手掌基底 #39 -->
-  <Operation Class="PatchOperationReplace">
-    <success>Always</success>
-    <xpath>Defs/NiceHealthTab.DollBodyPart[defName="HandBaseRight"]</xpath>
-    <value>
-      <NiceHealthTab.DollBodyPart>
-        <defName>HandBaseRight</defName>
-        <dollName>HandDoll</dollName>
-        <imagePath>HediffTab/Baseliner/Hand/HandBase</imagePath>
-        <bodyPartId>39</bodyPartId>
-        <position><x>113</x><y>40.5</y></position>
-        <width>1</width>
-        <height>1</height>
-        <layer>19</layer>
-        <visibleByDefault>true</visibleByDefault>
-        <showArmorCover>true</showArmorCover>
-        <bondageScale>1.00</bondageScale>
-        <hitboxScale><x>0.87</x><y>0.7</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-    </value>
-  </Operation>
-  <!-- HandDoll · 中指 #31 -->
-  <Operation Class="PatchOperationReplace">
-    <success>Always</success>
-    <xpath>Defs/NiceHealthTab.DollBodyPart[defName="MiddleLeft"]</xpath>
-    <value>
-      <NiceHealthTab.DollBodyPart>
-        <defName>MiddleLeft</defName>
-        <dollName>HandDoll</dollName>
-        <imagePath>HediffTab/Baseliner/Hand/Middle</imagePath>
-        <bodyPartId>31</bodyPartId>
-        <position><x>-97</x><y>-56.3</y></position>
-        <width>-1</width>
-        <height>1</height>
-        <layer>3</layer>
-        <visibleByDefault>true</visibleByDefault>
-        <showArmorCover>false</showArmorCover>
-        <bondageScale>1.00</bondageScale>
-        <hitboxScale><x>0.76</x><y>0.87</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-    </value>
-  </Operation>
-  <!-- FeetDoll · 脚掌基底 #58 -->
-  <Operation Class="PatchOperationReplace">
-    <success>Always</success>
-    <xpath>Defs/NiceHealthTab.DollBodyPart[defName="FeetBaseRight"]</xpath>
-    <value>
-      <NiceHealthTab.DollBodyPart>
-        <defName>FeetBaseRight</defName>
-        <dollName>FeetDoll</dollName>
-        <imagePath>HediffTab/Baseliner/Feet/Feet</imagePath>
-        <bodyPartId>58</bodyPartId>
-        <position><x>97.2</x><y>17.3</y></position>
-        <width>1</width>
-        <height>1</height>
-        <layer>10</layer>
-        <visibleByDefault>true</visibleByDefault>
-        <showArmorCover>true</showArmorCover>
-        <bondageScale>1.00</bondageScale>
-        <hitboxScale><x>0.8</x><y>0.8</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-    </value>
-  </Operation>
-  <!-- 新增定义 -->
-  <Operation Class="PatchOperationAdd">
-    <success>Always</success>
-    <xpath>Defs</xpath>
-    <value>
-      <!-- Milira · 新建 HumanlikeDoll Milira_Race -->
-      <NiceHealthTab.HumanlikeDoll>
+        </NHT_CustomDolls.DesatPartsDef>
+        </value>
+        </li>
+        <!-- Milira · 自动变换 bodyAddon 部位 -->
+        <li Class="PatchOperationAdd">
+        <success>Always</success>
+        <xpath>Defs</xpath>
+        <value>
+        <NHT_CustomDolls.AddonFollowDef>
+        <defName>NHTCD_AddonFollow_Milira_Race</defName>
+        <label>Milira AddonFollow</label>
+        <race>Milira_Race</race>
+        <doll>Milira_Race</doll>
+        <parts>
+        <li><part>Milira_Race_Milira_Race_u5149u73af</part><addon>milira halo</addon><path>Milira/Pawn/BodyAddon/HaloAdult/MiliraHalo</path><rot>0</rot></li>
+        </parts>
+        </NHT_CustomDolls.AddonFollowDef>
+        </value>
+        </li>
+        <!-- Milira · 画在头发之上的部位（NHTCD_HairFit_Milira_Race） -->
+        <li Class="PatchOperationReplace">
+        <success>Always</success>
+        <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_Milira_Race"]/aboveParts</xpath>
+        <value>
+        <aboveParts>
+        </aboveParts>
+        </value>
+        </li>
+        <li Class="PatchOperationReplace">
+        <success>Always</success>
+        <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_Milira_Race"]/topParts</xpath>
+        <value>
+        <topParts>
+        </topParts>
+        </value>
+        </li>
+        <!-- 新增定义 -->
+        <li Class="PatchOperationAdd">
+        <success>Always</success>
+        <xpath>Defs</xpath>
+        <value>
+        <!-- Milira · 新建 HumanlikeDoll Milira_Race -->
+        <NiceHealthTab.HumanlikeDoll>
         <defName>Milira_Race</defName>
         <gender>Female</gender>
         <xenotype>Milira_Race</xenotype>
         <bodytype>*</bodytype>
         <outlinePath>HediffTab/Baseliner/Female/Outline</outlinePath>
-        <headPart>Milira_FemaleHead</headPart>
+        <headPart>Milira_Race_FemaleHead</headPart>
         <BoundingBox>
-          <m_XMin>-160</m_XMin>
-          <m_YMin>-455</m_YMin>
-          <m_Width>320</m_Width>
-          <m_Height>890</m_Height>
+        <m_XMin>-160</m_XMin>
+        <m_YMin>-455</m_YMin>
+        <m_Width>320</m_Width>
+        <m_Height>890</m_Height>
         </BoundingBox>
         <headOverlayOffset><x>-2</x><y>-2</y></headOverlayOffset>
         <headOverlayScale><x>310</x><y>310</y></headOverlayScale>
-      </NiceHealthTab.HumanlikeDoll>
-      <!-- 自定义部位 · 左翼 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>Milira_Race_u5de6u7ffc</defName>
+        </NiceHealthTab.HumanlikeDoll>
+        <!-- 自定义部位 · 左翼 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Milira_Race_Milira_Race_u5de6u7ffc</defName>
         <imagePath>Custom/Milira/LeftWingFront2_south</imagePath>
         <position>
-          <x>147.91</x>
-          <y>44.79</y>
+        <x>147.91</x>
+        <y>36.89</y>
         </position>
         <layer>0</layer>
         <dollName>Milira_Race</dollName>
         <bodyPartId>73</bodyPartId>
-        <notifyPosition><x>36</x><y>-38.9</y></notifyPosition>
+        <notifyPosition><x>50</x><y>50</y></notifyPosition>
         <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>1.28</width>
         <height>1.67</height>
         <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
+        </NiceHealthTab.DollBodyPart>
 
-      <!-- 自定义部位 · 左翼（灰） -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>Milira_Race_u5de6u7ffc_NHTCD_Gray</defName>
+        <!-- 自定义部位 · 左翼（灰） -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Milira_Race_Milira_Race_u5de6u7ffc_NHTCD_Gray</defName>
         <imagePath>Custom/NHTCD_Gray/Milira/Milira_Race_Milira_Race_u5de6u7ffc</imagePath>
         <position>
-          <x>147.91</x>
-          <y>44.79</y>
+        <x>147.91</x>
+        <y>36.89</y>
         </position>
         <layer>0</layer>
         <dollName>Milira_Race</dollName>
         <bodyPartId>73</bodyPartId>
-        <notifyPosition><x>36</x><y>-38.9</y></notifyPosition>
+        <notifyPosition><x>50</x><y>50</y></notifyPosition>
         <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>1.28</width>
         <height>1.67</height>
         <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 自定义部位 · 右翼 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>Milira_Race_u53f3u7ffc</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 自定义部位 · 右翼 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Milira_Race_Milira_Race_u53f3u7ffc</defName>
         <imagePath>Custom/Milira/RightWingFront2_south</imagePath>
         <position>
-          <x>-147.91</x>
-          <y>44.79</y>
+        <x>-147.91</x>
+        <y>36.89</y>
         </position>
         <layer>0</layer>
         <dollName>Milira_Race</dollName>
         <bodyPartId>65</bodyPartId>
-        <notifyPosition><x>-30</x><y>-38</y></notifyPosition>
+        <notifyPosition><x>-50</x><y>50</y></notifyPosition>
         <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>1.28</width>
         <height>1.67</height>
         <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
+        </NiceHealthTab.DollBodyPart>
 
-      <!-- 自定义部位 · 右翼（灰） -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>Milira_Race_u53f3u7ffc_NHTCD_Gray</defName>
+        <!-- 自定义部位 · 右翼（灰） -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Milira_Race_Milira_Race_u53f3u7ffc_NHTCD_Gray</defName>
         <imagePath>Custom/NHTCD_Gray/Milira/Milira_Race_Milira_Race_u53f3u7ffc</imagePath>
         <position>
-          <x>-147.91</x>
-          <y>44.79</y>
+        <x>-147.91</x>
+        <y>36.89</y>
         </position>
         <layer>0</layer>
         <dollName>Milira_Race</dollName>
         <bodyPartId>65</bodyPartId>
-        <notifyPosition><x>-30</x><y>-38</y></notifyPosition>
+        <notifyPosition><x>-50</x><y>50</y></notifyPosition>
         <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>1.28</width>
         <height>1.67</height>
         <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 躯干 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>Milira_FemaleTorso</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 躯干 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Milira_Race_FemaleTorso</defName>
         <imagePath>HediffTab/Baseliner/Female/Torso</imagePath>
         <position>
-          <x>2.01</x>
-          <y>-132.95</y>
+        <x>2.01</x>
+        <y>-140.85</y>
         </position>
         <layer>1</layer>
         <dollName>Milira_Race</dollName>
@@ -251,14 +218,14 @@
         <width>1</width>
         <height>1</height>
         <hitboxScale><x>0.74</x><y>0.75</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 右腿 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>Milira_FemaleLegLeft</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 右腿 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Milira_Race_FemaleLegLeft</defName>
         <imagePath>HediffTab/Baseliner/Female/Leg</imagePath>
         <position>
-          <x>-45.06</x>
-          <y>187.51</y>
+        <x>-45.06</x>
+        <y>179.61</y>
         </position>
         <layer>2</layer>
         <dollName>Milira_Race</dollName>
@@ -270,14 +237,14 @@
         <width>-1</width>
         <height>1</height>
         <hitboxScale><x>0.8</x><y>0.88</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 左腿 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>Milira_FemaleLegRight</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 左腿 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Milira_Race_FemaleLegRight</defName>
         <imagePath>HediffTab/Baseliner/Female/Leg</imagePath>
         <position>
-          <x>45.06</x>
-          <y>187.51</y>
+        <x>45.06</x>
+        <y>179.61</y>
         </position>
         <layer>2</layer>
         <dollName>Milira_Race</dollName>
@@ -289,14 +256,14 @@
         <width>1</width>
         <height>1</height>
         <hitboxScale><x>0.8</x><y>0.88</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 颈部 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>Milira_FemaleNeck</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 颈部 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Milira_Race_FemaleNeck</defName>
         <imagePath>HediffTab/Baseliner/Female/Neck</imagePath>
         <position>
-          <x>1</x>
-          <y>-296.21</y>
+        <x>1</x>
+        <y>-304.11</y>
         </position>
         <layer>2</layer>
         <dollName>Milira_Race</dollName>
@@ -308,14 +275,14 @@
         <width>1</width>
         <height>1</height>
         <hitboxScale><x>0.9</x><y>0.74</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 右肩 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>Milira_FemaleShoulderLeft</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 右肩 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Milira_Race_FemaleShoulderLeft</defName>
         <imagePath>HediffTab/Baseliner/Female/Shoulder</imagePath>
         <position>
-          <x>-81.63</x>
-          <y>-190.57</y>
+        <x>-81.63</x>
+        <y>-198.47</y>
         </position>
         <layer>2</layer>
         <dollName>Milira_Race</dollName>
@@ -327,14 +294,14 @@
         <width>-1</width>
         <height>1</height>
         <hitboxScale><x>0.73</x><y>0.79</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 左肩 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>Milira_FemaleShoulderRight</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 左肩 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Milira_Race_FemaleShoulderRight</defName>
         <imagePath>HediffTab/Baseliner/Female/Shoulder</imagePath>
         <position>
-          <x>81.63</x>
-          <y>-190.57</y>
+        <x>81.63</x>
+        <y>-198.47</y>
         </position>
         <layer>2</layer>
         <dollName>Milira_Race</dollName>
@@ -346,14 +313,14 @@
         <width>1</width>
         <height>1</height>
         <hitboxScale><x>0.73</x><y>0.79</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 右臂 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>Milira_FemaleArmLeft</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 右臂 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Milira_Race_FemaleArmLeft</defName>
         <imagePath>HediffTab/Baseliner/Female/Arm</imagePath>
         <position>
-          <x>-107.15</x>
-          <y>-74.37</y>
+        <x>-107.15</x>
+        <y>-82.27</y>
         </position>
         <layer>3</layer>
         <dollName>Milira_Race</dollName>
@@ -365,14 +332,14 @@
         <width>-1</width>
         <height>1</height>
         <hitboxScale><x>0.74</x><y>0.73</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 左臂 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>Milira_FemaleArmRight</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 左臂 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Milira_Race_FemaleArmRight</defName>
         <imagePath>HediffTab/Baseliner/Female/Arm</imagePath>
         <position>
-          <x>107.15</x>
-          <y>-74.37</y>
+        <x>107.15</x>
+        <y>-82.27</y>
         </position>
         <layer>3</layer>
         <dollName>Milira_Race</dollName>
@@ -384,14 +351,14 @@
         <width>1</width>
         <height>1</height>
         <hitboxScale><x>0.74</x><y>0.73</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 右脚 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>Milira_FemaleFeetLeft</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 右脚 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Milira_Race_FemaleFeetLeft</defName>
         <imagePath>HediffTab/Baseliner/Female/Feet</imagePath>
         <position>
-          <x>-47.57</x>
-          <y>419.81</y>
+        <x>-47.57</x>
+        <y>411.91</y>
         </position>
         <layer>3</layer>
         <dollName>Milira_Race</dollName>
@@ -403,14 +370,14 @@
         <width>-1</width>
         <height>1</height>
         <hitboxScale><x>0.8</x><y>0.77</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 左脚 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>Milira_FemaleFeetRight</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 左脚 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Milira_Race_FemaleFeetRight</defName>
         <imagePath>HediffTab/Baseliner/Female/Feet</imagePath>
         <position>
-          <x>47.57</x>
-          <y>419.81</y>
+        <x>47.57</x>
+        <y>411.91</y>
         </position>
         <layer>3</layer>
         <dollName>Milira_Race</dollName>
@@ -422,14 +389,14 @@
         <width>1</width>
         <height>1</height>
         <hitboxScale><x>0.8</x><y>0.77</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 头部 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>Milira_FemaleHead</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 头部 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Milira_Race_FemaleHead</defName>
         <imagePath>HediffTab/Baseliner/Female/NiceHead</imagePath>
         <position>
-          <x>0</x>
-          <y>-344.79</y>
+        <x>0</x>
+        <y>-352.69</y>
         </position>
         <layer>3</layer>
         <dollName>Milira_Race</dollName>
@@ -441,14 +408,14 @@
         <width>1</width>
         <height>1</height>
         <hitboxScale><x>0.92</x><y>0.92</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 自定义部位 · 左耳 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>Milira_Race_u5de6u8033</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 自定义部位 · 左耳 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Milira_Race_Milira_Race_u5de6u8033</defName>
         <imagePath>Custom/Milira/elf_ear_left3</imagePath>
         <position>
-          <x>65.1</x>
-          <y>-325.84</y>
+        <x>65.1</x>
+        <y>-333.74</y>
         </position>
         <layer>3</layer>
         <dollName>Milira_Race</dollName>
@@ -460,15 +427,15 @@
         <width>1</width>
         <height>1</height>
         <hitboxScale><x>0.9</x><y>0.88</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
+        </NiceHealthTab.DollBodyPart>
 
-      <!-- 自定义部位 · 左耳（灰） -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>Milira_Race_u5de6u8033_NHTCD_Gray</defName>
+        <!-- 自定义部位 · 左耳（灰） -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Milira_Race_Milira_Race_u5de6u8033_NHTCD_Gray</defName>
         <imagePath>Custom/NHTCD_Gray/Milira/Milira_Race_Milira_Race_u5de6u8033</imagePath>
         <position>
-          <x>65.1</x>
-          <y>-325.84</y>
+        <x>65.1</x>
+        <y>-333.74</y>
         </position>
         <layer>3</layer>
         <dollName>Milira_Race</dollName>
@@ -480,14 +447,14 @@
         <width>1</width>
         <height>1</height>
         <hitboxScale><x>0.9</x><y>0.88</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 自定义部位 · 右耳 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>Milira_Race_u53f3u8033</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 自定义部位 · 右耳 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Milira_Race_Milira_Race_u53f3u8033</defName>
         <imagePath>Custom/Milira/elf_ear_right2</imagePath>
         <position>
-          <x>-69.08</x>
-          <y>-325.34</y>
+        <x>-69.08</x>
+        <y>-333.24</y>
         </position>
         <layer>3</layer>
         <dollName>Milira_Race</dollName>
@@ -499,15 +466,15 @@
         <width>1</width>
         <height>1</height>
         <hitboxScale><x>0.89</x><y>0.88</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
+        </NiceHealthTab.DollBodyPart>
 
-      <!-- 自定义部位 · 右耳（灰） -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>Milira_Race_u53f3u8033_NHTCD_Gray</defName>
+        <!-- 自定义部位 · 右耳（灰） -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Milira_Race_Milira_Race_u53f3u8033_NHTCD_Gray</defName>
         <imagePath>Custom/NHTCD_Gray/Milira/Milira_Race_Milira_Race_u53f3u8033</imagePath>
         <position>
-          <x>-69.08</x>
-          <y>-325.34</y>
+        <x>-69.08</x>
+        <y>-333.24</y>
         </position>
         <layer>3</layer>
         <dollName>Milira_Race</dollName>
@@ -519,14 +486,14 @@
         <width>1</width>
         <height>1</height>
         <hitboxScale><x>0.89</x><y>0.88</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 右手 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>Milira_FemaleHandLeft</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 右手 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Milira_Race_FemaleHandLeft</defName>
         <imagePath>HediffTab/Baseliner/Female/Hand</imagePath>
         <position>
-          <x>-121.17</x>
-          <y>13.24</y>
+        <x>-121.17</x>
+        <y>5.34</y>
         </position>
         <layer>4</layer>
         <dollName>Milira_Race</dollName>
@@ -538,14 +505,14 @@
         <width>-1</width>
         <height>1</height>
         <hitboxScale><x>0.88</x><y>0.75</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 左手 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>Milira_FemaleHandRight</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 左手 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Milira_Race_FemaleHandRight</defName>
         <imagePath>HediffTab/Baseliner/Female/Hand</imagePath>
         <position>
-          <x>121.17</x>
-          <y>13.24</y>
+        <x>121.17</x>
+        <y>5.34</y>
         </position>
         <layer>4</layer>
         <dollName>Milira_Race</dollName>
@@ -557,14 +524,14 @@
         <width>1</width>
         <height>1</height>
         <hitboxScale><x>0.88</x><y>0.75</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 骨盆 -->
-      <NiceHealthTab.DollBone>
-        <defName>Milira_FemalePelvis</defName>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 骨盆 -->
+        <NiceHealthTab.DollBone>
+        <defName>Milira_Race_FemalePelvis</defName>
         <imagePath>HediffTab/Bones/Pelvis</imagePath>
         <position>
-          <x>0</x>
-          <y>-34.83</y>
+        <x>0</x>
+        <y>-42.73</y>
         </position>
         <layer>9</layer>
         <dollName>Milira_Race</dollName>
@@ -577,14 +544,14 @@
         <height>1</height>
         <hitboxScale><x>0.75</x><y>0.8</y></hitboxScale>
         <extraLayer>0</extraLayer>
-      </NiceHealthTab.DollBone>
-      <!-- 脊柱 -->
-      <NiceHealthTab.DollBone>
-        <defName>Milira_FemaleSpine</defName>
+        </NiceHealthTab.DollBone>
+        <!-- 脊柱 -->
+        <NiceHealthTab.DollBone>
+        <defName>Milira_Race_FemaleSpine</defName>
         <imagePath>HediffTab/Bones/Spine</imagePath>
         <position>
-          <x>0</x>
-          <y>-145</y>
+        <x>0</x>
+        <y>-152.9</y>
         </position>
         <layer>10</layer>
         <dollName>Milira_Race</dollName>
@@ -597,14 +564,14 @@
         <height>0.7</height>
         <hitboxScale><x>0.99</x><y>0.82</y></hitboxScale>
         <extraLayer>0</extraLayer>
-      </NiceHealthTab.DollBone>
-      <!-- 鼻子 -->
-      <NiceHealthTab.DollOrgan>
-        <defName>Milira_FemaleNose</defName>
+        </NiceHealthTab.DollBone>
+        <!-- 鼻子 -->
+        <NiceHealthTab.DollOrgan>
+        <defName>Milira_Race_FemaleNose</defName>
         <imagePath>HediffTab/Baseliner/Head/Nose</imagePath>
         <position>
-          <x>0</x>
-          <y>-322.24</y>
+        <x>0</x>
+        <y>-330.14</y>
         </position>
         <layer>14</layer>
         <dollName>Milira_Race</dollName>
@@ -617,52 +584,52 @@
         <height>1</height>
         <hitboxScale><x>0.88</x><y>0.88</y></hitboxScale>
         <extraLayer>0</extraLayer>
-      </NiceHealthTab.DollOrgan>
-      <!-- 左眼 -->
-      <NiceHealthTab.DollEye>
-        <defName>Milira_FemaleEyeLeft</defName>
+        </NiceHealthTab.DollOrgan>
+        <!-- 左眼 -->
+        <NiceHealthTab.DollEye>
+        <defName>Milira_Race_FemaleEyeLeft</defName>
         <imagePath>HediffTab/Baseliner/Head/NiceMaleEye</imagePath>
         <position>
-          <x>18.03</x>
-          <y>-334.25</y>
+        <x>18.03</x>
+        <y>-342.15</y>
         </position>
         <layer>15</layer>
         <dollName>Milira_Race</dollName>
         <bodyPartId>16</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>0.6</width>
         <height>0.6</height>
-        <hitboxScale><x>0.8</x><y>0.75</y></hitboxScale>
-      </NiceHealthTab.DollEye>
-      <!-- 右眼 -->
-      <NiceHealthTab.DollEye>
-        <defName>Milira_FemaleEyeRight</defName>
+        <hitboxScale><x>0.73</x><y>0.73</y></hitboxScale>
+        </NiceHealthTab.DollEye>
+        <!-- 右眼 -->
+        <NiceHealthTab.DollEye>
+        <defName>Milira_Race_FemaleEyeRight</defName>
         <imagePath>HediffTab/Baseliner/Head/NiceMaleEye</imagePath>
         <position>
-          <x>-18.03</x>
-          <y>-334.25</y>
+        <x>-18.03</x>
+        <y>-342.15</y>
         </position>
         <layer>15</layer>
         <dollName>Milira_Race</dollName>
         <bodyPartId>17</bodyPartId>
         <notifyPosition><x>0</x><y>0</y></notifyPosition>
-        <showArmorCover>true</showArmorCover>
+        <showArmorCover>false</showArmorCover>
         <visibleByDefault>false</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>-0.6</width>
         <height>0.6</height>
-        <hitboxScale><x>0.8</x><y>0.75</y></hitboxScale>
-      </NiceHealthTab.DollEye>
-      <!-- 大脑 -->
-      <NiceHealthTab.DollOrgan>
-        <defName>Milira_FemaleBrain</defName>
+        <hitboxScale><x>0.73</x><y>0.73</y></hitboxScale>
+        </NiceHealthTab.DollEye>
+        <!-- 大脑 -->
+        <NiceHealthTab.DollOrgan>
+        <defName>Milira_Race_FemaleBrain</defName>
         <imagePath>HediffTab/Organs/Brain</imagePath>
         <position>
-          <x>1</x>
-          <y>-371.82</y>
+        <x>1</x>
+        <y>-379.72</y>
         </position>
         <layer>20</layer>
         <dollName>Milira_Race</dollName>
@@ -675,53 +642,69 @@
         <height>1</height>
         <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
         <extraLayer>0</extraLayer>
-      </NiceHealthTab.DollOrgan>
-      <!-- 自定义部位 · 光环 -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>Milira_Race_u5149u73af</defName>
-        <imagePath>Custom/Rot/MiliraHalo_south_r-41</imagePath>
+        </NiceHealthTab.DollOrgan>
+        <!-- 自定义部位 · 光环 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Milira_Race_Milira_Race_u5149u73af</defName>
+        <imagePath>Milira/Pawn/BodyAddon/HaloAdult/MiliraHalo_east</imagePath>
         <position>
-          <x>45.77</x>
-          <y>-393.75</y>
+        <x>-8</x>
+        <y>-305.14</y>
         </position>
         <layer>20</layer>
         <dollName>Milira_Race</dollName>
         <bodyPartId>64</bodyPartId>
-        <notifyPosition><x>4</x><y>-6</y></notifyPosition>
+        <notifyPosition><x>60</x><y>-100</y></notifyPosition>
         <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>1.04</width>
         <height>1.03</height>
-        <hitboxScale><x>0.4</x><y>0.56</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
+        <hitboxScale><x>0.13</x><y>0.1</y></hitboxScale>
+        <modExtensions>
+        <li Class="NHT_CustomDolls.HitboxRectExtension">
+        <w>70</w>
+        <h>50</h>
+        <dx>60</dx>
+        <dy>-100</dy>
+        </li>
+        </modExtensions>
+        </NiceHealthTab.DollBodyPart>
 
-      <!-- 自定义部位 · 光环（灰） -->
-      <NiceHealthTab.DollBodyPart>
-        <defName>Milira_Race_u5149u73af_NHTCD_Gray</defName>
+        <!-- 自定义部位 · 光环（灰） -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Milira_Race_Milira_Race_u5149u73af_NHTCD_Gray</defName>
         <imagePath>Custom/NHTCD_Gray/Milira/Milira_Race_Milira_Race_u5149u73af</imagePath>
         <position>
-          <x>45.77</x>
-          <y>-393.75</y>
+        <x>-8</x>
+        <y>-305.14</y>
         </position>
         <layer>20</layer>
         <dollName>Milira_Race</dollName>
         <bodyPartId>64</bodyPartId>
-        <notifyPosition><x>4</x><y>-6</y></notifyPosition>
+        <notifyPosition><x>60</x><y>-100</y></notifyPosition>
         <showArmorCover>true</showArmorCover>
         <visibleByDefault>true</visibleByDefault>
         <bondageScale>1.00</bondageScale>
         <width>1.04</width>
         <height>1.03</height>
-        <hitboxScale><x>0.4</x><y>0.56</y></hitboxScale>
-      </NiceHealthTab.DollBodyPart>
-      <!-- 心脏 -->
-      <NiceHealthTab.DollOrgan>
-        <defName>Milira_FemaleHeart</defName>
+        <hitboxScale><x>0.13</x><y>0.1</y></hitboxScale>
+        <modExtensions>
+        <li Class="NHT_CustomDolls.HitboxRectExtension">
+        <w>70</w>
+        <h>50</h>
+        <dx>60</dx>
+        <dy>-100</dy>
+        </li>
+        </modExtensions>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 心脏 -->
+        <NiceHealthTab.DollOrgan>
+        <defName>Milira_Race_FemaleHeart</defName>
         <imagePath>HediffTab/Organs/Heart</imagePath>
         <position>
-          <x>4.52</x>
-          <y>-160.02</y>
+        <x>4.52</x>
+        <y>-167.92</y>
         </position>
         <layer>21</layer>
         <dollName>Milira_Race</dollName>
@@ -734,14 +717,14 @@
         <height>0.85</height>
         <hitboxScale><x>0.75</x><y>0.75</y></hitboxScale>
         <extraLayer>0</extraLayer>
-      </NiceHealthTab.DollOrgan>
-      <!-- 右肾 -->
-      <NiceHealthTab.DollOrgan>
-        <defName>Milira_FemaleKidneyLeft</defName>
+        </NiceHealthTab.DollOrgan>
+        <!-- 右肾 -->
+        <NiceHealthTab.DollOrgan>
+        <defName>Milira_Race_FemaleKidneyLeft</defName>
         <imagePath>HediffTab/Organs/Kidney</imagePath>
         <position>
-          <x>-37.57</x>
-          <y>-63.37</y>
+        <x>-37.57</x>
+        <y>-71.27</y>
         </position>
         <layer>22</layer>
         <dollName>Milira_Race</dollName>
@@ -754,14 +737,14 @@
         <height>0.85</height>
         <hitboxScale><x>0.8</x><y>0.7</y></hitboxScale>
         <extraLayer>0</extraLayer>
-      </NiceHealthTab.DollOrgan>
-      <!-- 左肾 -->
-      <NiceHealthTab.DollOrgan>
-        <defName>Milira_FemaleKidneyRight</defName>
+        </NiceHealthTab.DollOrgan>
+        <!-- 左肾 -->
+        <NiceHealthTab.DollOrgan>
+        <defName>Milira_Race_FemaleKidneyRight</defName>
         <imagePath>HediffTab/Organs/Kidney</imagePath>
         <position>
-          <x>37.57</x>
-          <y>-63.37</y>
+        <x>37.57</x>
+        <y>-71.27</y>
         </position>
         <layer>22</layer>
         <dollName>Milira_Race</dollName>
@@ -774,14 +757,14 @@
         <height>0.85</height>
         <hitboxScale><x>0.8</x><y>0.7</y></hitboxScale>
         <extraLayer>0</extraLayer>
-      </NiceHealthTab.DollOrgan>
-      <!-- 肝脏 -->
-      <NiceHealthTab.DollOrgan>
-        <defName>Milira_FemaleLiver</defName>
+        </NiceHealthTab.DollOrgan>
+        <!-- 肝脏 -->
+        <NiceHealthTab.DollOrgan>
+        <defName>Milira_Race_FemaleLiver</defName>
         <imagePath>HediffTab/Organs/Liver</imagePath>
         <position>
-          <x>-25.52</x>
-          <y>-112.45</y>
+        <x>-25.52</x>
+        <y>-120.35</y>
         </position>
         <layer>23</layer>
         <dollName>Milira_Race</dollName>
@@ -794,14 +777,14 @@
         <height>0.85</height>
         <hitboxScale><x>0.75</x><y>0.87</y></hitboxScale>
         <extraLayer>0</extraLayer>
-      </NiceHealthTab.DollOrgan>
-      <!-- 右肺 -->
-      <NiceHealthTab.DollOrgan>
-        <defName>Milira_FemaleLungLeft</defName>
+        </NiceHealthTab.DollOrgan>
+        <!-- 右肺 -->
+        <NiceHealthTab.DollOrgan>
+        <defName>Milira_Race_FemaleLungLeft</defName>
         <imagePath>HediffTab/Organs/Lung</imagePath>
         <position>
-          <x>-23.51</x>
-          <y>-222.11</y>
+        <x>-23.51</x>
+        <y>-230.01</y>
         </position>
         <layer>24</layer>
         <dollName>Milira_Race</dollName>
@@ -814,14 +797,14 @@
         <height>0.85</height>
         <hitboxScale><x>0.77</x><y>0.7</y></hitboxScale>
         <extraLayer>0</extraLayer>
-      </NiceHealthTab.DollOrgan>
-      <!-- 左肺 -->
-      <NiceHealthTab.DollOrgan>
-        <defName>Milira_FemaleLungRight</defName>
+        </NiceHealthTab.DollOrgan>
+        <!-- 左肺 -->
+        <NiceHealthTab.DollOrgan>
+        <defName>Milira_Race_FemaleLungRight</defName>
         <imagePath>HediffTab/Organs/Lung</imagePath>
         <position>
-          <x>23.51</x>
-          <y>-222.11</y>
+        <x>23.51</x>
+        <y>-230.01</y>
         </position>
         <layer>24</layer>
         <dollName>Milira_Race</dollName>
@@ -834,14 +817,14 @@
         <height>0.85</height>
         <hitboxScale><x>0.77</x><y>0.7</y></hitboxScale>
         <extraLayer>0</extraLayer>
-      </NiceHealthTab.DollOrgan>
-      <!-- 胃 -->
-      <NiceHealthTab.DollOrgan>
-        <defName>Milira_FemaleStomach</defName>
+        </NiceHealthTab.DollOrgan>
+        <!-- 胃 -->
+        <NiceHealthTab.DollOrgan>
+        <defName>Milira_Race_FemaleStomach</defName>
         <imagePath>HediffTab/Organs/Stomach</imagePath>
         <position>
-          <x>19.54</x>
-          <y>-106.42</y>
+        <x>19.54</x>
+        <y>-114.32</y>
         </position>
         <layer>25</layer>
         <dollName>Milira_Race</dollName>
@@ -854,14 +837,14 @@
         <height>0.85</height>
         <hitboxScale><x>0.75</x><y>0.75</y></hitboxScale>
         <extraLayer>0</extraLayer>
-      </NiceHealthTab.DollOrgan>
-      <!-- 胸腔 -->
-      <NiceHealthTab.DollBone>
-        <defName>Milira_FemaleRibcage</defName>
+        </NiceHealthTab.DollOrgan>
+        <!-- 胸腔 -->
+        <NiceHealthTab.DollBone>
+        <defName>Milira_Race_FemaleRibcage</defName>
         <imagePath>HediffTab/Bones/Ribcage</imagePath>
         <position>
-          <x>0</x>
-          <y>-207.09</y>
+        <x>0</x>
+        <y>-214.99</y>
         </position>
         <layer>11</layer>
         <dollName>Milira_Race</dollName>
@@ -874,78 +857,10 @@
         <height>0.9</height>
         <hitboxScale><x>0.77</x><y>0.95</y></hitboxScale>
         <extraLayer>30</extraLayer>
-      </NiceHealthTab.DollBone>
-      <!-- Milira_Body · 种族部位对照表（NHT 槽位 → 身体部位下标） -->
-      <NiceHealthTab.BodyPartIndexesRemap>
-        <defName>NHTCD_BodyRemap_Milira_Body</defName>
-        <bodyDefName>Milira_Body</bodyDefName>
-        <parts>
-            <li>0, 0</li>
-            <li>1, 1</li>
-            <li>2, 2</li>
-            <li>3, 3</li>
-            <li>4, 4</li>
-            <li>5, 5</li>
-            <li>6, 6</li>
-            <li>7, 7</li>
-            <li>8, 8</li>
-            <li>9, 9</li>
-            <li>10, 10</li>
-            <li>11, 11</li>
-            <li>12, 12</li>
-            <li>13, 13</li>
-            <li>14, 14</li>
-            <li>15, 15</li>
-            <li>16, 17</li>
-            <li>17, 18</li>
-            <li>18, 19</li>
-            <li>19, 20</li>
-            <li>20, 21</li>
-            <li>21, 22</li>
-            <li>22, 23</li>
-            <li>23, 24</li>
-            <li>24, 25</li>
-            <li>25, 26</li>
-            <li>26, 27</li>
-            <li>27, 28</li>
-            <li>28, 29</li>
-            <li>29, 30</li>
-            <li>30, 31</li>
-            <li>31, 32</li>
-            <li>32, 33</li>
-            <li>33, 34</li>
-            <li>34, 35</li>
-            <li>35, 36</li>
-            <li>36, 37</li>
-            <li>37, 38</li>
-            <li>38, 39</li>
-            <li>39, 40</li>
-            <li>40, 41</li>
-            <li>41, 42</li>
-            <li>42, 43</li>
-            <li>43, 44</li>
-            <li>44, 45</li>
-            <li>45, 46</li>
-            <li>46, 63</li>
-            <li>47, 64</li>
-            <li>48, 65</li>
-            <li>49, 66</li>
-            <li>50, 67</li>
-            <li>51, 68</li>
-            <li>52, 69</li>
-            <li>53, 70</li>
-            <li>54, 71</li>
-            <li>55, 72</li>
-            <li>56, 73</li>
-            <li>57, 74</li>
-            <li>58, 75</li>
-            <li>59, 76</li>
-            <li>60, 77</li>
-            <li>61, 78</li>
-            <li>62, 79</li>
-            <li>63, 80</li>
-        </parts>
-      </NiceHealthTab.BodyPartIndexesRemap>
-    </value>
+        </NiceHealthTab.DollBone>
+        </value>
+        </li>
+      </operations>
+    </match>
   </Operation>
 </Patch>

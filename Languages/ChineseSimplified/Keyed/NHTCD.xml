@@ -1,40 +1,78 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
+  <!-- ===== page ===== -->
   <NHTCD_SettingsCategory>NHT 自定义娃娃</NHTCD_SettingsCategory>
-  <NHTCD_Header>已有自定义娃娃的种族：{0}。未指定的栏位会依次回退：性别 → 体型 → 任意娃娃。</NHTCD_Header>
-  <NHTCD_ShowHairInXray>在骨骼 / 器官视图显示头发</NHTCD_ShowHairInXray>
-  <NHTCD_NoDolls>没有找到种族娃娃。请把导出的 HumanlikeDoll XML 放进 Defs/ 目录。</NHTCD_NoDolls>
-  <NHTCD_Auto>自动</NHTCD_Auto>
-  <NHTCD_Default>默认</NHTCD_Default>
-  <NHTCD_Female>女性</NHTCD_Female>
-  <NHTCD_Male>男性</NHTCD_Male>
-  <NHTCD_Body>体型…</NHTCD_Body>
-  <NHTCD_Debug>调试模式（输出启动信息、诊断日志、缺图警告）</NHTCD_Debug>
-  <NHTCD_DefaultHint>默认：所有栏位都使用对应种族补丁里的娃娃（自动）。只有手动改过的栏位才会用你选的娃娃。</NHTCD_DefaultHint>
-  <NHTCD_BaseDolls>基础 NHT 体型</NHTCD_BaseDolls>
-  <NHTCD_BaseTag>（原版体型）</NHTCD_BaseTag>
-  <NHTCD_UseRacePatch>用种族补丁</NHTCD_UseRacePatch>
-    <NHTCD_DrawAllHairLayers>画出所有发型层（默认关：只画一层主发，避免多个发型叠在头上）</NHTCD_DrawAllHairLayers>
-  <NHTCD_DesatColors>部位颜色（关闭后，编辑器里标记过的部位显示为黑白）</NHTCD_DesatColors>
-  <NHTCD_DesatCustom>自定义…</NHTCD_DesatCustom>
-  <NHTCD_DesatCustomUsed>已使用自定义</NHTCD_DesatCustomUsed>
-  <NHTCD_DesatReset>重置为默认</NHTCD_DesatReset>
-  <NHTCD_DesatNoParts>还没有标记过的部位：在编辑器里给部位勾选「受部位颜色开关控制」。</NHTCD_DesatNoParts>
-  <NHTCD_TintVanillaHair>非 HAR 发型按发色重绘</NHTCD_TintVanillaHair>
-  <NHTCD_DetectedVanillaRaces>检测到使用原版发型的种族：{0}</NHTCD_DetectedVanillaRaces>
-  <NHTCD_TintVanillaHint>开启后会在娃娃上按发色补画一层发型。为避免头发盖住耳朵/装饰，标记了「联动置顶」的部位会改为在发型之后重画；代价是这些部位（连同头发）受伤后不再显示伤口 / 疤痕层。</NHTCD_TintVanillaHint>
-  <NHTCD_None>未检测到</NHTCD_None>
-  <NHTCD_VanillaCoords>非 HAR 发型使用自定义坐标（关闭 = 保持 NHT 原版位置）</NHTCD_VanillaCoords>
-  <NHTCD_HarHairTint>HAR 发色显示（关闭 = 保留头发贴图原色）</NHTCD_HarHairTint>
-<NHTCD_SecDisplay>显示</NHTCD_SecDisplay>
-  <NHTCD_SecColor>颜色</NHTCD_SecColor>
-  <NHTCD_SecCoord>坐标</NHTCD_SecCoord>
-  <NHTCD_SecDebug>调试</NHTCD_SecDebug>
+  <NHTCD_Header>已加载 {0} / {1} 个种族。未指定的栏位按「性别 → 体型 → 任意娃娃」依次回退。</NHTCD_Header>
+
+  <!-- ===== sections ===== -->
   <NHTCD_SecAssign>种族与娃娃</NHTCD_SecAssign>
+  <NHTCD_SecAssignSub>为每个种族指定使用哪套娃娃；按钮依次为「默认、男性、女性、体型」。</NHTCD_SecAssignSub>
+  <NHTCD_SecHair>头发</NHTCD_SecHair>
+  <NHTCD_SecHairSub>只放头发本身：是否按发色重绘、使用哪套坐标、骨骼视图与阴影处理。</NHTCD_SecHairSub>
+  <NHTCD_SecColor>颜色</NHTCD_SecColor>
+  <NHTCD_SecColorSub>只放部位配色：整体色彩显示、色彩变体、逐部位与逐种族的灰度开关。</NHTCD_SecColorSub>
+  <NHTCD_SecAddons>附加层与命中框</NHTCD_SecAddons>
+  <NHTCD_SecAddonsSub>HAR 附加层（光环、呆毛、尾巴）的跟随与命中判定。</NHTCD_SecAddonsSub>
+  <NHTCD_SecDebug>调试</NHTCD_SecDebug>
+  <NHTCD_SecDebugSub>仅在排查问题时开启，会额外写入诊断日志。</NHTCD_SecDebugSub>
+
+  <!-- ===== built-in patches ===== -->
+  <NHTCD_SecBuiltinPatches>内置补丁</NHTCD_SecBuiltinPatches>
+  <NHTCD_SecBuiltinPatchesSub>本模组自带的可选修正；默认关闭，打开后立即生效（无需重启）。</NHTCD_SecBuiltinPatchesSub>
+  <NHTCD_RjwLayoutAdapt>RJW 生殖器面板随窗口自适应</NHTCD_RjwLayoutAdapt>
+  <NHTCD_RjwLayoutAdaptHint>让 Nice Health Tab - RJW Genitalia 的面板、按钮和肛门窗口按娃娃列的实际尺寸定位；同时修复 LFS 等自绘列下部位状态不生效的问题（胸部无贴图、肛门窗口消失、下体窗口空白）。需要安装该 RJW 模组；关闭时完全恢复原模组行为。</NHTCD_RjwLayoutAdaptHint>
+  <NHTCD_RjwAddonPresent>已启用：Nice Health Tab - RJW Genitalia</NHTCD_RjwAddonPresent>
+  <NHTCD_RjwAddonAbsent>未检测到 Nice Health Tab - RJW Genitalia，本栏开关不生效</NHTCD_RjwAddonAbsent>
+
+  <!-- ===== race rows ===== -->
+  <NHTCD_Active>已激活</NHTCD_Active>
+  <NHTCD_Inactive>未激活</NHTCD_Inactive>
+  <NHTCD_InactiveHint>未检测到该种族：对应模组未加载，或补丁被跳过。</NHTCD_InactiveHint>
+  <NHTCD_Default>默认</NHTCD_Default>
+  <NHTCD_Male>男性</NHTCD_Male>
+  <NHTCD_Female>女性</NHTCD_Female>
+  <NHTCD_Body>体型…</NHTCD_Body>
+  <NHTCD_BodyHint>按体型指定娃娃</NHTCD_BodyHint>
+  <NHTCD_Auto>自动</NHTCD_Auto>
+  <NHTCD_UseRacePatch>用种族补丁</NHTCD_UseRacePatch>
+  <NHTCD_BaseDolls>基础 NHT 体型</NHTCD_BaseDolls>
+  <NHTCD_BaseTag>原版体型</NHTCD_BaseTag>
+  <NHTCD_NoDolls>尚未找到任何种族娃娃。请把编辑器导出的 HumanlikeDoll XML 放入 Defs/。</NHTCD_NoDolls>
+
+  <!-- ===== hair ===== -->
+  <NHTCD_TintVanillaHair>非 HAR 发型按发色重绘</NHTCD_TintVanillaHair>
+  <NHTCD_HarHairTint>HAR 发色显示</NHTCD_HarHairTint>
+  <NHTCD_EnableHairOverlay>原版发型补画层</NHTCD_EnableHairOverlay>
+  <NHTCD_ShowHairInXray>骨骼 / 器官视图显示头发</NHTCD_ShowHairInXray>
+  <NHTCD_DrawAllHairLayers>画出所有发型层</NHTCD_DrawAllHairLayers>
+  <NHTCD_HairCoords>头发坐标</NHTCD_HairCoords>
   <NHTCD_HarHairCoords>HAR 发型使用游戏内坐标</NHTCD_HarHairCoords>
-  <NHTCD_ColorHelp>说明</NHTCD_ColorHelp>
+  <NHTCD_HarHairCoordsHint>关闭后 HAR 发型改用编辑器坐标；仅影响 HAR 种族。</NHTCD_HarHairCoordsHint>
+  <NHTCD_VanillaCoords>非 HAR 发型使用自定义坐标</NHTCD_VanillaCoords>
+  <NHTCD_DetectedVanillaRaces>使用原版发型的种族</NHTCD_DetectedVanillaRaces>
   <NHTCD_AutoFixHair>自动校正发型错位（首次检测后缓存）</NHTCD_AutoFixHair>
   <NHTCD_RecheckHair>重新检测发型位置</NHTCD_RecheckHair>
+  <NHTCD_None>未检测到</NHTCD_None>
+
+  <!-- ===== colors ===== -->
+  <NHTCD_DesatColors>部位颜色</NHTCD_DesatColors>
+  <NHTCD_NonHarHairShadow>非 HAR 发型阴影</NHTCD_NonHarHairShadow>
+  <NHTCD_DesatCustom>自定义部位颜色开关</NHTCD_DesatCustom>
+  <NHTCD_DesatCustomUsed>已有部位单独设为灰度。</NHTCD_DesatCustomUsed>
+  <NHTCD_DesatReset>全部恢复默认</NHTCD_DesatReset>
+  <NHTCD_DesatNoParts>还没有标记为「受部位颜色开关控制」的部位，请在编辑器中勾选。</NHTCD_DesatNoParts>
+  <NHTCD_EnableColorVariants>异种 / 基因 / 状态颜色变体</NHTCD_EnableColorVariants>
+  <NHTCD_ColorOffRaces>按种族关闭色彩显示</NHTCD_ColorOffRaces>
+  <NHTCD_ColorOffHint>勾选表示该种族不按发色染色</NHTCD_ColorOffHint>
+
+  <!-- ===== addons & debug ===== -->
+  <NHTCD_EnableAddonFollow>HAR 附加层跟随（光环 / 呆毛 / 尾巴）</NHTCD_EnableAddonFollow>
+  <NHTCD_EnableHitboxOffset>命中框偏移（编辑器导出）</NHTCD_EnableHitboxOffset>
+  <NHTCD_AddonsHint>关闭附加层跟随后，光环、呆毛等改为按静态贴图绘制；关闭命中框偏移后，编辑器中的偏移不生效。</NHTCD_AddonsHint>
+  <NHTCD_Debug>调试模式</NHTCD_Debug>
+  <NHTCD_ResetHairDiag>重新输出头发诊断</NHTCD_ResetHairDiag>
+
+  <!-- ===== hair window ===== -->
   <NHTCD_WinTitle>发型位置</NHTCD_WinTitle>
   <NHTCD_WinReset>重置</NHTCD_WinReset>
   <NHTCD_WinMaster>使用自定义坐标</NHTCD_WinMaster>
@@ -43,9 +81,11 @@
   <NHTCD_WinScale>缩放</NHTCD_WinScale>
   <NHTCD_WinX>左右</NHTCD_WinX>
   <NHTCD_WinY>上下</NHTCD_WinY>
-  <NHTCD_WarnCurrent>当前：非HAR发型</NHTCD_WarnCurrent>
-  <NHTCD_WarnNonHar>非HAR发型上色后，头部装饰/耳朵受伤时不显示伤口层。</NHTCD_WarnNonHar>
-  <NHTCD_WarnSync1>打开与全族同步后，会同步：缩放/偏移、</NHTCD_WarnSync1>
-  <NHTCD_WarnSync2>使用自定义坐标、色彩显示；重置也会重置全族。</NHTCD_WarnSync2>
-  <NHTCD_WarnMore>更多选项见 设置 → NHT Custom Dolls。</NHTCD_WarnMore>
+  <NHTCD_WarnCurrent>当前：非 HAR 发型</NHTCD_WarnCurrent>
+  <NHTCD_WarnNonHar>非 HAR 发型上色后，头部装饰与耳朵受伤时不再显示伤口层。</NHTCD_WarnNonHar>
+  <NHTCD_WarnSync1>开启「与全族同步」后，会同步缩放、偏移、</NHTCD_WarnSync1>
+  <NHTCD_WarnSync2>自定义坐标与色彩显示；重置也会重置全族。</NHTCD_WarnSync2>
+  <NHTCD_WarnMore>更多选项见 设置 → NHT 自定义娃娃。</NHTCD_WarnMore>
+  <NHTCD_RjwHairOverChest>发型遮挡胸部</NHTCD_RjwHairOverChest>
+  <NHTCD_RjwHairOverChestHint>开启后头发会画在胸部与乳头之上；关闭则恢复 RJW 原样（胸部盖住头发）。</NHTCD_RjwHairOverChestHint>
 </LanguageData>

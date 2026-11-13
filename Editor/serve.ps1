@@ -12,21 +12,36 @@ if (-not $RootPath -or -not (Test-Path -LiteralPath $RootPath)) {
 }
 $Root    = $RootPath
 $ModRoot = Split-Path -Parent $Root
+# 兼容两种启动方式：-RootPath 指向 Editor（exe 默认），或直接指向模组根目录
+if (-not (Test-Path -LiteralPath (Join-Path $ModRoot 'About')) -and (Test-Path -LiteralPath (Join-Path $Root 'About'))) { $ModRoot = $Root }
 $PortStart = 8765
 $MaxPort   = 8785
-
-# 由 NHT-Anatomy-Editor.exe 启动时，父进程退出后自动结束本服务
-# （Windows 不会因为父进程退出就杀子进程，这里用后台 job 监控父 PID）
-try {
-    $parentPid = (Get-CimInstance Win32_Process -Filter ("ProcessId=" + $PID) -ErrorAction SilentlyContinue).ParentProcessId
-    if ($parentPid -and $parentPid -ne $PID) {
-        Start-Job -ScriptBlock {
-            param($serverPid, $parentPid)
-            while (Get-Process -Id $parentPid -ErrorAction SilentlyContinue) { Start-Sleep -Seconds 2 }
-            Stop-Process -Id $serverPid -Force -ErrorAction SilentlyContinue
-        } -ArgumentList $PID, $parentPid | Out-Null
-    }
-} catch { }
+
+
+# 由 NHT-Anatomy-Editor.exe 启动时，父进程退出后自动结束本服务
+
+# （Windows 不会因为父进程退出就杀子进程，这里用后台 job 监控父 PID）
+
+try {
+
+    $parentPid = (Get-CimInstance Win32_Process -Filter ("ProcessId=" + $PID) -ErrorAction SilentlyContinue).ParentProcessId
+
+    if ($parentPid -and $parentPid -ne $PID) {
+
+        Start-Job -ScriptBlock {
+
+            param($serverPid, $parentPid)
+
+            while (Get-Process -Id $parentPid -ErrorAction SilentlyContinue) { Start-Sleep -Seconds 2 }
+
+            Stop-Process -Id $serverPid -Force -ErrorAction SilentlyContinue
+
+        } -ArgumentList $PID, $parentPid | Out-Null
+
+    }
+
+} catch { }
+
 
 function Get-FreePort([int]$start, [int]$end) {
     for ($p = $start; $p -le $end; $p++) {
@@ -852,8 +867,16 @@ while ($true) {
             $dir = $query['dir']
             if (-not $git) { Send-Json $stream '200 OK' @{ ok = $false; error = 'git.exe not found' }; continue }
             if (-not $dir -or -not (Test-Path -LiteralPath $dir)) { Send-Json $stream '200 OK' @{ ok = $false; error = ('repo dir not found: ' + $dir) }; continue }
-            # 推送弹窗只读 git status；模组 -> 仓库的同步放到真正 push 时做，
-            # 否则 robocopy 整个模组会把弹窗卡住（之前表现为“读取本地更改失败/超时”）。
+            # sync=1：先把模组当前文件同步进仓库目录，再读 git status。
+            # 只同步会被推送的内容（跳过素材库 / 历史快照 / WebView2 缓存等默认锁定的目录），
+            # 否则弹窗会因为复制几百 MB 素材而超时。
+            $syncText = ''
+            if ($query['sync'] -eq '1') {
+                try {
+                    $rd = & robocopy $ModRoot $dir /E /MT:8 /R:1 /W:1 /XD .git .vs bin obj "Editor\NHT-Anatomy-Editor.exe.WebView2" "Editor\history" "Editor\_backup" "Editor\assets" "Editor\canvases\.backup" "_backup" "_analysis" ".dsh-images" /XF nht-project.js hair-map.js *.bak *.bak.* /NFL /NDL /NJH /NJS /NP 2>&1
+                    $syncText = "已同步模组文件（robocopy 退出码 " + $LASTEXITCODE + "）"
+                } catch { $syncText = "同步失败：" + $_.Exception.Message }
+            }
             # 已提交但还没推送的提交：推送窗口里不逐条列，但会随本次推送一起上传
             $curBrR = Invoke-Git $git @('-C', $dir, 'rev-parse', '--abbrev-ref', 'HEAD')
             $curBr = "$($curBrR.text)".Trim()
@@ -890,7 +913,7 @@ while ($true) {
                 }
                 $list += [pscustomobject]@{ path = $rest; status = $code }
             }
-            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $true; files = $list; ahead = $aheadN; aheadCommits = $aheadLog })
+            Send-Json $stream '200 OK' ([pscustomobject]@{ ok = $true; files = $list; ahead = $aheadN; aheadCommits = $aheadLog; syncText = $syncText })
             continue
         }
         elseif ($pathPart -eq '/__gitremote' -and $method -eq 'GET') {
@@ -1062,7 +1085,7 @@ while ($true) {
                 $syncText = ''
                 if ($query['sync'] -eq '1') {
                     try {
-                        $rc = & robocopy $ModRoot $dir /E /XD .git .vs bin obj "Editor\NHT-Anatomy-Editor.exe.WebView2" "Editor\history" "Editor\_backup" /XF *.bak *.bak.* /NFL /NDL /NJH /NJS /NP 2>&1
+                        $rc = & robocopy $ModRoot $dir /E /MT:8 /R:1 /W:1 /XD .git .vs bin obj "Editor\NHT-Anatomy-Editor.exe.WebView2" "Editor\history" "Editor\_backup" "Editor\assets" "Editor\canvases\.backup" "_backup" "_analysis" ".dsh-images" /XF nht-project.js hair-map.js *.bak *.bak.* /NFL /NDL /NJH /NJS /NP 2>&1
                         $syncText = "已同步模组文件到仓库目录（robocopy 退出码 " + $LASTEXITCODE + "）`n"
                     } catch { $syncText = "同步模组文件失败：" + $_.Exception.Message + "`n" }
                 }
@@ -1226,7 +1249,8 @@ while ($true) {
             }
         }
         elseif ($pathPart -eq '/__modzip' -and ($method -eq 'GET' -or $method -eq 'HEAD')) {
-            # 把整个模组文件夹（不含 Editor）打包成 zip 交给浏览器下载
+            # 导出「纯模组」：按磁盘现状原样打包模组文件，保持目录结构；
+            # 只排除开发内容（Editor / Source / tools / _backup / _analysis / history / .git …）
             $stage = $null; $zip = $null
             try {
                 $tmp = [System.IO.Path]::GetTempPath()
@@ -1234,25 +1258,40 @@ while ($true) {
                 $stage = Join-Path $tmp ('nhtstage-' + $stamp)
                 $zip = Join-Path $tmp ('nhtmod-' + $stamp + '.zip')
                 New-Item -ItemType Directory -Path $stage -Force | Out-Null
-                # 只导出正式模组内容：About / Assemblies / Defs / Languages / Patches / Textures / Sounds
-                $official = @('About','Assemblies','Defs','Languages','Patches','Textures','Sounds')
-                foreach ($d in $official) {
-                    $src = Join-Path $ModRoot $d
-                    if (-not (Test-Path -LiteralPath $src)) { continue }
-                    $dst = Join-Path $stage $d
-                    if (-not (Test-Path -LiteralPath $dst)) { New-Item -ItemType Directory -Path $dst -Force | Out-Null }
-                    if ($d -eq 'Patches') {
-                        Get-ChildItem -LiteralPath $src -File -Filter '*.xml' -ErrorAction SilentlyContinue | ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $dst -Force }
-                    } elseif ($d -eq 'Assemblies') {
-                        Get-ChildItem -LiteralPath $src -File -Filter '*.dll' -ErrorAction SilentlyContinue | ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $dst -Force }
+
+                $skipDirs = @('Editor','Source','tools','_backup','_analysis','history','.git','.github','.vs','.idea','obj','bin','packages','node_modules','.codegraph','.dsh-images','.agent-teams','.dsh-project-memory')
+                if (-not (Test-Path -LiteralPath (Join-Path $ModRoot 'About'))) { throw ('不像是模组根目录：' + $ModRoot) }
+
+                function Copy-ModFile([string]$full, [string]$rel) {
+                    if ($rel -match '\.(bak|bak[0-9]+|premap|tmp|orig|psd|xcf|kra|log)$' -or $rel -like '*.old-*') { return }
+                    if ($rel -match '(^|\\)nht-project[^\\]*\.js$' -or $rel -match '(^|\\)_probe') { return }
+                    $segs = $rel -split '\\'
+                    if (($segs -contains 'Patches') -and ($full -notmatch '\.xml$')) { return }
+                    if (($segs -contains 'Assemblies') -and ($full -notmatch '\.dll$')) { return }
+                    $target = Join-Path $stage $rel
+                    $tdir = Split-Path $target -Parent
+                    if (-not (Test-Path -LiteralPath $tdir)) { New-Item -ItemType Directory -Path $tdir -Force | Out-Null }
+                    Copy-Item -LiteralPath $full -Destination $target -Force
+                }
+
+                Get-ChildItem -LiteralPath $ModRoot -Force -ErrorAction SilentlyContinue | ForEach-Object {
+                    if ($_.PSIsContainer) {
+                        if ($skipDirs -contains $_.Name) { return }
+                        Get-ChildItem -LiteralPath $_.FullName -Recurse -File -Force -ErrorAction SilentlyContinue | ForEach-Object {
+                            Copy-ModFile $_.FullName ($_.FullName.Substring($ModRoot.Length).TrimStart('\'))
+                        }
                     } else {
-                        Get-ChildItem -LiteralPath $src -Force | ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $dst -Recurse -Force }
+                        Copy-ModFile $_.FullName $_.Name
                     }
                 }
-                # 清掉贴图目录里的备份 / 临时 / 工程文件
-                Get-ChildItem -LiteralPath $stage -Recurse -File -Force -ErrorAction SilentlyContinue | Where-Object {
-                    $_.Name -match '\.(bak|bak[0-9]+|premap|tmp|orig|psd|xcf|kra)$' -or $_.Name -like '*.old-*'
-                } | Remove-Item -Force -ErrorAction SilentlyContinue
+
+                # 用编辑器里保存的 About.xml 覆盖模组目录里的那份（仅在传了 about 参数时）
+                $aboutTxt = $query['about']
+                if ($aboutTxt -and $aboutTxt.Trim()) {
+                    $aboutDir = Join-Path $stage 'About'
+                    if (-not (Test-Path -LiteralPath $aboutDir)) { New-Item -ItemType Directory -Path $aboutDir -Force | Out-Null }
+                    [System.IO.File]::WriteAllText((Join-Path $aboutDir 'About.xml'), $aboutTxt, (New-Object System.Text.UTF8Encoding($false)))
+                }
                 if (Test-Path -LiteralPath $zip) { Remove-Item -LiteralPath $zip -Force }
                 Add-Type -AssemblyName System.IO.Compression
                 Add-Type -AssemblyName System.IO.Compression.FileSystem
@@ -1260,13 +1299,17 @@ while ($true) {
                 try {
                     Get-ChildItem -LiteralPath $stage -Recurse -File -Force | ForEach-Object {
                         $rel = $_.FullName.Substring($stage.Length + 1).Replace('\', '/')
-                        [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($z, $_.FullName, $rel, [System.IO.Compression.CompressionLevel]::Optimal) | Out-Null
+                        $en = $z.CreateEntry($rel, [System.IO.Compression.CompressionLevel]::Optimal)
+                        $es = $en.Open()
+                        $fs = [System.IO.File]::OpenRead($_.FullName)
+                        try { $fs.CopyTo($es) } finally { $fs.Close(); $es.Close() }
                     }
                 } finally { $z.Dispose() }
                 $bytes = [System.IO.File]::ReadAllBytes($zip)
                 Send-Bytes $stream '200 OK' 'application/zip' $bytes
             }
             catch {
+                try { [System.IO.File]::AppendAllText((Join-Path ([System.IO.Path]::GetTempPath()) 'nhtzip-err.txt'), ($_.Exception.ToString() + "`n---`n")) } catch { }
                 Send-Text $stream '500 Internal Server Error' ('zip failed: ' + $_.Exception.Message)
             }
             finally {

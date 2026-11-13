@@ -1,11 +1,10 @@
-﻿param([string]$OutDir = '')
-﻿#!/usr/bin/env pwsh
+param([string]$OutDir = '')
 # Build NHT_CustomDolls.dll (Harmony + mod settings) against RimWorld 1.7 / NHT.
 $ErrorActionPreference = 'Stop'
 
 $mod      = Split-Path -Parent $PSScriptRoot   # 模组根目录（文件夹改名也不影响）
-if (-not (Test-Path (Join-Path $mod "About"))) { $mod = "C:\Misaki\Game\RimCrow\mods\NHT_CustomDolls" }
-$rw       = "C:\Program Files (x86)\Steam\steamapps\common\RimWorld"
+if (-not (Test-Path (Join-Path $mod "About"))) { $mod = "C:\Misaki\Game\RimCrow\mods\NHT_CustomDollTest" }
+$rw       = "C:\Misaki\Game\RimWorld\RimWorld-v1.7.5000"
 $ws       = "C:\Program Files (x86)\Steam\steamapps\workshop\content\294100"
 $nht      = Join-Path $ws "3328729902\1.7\Assemblies\NiceHediffTab.dll"
 $harmony  = Join-Path $ws "1127530465\Dependencies\0Harmony.dll"
@@ -13,7 +12,9 @@ $milky    = Join-Path $ws "3328729902\1.7\Assemblies\MilkyWay.dll"
 $net      = "C:\Program Files\dotnet\shared\Microsoft.NETCore.App\10.0.10"
 $csc      = "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe"
 
-$out = if ($OutDir) { $OutDir } else { Join-Path $mod "Assemblies" }
+# 1.7 build -> mod\1.7\Assemblies (LoadFolders.xml picks this folder on 1.7; the 1.6
+# build lives in mod\1.6\Assemblies and is produced by build-1.6.ps1).
+$out = if ($OutDir) { $OutDir } else { Join-Path $mod "1.7\Assemblies" }
 New-Item -ItemType Directory -Force -Path $out | Out-Null
 
 $refs = @(

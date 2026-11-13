@@ -1,40 +1,78 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
+  <!-- ===== page ===== -->
   <NHTCD_SettingsCategory>NHT Custom Dolls</NHTCD_SettingsCategory>
-  <NHTCD_Header>Races with a custom doll: {0}. Unset rows fall back to gender, then body type, then any doll.</NHTCD_Header>
-  <NHTCD_ShowHairInXray>Show hair in the Bones / Organs view</NHTCD_ShowHairInXray>
-  <NHTCD_NoDolls>No race dolls found. Drop the exported HumanlikeDoll XML into Defs/.</NHTCD_NoDolls>
-  <NHTCD_Auto>auto</NHTCD_Auto>
-  <NHTCD_Default>default</NHTCD_Default>
-  <NHTCD_Female>female</NHTCD_Female>
-  <NHTCD_Male>male</NHTCD_Male>
-  <NHTCD_Body>body...</NHTCD_Body>
-  <NHTCD_Debug>Debug logging (startup info, per-pawn diagnostics, missing textures)</NHTCD_Debug>
-  <NHTCD_DefaultHint>Default: every slot uses the doll from that race's patch (auto). Only slots you change manually use your pick.</NHTCD_DefaultHint>
-  <NHTCD_BaseDolls>Base NHT bodies</NHTCD_BaseDolls>
-  <NHTCD_BaseTag>(vanilla body)</NHTCD_BaseTag>
-  <NHTCD_UseRacePatch>race patch</NHTCD_UseRacePatch>
-    <NHTCD_DrawAllHairLayers>Draw all hair layers (off by default: only one main hairstyle, avoids overlapping hair)</NHTCD_DrawAllHairLayers>
-  <NHTCD_DesatColors>Part colors (when off, parts flagged in the editor are drawn in grayscale)</NHTCD_DesatColors>
-  <NHTCD_DesatCustom>Customize...</NHTCD_DesatCustom>
-  <NHTCD_DesatCustomUsed>Custom in use</NHTCD_DesatCustomUsed>
-  <NHTCD_DesatReset>Reset to default</NHTCD_DesatReset>
-  <NHTCD_DesatNoParts>No flagged parts yet: tick "controlled by part color switch" on a part in the editor.</NHTCD_DesatNoParts>
-  <NHTCD_TintVanillaHair>Tint vanilla hairstyles with hair color</NHTCD_TintVanillaHair>
-  <NHTCD_DetectedVanillaRaces>Races using vanilla hair: {0}</NHTCD_DetectedVanillaRaces>
-  <NHTCD_TintVanillaHint>Draws a colored hair layer over the doll. Parts marked "linked top" are redrawn after the hair so it does not cover ears or decorations; as a trade-off those parts (and the hair) no longer show injury/scar layers.</NHTCD_TintVanillaHint>
-  <NHTCD_None>none detected</NHTCD_None>
-  <NHTCD_VanillaCoords>Use custom coordinates for vanilla hairstyles (off = keep NHT default)</NHTCD_VanillaCoords>
-  <NHTCD_HarHairTint>Show HAR hair color (off = keep texture colors)</NHTCD_HarHairTint>
-<NHTCD_SecDisplay>Display</NHTCD_SecDisplay>
-  <NHTCD_SecColor>Colors</NHTCD_SecColor>
-  <NHTCD_SecCoord>Coordinates</NHTCD_SecCoord>
-  <NHTCD_SecDebug>Debug</NHTCD_SecDebug>
+  <NHTCD_Header>{0} of {1} races loaded. Unset slots fall back in order: gender, then body type, then any doll.</NHTCD_Header>
+
+  <!-- ===== sections ===== -->
   <NHTCD_SecAssign>Races and dolls</NHTCD_SecAssign>
+  <NHTCD_SecAssignSub>Pick the doll set for each race. The buttons are: default, male, female, body type.</NHTCD_SecAssignSub>
+  <NHTCD_SecHair>Hair</NHTCD_SecHair>
+  <NHTCD_SecHairSub>Hair only: recoloring, which coordinates apply, skeleton view and shadow handling.</NHTCD_SecHairSub>
+  <NHTCD_SecColor>Colors</NHTCD_SecColor>
+  <NHTCD_SecColorSub>Parts only: master color toggle, color variants, per-part and per-race grayscale.</NHTCD_SecColorSub>
+  <NHTCD_SecAddons>Addons and hitbox</NHTCD_SecAddons>
+  <NHTCD_SecAddonsSub>Follow-through and hit testing for HAR addons (halo, ahoge, tail).</NHTCD_SecAddonsSub>
+  <NHTCD_SecDebug>Debug</NHTCD_SecDebug>
+  <NHTCD_SecDebugSub>For troubleshooting only; adds diagnostic entries to the log.</NHTCD_SecDebugSub>
+
+  <!-- ===== built-in patches ===== -->
+  <NHTCD_SecBuiltinPatches>Built-in patches</NHTCD_SecBuiltinPatches>
+  <NHTCD_SecBuiltinPatchesSub>Optional fixes bundled with this mod. Off by default; enabling takes effect immediately.</NHTCD_SecBuiltinPatchesSub>
+  <NHTCD_RjwLayoutAdapt>RJW genitalia panel follows the doll column</NHTCD_RjwLayoutAdapt>
+  <NHTCD_RjwLayoutAdaptHint>Positions the Nice Health Tab - RJW Genitalia panel, button and anus window against the actual doll column size, and restores per-pawn part state in custom-drawn columns such as LFS UI (missing chest texture, missing anus window, empty genital slots). Requires that RJW addon; disabling it restores the original mod behaviour.</NHTCD_RjwLayoutAdaptHint>
+  <NHTCD_RjwAddonPresent>Active: Nice Health Tab - RJW Genitalia</NHTCD_RjwAddonPresent>
+  <NHTCD_RjwAddonAbsent>Nice Health Tab - RJW Genitalia not detected; these switches have no effect</NHTCD_RjwAddonAbsent>
+
+  <!-- ===== race rows ===== -->
+  <NHTCD_Active>Loaded</NHTCD_Active>
+  <NHTCD_Inactive>Missing</NHTCD_Inactive>
+  <NHTCD_InactiveHint>Race not found: its mod is not loaded, or the patch was skipped.</NHTCD_InactiveHint>
+  <NHTCD_Default>default</NHTCD_Default>
+  <NHTCD_Male>male</NHTCD_Male>
+  <NHTCD_Female>female</NHTCD_Female>
+  <NHTCD_Body>body...</NHTCD_Body>
+  <NHTCD_BodyHint>Pick a doll per body type</NHTCD_BodyHint>
+  <NHTCD_Auto>auto</NHTCD_Auto>
+  <NHTCD_UseRacePatch>race patch</NHTCD_UseRacePatch>
+  <NHTCD_BaseDolls>Base NHT bodies</NHTCD_BaseDolls>
+  <NHTCD_BaseTag>vanilla body</NHTCD_BaseTag>
+  <NHTCD_NoDolls>No race dolls found yet. Drop the editor's HumanlikeDoll XML into Defs/.</NHTCD_NoDolls>
+
+  <!-- ===== hair ===== -->
+  <NHTCD_TintVanillaHair>Recolor non-HAR hairstyles with hair color</NHTCD_TintVanillaHair>
+  <NHTCD_HarHairTint>Show HAR hair color</NHTCD_HarHairTint>
+  <NHTCD_EnableHairOverlay>Vanilla hair overlay</NHTCD_EnableHairOverlay>
+  <NHTCD_ShowHairInXray>Show hair in Bones / Organs view</NHTCD_ShowHairInXray>
+  <NHTCD_DrawAllHairLayers>Draw every hair layer</NHTCD_DrawAllHairLayers>
+  <NHTCD_HairCoords>Hair coordinates</NHTCD_HairCoords>
   <NHTCD_HarHairCoords>Use in-game coordinates for HAR hair</NHTCD_HarHairCoords>
-  <NHTCD_ColorHelp>Details</NHTCD_ColorHelp>
+  <NHTCD_HarHairCoordsHint>When off, HAR hair uses the editor coordinates. HAR races only.</NHTCD_HarHairCoordsHint>
+  <NHTCD_VanillaCoords>Use custom coordinates for non-HAR hair</NHTCD_VanillaCoords>
+  <NHTCD_DetectedVanillaRaces>Races using vanilla hair</NHTCD_DetectedVanillaRaces>
   <NHTCD_AutoFixHair>Auto-correct misplaced hair (cached after first check)</NHTCD_AutoFixHair>
   <NHTCD_RecheckHair>Re-detect hair position</NHTCD_RecheckHair>
+  <NHTCD_None>none detected</NHTCD_None>
+
+  <!-- ===== colors ===== -->
+  <NHTCD_DesatColors>Part colors</NHTCD_DesatColors>
+  <NHTCD_NonHarHairShadow>Non-HAR hair shading</NHTCD_NonHarHairShadow>
+  <NHTCD_DesatCustom>Per-part color overrides</NHTCD_DesatCustom>
+  <NHTCD_DesatCustomUsed>Some parts are set to grayscale individually.</NHTCD_DesatCustomUsed>
+  <NHTCD_DesatReset>Reset all to default</NHTCD_DesatReset>
+  <NHTCD_DesatNoParts>No parts are flagged as "controlled by the part color switch" yet. Tick them in the editor.</NHTCD_DesatNoParts>
+  <NHTCD_EnableColorVariants>Xenotype / gene / hediff color variants</NHTCD_EnableColorVariants>
+  <NHTCD_ColorOffRaces>Disable color per race</NHTCD_ColorOffRaces>
+  <NHTCD_ColorOffHint>Ticked means that race is not tinted by hair color</NHTCD_ColorOffHint>
+
+  <!-- ===== addons & debug ===== -->
+  <NHTCD_EnableAddonFollow>Follow HAR addons (halo / ahoge / tail)</NHTCD_EnableAddonFollow>
+  <NHTCD_EnableHitboxOffset>Hitbox offset (from the editor)</NHTCD_EnableHitboxOffset>
+  <NHTCD_AddonsHint>With addon follow off, halos and ahoge are drawn as static textures. With hitbox offset off, offsets authored in the editor are ignored.</NHTCD_AddonsHint>
+  <NHTCD_Debug>Debug mode</NHTCD_Debug>
+  <NHTCD_ResetHairDiag>Re-print hair diagnostics</NHTCD_ResetHairDiag>
+
+  <!-- ===== hair window ===== -->
   <NHTCD_WinTitle>Hair position</NHTCD_WinTitle>
   <NHTCD_WinReset>Reset</NHTCD_WinReset>
   <NHTCD_WinMaster>Use custom coordinates</NHTCD_WinMaster>
@@ -44,8 +82,10 @@
   <NHTCD_WinX>X offset</NHTCD_WinX>
   <NHTCD_WinY>Y offset</NHTCD_WinY>
   <NHTCD_WarnCurrent>Current: non-HAR hair</NHTCD_WarnCurrent>
-  <NHTCD_WarnNonHar>With tinting on, injured head decorations/ears no longer show wound layers.</NHTCD_WarnNonHar>
-  <NHTCD_WarnSync1>Enabling race sync also syncs: scale/offsets,</NHTCD_WarnSync1>
-  <NHTCD_WarnSync2>custom coordinates and color display; reset also resets the whole race.</NHTCD_WarnSync2>
-  <NHTCD_WarnMore>More options: Settings → NHT Custom Dolls.</NHTCD_WarnMore>
+  <NHTCD_WarnNonHar>With tinting on, injured head decorations and ears no longer show wound layers.</NHTCD_WarnNonHar>
+  <NHTCD_WarnSync1>Race sync also applies scale and offsets,</NHTCD_WarnSync1>
+  <NHTCD_WarnSync2>custom coordinates and color display; resetting also resets the whole race.</NHTCD_WarnSync2>
+  <NHTCD_WarnMore>More options: Options → NHT Custom Dolls.</NHTCD_WarnMore>
+  <NHTCD_RjwHairOverChest>Hair covers the chest</NHTCD_RjwHairOverChest>
+  <NHTCD_RjwHairOverChestHint>When on, hair is drawn above the chest and nipples. Turn it off to restore the original RJW order (chest over hair).</NHTCD_RjwHairOverChestHint>
 </LanguageData>

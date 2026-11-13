@@ -1,0 +1,576 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  NHT_CustomDolls0.3.1
+  由 NHT Anatomy Editor 生成 · 2026-11-12 23:11
+  基准模组：Nice Health Tab (Andromeda.NiceHealthTab) v1.6 · 创意工坊 3328729902
+  RJW 层：Nice Health Tab - RJW Genitalia (zoc2k.nicehealthtab.rjwgenitalia) · 相关操作带 MayRequire rim.job.world
+  画布：1 个 · 部位：29 个 · 补丁操作：8 段
+  贴图路径指向 Nice Health Tab（以及 RJW 补丁）的 Textures/ 目录。直接点「保存到注入模组」写进 NHT_CustomDollTest/Patches/ 即可，也可以手动放进任意模组的 Patches/。
+  备注：以 Nice Health Tab 模组 1.6 默认体型为基准制作的部位补丁。
+-->
+<Patch>
+  <!-- race marker: Mincho_ThingDef -->
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs</xpath>
+    <value>
+      <NHT_CustomDolls.RaceMarkerDef>
+        <defName>NHTCD_RaceMarker_Mincho_ThingDef</defName>
+        <race>Mincho_ThingDef</race>
+      </NHT_CustomDolls.RaceMarkerDef>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/*[defName='Mincho_ThingDef']</xpath>
+    <match Class="PatchOperationSequence">
+      <operations>
+        <!-- Mincho · HAR 头发参数（种族 Mincho_ThingDef） -->
+        <li Class="PatchOperationAdd">
+        <success>Always</success>
+        <xpath>Defs</xpath>
+        <value>
+        <NHT_CustomDolls.HairFitDef>
+        <defName>NHTCD_HairFit_Mincho_ThingDef</defName>
+        <race>Mincho_ThingDef</race>
+        <scale>0.320</scale>
+        <offsetX>0.001</offsetX>
+        <offsetY>-0.344</offsetY>
+        <front>true</front>
+        <layer>14</layer>
+        <showInXray>false</showInXray>
+        <vanillaScale>1.000</vanillaScale>
+        <vanillaOffsetX>0.000</vanillaOffsetX>
+        <vanillaOffsetY>0.000</vanillaOffsetY>
+        <aboveParts>
+        </aboveParts>
+        <topParts>
+        </topParts>
+        </NHT_CustomDolls.HairFitDef>
+        </value>
+        </li>
+        <!-- Mincho · HAR 头发参数（种族 mincho） -->
+        <li Class="PatchOperationAdd">
+        <success>Always</success>
+        <xpath>Defs</xpath>
+        <value>
+        <NHT_CustomDolls.HairFitDef>
+        <defName>NHTCD_HairFit_mincho</defName>
+        <race>mincho</race>
+        <scale>0.320</scale>
+        <offsetX>0.001</offsetX>
+        <offsetY>-0.344</offsetY>
+        <front>true</front>
+        <layer>14</layer>
+        <showInXray>false</showInXray>
+        <vanillaScale>1.000</vanillaScale>
+        <vanillaOffsetX>0.000</vanillaOffsetX>
+        <vanillaOffsetY>0.000</vanillaOffsetY>
+        <aboveParts>
+        </aboveParts>
+        <topParts>
+        </topParts>
+        </NHT_CustomDolls.HairFitDef>
+        </value>
+        </li>
+        <!-- Mincho · 部位颜色开关：关闭后这些部位显示为黑白 -->
+        <li Class="PatchOperationAdd">
+        <success>Always</success>
+        <xpath>Defs</xpath>
+        <value>
+        <NHT_CustomDolls.DesatPartsDef>
+        <defName>NHTCD_Desat_Mincho_ThingDef</defName>
+        <label>Mincho</label>
+        <race>Mincho_ThingDef</race>
+        <doll>Mincho_ThingDef</doll>
+        <parts>
+        <li><part>Mincho_ThingDef_MinchoThingDefSlimeHeadHead</part><id>13</id><label>右耳</label></li>
+        <li><part>Mincho_ThingDef_MinchoThingDefSlimeHeadHead_2</part><id>13</id><label>左耳</label></li>
+        </parts>
+        </NHT_CustomDolls.DesatPartsDef>
+        </value>
+        </li>
+        <!-- Mincho · 画在头发之上的部位（NHTCD_HairFit_Mincho_ThingDef） -->
+        <li Class="PatchOperationReplace">
+        <success>Always</success>
+        <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_Mincho_ThingDef"]/aboveParts</xpath>
+        <value>
+        <aboveParts>
+        </aboveParts>
+        </value>
+        </li>
+        <li Class="PatchOperationReplace">
+        <success>Always</success>
+        <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_Mincho_ThingDef"]/topParts</xpath>
+        <value>
+        <topParts>
+        </topParts>
+        </value>
+        </li>
+        <!-- Mincho · 画在头发之上的部位（NHTCD_HairFit_mincho） -->
+        <li Class="PatchOperationReplace">
+        <success>Always</success>
+        <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_mincho"]/aboveParts</xpath>
+        <value>
+        <aboveParts>
+        </aboveParts>
+        </value>
+        </li>
+        <li Class="PatchOperationReplace">
+        <success>Always</success>
+        <xpath>Defs/NHT_CustomDolls.HairFitDef[defName="NHTCD_HairFit_mincho"]/topParts</xpath>
+        <value>
+        <topParts>
+        </topParts>
+        </value>
+        </li>
+        <!-- 新增定义 -->
+        <li Class="PatchOperationAdd">
+        <success>Always</success>
+        <xpath>Defs</xpath>
+        <value>
+        <!-- Mincho · 形态映射 Mincho_Body_Large_Mintchoco_Humanlike → Mincho_Body_Large_Mintchoco_Slime -->
+        <NHT_CustomDolls.BodyAliasDef>
+        <defName>NHTCD_Alias_Mincho_ThingDef_0</defName>
+        <race>Mincho_ThingDef</race>
+        <fromBody>Mincho_Body_Large_Mintchoco_Humanlike</fromBody>
+        <toBody>Mincho_Body_Large_Mintchoco_Slime</toBody>
+        </NHT_CustomDolls.BodyAliasDef>
+        <!-- Mincho · 形态映射 Mincho_Body_Large_Mintchoco_Slime_YR_Bote → Mincho_Body_Large_Mintchoco_Slime -->
+        <NHT_CustomDolls.BodyAliasDef>
+        <defName>NHTCD_Alias_Mincho_ThingDef_1</defName>
+        <race>Mincho_ThingDef</race>
+        <fromBody>Mincho_Body_Large_Mintchoco_Slime_YR_Bote</fromBody>
+        <toBody>Mincho_Body_Large_Mintchoco_Slime</toBody>
+        </NHT_CustomDolls.BodyAliasDef>
+        <!-- Mincho · 形态映射 Mincho_Body_Large_Mintchoco_Humanlike_YR_Bote → Mincho_Body_Large_Mintchoco_Slime -->
+        <NHT_CustomDolls.BodyAliasDef>
+        <defName>NHTCD_Alias_Mincho_ThingDef_2</defName>
+        <race>Mincho_ThingDef</race>
+        <fromBody>Mincho_Body_Large_Mintchoco_Humanlike_YR_Bote</fromBody>
+        <toBody>Mincho_Body_Large_Mintchoco_Slime</toBody>
+        </NHT_CustomDolls.BodyAliasDef>
+        <!-- Mincho · 新建 HumanlikeDoll Mincho_ThingDef -->
+        <NiceHealthTab.HumanlikeDoll>
+        <defName>Mincho_ThingDef</defName>
+        <gender>Female</gender>
+        <xenotype>Mincho_ThingDef</xenotype>
+        <bodytype>Mincho_Body_Large_Mintchoco_Slime</bodytype>
+        <outlinePath>HediffTab/Baseliner/Female/Outline</outlinePath>
+        <headPart>Mincho_ThingDef_FemaleHead</headPart>
+        <BoundingBox>
+        <m_XMin>-160</m_XMin>
+        <m_YMin>-455</m_YMin>
+        <m_Width>320</m_Width>
+        <m_Height>890</m_Height>
+        </BoundingBox>
+        <headOverlayOffset><x>-2</x><y>-2</y></headOverlayOffset>
+        <headOverlayScale><x>310</x><y>310</y></headOverlayScale>
+        </NiceHealthTab.HumanlikeDoll>
+        <!-- 躯干 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Mincho_ThingDef_FemaleTorso</defName>
+        <imagePath>HediffTab/Baseliner/Female/Torso</imagePath>
+        <position>
+        <x>2</x>
+        <y>-140.5</y>
+        </position>
+        <layer>1</layer>
+        <dollName>Mincho_ThingDef</dollName>
+        <bodyPartId>0</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1</width>
+        <height>1</height>
+        <hitboxScale><x>0.74</x><y>0.75</y></hitboxScale>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 右腿 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Mincho_ThingDef_FemaleLegLeft</defName>
+        <imagePath>HediffTab/Baseliner/Female/Leg</imagePath>
+        <position>
+        <x>-45</x>
+        <y>179.5</y>
+        </position>
+        <layer>2</layer>
+        <dollName>Mincho_ThingDef</dollName>
+        <bodyPartId>55</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>-1</width>
+        <height>1</height>
+        <hitboxScale><x>0.8</x><y>0.88</y></hitboxScale>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 左腿 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Mincho_ThingDef_FemaleLegRight</defName>
+        <imagePath>HediffTab/Baseliner/Female/Leg</imagePath>
+        <position>
+        <x>45</x>
+        <y>179.5</y>
+        </position>
+        <layer>2</layer>
+        <dollName>Mincho_ThingDef</dollName>
+        <bodyPartId>46</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1</width>
+        <height>1</height>
+        <hitboxScale><x>0.8</x><y>0.88</y></hitboxScale>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 颈部 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Mincho_ThingDef_FemaleNeck</defName>
+        <imagePath>HediffTab/Baseliner/Female/Neck</imagePath>
+        <position>
+        <x>1</x>
+        <y>-303.5</y>
+        </position>
+        <layer>2</layer>
+        <dollName>Mincho_ThingDef</dollName>
+        <bodyPartId>12</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1</width>
+        <height>1</height>
+        <hitboxScale><x>0.9</x><y>0.74</y></hitboxScale>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 右肩 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Mincho_ThingDef_FemaleShoulderLeft</defName>
+        <imagePath>HediffTab/Baseliner/Female/Shoulder</imagePath>
+        <position>
+        <x>-81.5</x>
+        <y>-198</y>
+        </position>
+        <layer>2</layer>
+        <dollName>Mincho_ThingDef</dollName>
+        <bodyPartId>34</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>-1</width>
+        <height>1</height>
+        <hitboxScale><x>0.73</x><y>0.79</y></hitboxScale>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 左肩 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Mincho_ThingDef_FemaleShoulderRight</defName>
+        <imagePath>HediffTab/Baseliner/Female/Shoulder</imagePath>
+        <position>
+        <x>81.5</x>
+        <y>-198</y>
+        </position>
+        <layer>2</layer>
+        <dollName>Mincho_ThingDef</dollName>
+        <bodyPartId>23</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1</width>
+        <height>1</height>
+        <hitboxScale><x>0.73</x><y>0.79</y></hitboxScale>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 右臂 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Mincho_ThingDef_MinchoThingDefRightShoulderShoulder</defName>
+        <imagePath>HediffTab/Baseliner/Female/Arm</imagePath>
+        <position>
+        <x>-107</x>
+        <y>-82</y>
+        </position>
+        <layer>3</layer>
+        <dollName>Mincho_ThingDef</dollName>
+        <bodyPartId>34</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>-1</width>
+        <height>1</height>
+        <hitboxScale><x>0.74</x><y>0.73</y></hitboxScale>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 左臂 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Mincho_ThingDef_MinchoThingDefLeftShoulderShoulder</defName>
+        <imagePath>HediffTab/Baseliner/Female/Arm</imagePath>
+        <position>
+        <x>107</x>
+        <y>-82</y>
+        </position>
+        <layer>3</layer>
+        <dollName>Mincho_ThingDef</dollName>
+        <bodyPartId>23</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1</width>
+        <height>1</height>
+        <hitboxScale><x>0.74</x><y>0.73</y></hitboxScale>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 右脚 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Mincho_ThingDef_MinchoThingDefRightLegLeg</defName>
+        <imagePath>HediffTab/Baseliner/Female/Feet</imagePath>
+        <position>
+        <x>-47.5</x>
+        <y>411.5</y>
+        </position>
+        <layer>3</layer>
+        <dollName>Mincho_ThingDef</dollName>
+        <bodyPartId>55</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>-1</width>
+        <height>1</height>
+        <hitboxScale><x>0.8</x><y>0.77</y></hitboxScale>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 左脚 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Mincho_ThingDef_MinchoThingDefLeftLegLeg</defName>
+        <imagePath>HediffTab/Baseliner/Female/Feet</imagePath>
+        <position>
+        <x>47.5</x>
+        <y>411.5</y>
+        </position>
+        <layer>3</layer>
+        <dollName>Mincho_ThingDef</dollName>
+        <bodyPartId>46</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1</width>
+        <height>1</height>
+        <hitboxScale><x>0.8</x><y>0.77</y></hitboxScale>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 头部 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Mincho_ThingDef_FemaleHead</defName>
+        <imagePath>HediffTab/Baseliner/Female/NiceHead</imagePath>
+        <position>
+        <x>0</x>
+        <y>-352</y>
+        </position>
+        <layer>3</layer>
+        <dollName>Mincho_ThingDef</dollName>
+        <bodyPartId>13</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1</width>
+        <height>1</height>
+        <hitboxScale><x>0.92</x><y>0.92</y></hitboxScale>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 自定义部位 · 右耳 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Mincho_ThingDef_MinchoThingDefSlimeHeadHead</defName>
+        <imagePath>Custom/mincho/Crop_Ear_east.png_37ceb5f1</imagePath>
+        <position>
+        <x>-58</x>
+        <y>-339</y>
+        </position>
+        <layer>3</layer>
+        <dollName>Mincho_ThingDef</dollName>
+        <bodyPartId>13</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1.3</width>
+        <height>1.3</height>
+        <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
+        </NiceHealthTab.DollBodyPart>
+
+        <!-- 自定义部位 · 右耳（灰） -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Mincho_ThingDef_MinchoThingDefSlimeHeadHead_NHTCD_Gray</defName>
+        <imagePath>Custom/NHTCD_Gray/Mincho/Mincho_ThingDef_MinchoThingDefSlimeHeadHead</imagePath>
+        <position>
+        <x>-58</x>
+        <y>-339</y>
+        </position>
+        <layer>3</layer>
+        <dollName>Mincho_ThingDef</dollName>
+        <bodyPartId>13</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1.3</width>
+        <height>1.3</height>
+        <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 自定义部位 · 左耳 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Mincho_ThingDef_MinchoThingDefSlimeHeadHead_2</defName>
+        <imagePath>Custom/mincho/Crop_Ear_east.png_37ceb5f1</imagePath>
+        <position>
+        <x>56</x>
+        <y>-339</y>
+        </position>
+        <layer>3</layer>
+        <dollName>Mincho_ThingDef</dollName>
+        <bodyPartId>13</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>-1.3</width>
+        <height>1.3</height>
+        <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
+        </NiceHealthTab.DollBodyPart>
+
+        <!-- 自定义部位 · 左耳（灰） -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Mincho_ThingDef_MinchoThingDefSlimeHeadHead_2_NHTCD_Gray</defName>
+        <imagePath>Custom/NHTCD_Gray/Mincho/Mincho_ThingDef_MinchoThingDefSlimeHeadHead_2</imagePath>
+        <position>
+        <x>56</x>
+        <y>-339</y>
+        </position>
+        <layer>3</layer>
+        <dollName>Mincho_ThingDef</dollName>
+        <bodyPartId>13</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>-1.3</width>
+        <height>1.3</height>
+        <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 右手 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Mincho_ThingDef_MinchoThingDefRightShoulderShoulder_2</defName>
+        <imagePath>HediffTab/Baseliner/Female/Hand</imagePath>
+        <position>
+        <x>-121</x>
+        <y>5.5</y>
+        </position>
+        <layer>4</layer>
+        <dollName>Mincho_ThingDef</dollName>
+        <bodyPartId>34</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>-1</width>
+        <height>1</height>
+        <hitboxScale><x>0.88</x><y>0.75</y></hitboxScale>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 左手 -->
+        <NiceHealthTab.DollBodyPart>
+        <defName>Mincho_ThingDef_MinchoThingDefLeftShoulderShoulder_2</defName>
+        <imagePath>HediffTab/Baseliner/Female/Hand</imagePath>
+        <position>
+        <x>121</x>
+        <y>5.5</y>
+        </position>
+        <layer>4</layer>
+        <dollName>Mincho_ThingDef</dollName>
+        <bodyPartId>23</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>true</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1</width>
+        <height>1</height>
+        <hitboxScale><x>0.88</x><y>0.75</y></hitboxScale>
+        </NiceHealthTab.DollBodyPart>
+        <!-- 左眼 -->
+        <NiceHealthTab.DollEye>
+        <defName>Mincho_ThingDef_MinchoThingDefMinchoEyespot</defName>
+        <imagePath>HediffTab/Baseliner/Head/NiceMaleEye</imagePath>
+        <position>
+        <x>18</x>
+        <y>-341.5</y>
+        </position>
+        <layer>15</layer>
+        <dollName>Mincho_ThingDef</dollName>
+        <bodyPartId>66</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>0.6</width>
+        <height>0.6</height>
+        <hitboxScale><x>0.73</x><y>0.73</y></hitboxScale>
+        </NiceHealthTab.DollEye>
+        <!-- 右眼 -->
+        <NiceHealthTab.DollEye>
+        <defName>Mincho_ThingDef_MinchoThingDefMinchoEyespot_2</defName>
+        <imagePath>HediffTab/Baseliner/Head/NiceMaleEye</imagePath>
+        <position>
+        <x>-18</x>
+        <y>-341.5</y>
+        </position>
+        <layer>15</layer>
+        <dollName>Mincho_ThingDef</dollName>
+        <bodyPartId>66</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>true</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>-0.6</width>
+        <height>0.6</height>
+        <hitboxScale><x>0.73</x><y>0.73</y></hitboxScale>
+        </NiceHealthTab.DollEye>
+        <!-- 大脑 -->
+        <NiceHealthTab.DollOrgan>
+        <defName>Mincho_ThingDef_FemaleBrain</defName>
+        <imagePath>HediffTab/Organs/Brain</imagePath>
+        <position>
+        <x>1</x>
+        <y>-379</y>
+        </position>
+        <layer>20</layer>
+        <dollName>Mincho_ThingDef</dollName>
+        <bodyPartId>15</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>false</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>1</width>
+        <height>1</height>
+        <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
+        <extraLayer>0</extraLayer>
+        </NiceHealthTab.DollOrgan>
+        <!-- 心脏 -->
+        <NiceHealthTab.DollOrgan>
+        <defName>Mincho_ThingDef_MinchoThingDefMinchoCore</defName>
+        <imagePath>HediffTab/Organs/Heart</imagePath>
+        <position>
+        <x>4.5</x>
+        <y>-167.5</y>
+        </position>
+        <layer>21</layer>
+        <dollName>Mincho_ThingDef</dollName>
+        <bodyPartId>65</bodyPartId>
+        <notifyPosition><x>0</x><y>0</y></notifyPosition>
+        <showArmorCover>false</showArmorCover>
+        <visibleByDefault>false</visibleByDefault>
+        <bondageScale>1.00</bondageScale>
+        <width>0.85</width>
+        <height>0.85</height>
+        <hitboxScale><x>0.75</x><y>0.75</y></hitboxScale>
+        <extraLayer>0</extraLayer>
+        </NiceHealthTab.DollOrgan>
+        </value>
+        </li>
+      </operations>
+    </match>
+  </Operation>
+</Patch>
