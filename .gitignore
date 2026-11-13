@@ -34,3 +34,10 @@ _backup/
 *.rej
 *.tmp
 *.log
+
+# 编译产物 / 旧备份（源码在 Source、产物在 1.6|1.7/Assemblies）
+*.dll.bak*
+Source/*.dll
+Source/*.new.dll
+Source/staging/
+Editor/ui/notice1.html
