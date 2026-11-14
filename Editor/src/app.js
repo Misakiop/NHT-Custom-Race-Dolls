@@ -3044,6 +3044,9 @@ async function loadBodyMap(force, bodyDef) {
   const c = activeCanvas();
   const want = bodyDef || (c && c.race && c.race.bodyDef) || '';
   const tries = [];
+  // meta/ 是现在的正式位置（游戏仍会写到根目录，编辑器启动时自动归位）
+  if (want) tries.push('meta/body-map-' + want + '.json');
+  tries.push('meta/body-map.json');
   if (want) tries.push('body-map-' + want + '.json');
   tries.push('body-map.json');
   BODY_MAP = null;
@@ -14210,13 +14213,15 @@ async function loadRaceRemaps() {
     let j = cache.get(body);
     if (j === undefined) {
       j = null;
-      try {
-        const r = await fetch('body-map-' + encodeURIComponent(body) + '.json', { cache: 'no-store' });
-        if (r.ok) {
+      const urls = ['meta/body-map-' + encodeURIComponent(body) + '.json', 'body-map-' + encodeURIComponent(body) + '.json'];
+      for (const u of urls) {
+        try {
+          const r = await fetch(u, { cache: 'no-store' });
+          if (!r.ok) continue;
           const t = await r.json();
-          if (t && Array.isArray(t.pairs) && t.pairs.length) j = t;
-        }
-      } catch (e) { }
+          if (t && Array.isArray(t.pairs) && t.pairs.length) { j = t; break; }
+        } catch (e) { }
+      }
       cache.set(body, j);
     }
     if (!j) continue;

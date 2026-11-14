@@ -1780,7 +1780,10 @@ namespace NHT_CustomDolls
                             }
                             if (dir != null)
                             {
-                                string path = System.IO.Path.Combine(dir, "Editor", "body-map.json");
+                                // t124：写到 Editor\meta（编辑器正式读取位置），目录不存在就建
+                                string metaDir = System.IO.Path.Combine(dir, "Editor", "meta");
+                                if (!System.IO.Directory.Exists(metaDir)) System.IO.Directory.CreateDirectory(metaDir);
+                                string path = System.IO.Path.Combine(metaDir, "body-map.json");
                                 StringBuilder sb = new StringBuilder();
                                 sb.Append("{\"body\":\"").Append(body.defName).Append("\",\"pairs\":[");
                                 bool first = true;
@@ -1795,7 +1798,7 @@ namespace NHT_CustomDolls
                                 sb.Append("]}");
                                 System.IO.File.WriteAllText(path, sb.ToString());
                                 // 每个身体单独一份，避免被别的种族覆盖
-                                string perBody = System.IO.Path.Combine(dir, "Editor", "body-map-" + body.defName + ".json");
+                                string perBody = System.IO.Path.Combine(metaDir, "body-map-" + body.defName + ".json");
                                 System.IO.File.WriteAllText(perBody, sb.ToString());
                                 Log.Message("[NHT body map] written " + perBody);
                             }

@@ -14,6 +14,20 @@ $Root    = $RootPath
 $ModRoot = Split-Path -Parent $Root
 # 兼容两种启动方式：-RootPath 指向 Editor（exe 默认），或直接指向模组根目录
 if (-not (Test-Path -LiteralPath (Join-Path $ModRoot 'About')) -and (Test-Path -LiteralPath (Join-Path $Root 'About'))) { $ModRoot = $Root }
+# 上一次运行时游戏写出的 body-map*.json / hair-map.js 归位到 Editor\meta
+# （游戏侧 C# 只写不读，路径写在 DLL 里；这里在服务启动时顺手挪走，保持根目录干净）
+try {
+    $metaDir = Join-Path $Root 'meta'
+    $loose = @(Get-ChildItem -LiteralPath $Root -File -ErrorAction SilentlyContinue |
+        Where-Object { $_.Name -like 'body-map*.json' -or $_.Name -eq 'hair-map.js' })
+    if ($loose.Count -gt 0) {
+        if (-not (Test-Path -LiteralPath $metaDir)) { New-Item -ItemType Directory -Path $metaDir -Force | Out-Null }
+        foreach ($f in $loose) {
+            try { Move-Item -LiteralPath $f.FullName -Destination (Join-Path $metaDir $f.Name) -Force } catch { }
+        }
+    }
+} catch { }
+
 $PortStart = 8765
 $MaxPort   = 8785
 

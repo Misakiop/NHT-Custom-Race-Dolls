@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
   <!-- ===== page ===== -->
   <NHTCD_SettingsCategory>NHT Custom Dolls</NHTCD_SettingsCategory>
@@ -7,6 +7,9 @@
   <!-- ===== sections ===== -->
   <NHTCD_SecAssign>Races and dolls</NHTCD_SecAssign>
   <NHTCD_SecAssignSub>Pick the doll set for each race. The buttons are: default, male, female, body type.</NHTCD_SecAssignSub>
+  <NHTCD_RacesCount>{0} / {1} active</NHTCD_RacesCount>
+  <NHTCD_RacesSearchHint>Search race / doll / current rule</NHTCD_RacesSearchHint>
+  <NHTCD_RacesNoMatch>No matching race</NHTCD_RacesNoMatch>
   <NHTCD_SecHair>Hair</NHTCD_SecHair>
   <NHTCD_SecHairSub>Hair only: recoloring, which coordinates apply, skeleton view and shadow handling.</NHTCD_SecHairSub>
   <NHTCD_SecColor>Colors</NHTCD_SecColor>

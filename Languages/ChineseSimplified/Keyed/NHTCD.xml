@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
   <!-- ===== page ===== -->
   <NHTCD_SettingsCategory>NHT 自定义娃娃</NHTCD_SettingsCategory>
@@ -7,6 +7,9 @@
   <!-- ===== sections ===== -->
   <NHTCD_SecAssign>种族与娃娃</NHTCD_SecAssign>
   <NHTCD_SecAssignSub>为每个种族指定使用哪套娃娃；按钮依次为「默认、男性、女性、体型」。</NHTCD_SecAssignSub>
+  <NHTCD_RacesCount>已激活 {0} / {1}</NHTCD_RacesCount>
+  <NHTCD_RacesSearchHint>搜索种族 / 娃娃 / 当前规则</NHTCD_RacesSearchHint>
+  <NHTCD_RacesNoMatch>没有匹配的种族</NHTCD_RacesNoMatch>
   <NHTCD_SecHair>头发</NHTCD_SecHair>
   <NHTCD_SecHairSub>只放头发本身：是否按发色重绘、使用哪套坐标、骨骼视图与阴影处理。</NHTCD_SecHairSub>
   <NHTCD_SecColor>颜色</NHTCD_SecColor>

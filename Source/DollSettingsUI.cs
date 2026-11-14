@@ -26,6 +26,10 @@ namespace NHT_CustomDolls
         private static bool desatOpen;
         private static bool colorOffOpen;
 
+        // 种族与娃娃：默认折叠；搜索词与展开状态只保留在本次游戏会话内。
+        private static bool racesOpen;
+        private static string raceSearch = "";
+
         /* ---------------- palette ---------------- */
 
         private static readonly Color Accent = new Color(0.98f, 0.80f, 0.42f);
@@ -335,6 +339,129 @@ namespace NHT_CustomDolls
             y += RaceCardH + Gap;
         }
 
+        /* ---------------- races fold ---------------- */
+
+        /// <summary>标题行 + 右侧「已激活 N / M」计数，点击整行折叠/展开。</summary>
+        private static bool FoldHeader(Rect view, ref float y, string titleKey, string subKey, bool open, int active, int total)
+        {
+            float w = W(view);
+            string title = T(titleKey);
+            Text.Font = GameFont.Medium;
+            float th = Text.CalcHeight(title, w - 190f);
+            Text.Font = GameFont.Small;
+            float h = Mathf.Max(24f, th) + 6f;
+            Rect r = new Rect(X, y, w, h);
+            Card(r);
+            Fill(new Rect(r.x + 4f, r.y + 3f, 3f, h - 6f), Accent);
+
+            if (Widgets.ButtonInvisible(r))
+                open = !open;
+
+            Text.Font = GameFont.Medium;
+            Color old = GUI.color;
+            GUI.color = TitleCol;
+            Widgets.Label(new Rect(r.x + 12f, r.y + 3f, w - 190f, th), (open ? "\u25be  " : "\u25b8  ") + title);
+            GUI.color = old;
+            Text.Font = GameFont.Small;
+
+            string cnt = string.Format(T("NHTCD_RacesCount"), active, total);
+            float cw = Mathf.Min(170f, Text.CalcSize(cnt).x + 18f);
+            Rect cr = new Rect(r.x + w - cw - 8f, r.y + (h - 22f) * 0.5f, cw, 22f);
+            Fill(cr, active > 0 ? new Color(0.20f, 0.40f, 0.24f) : new Color(0.38f, 0.24f, 0.22f));
+            GUI.color = active > 0 ? OkCol : OffCol;
+            TextAnchor a = Text.Anchor;
+            Text.Anchor = TextAnchor.MiddleCenter;
+            Widgets.Label(cr, cnt);
+            Text.Anchor = a;
+            GUI.color = old;
+
+            y += h + Gap;
+            if (open && !string.IsNullOrEmpty(subKey))
+            {
+                string sub = T(subKey);
+                float sh = Text.CalcHeight(sub, w - 12f);
+                Muted(new Rect(X + 12f, y, w - 12f, sh), sub);
+                y += sh + 2f;
+            }
+            return open;
+        }
+
+        private static void RaceSearchRow(Rect view, ref float y)
+        {
+            float w = W(view);
+            Rect r = new Rect(X, y, w, RowH);
+            Card(r);
+            Rect tf = new Rect(r.x + 8f, r.y + 2f, w - 8f - 40f, RowH - 4f);
+            GUI.SetNextControlName("NHTCD_RaceSearch");
+            string next = Widgets.TextField(tf, raceSearch ?? "");
+            if (next != raceSearch) raceSearch = next;
+            if (string.IsNullOrEmpty(raceSearch))
+            {
+                Color old = GUI.color;
+                GUI.color = MutedCol;
+                Widgets.Label(new Rect(tf.x + 4f, tf.y + 2f, tf.width - 8f, tf.height - 4f), T("NHTCD_RacesSearchHint"));
+                GUI.color = old;
+            }
+            if (Widgets.ButtonText(new Rect(r.x + w - 34f, r.y + 2f, 26f, RowH - 4f), "\u00d7"))
+                raceSearch = "";
+            if (Event.current != null && Event.current.type == EventType.KeyDown
+                && Event.current.keyCode == KeyCode.Escape
+                && GUI.GetNameOfFocusedControl() == "NHTCD_RaceSearch")
+            {
+                raceSearch = "";
+                GUI.FocusControl(null);
+                Event.current.Use();
+            }
+            y += RowH + Gap;
+        }
+
+        private static bool RaceMatches(string race, string query, List<HumanlikeDoll> dolls)
+        {
+            if (string.IsNullOrEmpty(query)) return true;
+            if (race.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0) return true;
+            if (dolls != null)
+            {
+                for (int i = 0; i < dolls.Count; i++)
+                {
+                    HumanlikeDoll d = dolls[i];
+                    if (d != null && !string.IsNullOrEmpty(d.defName)
+                        && d.defName.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0) return true;
+                }
+            }
+            CustomDollsSettings st = CustomDollsMod.Settings;
+            if (st != null && st.rules != null)
+            {
+                string prefix = race + "|";
+                foreach (KeyValuePair<string, string> kv in st.rules)
+                {
+                    if (string.IsNullOrEmpty(kv.Key) || !kv.Key.StartsWith(prefix, StringComparison.Ordinal)) continue;
+                    if (!string.IsNullOrEmpty(kv.Value)
+                        && kv.Value.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0) return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>搜索结果 + 已激活优先的显示顺序（不改变原始列表）。</summary>
+        private static List<string> BuildRaceDisplay(List<string> races, Dictionary<string, List<HumanlikeDoll>> map)
+        {
+            string q = (raceSearch ?? "").Trim();
+            List<string> shown = new List<string>();
+            for (int i = 0; i < races.Count; i++)
+            {
+                string rc = races[i];
+                List<HumanlikeDoll> dolls = (map != null && map.ContainsKey(rc)) ? map[rc] : null;
+                if (RaceMatches(rc, q, dolls)) shown.Add(rc);
+            }
+            shown.Sort(delegate (string a, string b)
+            {
+                bool la = RaceLoaded(a), lb = RaceLoaded(b);
+                if (la != lb) return la ? -1 : 1;
+                return string.Compare(a, b, StringComparison.OrdinalIgnoreCase);
+            });
+            return shown;
+        }
+
         /* ---------------- main ---------------- */
 
         public static void Draw(Rect inRect)
@@ -350,7 +477,10 @@ namespace NHT_CustomDolls
                 int loadedCount = 0;
                 for (int i = 0; i < races.Count; i++) if (RaceLoaded(races[i])) loadedCount++;
 
-                float est = 760f + races.Count * (RaceCardH + Gap)
+                List<string> raceShown = BuildRaceDisplay(races, map);
+                int raceRows = racesOpen ? raceShown.Count : 0;
+                float est = 760f + raceRows * (RaceCardH + Gap)
+                    + (racesOpen ? RowH + Gap + 44f : 0f) // search row + fold subtitle
                     + (hairCoordOpen ? 210f : 0f) + (vcoordOpen ? 200f : 0f)
                     + (desatOpen ? 250f : 0f) + (colorOffOpen ? 240f : 0f)
                     + 350f; // built-in patches: title + sub + 2 toggles + 2 wrapped hints, plus slack
@@ -369,17 +499,25 @@ namespace NHT_CustomDolls
                 y += hh + 2f * Pad + Gap + 4f;
 
                 // ---- races & dolls (first: this is what people come here for) ----
-                Section(view, ref y, "NHTCD_SecAssign", "NHTCD_SecAssignSub");
-                if (races.Count == 0)
+                racesOpen = FoldHeader(view, ref y, "NHTCD_SecAssign", "NHTCD_SecAssignSub", racesOpen, loadedCount, races.Count);
+                if (racesOpen)
                 {
-                    Note(view, ref y, "NHTCD_NoDolls");
-                }
-                else
-                {
-                    for (int i = 0; i < races.Count; i++)
+                    RaceSearchRow(view, ref y);
+                    if (races.Count == 0)
                     {
-                        List<HumanlikeDoll> dolls = (map != null && map.ContainsKey(races[i])) ? map[races[i]] : null;
-                        RaceRow(view, ref y, races[i], dolls);
+                        Note(view, ref y, "NHTCD_NoDolls");
+                    }
+                    else if (raceShown.Count == 0)
+                    {
+                        Note(view, ref y, "NHTCD_RacesNoMatch");
+                    }
+                    else
+                    {
+                        for (int i = 0; i < raceShown.Count; i++)
+                        {
+                            List<HumanlikeDoll> dolls = (map != null && map.ContainsKey(raceShown[i])) ? map[raceShown[i]] : null;
+                            RaceRow(view, ref y, raceShown[i], dolls);
+                        }
                     }
                 }
                 y += 6f;
