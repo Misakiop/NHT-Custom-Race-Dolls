@@ -1031,6 +1031,34 @@ namespace NHT_CustomDolls
             return string.IsNullOrEmpty(t) ? race : t;
         }
 
+        /// <summary>t148：编辑器「整体缩放」导出的每种族缩放；RJW 等外部部位用它对齐。</summary>
+        private static Dictionary<string, float> dollScaleCache;
+
+        public static float DollScaleFor(string race)
+        {
+            if (string.IsNullOrEmpty(race)) return 1f;
+            if (dollScaleCache == null)
+            {
+                dollScaleCache = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
+                try
+                {
+                    foreach (DollScaleDef d in DefDatabase<DollScaleDef>.AllDefs)
+                    {
+                        if (d == null || string.IsNullOrEmpty(d.race) || d.race == "*") continue;
+                        float s = d.scale <= 0f ? 1f : d.scale;
+                        if (s < 0.1f) s = 0.1f;
+                        if (s > 3f) s = 3f;
+                        dollScaleCache[d.race] = s;
+                    }
+                }
+                catch (Exception) { }
+            }
+            string key = AliasRace(race);
+            float v;
+            if (key != null && dollScaleCache.TryGetValue(key, out v)) return v;
+            return 1f;
+        }
+
         private static string RaceAliasTarget(string race)
         {
             if (string.IsNullOrEmpty(race)) return null;
@@ -1283,7 +1311,7 @@ namespace NHT_CustomDolls
                         sb.Append(a.from).Append("->").Append(a.to);
                         n++;
                     }
-                    Log.Message("[NHT build] t123 quiet-log loaded, debug=" + (CustomDollsMod.Settings != null && CustomDollsMod.Settings.debug)
+                    Log.Message("[NHT build] t161 layers=" + DefDatabase<HairLayerDef>.AllDefsListForReading.Count + " loaded, debug=" + (CustomDollsMod.Settings != null && CustomDollsMod.Settings.debug)
                         + " raceAlias=" + n + (n > 0 ? (" [" + sb.ToString() + "]") : ""));
                 }
                 catch (Exception e) { Log.Message("[NHT build] alias dump failed: " + e.GetType().Name); }
@@ -2052,7 +2080,13 @@ namespace NHT_CustomDolls
             private class AddonMeta
             {
                 public bool alignHead;
+                public bool inFrontOfBody = true;
+                // t152：是否显式写了 inFrontOfBody —— 显式 true 的 addon（Dragonian 发）即使 layerOffset 为负也必须当正面主发
+                public bool hasInFrontOfBody;
                 public float layerOffset;
+                // t161：HAR BodyAddon 实例本身。贴图路径必须问 HAR（性别/基因/变体数/幼体），
+                // 不能再拿「基础 path + 变体号」硬拼，否则男性 DR_Male 会被画成女性 DR7。
+                public object addon;
             }
 
             private class AddonSet
@@ -2092,6 +2126,9 @@ namespace NHT_CustomDolls
 
             // 编辑器开关导出的「发型不乘发色」种族（HairColorModeDef.tintOff），只建一次。
             private static Dictionary<string, bool> hairTintOffDefRaces;
+            // t148：编辑器「发型组合」覆盖（按种族 + 当前 HairDef 匹配）
+            private static HairLayerDef hairLayerDef;
+            private static string hairLayerKey;
 
             // Monolyn / Epona Unicorn 的发型贴图本身已带颜色，再乘一次发色会变脏；
             // 只对这些族跳过「发色相乘」，WantGrayHair/GrayOrFlat 的灰度图路径保持不变。
@@ -2219,6 +2256,12 @@ namespace NHT_CustomDolls
             private static float haloOldW, haloOldH;
             private static bool haloSizeSaved;
             private static readonly Dictionary<int, Texture2D> addonCropCache = new Dictionary<int, Texture2D>();
+
+            // t148：RJW 等外部部位跟随画布「整体缩放」（Def 共享，画完必须还原）
+            private static DollBodyPartDef rjwScalePart;
+            private static Vector2 rjwOldPos;
+            private static float rjwOldW, rjwOldH;
+            private static bool rjwScaleActive;
 
             /* t110：AddonFollow 换上去的是裸贴图，HAR 原本靠 CutoutComplex 的 _m 遮罩决定
                「哪些像素吃发色」（遮罩红=染色权重，黑=保留原图，比如 Nyaron 耳朵的内耳、
@@ -2686,10 +2729,14 @@ namespace NHT_CustomDolls
             private static AddonMeta ReadAddonMeta(object ad)
             {
                 AddonMeta m = new AddonMeta();
+                m.addon = ad;
                 try
                 {
                     FieldInfo ah = AccessTools.Field(ad.GetType(), "alignWithHead");
                     if (ah != null) m.alignHead = Convert.ToBoolean(ah.GetValue(ad));
+                    FieldInfo ifb = AccessTools.Field(ad.GetType(), "inFrontOfBody");
+                    m.hasInFrontOfBody = ifb != null;
+                    if (ifb != null) m.inFrontOfBody = Convert.ToBoolean(ifb.GetValue(ad));
                     object offs = AccessTools.Field(ad.GetType(), "offsets") == null ? null : AccessTools.Field(ad.GetType(), "offsets").GetValue(ad);
                     if (offs != null)
                     {
@@ -2703,6 +2750,52 @@ namespace NHT_CustomDolls
                 }
                 catch (Exception) { }
                 return m;
+            }
+
+            /* t161：不要再用「基础 path + 变体号」拼 HAR addon 贴图。
+               HAR 的真实规则在 ExtendedGraphicTop.GetPath：
+                 - 男性 DR_Male 的 variantCount=1，7 % 1 = 0 → 路径不带数字；
+                 - 女性 DR 有 13 个变体，7 → DR7；
+                 - 黑龙基因会换成 Black/DR（或 Black/DR_Male）。
+               直接反射调用 HAR 自己的 GetPath，才能和游戏世界一致。 */
+            private static readonly Dictionary<Type, MethodInfo> addonPathMethods = new Dictionary<Type, MethodInfo>();
+            private static bool addonPathWarned;
+            private static string ResolveAddonPath(Pawn pawn, int index, int variant)
+            {
+                try
+                {
+                    AddonMeta am;
+                    if (cur == null || cur.meta == null || !cur.meta.TryGetValue(index, out am) || am.addon == null) return null;
+                    Type t = am.addon.GetType();
+                    MethodInfo mi;
+                    if (!addonPathMethods.TryGetValue(t, out mi))
+                    {
+                        foreach (MethodInfo m in t.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+                        {
+                            if (m.Name != "GetPath") continue;
+                            ParameterInfo[] ps = m.GetParameters();
+                            if (ps.Length == 4 && ps[0].ParameterType == typeof(Pawn)) { mi = m; break; }
+                        }
+                        addonPathMethods[t] = mi;
+                    }
+                    if (mi == null) return null;
+                    ParameterInfo[] pars = mi.GetParameters();
+                    object[] args = new object[4];
+                    args[0] = pawn;
+                    args[1] = variant;
+                    args[2] = pars[2].ParameterType == typeof(int?) ? (object)(int?)variant : (object)variant;
+                    args[3] = null;
+                    return mi.Invoke(am.addon, args) as string;
+                }
+                catch (Exception e)
+                {
+                    if (!addonPathWarned)
+                    {
+                        addonPathWarned = true;
+                        if (Dolls.DebugOn) Log.Warning("[NHT hair] addon path resolve failed: " + e.GetType().Name + " " + e.Message);
+                    }
+                    return null;
+                }
             }
 
             /* 当前娃娃头部中心（NHT 娃娃坐标单位，相对娃娃中心） */
@@ -2866,9 +2959,12 @@ namespace NHT_CustomDolls
                 }
             }
 
-            private static void InitAddons(ThingDef raceDef)
+            private static void InitAddons(ThingDef raceDef, Pawn pawn)
             {
-                string key = raceDef == null ? "?" : raceDef.defName;
+                string hairKey = (pawn == null || pawn.story == null || pawn.story.hairDef == null) ? "" : (pawn.story.hairDef.defName ?? "");
+                // 注意：这里不能在给 cur 赋值前提前 return。cur 是静态字段，提前返回会把上一个
+                // 种族/小人的 AddonSet 留给当前 pawn（Bald 的 HAR 种族们曾因此整族发型串错/消失）。
+                string key = (raceDef == null ? "?" : raceDef.defName) + "|" + hairKey + "|" + AddonVariantSignature(pawn);
                 AddonSet cached;
                 if (!Dolls.DebugOn && addonSets.TryGetValue(key, out cached)) { cur = cached; WriteHairMap(raceDef, cached); return; }
                 cur = new AddonSet();
@@ -2886,8 +2982,16 @@ namespace NHT_CustomDolls
                     FieldInfo baF = AccessTools.Field(apg.GetType(), "bodyAddons");
                     System.Collections.IList addons = baF == null ? null : baF.GetValue(apg) as System.Collections.IList;
                     if (addons == null) return;
+                    List<int> activeVariants = AddonVariantsOf(pawn);
                     for (int i = 0; i < addons.Count; i++)
                     {
+                        // t153：HAR 的 addonVariants 是「这只 pawn 实际激活的 addon」；
+                        // 负数=没有（例如女性发、Black 基因发在普通个体上），必须跳过，
+                        // 否则第一层发会被选成 variant=-1，Draw 直接 return，宿主原生发又顶上来。
+                        if (activeVariants != null && i < activeVariants.Count && activeVariants[i] < 0)
+                        {
+                            continue;
+                        }
                         object ad = addons[i];
                         FieldInfo nmF = AccessTools.Field(ad.GetType(), "name");
                         FieldInfo ptF = AccessTools.Field(ad.GetType(), "path");
@@ -2900,6 +3004,8 @@ namespace NHT_CustomDolls
                             continue;
                         }
                         AddonMeta meta = ReadAddonMeta(ad);
+                        // t148：HAR 的 addonGraphics 已按 <conditions><HairType>… 过滤过，
+                        // 这里以它为权威，避免把另一套发型的后层（例如 Viska 的 Hair2_mawei）当成主发。
                         bool isAhoge = pt.IndexOf("Ahoge", StringComparison.OrdinalIgnoreCase) >= 0;
                         if (pt.IndexOf("Hair", StringComparison.OrdinalIgnoreCase) < 0 && !isAhoge) continue;
                         if (isAhoge)
@@ -2921,12 +3027,14 @@ namespace NHT_CustomDolls
                             continue;
                         }
                         // 一次识别：HAR 的 layerOffset（<0 在后，>0 在前）
-                        bool autoBack = meta.layerOffset < -0.001f;
+                        bool autoBack = meta.hasInFrontOfBody ? !meta.inFrontOfBody : meta.layerOffset < -0.001f;
                         bool autoFront = meta.layerOffset > 0.001f;
                         // 二次识别：命名/路径关键词（没有 layerOffset 的旧模组）
                         bool keyBack = nm.IndexOf("BG", StringComparison.OrdinalIgnoreCase) >= 0
                                  || nm.IndexOf("back", StringComparison.OrdinalIgnoreCase) >= 0
                                  || pt.IndexOf("HairBack", StringComparison.OrdinalIgnoreCase) >= 0
+                                 // Koelime 这类：路径就叫 BackHairs/Koelime_BackHair（BackHair 不是 HairBack）
+                                 || pt.IndexOf("BackHair", StringComparison.OrdinalIgnoreCase) >= 0
                                  || pt.IndexOf("Hair_Back", StringComparison.OrdinalIgnoreCase) >= 0
                                  || pt.IndexOf("Background", StringComparison.OrdinalIgnoreCase) >= 0
                                  || pt.IndexOf("/addonB/", StringComparison.OrdinalIgnoreCase) >= 0
@@ -3083,6 +3191,25 @@ namespace NHT_CustomDolls
 
             private static bool vanillaLogged;
 
+            /* t152：自动匹配「显式 inFrontOfBody=true 的正面发 addon」——
+               Dragonian 的发是 bodyAddon（AddonHairs/DR_Male），但 layerOffset 为负，
+               旧逻辑把它判成后层，导致原生 HairDef（dr2hair_twin1）顶上来。
+               只有显式声明正面、且贴图真实存在的 addon 才跳过宿主原生发，避免再出现
+               t148 那种「抑制了原生发但 addon 没画出来」的大面积无发。 */
+            private static bool AutoFrontHairAddon(Pawn pawn, AddonSet set)
+            {
+                if (pawn == null || set == null || set.main < 0 || string.IsNullOrEmpty(set.mainPath)) return false;
+                AddonMeta m;
+                if (!set.meta.TryGetValue(set.main, out m) || m == null || !m.hasInFrontOfBody || !m.inFrontOfBody) return false;
+                try
+                {
+                    Texture2D t = ContentFinder<Texture2D>.Get(set.mainPath + "_south", false);
+                    if (t == null) t = ContentFinder<Texture2D>.Get(set.mainPath + "_north", false);
+                    return t != null;
+                }
+                catch (Exception) { return false; }
+            }
+
             private static readonly List<string> diagLogged = new List<string>();
 
             private static void Draw(object widget, Pawn pawn, Rect dollRect, int index, string path)
@@ -3112,9 +3239,19 @@ namespace NHT_CustomDolls
                 int variant = variants[index];
                 if (variant < 0) return;              // 负数才是“没有”
 
-                // HAR: 变体 0 用 path 本身（无数字），1..N 用 path+N
-                string full = variant > 0 ? path + variant + "_south" : path + "_south";
+                // t161：优先用 HAR 自己解析出的路径（性别/基因/变体数都会影响），
+                // 只有拿不到时才退回旧的 path+变体号。
+                string drawPath = ResolveAddonPath(pawn, index, variant);
+                if (string.IsNullOrEmpty(drawPath)) drawPath = variant > 0 ? path + variant : path;
+                string full = drawPath + "_south";
                 Texture2D tex = ContentFinder<Texture2D>.Get(full, false);
+                // Viska 这类后发在 south 方向只有 1×1 占位，真正的图在 north；
+                // 后层没有方向差异，直接回退到 _north。
+                if (tex != null && (tex.width <= 1 || tex.height <= 1))
+                {
+                    Texture2D nt = ContentFinder<Texture2D>.Get(drawPath + "_north", false);
+                    if (nt != null && nt.width > 1 && nt.height > 1) tex = nt;
+                }
                 if (tex == null)
                 {
                     if (Dolls.DebugOn) Log.Warning("[NHT Custom Dolls] hair texture missing: " + full);
@@ -3548,7 +3685,8 @@ namespace NHT_CustomDolls
                     // t75：种族映射（RaceAliasDef）先折算，后面的判定全部按目标种族取数据
                     bool hasRaceFit = hairFits.TryGetValue(Dolls.AliasRace(pawn.def.defName ?? ""), out raceFit)
                         && raceFit != null && !string.IsNullOrEmpty(raceFit.race) && raceFit.race != "*";
-                    if (RaceHasHairAddon(pawn.def)) return false;      // HAR 头发由我们自己画（Dummy 的情况已在 HairDrawPrefix 提前跳过）
+                    if (hairLayerDef != null && !hairLayerDef.nativeFront) return true; // 编辑器组合层接管正面
+                    // t149：回退全局抑制（t148 导致大量 HAR 种族原生发消失）；只在明确的组合层接管时抑制。
                     if (!st.tintVanillaHair || !st.desatColorsOn) return false;
                     bool gTint = !HairTuning.ColorOff(pawn.def.defName);
                     bool pTint = (pawn.thingIDNumber >= 0 && !HairTuning.SyncPawn(pawn.thingIDNumber))
@@ -3577,6 +3715,19 @@ namespace NHT_CustomDolls
                     }
                     if (pawn == null) pawn = curPawn;
                     if (pawn == null) return true;
+
+                    // t152：卡片是「手动覆盖」；命中卡片时不再让自动匹配/宿主原生发参与。
+                    if (hairLayerDef != null && curPawn == pawn && !hairLayerDef.nativeFront)
+                    {
+                        Dolls.LogDebug("hair:card:" + pawn.def.defName + ":" + hairLayerDef.defName, "[NHT hair] card override race=" + pawn.def.defName + " def=" + hairLayerDef.defName);
+                        return false;
+                    }
+                    // t152：没有卡片时，显式正面发 addon（Dragonian）接管，跳过原生 HairDef。
+                    if (hairLayerDef == null && curPawn == pawn && AutoFrontHairAddon(pawn, cur))
+                    {
+                        Dolls.LogDebug("hair:autofront:" + pawn.def.defName + ":" + cur.mainPath, "[NHT hair] auto front addon race=" + pawn.def.defName + " path=" + cur.mainPath);
+                        return false;
+                    }
 
                     // HAR 但 bodyAddon 全是 Dummy：NHT 的固定 headOverlay 会忽略编辑器坐标，
                     // 直接跳过它，统一由 NHT 自己按 HairFitDef 画（见 PartPrefix / Postfix）。
@@ -4057,6 +4208,96 @@ namespace NHT_CustomDolls
             /* t141：原版 HairDef 的后脑层。部分模组（Nivarian 等）给发型额外画了 *_back_south
                （与 *_south 同画布的后发层），RimWorld 和 NHT 都只读 _south，所以后发一直缺失。
                位置/缩放与正面发完全相同；这里在 HairFix.Prefix 里画（部件栈之前），让后发压在所有部位后面。 */
+            private static void LoadHairLayerDef(Pawn pawn)
+            {
+                // t160：缓存命中时必须保留上一帧的 hairLayerDef，否则卡片判定变成“没有卡片”，
+                // Prefix 就不会清空 cur，addon 主发（Viska 的 Hair2_mawei）会压到正面，
+                // HairDrawPrefix 也拦不到宿主发。只在真正重新扫描前才清空。
+                if (pawn == null || pawn.def == null) { hairLayerDef = null; return; }
+                string race = pawn.def.defName ?? "";
+                string hd = (pawn.story == null || pawn.story.hairDef == null) ? "" : (pawn.story.hairDef.defName ?? "");
+                string act = (cur == null ? "" : (cur.mainPath ?? "") + "|" + (cur.bgPath ?? ""));
+                string key = race + "|" + hd + "|" + act;
+                if (hairLayerKey == key) return;
+                hairLayerKey = key;
+                hairLayerDef = null;
+                try
+                {
+                    List<string> active = ActiveAddonPathsOf(pawn);
+                    HairLayerDef pick = null;
+                    int best = -1;
+                    foreach (HairLayerDef d in DefDatabase<HairLayerDef>.AllDefs)
+                    {
+                        if (d == null) continue;
+                        if (!string.IsNullOrEmpty(d.race) && d.race != "*"
+                            && !string.Equals(d.race, race, StringComparison.OrdinalIgnoreCase)) continue;
+                        int score = -1;
+                        if (!string.IsNullOrEmpty(d.addon))
+                        {
+                            if (active == null || active.Count == 0) continue;
+                            bool hit = false;
+                            for (int i = 0; i < active.Count; i++)
+                            {
+                                if (string.Equals(active[i], d.addon, StringComparison.OrdinalIgnoreCase)) { hit = true; break; }
+                            }
+                            if (!hit) continue;
+                            score = 2;
+                        }
+                        else if (!string.IsNullOrEmpty(d.hairDef))
+                        {
+                            if (!string.Equals(d.hairDef, hd, StringComparison.OrdinalIgnoreCase)) continue;
+                            score = 2;
+                        }
+                        else score = 0;
+                        if (score > best) { best = score; pick = d; }
+                    }
+                    hairLayerDef = pick;
+                    if (Dolls.DebugOn) Log.Message("[NHT hair] layer pick count=" + DefDatabase<HairLayerDef>.AllDefsListForReading.Count + " race=" + race + " hd=" + hd + " act=" + act + " pick=" + (pick == null ? "null" : pick.defName));
+                }
+                catch (Exception) { }
+            }
+
+            private static void DrawHairPath(Pawn pawn, Rect dollRect, string path)
+            {
+                if (pawn == null || string.IsNullOrEmpty(path)) return;
+                Texture2D tex = null;
+                // t148：允许编辑器把方向写死（_north / _south / _east / _west）
+                bool hasDir = path.EndsWith("_north") || path.EndsWith("_south")
+                    || path.EndsWith("_east") || path.EndsWith("_west");
+                if (hasDir)
+                {
+                    tex = ContentFinder<Texture2D>.Get(path, false);
+                    if (tex != null && (tex.width <= 1 || tex.height <= 1)) tex = null;
+                }
+                else
+                {
+                    tex = ContentFinder<Texture2D>.Get(path + "_south", false);
+                    if (tex == null || tex.width <= 1 || tex.height <= 1)
+                    {
+                        Texture2D nt = ContentFinder<Texture2D>.Get(path + "_north", false);
+                        if (nt != null && nt.width > 1) tex = nt;
+                    }
+                }
+                if (tex == null) return;
+                float k = HairK(dollRect);
+                float sc = hairLayerDef == null ? 1f : Mathf.Max(0.05f, hairLayerDef.scale);
+                UseFit(pawn.def.defName);
+                float baseSc = HairScale(1.15f);
+                float ox = HairOffX(0f) + (hairLayerDef == null ? 0f : hairLayerDef.offsetX);
+                float oy = HairOffY(0f) + (hairLayerDef == null ? 0f : hairLayerDef.offsetY);
+                float size = 1024f * baseSc * sc * k;
+                float cx = dollRect.x + dollRect.width / 2f + ox * 1024f * k;
+                float cy = dollRect.y + dollRect.height / 2f + oy * 1024f * k;
+                Rect r = new Rect(cx - size / 2f, cy - size / 2f, size, size);
+                CustomDollsSettings st = CustomDollsMod.Settings;
+                bool tint = st != null && st.tintVanillaHair && st.desatColorsOn;
+                bool gray = WantGrayHair(pawn);
+                Color old = GUI.color;
+                GUI.color = gray ? Color.white : (tint && !HairTintOffRace(pawn.def.defName) ? pawn.story.HairColor : Color.white);
+                GUI.DrawTexture(r, gray ? GrayOrFlat(tex) : tex, ScaleMode.StretchToFill, true);
+                GUI.color = old;
+            }
+
             private static void DrawVanillaHairBack(Pawn pawn, Rect dollRect)
             {
                 try
@@ -5140,6 +5381,32 @@ namespace NHT_CustomDolls
                 return null;
             }
 
+            // t153：该 pawn 的 HAR addonVariants（负数=该性别/基因下未激活）。
+            private static List<int> AddonVariantsOf(Pawn pawn)
+            {
+                if (pawn == null || alienCompType == null || addonVariantsField == null) return null;
+                try
+                {
+                    foreach (ThingComp c in pawn.AllComps)
+                    {
+                        if (!alienCompType.IsInstanceOfType(c)) continue;
+                        return addonVariantsField.GetValue(c) as List<int>;
+                    }
+                }
+                catch (Exception) { }
+                return null;
+            }
+
+            // t153：把变体状态并入 InitAddons 缓存 key，避免男/女、基因变体共用同一张表。
+            private static string AddonVariantSignature(Pawn pawn)
+            {
+                List<int> v = AddonVariantsOf(pawn);
+                if (v == null || v.Count == 0) return "-";
+                StringBuilder sb = new StringBuilder(v.Count * 3);
+                for (int i = 0; i < v.Count; i++) { sb.Append(v[i]); sb.Append(','); }
+                return sb.ToString();
+            }
+
             private static AddonFollowPart FindAddonFollow(string race, string doll, string part)
             {
                 if (CustomDollsMod.Settings != null && !CustomDollsMod.Settings.enableAddonFollow) return null;
@@ -5651,13 +5918,63 @@ namespace NHT_CustomDolls
                 catch (Exception) { }
             }
 
+            /* t148：RJW 的 NHTRJW_* 部位是它自己注入的 Def，不经过编辑器的整体缩放。
+               画之前围绕身体中心把 position/width/height 乘上 DollScaleDef.scale，
+               画完立刻还原（Def 是共享对象）。只处理以 NHTRJW_ 开头的部位，不碰我们的部位。 */
+            private static void ApplyRjwScale(object[] args)
+            {
+                try
+                {
+                    if (curPawn == null || curPawn.def == null) return;
+                    DollBodyPartDef part = PartDefOfArgs(args) as DollBodyPartDef;
+                    if (part == null || string.IsNullOrEmpty(part.defName)) return;
+                    if (!part.defName.StartsWith("NHTRJW_", StringComparison.OrdinalIgnoreCase)) return;
+                    float s = Dolls.DollScaleFor(curPawn.def.defName);
+                    if (s < 0.999f || s > 1.001f)
+                    {
+                        FieldInfo pf = typeof(DollBodyPartDef).GetField("position", BindingFlags.Instance | BindingFlags.Public);
+                        FieldInfo wf = typeof(DollBodyPartDef).GetField("width", BindingFlags.Instance | BindingFlags.Public);
+                        FieldInfo hf = typeof(DollBodyPartDef).GetField("height", BindingFlags.Instance | BindingFlags.Public);
+                        if (pf == null || wf == null || hf == null) return;
+                        rjwScalePart = part;
+                        rjwOldPos = (Vector2)pf.GetValue(part);
+                        rjwOldW = (float)wf.GetValue(part);
+                        rjwOldH = (float)hf.GetValue(part);
+                        pf.SetValue(part, new Vector2(rjwOldPos.x * s, rjwOldPos.y * s));
+                        wf.SetValue(part, rjwOldW * s);
+                        hf.SetValue(part, rjwOldH * s);
+                        rjwScaleActive = true;
+                    }
+                }
+                catch (Exception) { }
+            }
+
+            private static void RestoreRjwScale()
+            {
+                if (!rjwScaleActive || rjwScalePart == null) return;
+                try
+                {
+                    FieldInfo pf = typeof(DollBodyPartDef).GetField("position", BindingFlags.Instance | BindingFlags.Public);
+                    FieldInfo wf = typeof(DollBodyPartDef).GetField("width", BindingFlags.Instance | BindingFlags.Public);
+                    FieldInfo hf = typeof(DollBodyPartDef).GetField("height", BindingFlags.Instance | BindingFlags.Public);
+                    if (pf != null) pf.SetValue(rjwScalePart, rjwOldPos);
+                    if (wf != null) wf.SetValue(rjwScalePart, rjwOldW);
+                    if (hf != null) hf.SetValue(rjwScalePart, rjwOldH);
+                }
+                catch (Exception) { }
+                rjwScalePart = null;
+                rjwScaleActive = false;
+            }
+
             private static bool PartPrefix(object[] __args)
             {
+                RestoreRjwScale();   // 上一帧若因提前 return 没跑到 Postfix，这里兜底
                 if (curPawn == null) return true;
                 bool deferThis = false;
                 try
                 {
                     if (SkipPart(__args)) return false;
+                    ApplyRjwScale(__args);
                     // t65：置顶部位（topParts/aboveParts）只保留「头发之后」那一次绘制，
                     // 常规阶段不再画一遍，避免同样的像素（尤其带 alpha 的腮/提灯）叠两层。
                     deferThis = DeferTopPart(__args);
@@ -5737,6 +6054,7 @@ namespace NHT_CustomDolls
 
             private static void PartPostfix(object[] __args)
             {
+                RestoreRjwScale();
                 if (hairTintActive)
                 {
                     if (hairTintPart != null && hairTintField != null)
@@ -5807,7 +6125,9 @@ namespace NHT_CustomDolls
                         // t36：判定抽成 HairVisibleInXray()，与 PartPrefix 层内插入共用同一语义
                         if (!HairVisibleInXray()) { curPawn = null; xrayHide = true; }   // 器官/骨骼视图：默认不画头发
                     }
-                    InitAddons(pawn.def); 
+                    InitAddons(pawn.def, pawn); 
+                    LoadHairLayerDef(pawn);
+                    if (hairLayerDef != null) cur = new AddonSet();   // t152：卡片覆盖自动 addon，卡片层单独画
                     DumpDollParts(pawn.def.defName);   // t64 诊断
                     UseFit(pawn.def.defName);
                     // t10-P13：每帧都会打（t7: 1.5s 内 277 条）—— 同种族只留第一条，计入全局上限
@@ -5823,6 +6143,8 @@ namespace NHT_CustomDolls
                             + " extra=" + cur.extra.Count + " backExtra=" + cur.backExtra.Count);
                     }
                     if (xrayHide) return;                                   // 后层也不要画
+                    if (hairLayerDef != null && hairLayerDef.back != null)
+                        for (int bi = 0; bi < hairLayerDef.back.Count; bi++) DrawHairPath(pawn, curRect, hairLayerDef.back[bi]);
                     Draw(__instance, pawn, curRect, cur.bg, cur.bgPath);      // 后层：先画，压在所有部位后面
                     // t141：原版 HairDef 的后脑层（*_back_south），和其它后层一样画在部件栈之前
                     if (cur.main < 0) DrawVanillaHairBack(pawn, curRect);
@@ -5909,16 +6231,14 @@ namespace NHT_CustomDolls
                     if (curPawn != null && cur.main >= 0)
                     {
                         UseFit(curPawn.def.defName);
-                        List<string> activePaths = ActiveAddonPathsOf(curPawn);
                         for (int oi = 0; oi < cur.over.Count; oi++)
-                        {
-                            if (activePaths != null && activePaths.Count > 0 && !activePaths.Contains(cur.overPath[oi])) continue;
                             Draw(null, curPawn, curRect, cur.over[oi], cur.overPath[oi]);
-                        }
                     }
 
                     if (curPawn != null && curWidget != null) RedrawAboveHair(curWidget, curPawn, curRect); 
                     
+                    if (curPawn != null && hairLayerDef != null && !hairLayerDef.nativeFront && hairLayerDef.front != null)
+                        for (int fi = 0; fi < hairLayerDef.front.Count; fi++) DrawHairPath(curPawn, curRect, hairLayerDef.front[fi]);
                     hairPending = false;
                     try { DrawHairGear(curPawn, curRect); } catch (Exception) { } 
                 }
@@ -6530,6 +6850,29 @@ class HairColorModeDef : Def
     public bool defaultColorOn = true;
     public bool tintOff = true;
 }
+
+/// <summary>编辑器「发型组合」：按贴图路径直接画前/后层（同层可多张）。
+/// nativeFront=true 时不画 front，交给游戏原本的 HairDef 画正面。</summary>
+class HairLayerDef : Def
+{
+    public string race = "";
+    public string hairDef = "";
+    public string addon = "";
+    public bool nativeFront = false;
+    public float scale = 1.15f;
+    public float offsetX = 0f;
+    public float offsetY = 0f;
+    public List<string> front = new List<string>();
+    public List<string> back = new List<string>();
+}
+
+    /* t148：编辑器画布的「整体缩放」。RJW 的部位不在我们导出的 DollBodyPart 里，
+       运行时按这个值把它们围绕身体中心一起缩放，保证与我们的部位对齐。 */
+    public class DollScaleDef : Def
+    {
+        public string race = "";
+        public float scale = 1f;
+    }
 
     /* ---------- hitbox offset ---------- */
     // Editor writes <x>/<y> as a fraction of the part's visual width/height.

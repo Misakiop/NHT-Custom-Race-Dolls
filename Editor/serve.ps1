@@ -1268,7 +1268,8 @@ while ($true) {
         }
         elseif ($pathPart -eq '/__modzip' -and ($method -eq 'GET' -or $method -eq 'HEAD')) {
             # 导出「纯模组」：按磁盘现状原样打包模组文件，保持目录结构；
-            # 只排除开发内容（Editor / Source / tools / _backup / _analysis / history / .git …）
+            # 只排除开发内容（Editor / Source / tools / history / .git 等，
+            # 以及 _ 或 . 开头的开发/临时目录，如 _backup、_analysis、_analysis_build_*）
             $stage = $null; $zip = $null
             try {
                 $tmp = [System.IO.Path]::GetTempPath()
@@ -1294,6 +1295,8 @@ while ($true) {
                 }
 
                 Get-ChildItem -LiteralPath $ModRoot -Force -ErrorAction SilentlyContinue | ForEach-Object {
+                    # 只收真实模组目录；_* / .* 一律视为开发目录（_analysis_build_* 曾被打进 zip）
+                    if ($_.Name -match '^[._]') { return }
                     if ($_.PSIsContainer) {
                         if ($skipDirs -contains $_.Name) { return }
                         Get-ChildItem -LiteralPath $_.FullName -Recurse -File -Force -ErrorAction SilentlyContinue | ForEach-Object {

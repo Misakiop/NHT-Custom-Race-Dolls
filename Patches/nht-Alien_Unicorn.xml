@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  NHT_CustomDolls0.3.1
-  由 NHT Anatomy Editor 生成 · 2026-11-12 23:11
+  NHT_CustomDolls
+  由 NHT Anatomy Editor 生成 · 2026-11-16 22:38
   基准模组：Nice Health Tab (Andromeda.NiceHealthTab) v1.6 · 创意工坊 3328729902
   RJW 层：Nice Health Tab - RJW Genitalia (zoc2k.nicehealthtab.rjwgenitalia) · 相关操作带 MayRequire rim.job.world
   画布：1 个 · 部位：31 个 · 补丁操作：8 段
@@ -129,6 +129,20 @@
         <success>Always</success>
         <xpath>Defs</xpath>
         <value>
+        <!-- Epona Form · 默认开色彩（发型单独关色）：Alien_Unicorn -->
+        <NHT_CustomDolls.HairColorModeDef>
+        <defName>NHTCD_HairColorMode_Alien_Unicorn</defName>
+        <race>Alien_Unicorn</race>
+        <defaultColorOn>true</defaultColorOn>
+        <tintOff>true</tintOff>
+        </NHT_CustomDolls.HairColorModeDef>
+        <!-- Epona Form · 默认开色彩（发型单独关色）：Uniponen -->
+        <NHT_CustomDolls.HairColorModeDef>
+        <defName>NHTCD_HairColorMode_Uniponen</defName>
+        <race>Uniponen</race>
+        <defaultColorOn>true</defaultColorOn>
+        <tintOff>true</tintOff>
+        </NHT_CustomDolls.HairColorModeDef>
         <!-- Epona Form · 新建 HumanlikeDoll Alien_Unicorn -->
         <NiceHealthTab.HumanlikeDoll>
         <defName>Alien_Unicorn</defName>
