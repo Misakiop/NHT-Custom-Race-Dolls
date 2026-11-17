@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  NHT_CustomDolls0.3.1
-  由 NHT Anatomy Editor 生成 · 2026-11-12 23:11
+  NHT_CustomDolls
+  由 NHT Anatomy Editor 生成 · 2026-11-16 05:21
   基准模组：Nice Health Tab (Andromeda.NiceHealthTab) v1.6 · 创意工坊 3328729902
   RJW 层：Nice Health Tab - RJW Genitalia (zoc2k.nicehealthtab.rjwgenitalia) · 相关操作带 MayRequire rim.job.world
   画布：1 个 · 部位：29 个 · 补丁操作：8 段
@@ -127,6 +127,20 @@
         <success>Always</success>
         <xpath>Defs</xpath>
         <value>
+        <!-- Mincho · 默认开色彩（发型单独关色）：Mincho_ThingDef -->
+        <NHT_CustomDolls.HairColorModeDef>
+        <defName>NHTCD_HairColorMode_Mincho_ThingDef</defName>
+        <race>Mincho_ThingDef</race>
+        <defaultColorOn>true</defaultColorOn>
+        <tintOff>true</tintOff>
+        </NHT_CustomDolls.HairColorModeDef>
+        <!-- Mincho · 默认开色彩（发型单独关色）：mincho -->
+        <NHT_CustomDolls.HairColorModeDef>
+        <defName>NHTCD_HairColorMode_mincho</defName>
+        <race>mincho</race>
+        <defaultColorOn>true</defaultColorOn>
+        <tintOff>true</tintOff>
+        </NHT_CustomDolls.HairColorModeDef>
         <!-- Mincho · 形态映射 Mincho_Body_Large_Mintchoco_Humanlike → Mincho_Body_Large_Mintchoco_Slime -->
         <NHT_CustomDolls.BodyAliasDef>
         <defName>NHTCD_Alias_Mincho_ThingDef_0</defName>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  NHT_CustomDolls0.3.1
-  由 NHT Anatomy Editor 生成 · 2026-11-12 23:11
+  NHT_CustomDolls
+  由 NHT Anatomy Editor 生成 · 2026-11-16 05:21
   基准模组：Nice Health Tab (Andromeda.NiceHealthTab) v1.6 · 创意工坊 3328729902
   RJW 层：Nice Health Tab - RJW Genitalia (zoc2k.nicehealthtab.rjwgenitalia) · 相关操作带 MayRequire rim.job.world
   画布：1 个 · 部位：30 个 · 补丁操作：8 段
@@ -132,6 +132,20 @@
         <success>Always</success>
         <xpath>Defs</xpath>
         <value>
+        <!-- Monolyn · 默认开色彩（发型单独关色）：MNRace -->
+        <NHT_CustomDolls.HairColorModeDef>
+        <defName>NHTCD_HairColorMode_MNRace</defName>
+        <race>MNRace</race>
+        <defaultColorOn>true</defaultColorOn>
+        <tintOff>true</tintOff>
+        </NHT_CustomDolls.HairColorModeDef>
+        <!-- Monolyn · 默认开色彩（发型单独关色）：Monolyn -->
+        <NHT_CustomDolls.HairColorModeDef>
+        <defName>NHTCD_HairColorMode_Monolyn</defName>
+        <race>Monolyn</race>
+        <defaultColorOn>true</defaultColorOn>
+        <tintOff>true</tintOff>
+        </NHT_CustomDolls.HairColorModeDef>
         <!-- Monolyn · 新建 HumanlikeDoll MNRace -->
         <NiceHealthTab.HumanlikeDoll>
         <defName>MNRace</defName>

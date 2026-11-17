@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  NHT_CustomDolls0.3.1
-  由 NHT Anatomy Editor 生成 · 2026-11-12 23:11
+  NHT_CustomDolls
+  由 NHT Anatomy Editor 生成 · 2026-11-17 04:40
   基准模组：Nice Health Tab (Andromeda.NiceHealthTab) v1.6 · 创意工坊 3328729902
   RJW 层：Nice Health Tab - RJW Genitalia (zoc2k.nicehealthtab.rjwgenitalia) · 相关操作带 MayRequire rim.job.world
   画布：1 个 · 部位：30 个 · 补丁操作：9 段
@@ -180,7 +180,13 @@
         <bondageScale>1.00</bondageScale>
         <width>1.61</width>
         <height>1.61</height>
-        <hitboxScale><x>1</x><y>1</y></hitboxScale>
+        <hitboxScale><x>1</x><y>0.78</y></hitboxScale>
+        <modExtensions>
+        <li Class="NHT_CustomDolls.HitboxOffsetExtension">
+        <x>0</x>
+        <y>0.4</y>
+        </li>
+        </modExtensions>
         </NiceHealthTab.DollBodyPart>
 
         <!-- 尾巴（灰） -->
@@ -200,7 +206,13 @@
         <bondageScale>1.00</bondageScale>
         <width>1.61</width>
         <height>1.61</height>
-        <hitboxScale><x>1</x><y>1</y></hitboxScale>
+        <hitboxScale><x>1</x><y>0.78</y></hitboxScale>
+        <modExtensions>
+        <li Class="NHT_CustomDolls.HitboxOffsetExtension">
+        <x>0</x>
+        <y>0.4</y>
+        </li>
+        </modExtensions>
         </NiceHealthTab.DollBodyPart>
         <!-- 躯干 -->
         <NiceHealthTab.DollBodyPart>
@@ -219,7 +231,7 @@
         <bondageScale>1.00</bondageScale>
         <width>1</width>
         <height>1</height>
-        <hitboxScale><x>0.74</x><y>0.75</y></hitboxScale>
+        <hitboxScale><x>0.87</x><y>0.88</y></hitboxScale>
         </NiceHealthTab.DollBodyPart>
         <!-- 右腿 -->
         <NiceHealthTab.DollBodyPart>
@@ -238,7 +250,7 @@
         <bondageScale>1.00</bondageScale>
         <width>-1</width>
         <height>1</height>
-        <hitboxScale><x>0.8</x><y>0.88</y></hitboxScale>
+        <hitboxScale><x>0.9</x><y>0.94</y></hitboxScale>
         </NiceHealthTab.DollBodyPart>
         <!-- 左腿 -->
         <NiceHealthTab.DollBodyPart>
@@ -257,7 +269,7 @@
         <bondageScale>1.00</bondageScale>
         <width>1</width>
         <height>1</height>
-        <hitboxScale><x>0.8</x><y>0.88</y></hitboxScale>
+        <hitboxScale><x>0.9</x><y>0.94</y></hitboxScale>
         </NiceHealthTab.DollBodyPart>
         <!-- 颈部 -->
         <NiceHealthTab.DollBodyPart>
@@ -276,7 +288,7 @@
         <bondageScale>1.00</bondageScale>
         <width>1</width>
         <height>1</height>
-        <hitboxScale><x>0.9</x><y>0.74</y></hitboxScale>
+        <hitboxScale><x>0.95</x><y>0.87</y></hitboxScale>
         </NiceHealthTab.DollBodyPart>
         <!-- 右肩 -->
         <NiceHealthTab.DollBodyPart>
@@ -295,7 +307,7 @@
         <bondageScale>1.00</bondageScale>
         <width>-1</width>
         <height>1</height>
-        <hitboxScale><x>0.73</x><y>0.79</y></hitboxScale>
+        <hitboxScale><x>0.87</x><y>0.9</y></hitboxScale>
         </NiceHealthTab.DollBodyPart>
         <!-- 左肩 -->
         <NiceHealthTab.DollBodyPart>
@@ -314,7 +326,7 @@
         <bondageScale>1.00</bondageScale>
         <width>1</width>
         <height>1</height>
-        <hitboxScale><x>0.73</x><y>0.79</y></hitboxScale>
+        <hitboxScale><x>0.87</x><y>0.9</y></hitboxScale>
         </NiceHealthTab.DollBodyPart>
         <!-- 右臂 -->
         <NiceHealthTab.DollBodyPart>
@@ -333,7 +345,7 @@
         <bondageScale>1.00</bondageScale>
         <width>-1</width>
         <height>1</height>
-        <hitboxScale><x>0.74</x><y>0.73</y></hitboxScale>
+        <hitboxScale><x>0.87</x><y>0.87</y></hitboxScale>
         </NiceHealthTab.DollBodyPart>
         <!-- 左臂 -->
         <NiceHealthTab.DollBodyPart>
@@ -352,7 +364,7 @@
         <bondageScale>1.00</bondageScale>
         <width>1</width>
         <height>1</height>
-        <hitboxScale><x>0.74</x><y>0.73</y></hitboxScale>
+        <hitboxScale><x>0.87</x><y>0.87</y></hitboxScale>
         </NiceHealthTab.DollBodyPart>
         <!-- 右脚 -->
         <NiceHealthTab.DollBodyPart>
@@ -371,7 +383,7 @@
         <bondageScale>1.00</bondageScale>
         <width>-1</width>
         <height>1</height>
-        <hitboxScale><x>0.8</x><y>0.77</y></hitboxScale>
+        <hitboxScale><x>0.9</x><y>0.89</y></hitboxScale>
         </NiceHealthTab.DollBodyPart>
         <!-- 左脚 -->
         <NiceHealthTab.DollBodyPart>
@@ -390,7 +402,7 @@
         <bondageScale>1.00</bondageScale>
         <width>1</width>
         <height>1</height>
-        <hitboxScale><x>0.8</x><y>0.77</y></hitboxScale>
+        <hitboxScale><x>0.9</x><y>0.89</y></hitboxScale>
         </NiceHealthTab.DollBodyPart>
         <!-- 头部 -->
         <NiceHealthTab.DollBodyPart>
@@ -409,7 +421,7 @@
         <bondageScale>1.00</bondageScale>
         <width>1</width>
         <height>1</height>
-        <hitboxScale><x>0.92</x><y>0.92</y></hitboxScale>
+        <hitboxScale><x>0.96</x><y>0.96</y></hitboxScale>
         </NiceHealthTab.DollBodyPart>
         <!-- 右手 -->
         <NiceHealthTab.DollBodyPart>
@@ -428,7 +440,7 @@
         <bondageScale>1.00</bondageScale>
         <width>-1</width>
         <height>1</height>
-        <hitboxScale><x>0.88</x><y>0.75</y></hitboxScale>
+        <hitboxScale><x>0.94</x><y>0.88</y></hitboxScale>
         </NiceHealthTab.DollBodyPart>
         <!-- 左手 -->
         <NiceHealthTab.DollBodyPart>
@@ -447,7 +459,7 @@
         <bondageScale>1.00</bondageScale>
         <width>1</width>
         <height>1</height>
-        <hitboxScale><x>0.88</x><y>0.75</y></hitboxScale>
+        <hitboxScale><x>0.94</x><y>0.88</y></hitboxScale>
         </NiceHealthTab.DollBodyPart>
         <!-- 骨盆 -->
         <NiceHealthTab.DollBone>
@@ -466,7 +478,7 @@
         <bondageScale>1.00</bondageScale>
         <width>1</width>
         <height>1</height>
-        <hitboxScale><x>0.75</x><y>0.8</y></hitboxScale>
+        <hitboxScale><x>0.88</x><y>0.9</y></hitboxScale>
         <extraLayer>0</extraLayer>
         </NiceHealthTab.DollBone>
         <!-- 脊柱 -->
@@ -486,7 +498,7 @@
         <bondageScale>1.00</bondageScale>
         <width>0.7</width>
         <height>0.7</height>
-        <hitboxScale><x>0.99</x><y>0.82</y></hitboxScale>
+        <hitboxScale><x>1</x><y>0.91</y></hitboxScale>
         <extraLayer>0</extraLayer>
         </NiceHealthTab.DollBone>
         <!-- 鼻子 -->
@@ -506,7 +518,7 @@
         <bondageScale>1.00</bondageScale>
         <width>1</width>
         <height>1</height>
-        <hitboxScale><x>0.88</x><y>0.88</y></hitboxScale>
+        <hitboxScale><x>0.94</x><y>0.94</y></hitboxScale>
         <extraLayer>0</extraLayer>
         </NiceHealthTab.DollOrgan>
         <!-- 左眼 -->
@@ -526,7 +538,7 @@
         <bondageScale>1.00</bondageScale>
         <width>0.6</width>
         <height>0.6</height>
-        <hitboxScale><x>0.73</x><y>0.73</y></hitboxScale>
+        <hitboxScale><x>0.86</x><y>0.86</y></hitboxScale>
         </NiceHealthTab.DollEye>
         <!-- 右眼 -->
         <NiceHealthTab.DollEye>
@@ -545,7 +557,7 @@
         <bondageScale>1.00</bondageScale>
         <width>-0.6</width>
         <height>0.6</height>
-        <hitboxScale><x>0.73</x><y>0.73</y></hitboxScale>
+        <hitboxScale><x>0.86</x><y>0.86</y></hitboxScale>
         </NiceHealthTab.DollEye>
         <!-- 左耳 -->
         <NiceHealthTab.DollBodyPart>
@@ -564,7 +576,7 @@
         <bondageScale>1.00</bondageScale>
         <width>0.79</width>
         <height>0.79</height>
-        <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
+        <hitboxScale><x>0.95</x><y>0.95</y></hitboxScale>
         </NiceHealthTab.DollBodyPart>
 
         <!-- 左耳（灰） -->
@@ -584,7 +596,7 @@
         <bondageScale>1.00</bondageScale>
         <width>0.79</width>
         <height>0.79</height>
-        <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
+        <hitboxScale><x>0.95</x><y>0.95</y></hitboxScale>
         </NiceHealthTab.DollBodyPart>
         <!-- 右耳 -->
         <NiceHealthTab.DollBodyPart>
@@ -603,7 +615,7 @@
         <bondageScale>1.00</bondageScale>
         <width>0.77</width>
         <height>0.77</height>
-        <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
+        <hitboxScale><x>0.95</x><y>0.95</y></hitboxScale>
         </NiceHealthTab.DollBodyPart>
 
         <!-- 右耳（灰） -->
@@ -623,7 +635,7 @@
         <bondageScale>1.00</bondageScale>
         <width>0.77</width>
         <height>0.77</height>
-        <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
+        <hitboxScale><x>0.95</x><y>0.95</y></hitboxScale>
         </NiceHealthTab.DollBodyPart>
         <!-- 大脑 -->
         <NiceHealthTab.DollOrgan>
@@ -642,7 +654,7 @@
         <bondageScale>1.00</bondageScale>
         <width>1</width>
         <height>1</height>
-        <hitboxScale><x>0.9</x><y>0.9</y></hitboxScale>
+        <hitboxScale><x>0.95</x><y>0.95</y></hitboxScale>
         <extraLayer>0</extraLayer>
         </NiceHealthTab.DollOrgan>
         <!-- 心脏 -->
@@ -662,7 +674,7 @@
         <bondageScale>1.00</bondageScale>
         <width>0.85</width>
         <height>0.85</height>
-        <hitboxScale><x>0.75</x><y>0.75</y></hitboxScale>
+        <hitboxScale><x>0.88</x><y>0.88</y></hitboxScale>
         <extraLayer>0</extraLayer>
         </NiceHealthTab.DollOrgan>
         <!-- 右肾 -->
@@ -682,7 +694,7 @@
         <bondageScale>1.00</bondageScale>
         <width>-0.85</width>
         <height>0.85</height>
-        <hitboxScale><x>0.8</x><y>0.7</y></hitboxScale>
+        <hitboxScale><x>0.9</x><y>0.85</y></hitboxScale>
         <extraLayer>0</extraLayer>
         </NiceHealthTab.DollOrgan>
         <!-- 左肾 -->
@@ -702,7 +714,7 @@
         <bondageScale>1.00</bondageScale>
         <width>0.85</width>
         <height>0.85</height>
-        <hitboxScale><x>0.8</x><y>0.7</y></hitboxScale>
+        <hitboxScale><x>0.9</x><y>0.85</y></hitboxScale>
         <extraLayer>0</extraLayer>
         </NiceHealthTab.DollOrgan>
         <!-- 肝脏 -->
@@ -722,7 +734,7 @@
         <bondageScale>1.00</bondageScale>
         <width>0.85</width>
         <height>0.85</height>
-        <hitboxScale><x>0.75</x><y>0.87</y></hitboxScale>
+        <hitboxScale><x>0.88</x><y>0.94</y></hitboxScale>
         <extraLayer>0</extraLayer>
         </NiceHealthTab.DollOrgan>
         <!-- 右肺 -->
@@ -742,7 +754,7 @@
         <bondageScale>1.00</bondageScale>
         <width>-0.85</width>
         <height>0.85</height>
-        <hitboxScale><x>0.77</x><y>0.7</y></hitboxScale>
+        <hitboxScale><x>0.89</x><y>0.85</y></hitboxScale>
         <extraLayer>0</extraLayer>
         </NiceHealthTab.DollOrgan>
         <!-- 左肺 -->
@@ -762,7 +774,7 @@
         <bondageScale>1.00</bondageScale>
         <width>0.85</width>
         <height>0.85</height>
-        <hitboxScale><x>0.77</x><y>0.7</y></hitboxScale>
+        <hitboxScale><x>0.89</x><y>0.85</y></hitboxScale>
         <extraLayer>0</extraLayer>
         </NiceHealthTab.DollOrgan>
         <!-- 胃 -->
@@ -782,7 +794,7 @@
         <bondageScale>1.00</bondageScale>
         <width>0.85</width>
         <height>0.85</height>
-        <hitboxScale><x>0.75</x><y>0.75</y></hitboxScale>
+        <hitboxScale><x>0.88</x><y>0.88</y></hitboxScale>
         <extraLayer>0</extraLayer>
         </NiceHealthTab.DollOrgan>
         <!-- 胸腔 -->
@@ -802,7 +814,7 @@
         <bondageScale>1.00</bondageScale>
         <width>0.9</width>
         <height>0.9</height>
-        <hitboxScale><x>0.77</x><y>0.95</y></hitboxScale>
+        <hitboxScale><x>0.89</x><y>0.98</y></hitboxScale>
         <extraLayer>30</extraLayer>
         </NiceHealthTab.DollBone>
         </value>
